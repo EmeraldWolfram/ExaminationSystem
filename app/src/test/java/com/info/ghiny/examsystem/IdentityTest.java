@@ -11,28 +11,25 @@ public class IdentityTest {
 
     @Test
     public void testMatchPasswordGivenSameIdShouldReturnTrue() throws Exception {
-        Identity actualId   = new Identity("NG YEN AENG", "0000", true);
-        Identity testId     = new Identity("NG YEN AENG", "0000", true);
+        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
 
-        boolean returnItem = actualId.matchPassword(testId);
+        boolean returnItem = actualId.matchPassword("0000");
         assertTrue(returnItem);
     }
 
     @Test
     public void testMatchPasswordGivenDiffIdShouldReturnFalse() throws Exception {
-        Identity actualId   = new Identity("NG YEN AENG", "0000", true);
-        Identity testId     = new Identity("NG YON AENG", "0000", true);
+        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
 
-        boolean returnItem = actualId.matchPassword(testId);
+        boolean returnItem = actualId.matchPassword("0001");
         assertFalse(returnItem);
     }
 
     @Test
     public void testMatchPasswordGivenDiffPassShouldReturnFalse() throws Exception {
-        Identity actualId   = new Identity("NG YEN AENG", "QQ20,.,.", true);
-        Identity testId     = new Identity("NG YEN AENG", "QQ21,.,.", true);
+        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
 
-        boolean returnItem = actualId.matchPassword(testId);
+        boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);
     }
 

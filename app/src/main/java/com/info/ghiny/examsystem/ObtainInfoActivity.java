@@ -32,7 +32,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                student.setIdentity(result.getText());
+                student.setRegNum(result.getText());
                 displayResult();
                 //get The info of the student here
             }
