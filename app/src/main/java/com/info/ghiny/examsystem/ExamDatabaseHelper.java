@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class ExamDatabaseHelper {
 
-    private static final int DATABASE_VERSION   = 16;
+    private static final int DATABASE_VERSION   = 21;
     private static final String DATABASE_NAME   = "examSysDB";
     private static final String EXAM_TABLE      = "ExamPaper";
     private static final String IDENTITY_TABLE  = "IdentityInfo";
@@ -65,18 +65,21 @@ public class ExamDatabaseHelper {
         Cursor pointer = database.rawQuery("SELECT * FROM "  + IDENTITY_TABLE + " WHERE "
                 + IDENTITY_COLUMN_IC + " = ?", new String[]{icNumber});
 
-        if(pointer != null)
-            pointer.moveToFirst();
+        if(pointer.moveToFirst()){
+            if(pointer.getInt(pointer.getColumnIndex(IDENTITY_COLUMN_LEGIT)) != 0)
+                legit = true;
 
-        if(pointer.getInt(pointer.getColumnIndex(IDENTITY_COLUMN_LEGIT)) != 0)
-            legit = true;
+            identity.setRegNum(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_REG)));
+            identity.setName(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_NAME)));
+            identity.setEligible(legit);
+            identity.setPassword(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_PASS)));
 
-        identity.setRegNum(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_REG)));
-        identity.setName(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_NAME)));
-        identity.setEligible(legit);
-        identity.setPassword(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_PASS)));
-
-        return identity;
+            pointer.close();
+            return identity;
+        } else{
+            pointer.close();
+            return null;
+        }
     }
 
     //**********************INTERNAL CLASS***************************

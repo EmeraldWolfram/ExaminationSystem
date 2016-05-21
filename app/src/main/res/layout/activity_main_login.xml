@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLoginLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.info.ghiny.examsystem.MainLoginActivity">
+    tools:context="com.info.ghiny.examsystem.MainLoginActivity"
+    android:background="@color/abc_search_url_text_selected">
 
     <TextView
         android:id="@+id/identityText"
@@ -16,56 +18,24 @@
         android:text="@string/id_text"
         android:textSize="18sp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:textColor="@color/primary_text_default_material_dark"
+        android:textColorHighlight="@android:color/holo_green_light" />
 
     <View
         android:id="@+id/loginDummy"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/identityText"
-        android:layout_above="@+id/passwordLayout">
+        android:layout_height="match_parent"
+        android:layout_below="@id/identityText">
     </View>
 
     <com.journeyapps.barcodescanner.CompoundBarcodeView
         android:id="@+id/loginScanner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@id/passwordLayout"
+        android:layout_alignParentBottom="true"
         android:layout_alignTop="@+id/loginDummy">
     </com.journeyapps.barcodescanner.CompoundBarcodeView>
 
-    <LinearLayout
-        android:id="@+id/passwordLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_above="@+id/loginButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
-        <TextView
-            android:id="@+id/passwordText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textSize="18sp"
-            android:paddingTop="6dp"
-            android:text="@string/password_text"/>
-
-        <EditText
-            android:id="@+id/inputPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_text"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="onLogin"/>
 
 </RelativeLayout>

@@ -26,8 +26,10 @@ public class AssignInfoActivity extends AppCompatActivity {
     private Intent grabIntent;
     private AlertDialog.Builder dialogMsg;
     private AlertDialog alert;
+    private ExamDatabaseHelper databaseHelper;
     private String scanString;
     private int flag = 0;
+    private Identity candidate;
 
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
     private CompoundBarcodeView barcodeView;
@@ -50,6 +52,8 @@ public class AssignInfoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
+
+        databaseHelper = new ExamDatabaseHelper(this);
 
         dialogMsg = new AlertDialog.Builder(this);
         dialogMsg.setCancelable(true);
@@ -100,7 +104,8 @@ public class AssignInfoActivity extends AppCompatActivity {
             }
         }else{
             if((flag & 3) == 0 || (flag & 3) == 1){
-                cddView.setText(scanString);
+                candidate = databaseHelper.getIdentity(scanString);
+                cddView.setText(candidate.getName());
                 flag = flag | 2;
             }
             else{

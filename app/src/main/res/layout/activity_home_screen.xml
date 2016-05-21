@@ -22,7 +22,7 @@
             android:id="@+id/examinatorText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ID: FOONG GHIN YEW\n15WAU09184\nFUCKER"
+            android:text="ID: FOONG GHIN YEW\n15WAU09184"
             android:lineSpacingExtra="5dp"/>
     </LinearLayout>
 

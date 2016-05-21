@@ -25,14 +25,13 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
     private CompoundBarcodeView barcodeView;
-    private Identity student = new Identity();
-
+    private Identity student;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.setStatusText(result.getText());
-                student.setRegNum(result.getText());
+                student = databaseHelper.getIdentity(result.getText());
+                barcodeView.setStatusText(student.getName());
                 displayResult();
                 //get The info of the student here
             }
@@ -54,6 +53,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
         barcodeView.decodeContinuous(callback);
+        barcodeView.setStatusText("Scan candidate ID to get his/her exam details");
     }
 
     @Override
@@ -78,8 +78,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     private void displayResult(){
         //pass in the IC to getExamTable
-        TextView student = (TextView)findViewById(R.id.studentInfoText);
-        student.setText("FOONG GHIN YEW");
+        TextView studentDetail = (TextView)findViewById(R.id.studentInfoText);
+        studentDetail.setText(student.getRegNum());
         systemAdapter.changeCursor(databaseHelper.getExamTable());
     }
 

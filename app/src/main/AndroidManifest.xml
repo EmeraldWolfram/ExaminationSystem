@@ -18,6 +18,9 @@
         <activity android:name=".ObtainInfoActivity"/>
         <activity android:name=".AssignInfoActivity"/>
         <activity android:name=".CheckListActivity"/>
+        <activity
+            android:name=".PopUpLogin"
+            android:theme="@style/AppTheme.CustomTheme"/>
     </application>
 
 </manifest>

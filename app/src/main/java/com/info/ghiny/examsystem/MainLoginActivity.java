@@ -1,13 +1,11 @@
 package com.info.ghiny.examsystem;
 
-import android.content.DialogInterface;
+
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -18,25 +16,20 @@ import java.util.List;
 
 public class MainLoginActivity extends AppCompatActivity {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
+    private static final int PASSWORD_REQ_CODE = 888;
+    private Intent pwIntent;
     private CompoundBarcodeView barcodeView;
-    private Identity examinator;
-    private AlertDialog.Builder dialogMsg;
-    private AlertDialog alert;
-
     private ExamDatabaseHelper databaseHelper;
+    private Identity examiner;
 
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                examinator = databaseHelper.getIdentity(result.getText());
-                barcodeView.setStatusText(examinator.getName() + "\n" + examinator.getRegNum());
-                checkEligibilityOfTheIdendity(examinator);
+                examiner = databaseHelper.getIdentity(result.getText());
+                checkEligibilityOfTheIdendity();
                 //Create the object here by a getIdentity method from Database
             }
-            //DO SOMETHING WITH RESULT
-            //ImageView imageView = (ImageView) findViewById(R.id.barcodePreview);
-            //imageView.setImageBitmap(result.getBitmapWithResultPoints(Color.YELLOW));
         }
 
         @Override
@@ -52,17 +45,9 @@ public class MainLoginActivity extends AppCompatActivity {
 
         databaseHelper = new ExamDatabaseHelper(this);
 
-        dialogMsg = new AlertDialog.Builder(this);
-        dialogMsg.setCancelable(true);
-        dialogMsg.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                barcodeView.decodeSingle(callback);
-                dialog.cancel();
-            }
-        });
-
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
-        barcodeView.decodeSingle(callback);
+        barcodeView.decodeContinuous(callback);
+        barcodeView.setStatusText("Searching for Authorized Invigilator's Identity");
     }
 
     @Override
@@ -85,31 +70,50 @@ public class MainLoginActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void checkEligibilityOfTheIdendity(Identity identity){
-        if(!identity.getEligible()) {
-            dialogMsg.setMessage("Unauthorized examiner detected!");
-            alert = dialogMsg.create();
-            alert.show();
+    private void checkEligibilityOfTheIdendity(){
+        if(examiner == null){
+            Toast.makeText(this, "Invalid QR code!", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            barcodeView.setStatusText(examiner.getName() + "\n" + examiner.getRegNum());
+
+            if(examiner.getEligible()) {
+                barcodeView.pause();
+
+                pwIntent = new Intent(this, PopUpLogin.class);
+                pwIntent.putExtra("Name", examiner.getName());
+                pwIntent.putExtra("RegNum", examiner.getRegNum());
+                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+            } else{
+                Toast.makeText(this, "Unauthorized examiner detected!",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
-    public void onLogin(View view){
-        EditText password = (EditText)findViewById(R.id.inputPassword);
+    public void onActivityResult(int reqCode, int resCode, Intent data){
+        if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
+            String password = data.getStringExtra("Password");
+            pwIntent = new Intent(this, PopUpLogin.class);
 
+            if(password.isEmpty()){
+                Toast.makeText(this, "Please enter password to proceed", Toast.LENGTH_SHORT).show();
 
-        if(password.getText().toString().isEmpty())
-            dialogMsg.setMessage("Please enter password to proceed");
-        else {
-            if (examinator.matchPassword(password.getText().toString())) {
-                Intent homeIntent = new Intent(this, HomeOptionActivity.class);
-                startActivity(homeIntent);
-                dialogMsg.setMessage("Thank you! " + examinator.getName());
+                pwIntent.putExtra("Name", examiner.getName());
+                pwIntent.putExtra("RegNum", examiner.getRegNum());
+                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+            } else if (examiner.matchPassword(password)) {
+                    Intent homeIntent = new Intent(this, HomeOptionActivity.class);
+                    homeIntent.putExtra("Name", examiner.getName());
+                    homeIntent.putExtra("RegNum", examiner.getRegNum());
+                    startActivity(homeIntent);
+            } else{
+                    Toast.makeText(this, "The input password was wrong!", Toast.LENGTH_SHORT).show();
+
+                    pwIntent.putExtra("Name", examiner.getName());
+                    pwIntent.putExtra("RegNum", examiner.getRegNum());
+                    startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
-            else
-                dialogMsg.setMessage("The input password was wrong!");
         }
-
-        alert = dialogMsg.create();
-        alert.show();
     }
 }
