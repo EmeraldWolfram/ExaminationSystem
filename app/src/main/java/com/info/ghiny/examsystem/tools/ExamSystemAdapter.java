@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.tools;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+
+import com.info.ghiny.examsystem.R;
 
 import org.w3c.dom.Text;
 

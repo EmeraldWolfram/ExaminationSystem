@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.database;
 
 /**
  * Created by GhinY on 06/05/2016.

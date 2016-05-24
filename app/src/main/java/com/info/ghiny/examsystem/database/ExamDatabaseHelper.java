@@ -1,11 +1,9 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.database;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.util.Date;
 
 /**
  * Created by GhinY on 13/05/2016.

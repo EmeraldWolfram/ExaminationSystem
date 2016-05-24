@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.database;
 
 import java.util.Date;
 

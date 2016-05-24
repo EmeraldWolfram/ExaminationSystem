@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
+import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.tools.CustomToast;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -16,22 +18,22 @@ import java.util.List;
 
 public class MainLoginActivity extends AppCompatActivity {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
-    private static final int PASSWORD_REQ_CODE = 888;
-    private Intent pwIntent;
-    private CompoundBarcodeView barcodeView;
-    private ExamDatabaseHelper databaseHelper;
-    private Identity examiner;
 
+    private ExamDatabaseHelper databaseHelper;
+    private static final int PASSWORD_REQ_CODE = 888;
+    private Identity examiner;
+    private Intent pwIntent;
+    private CustomToast message;
+
+    private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 examiner = databaseHelper.getIdentity(result.getText());
                 checkEligibilityOfTheIdendity();
-                //Create the object here by a getIdentity method from Database
             }
         }
-
         @Override
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
         }
@@ -44,6 +46,7 @@ public class MainLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_login);
 
         databaseHelper = new ExamDatabaseHelper(this);
+        message = new CustomToast(this);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
         barcodeView.decodeContinuous(callback);
@@ -53,14 +56,12 @@ public class MainLoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         barcodeView.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         barcodeView.pause();
     }
 
@@ -71,9 +72,8 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void checkEligibilityOfTheIdendity(){
-        if(examiner == null){
-            Toast.makeText(this, "Invalid QR code!", Toast.LENGTH_SHORT).show();
-        }
+        if(examiner == null)
+            message.showMessage("Invalid QR code!");
         else{
             barcodeView.setStatusText(examiner.getName() + "\n" + examiner.getRegNum());
 
@@ -84,10 +84,8 @@ public class MainLoginActivity extends AppCompatActivity {
                 pwIntent.putExtra("Name", examiner.getName());
                 pwIntent.putExtra("RegNum", examiner.getRegNum());
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-            } else{
-                Toast.makeText(this, "Unauthorized examiner detected!",
-                        Toast.LENGTH_SHORT).show();
-            }
+            } else
+                message.showMessage("Unauthorized examiner");
         }
     }
 
@@ -96,23 +94,28 @@ public class MainLoginActivity extends AppCompatActivity {
             String password = data.getStringExtra("Password");
             pwIntent = new Intent(this, PopUpLogin.class);
 
-            if(password.isEmpty()){
-                Toast.makeText(this, "Please enter password to proceed", Toast.LENGTH_SHORT).show();
+            if(password.isEmpty()) {
+                //If the user didn't enter a password
+                message.showMessage("Please enter password to proceed");
 
                 pwIntent.putExtra("Name", examiner.getName());
                 pwIntent.putExtra("RegNum", examiner.getRegNum());
-                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-            } else if (examiner.matchPassword(password)) {
-                    Intent homeIntent = new Intent(this, HomeOptionActivity.class);
-                    homeIntent.putExtra("Name", examiner.getName());
-                    homeIntent.putExtra("RegNum", examiner.getRegNum());
-                    startActivity(homeIntent);
-            } else{
-                    Toast.makeText(this, "The input password was wrong!", Toast.LENGTH_SHORT).show();
 
-                    pwIntent.putExtra("Name", examiner.getName());
-                    pwIntent.putExtra("RegNum", examiner.getRegNum());
-                    startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+            }
+            else if (examiner.matchPassword(password)) {
+                //If the user entered CORRECT password
+                Intent assignIntent = new Intent(this, AssignInfoActivity.class);
+                startActivity(assignIntent);
+            }
+            else {
+                //If the user entered INCORRECT password
+                message.showMessage("The input password was wrong!");
+
+                pwIntent.putExtra("Name", examiner.getName());
+                pwIntent.putExtra("RegNum", examiner.getRegNum());
+
+                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.database;
 
 /**
  * Created by GhinY on 14/05/2016.
@@ -6,7 +6,8 @@ package com.info.ghiny.examsystem;
 public class Candidate {
     private Integer tableNumber;
     private String studentName;
-    private String paper;   //Just the code
+    private String paperCode;
+    private String paperDesc;
     public enum Status {
         PRESENT,
         ABSENT,
@@ -18,34 +19,44 @@ public class Candidate {
 
     public Candidate(){
         tableNumber = 0;
-        paper   = null;
-        status  = Status.ABSENT;
+        paperCode   = null;
+        paperDesc   = null;
+        status      = Status.ABSENT;
         studentName = null;
     }
 
-    public Candidate(int tableNumber, String paper,
+    public Candidate(int tableNumber, String paperCode, String paperDesc,
                      Status status, String sName){
         this.tableNumber = tableNumber;
-        this.paper  = paper;
-        this.status = status;
-        studentName = sName;
+        this.paperCode  = paperCode;
+        this.paperDesc  = paperDesc;
+        this.status     = status;
+        studentName     = sName;
     }
 
     public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
     }
 
-    public String getTableNumber() {
-        return tableNumber.toString();
+    public Integer getTableNumber() {
+        return tableNumber;
     }
 
-    public void setPaper(String paper) {
-        this.paper = paper;
+    public void setPaperCode(String paperCode) {
+        this.paperCode = paperCode;
+    }
+    public void setPaperDesc(String paperDesc) {
+        this.paperDesc = paperDesc;
     }
 
-    public String getPaper() {
-        return paper;
+    public String getPaperCode() {
+        return paperCode;
     }
+    public String getPaperDesc() {
+        return paperDesc;
+    }
+
+    public String getPaper(){return paperCode + "  " + paperDesc;   }
 
     public void setStatus(Status status) {
         this.status = status;

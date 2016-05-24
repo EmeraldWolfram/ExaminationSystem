@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
+import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.tools.ExamSystemAdapter;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
