@@ -19,13 +19,16 @@ public class Candidate {
         studentName = null;
         regNum      = null;
         paperCode   = null;
+        status      = AttendanceList.Status.ABSENT;
     }
 
-    public Candidate(int tableNumber, String sName, String regNum, String paperCode){
+    public Candidate(int tableNumber, String sName, String regNum, String paperCode,
+                     AttendanceList.Status status){
         this.tableNumber = tableNumber;
         studentName     = sName;
         this.regNum     = regNum;
         this.paperCode  = paperCode;
+        this.status     = status;
     }
 
     //Instance Method ---------------------------------------------------------------------
@@ -36,6 +39,9 @@ public class Candidate {
         return tableNumber;
     }
 
+    public void setPaperCode(String paperCode) {
+        this.paperCode = paperCode;
+    }
     public String getPaperCode() {
         return paperCode;
     }
@@ -55,6 +61,7 @@ public class Candidate {
         return studentName;
     }
 
+    public void setRegNum(String regNum) {this.regNum = regNum;}
     public String getRegNum() {
         return regNum;
     }

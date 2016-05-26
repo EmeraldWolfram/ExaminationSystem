@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.info.ghiny.examsystem.database.Candidate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,10 +21,15 @@ public class CheckListDatabaseHelper {
 
     public static final String TABLE_INFO_ID            = "_id";
     public static final String TABLE_INFO_COLUMN_NAME   = "Name";
+    public static final String TABLE_INFO_COLUMN_REGNUM = "RegNum";
     public static final String TABLE_INFO_COLUMN_CODE   = "Code";
-    public static final String TABLE_INFO_COLUMN_DESC   = "Desc";
     public static final String TABLE_INFO_COLUMN_TABLE  = "TableNo";
     public static final String TABLE_INFO_COLUMN_STATUS = "Status";
+
+    private static final String SAVE_ATTENDANCE = "INSERT INTO " + ATTENDANCE_TABLE
+            + " (" + TABLE_INFO_COLUMN_NAME     + ", " + TABLE_INFO_COLUMN_REGNUM
+            + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_TABLE
+            + ", " + TABLE_INFO_COLUMN_STATUS   + ") VALUES ('";
 
     private SQLiteDatabase database;
     private CheckListOpenHelper openHelper;
@@ -33,46 +39,99 @@ public class CheckListDatabaseHelper {
         database    = openHelper.getWritableDatabase();
     }
 
-    public void insertCandidateList(Candidate candidate){
-       // database.execSQL("INSERT INTO " + ATTENDANCE_TABLE + " ("
-       //         + TABLE_INFO_COLUMN_TABLE   + ", "
-       //         + TABLE_INFO_COLUMN_NAME    + ", "
-       //        + TABLE_INFO_COLUMN_CODE    + ", "
-       //         + TABLE_INFO_COLUMN_DESC    + ", "
-       //         + TABLE_INFO_COLUMN_STATUS  + ")"
-        //        + " VALUES ("+ candidate.getTableNumber()
-        //        + ", '"  + candidate.getStudentName()
-          //      + "', '" + candidate.getPaperCode()
-          //      + "', '" + candidate.getPaperDesc()
-            //    + "', '" + candidate.getStatus() + "')");
+    public void saveAttendanceList(AttendanceList attdList){
+        //clearDatabase();
     }
 
     public void clearDatabase(){
-        database.execSQL("DELETE * FROM " + ATTENDANCE_TABLE);
+        database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
+        database.execSQL("VACUUM");
     }
 
-    public List<Candidate> getCandidatesList(AttendanceList.Status status){
-        List<Candidate> candidateList = new ArrayList<Candidate>();
-        Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
+    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>>
+    getLastSavedAttendanceList(){
+        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>> map;
+        map = new HashMap<>();
+        map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
+        map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
+        map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
+        map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
+
+        return map;
+    }
+
+    private void saveAttendance(Candidate cdd){
+        database.execSQL(SAVE_ATTENDANCE    + cdd.getStudentName()  + "', '"
+                + cdd.getRegNum()       + "', '"
+                + cdd.getPaperCode()    + "', "
+                + cdd.getTableNumber()  + ", '"
+                + cdd.getStatus()       + "')");
+    }
+
+    private HashMap<String, HashMap<String, Candidate>> getPaperMap(AttendanceList.Status status){
+
+        HashMap<String, HashMap<String, Candidate>> paperMap = new HashMap<>();
+        List<String> paperCodeList = getDistinctPaperCode();
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
                 + TABLE_INFO_COLUMN_STATUS + " = ?", new String[]{status.toString()});
+
+        for(int i = 0; i < paperCodeList.size(); i++){
+            if (ptr.moveToFirst()) {
+                do {
+                    HashMap<String, Candidate> candidateMap = new HashMap<>();
+                    candidateMap = getCandidateList(paperCodeList.get(i), status);
+
+                    paperMap.put(paperCodeList.get(i), candidateMap);
+                } while (ptr.moveToNext());
+            }
+        }
+        ptr.close();
+        return paperMap;
+    }
+
+    private HashMap<String, Candidate> getCandidateList(String paperCode,
+                                                        AttendanceList.Status status){
+        HashMap<String, Candidate> candidateMap= new HashMap<>();
+        Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
+                + TABLE_INFO_COLUMN_CODE + " = ? AND " + TABLE_INFO_COLUMN_STATUS
+                + " = ?", new String[]{paperCode, status.toString()});
 
         if (ptr.moveToFirst()) {
             do {
                 Candidate cdd = new Candidate();
 
-                //cdd.setStudentName(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_NAME)));
-                //cdd.setPaperCode(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_CODE)));
-                //cdd.setPaperDesc(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_DESC)));
-                //cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(TABLE_INFO_COLUMN_TABLE)));
-                //cdd.setStatus(status);
+                cdd.setStudentName(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_NAME)));
+                cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(TABLE_INFO_COLUMN_TABLE)));
+                cdd.setRegNum(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_REGNUM)));
+                cdd.setPaperCode(paperCode);
+                cdd.setStatus(status);
 
-                candidateList.add(cdd);
+                candidateMap.put(cdd.getRegNum(), cdd);
             } while (ptr.moveToNext());
         }
         ptr.close();
-        return candidateList;
+        return candidateMap;
     }
 
+    private List<String> getDistinctPaperCode(){
+        List<String> paperCodeList = new ArrayList<>();
+
+        Cursor ptr  = database.rawQuery("SELECT DISTINCT " + TABLE_INFO_COLUMN_CODE  + ", "
+                + " FROM " + ATTENDANCE_TABLE , null);
+
+        if (ptr.moveToFirst()) {
+            do {
+                paperCodeList.add(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_CODE)));
+            } while (ptr.moveToNext());
+        }
+        ptr.close();
+        return paperCodeList;
+    }
+
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     private class CheckListOpenHelper extends SQLiteOpenHelper{
 
         public CheckListOpenHelper(Context context){
@@ -84,8 +143,8 @@ public class CheckListDatabaseHelper {
             db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "( "
                     + TABLE_INFO_ID    + " INTEGER PRIMARY KEY, "
                     + TABLE_INFO_COLUMN_NAME    + " TEXT, "
+                    + TABLE_INFO_COLUMN_REGNUM  + " TEXT, "
                     + TABLE_INFO_COLUMN_CODE    + " TEXT, "
-                    + TABLE_INFO_COLUMN_DESC    + " TEXT, "
                     + TABLE_INFO_COLUMN_TABLE   + " INTEGER, "
                     + TABLE_INFO_COLUMN_STATUS  + " TEXT )");
         }
