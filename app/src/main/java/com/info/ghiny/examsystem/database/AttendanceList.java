@@ -52,7 +52,13 @@ public class AttendanceList {
         assert status != null;
         assert paperCode != null;
 
-        return getPaperList(status).get(paperCode);
+        HashMap<String, Candidate> cddList = null;
+        HashMap<String, HashMap<String, Candidate>> paperMap = getPaperList(status);
+        if(!paperMap.isEmpty()){
+            cddList = paperMap.get(paperCode);
+        }
+
+        return cddList;
     }
 
 
@@ -69,47 +75,25 @@ public class AttendanceList {
         return getAllCandidateRegNumList().size();
     }
 
-    //Add CandidateList into attendance list
-    public void putCandidateList(String paperCode,
-                                 HashMap<String, Candidate> candidateList,
-                                 Status status){
-
-        HashMap<String, HashMap<String, Candidate>> statusList = attendanceList.get(status);
-        HashMap<String, Candidate> papers;
-
-        if(statusList.containsKey(paperCode))
-            statusList.put(paperCode, candidateList);
-        else{
-            papers = statusList.get(paperCode);
-            papers.putAll(candidateList);
-        }
-    }
-
-    //Add empty Candidate PaperList into the attendance list
-    //Assume Each status will have the same papers
-    public void putSubjectList(HashMap<String, HashMap<String, Candidate>> paperList){
-        for(Map.Entry<Status, HashMap<String, HashMap<String, Candidate>>> s:attendanceList.entrySet()){
-            s.getValue().putAll(paperList);
-        }
-        //attendanceList.put(Status.PRESENT, paperList);
-        //attendanceList.put(Status.ABSENT, paperList);
-        //attendanceList.put(Status.BARRED, paperList);
-        //attendanceList.put(Status.EXEMPTED, paperList);
-    }
-
-    public void addCandidate(Candidate cdd, ExamSubject paper, Status status){
+    public void addCandidate(Candidate cdd, String paperCode, Status status){
         assert cdd      != null : "Input Candidate argument cannot be null";
-        assert paper    != null : "Input ExamSubject argument cannot be null";
+        assert paperCode!= null : "Input PaperCode argument cannot be null";
         assert status   != null : "Input Status argument cannot be null";
 
-        HashMap<String, HashMap<String, Candidate>> statusList = attendanceList.get(status);
-        assert statusList != null;
+        HashMap<String, Candidate> cddList = getCandidateList(status, paperCode);
+        if(cddList == null){
+            cddList = new HashMap<String, Candidate>();
+            cddList.put(cdd.getRegNum(), cdd);
+            HashMap<String, HashMap<String, Candidate>> paperList = new HashMap<>();
+            paperList.put(paperCode, cddList);
 
-        HashMap<String, Candidate> paperList = statusList.get(paper.getPaperCode());
-        assert paperList != null;
+            attendanceList.put(status, paperList);
+        }
+        else{
+            cdd.setStatus(status);
+            cddList.put(cdd.getRegNum(), cdd);
+        }
 
-        cdd.setStatus(status);
-        paperList.put(cdd.getRegNum(), cdd);
     }
 
     public void removeCandidate(String regNum){

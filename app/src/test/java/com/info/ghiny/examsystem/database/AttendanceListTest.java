@@ -29,51 +29,8 @@ public class AttendanceListTest {
     @Before
     public void setUp() throws Exception{
         attdList = new AttendanceList();
-
-        paperList1 = new HashMap<>();
-        paperList2 = new HashMap<>();
-        paperList3 = new HashMap<>();
-        paperList1.put("BAME 1234", new HashMap<String, Candidate>());
-        paperList3.put("BAME 1234", new HashMap<String, Candidate>());
-        paperList3.put("BAME 2134", new HashMap<String, Candidate>());
-        paperList3.put("BAME 3134", new HashMap<String, Candidate>());
-
-        cddList1 = new HashMap<>();
-        cddList2 = new HashMap<>();
-        cddList3 = new HashMap<>();
-        cddList1.put("12WAD03444", new Candidate());
-        cddList2.put("13WAD05666", new Candidate());
-        cddList3.put("14WAD07888", new Candidate());
     }
 
-    @Test
-    public void testPutSubjectList_WhenAttdListWasEmpty() throws Exception {
-        //AttdList initially was empty
-        assertEquals(0, attdList.getNumberOfPaper());
-
-        //Added one paper list to AttdList should now have size 1
-        attdList.putSubjectList(paperList1);
-        dummyPaperList = attdList.getPaperList(AttendanceList.Status.PRESENT);
-        assertEquals(dummyPaperList, paperList1);
-        assertEquals(1, attdList.getNumberOfPaper());
-
-        //Added empty paper list to AttdList should not change anything
-        attdList.putSubjectList(paperList2);
-        assertEquals(1, attdList.getNumberOfPaper());
-
-        //Added same Key paperCode will not create new PaperMap
-        attdList.putSubjectList(paperList3);
-        assertEquals(3, attdList.getNumberOfPaper());
-    }
-
-    @Test
-    public void testPutCandidateList() throws Exception {
-        int i = attdList.getNumberOfCandidates();
-        assertEquals(i, 0);
-
-        HashMap<String, Candidate> cddMap = new HashMap<>();
-        attdList.putCandidateList("BAME 2134", cddMap, AttendanceList.Status.PRESENT);
-    }
 
     @Test
     public void testGetStatusList() throws Exception {
@@ -82,12 +39,30 @@ public class AttendanceListTest {
 
     @Test
     public void testAddCandidate() throws Exception {
+        assertEquals(0, attdList.getNumberOfCandidates());
+        assertEquals(0, attdList.getNumberOfPaper());
+        assertEquals(4, attdList.getNumberOfStatus());
 
+        attdList.addCandidate(new Candidate(1, "FGY", "15WAU09184",
+                        "BAME 2134", AttendanceList.Status.ABSENT), "BAME 2134",
+                AttendanceList.Status.PRESENT);
+
+        assertEquals(1, attdList.getNumberOfCandidates());
+        assertEquals(1, attdList.getNumberOfPaper());
+        assertEquals(4, attdList.getNumberOfStatus());
     }
 
     @Test
     public void testRemoveCandidate() throws Exception {
+        attdList.addCandidate(new Candidate(1, "FGY", "15WAU09184",
+                        "BAME 2134", AttendanceList.Status.ABSENT), "BAME 2134",
+                AttendanceList.Status.PRESENT);
 
+        assertEquals(1, attdList.getNumberOfCandidates());
+        assertEquals(1, attdList.getNumberOfPaper());
+        attdList.removeCandidate("15WAU09184");
+        assertEquals(0, attdList.getNumberOfCandidates());
+        assertEquals(1, attdList.getNumberOfPaper());
     }
 
     @Test
@@ -100,6 +75,19 @@ public class AttendanceListTest {
         List<String> testList   = attdList.getAllCandidateRegNumList();
 
         assertNotNull(testList);
-        assertEquals(testList, new ArrayList<String>());
+        assertEquals(new ArrayList<String>(), testList);
+    }
+
+    @Test
+    public void testGetAllCandidateRegNumList_TestExistedList() throws Exception {
+        attdList.addCandidate(new Candidate(1, "FGY", "15WAU09184",
+                "BAME 2134", AttendanceList.Status.ABSENT), "BAME 2134",
+                AttendanceList.Status.PRESENT);
+        List<String> testList   = attdList.getAllCandidateRegNumList();
+
+        assertNotNull(testList);
+        List<String> test = new ArrayList<>();
+        test.add("15WAU09184");
+        assertEquals(testList, test);
     }
 }
