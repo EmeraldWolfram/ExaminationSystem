@@ -77,10 +77,10 @@ public class CheckListActivity extends AppCompatActivity {
         statusHead.add("BARRED");
         statusHead.add("EXEMPTED");
 
-        present = databaseHelper.getCandidatesList(AttendanceList.Status.PRESENT);
-        absent  = databaseHelper.getCandidatesList(AttendanceList.Status.ABSENT);
-        barred  = databaseHelper.getCandidatesList(AttendanceList.Status.BARRED);
-        exempted = databaseHelper.getCandidatesList(AttendanceList.Status.EXEMPTED);
+        //present = databaseHelper.getCandidatesList(AttendanceList.Status.PRESENT);
+        //absent  = databaseHelper.getCandidatesList(AttendanceList.Status.ABSENT);
+        //barred  = databaseHelper.getCandidatesList(AttendanceList.Status.BARRED);
+        //exempted = databaseHelper.getCandidatesList(AttendanceList.Status.EXEMPTED);
 
 
         dataChild.put(statusHead.get(0), present); // Header, Child data

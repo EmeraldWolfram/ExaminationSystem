@@ -46,7 +46,8 @@ public class CandidateTest {
         paperMap.put(testPaper1.getPaperCode(), testPaper1);
 
         Candidate.setPaperList(paperMap);
-        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184", "BAME 2134");
+        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184",
+                "BAME 2134", AttendanceList.Status.ABSENT);
 
         ExamSubject getSubject = testCdd.getPaper();
 
@@ -59,7 +60,8 @@ public class CandidateTest {
         paperMap.put(testPaper1.getPaperCode(), testPaper1);
 
         Candidate.setPaperList(paperMap);
-        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184", "BAME 2004");
+        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184",
+                "BAME 2004", AttendanceList.Status.ABSENT);
 
         ExamSubject getSubject = testCdd.getPaper();
         assertNull(getSubject);
@@ -84,7 +86,8 @@ public class CandidateTest {
         paperMap.put(testPaper2.getPaperCode(), testPaper2);
 
         Candidate.setPaperList(paperMap);
-        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184", "BAME 2004");
+        Candidate testCdd = new Candidate(1, "FGY", "15WAU09184",
+                "BAME 2004", AttendanceList.Status.ABSENT);
 
         ExamSubject getSubject = testCdd.getPaper();
 

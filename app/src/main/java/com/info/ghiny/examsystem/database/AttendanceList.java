@@ -1,6 +1,8 @@
 package com.info.ghiny.examsystem.database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,14 +20,10 @@ public class AttendanceList {
     public AttendanceList(){
         attendanceList = new HashMap<Status, HashMap<String, HashMap<String, Candidate>>>();
 
-        HashMap<String, HashMap<String, Candidate>> present =
-                new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> absent  =
-                new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> barred  =
-                new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> exempt  =
-                new HashMap<String, HashMap<String, Candidate>>();
+        HashMap<String, HashMap<String, Candidate>> present = new HashMap<String, HashMap<String, Candidate>>();
+        HashMap<String, HashMap<String, Candidate>> absent  = new HashMap<String, HashMap<String, Candidate>>();
+        HashMap<String, HashMap<String, Candidate>> barred  = new HashMap<String, HashMap<String, Candidate>>();
+        HashMap<String, HashMap<String, Candidate>> exempt  = new HashMap<String, HashMap<String, Candidate>>();
 
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
@@ -44,36 +42,59 @@ public class AttendanceList {
         attendanceList.put(Status.EXEMPTED, exempt);
     }
 
-    //Add empty Candidate PaperList into the attendance list
-    //Assume Each status will have the same papers
-    public void addSubjectList(HashMap<String, HashMap<String, Candidate>> paperList){
-        attendanceList.put(Status.PRESENT, paperList);
-        attendanceList.put(Status.ABSENT, paperList);
-        attendanceList.put(Status.BARRED, paperList);
-        attendanceList.put(Status.EXEMPTED, paperList);
+    //Inherit Methods
+    public HashMap<String, HashMap<String, Candidate>> getPaperList(Status status){
+        assert status != null;
+        return attendanceList.get(status);
+    }
+
+    public HashMap<String, Candidate> getCandidateList(Status status, String paperCode){
+        assert status != null;
+        assert paperCode != null;
+
+        return getPaperList(status).get(paperCode);
+    }
+
+
+    //Available Methods
+    public int getNumberOfStatus(){
+        return attendanceList.size();
+    }
+
+    public int getNumberOfPaper(){
+        return attendanceList.get(Status.PRESENT).size();
+    }
+
+    public int getNumberOfCandidates(){
+        return getAllCandidateRegNumList().size();
     }
 
     //Add CandidateList into attendance list
-    public void addCandidateList(String paperCode,
-                               HashMap<String, Candidate> candidateList,
-                               Status status){
+    public void putCandidateList(String paperCode,
+                                 HashMap<String, Candidate> candidateList,
+                                 Status status){
 
         HashMap<String, HashMap<String, Candidate>> statusList = attendanceList.get(status);
         HashMap<String, Candidate> papers;
 
         if(statusList.containsKey(paperCode))
             statusList.put(paperCode, candidateList);
-        else{//Strongly error prompt area, if there are same candidate in here, require extra checking
+        else{
             papers = statusList.get(paperCode);
             papers.putAll(candidateList);
         }
     }
 
-    public HashMap<String, HashMap<String, Candidate>>  getStatusList(Status status) {
-        assert status != null;
-        HashMap<String, HashMap<String, Candidate>>  list;
-        list = attendanceList.get(status);
-        return list;
+    //Add empty Candidate PaperList into the attendance list
+    //Assume Each status will have the same papers
+    public void putSubjectList(HashMap<String, HashMap<String, Candidate>> paperList){
+        for(Map.Entry<Status, HashMap<String, HashMap<String, Candidate>>> s:attendanceList.entrySet()){
+            s.getValue().putAll(paperList);
+        }
+        //attendanceList.put(Status.PRESENT, paperList);
+        //attendanceList.put(Status.ABSENT, paperList);
+        //attendanceList.put(Status.BARRED, paperList);
+        //attendanceList.put(Status.EXEMPTED, paperList);
     }
 
     public void addCandidate(Candidate cdd, ExamSubject paper, Status status){
@@ -107,6 +128,28 @@ public class AttendanceList {
                 break;
         }
         return candidate;
+    }
+
+    protected List<String> getAllCandidateRegNumList(){
+        List<String> regNumList = new ArrayList<>();
+
+        for(Map.Entry<Status, HashMap<String, HashMap<String, Candidate>>> s:attendanceList.entrySet())
+            fromPaperGetRegNum(regNumList, s.getValue());
+
+        return regNumList;
+    }
+
+    //Private internal function used to traverse the level of Map
+    private void fromPaperGetRegNum(List<String> regNumList,
+                                    HashMap<String, HashMap<String, Candidate>> paperMap){
+        for(Map.Entry<String, HashMap<String, Candidate>> s:paperMap.entrySet())
+            fromCandidatesGetRegNum(regNumList, s.getValue());
+    }
+
+    private void fromCandidatesGetRegNum(List<String> regNumList,
+                                         HashMap<String, Candidate> cddMap){
+        for(Map.Entry<String, Candidate> s:cddMap.entrySet())
+            regNumList.add(s.getKey());
     }
 
     private void fromPaperRemoveCandidate(String regNum, HashMap<String,

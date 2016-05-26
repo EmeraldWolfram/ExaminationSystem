@@ -39,15 +39,26 @@ public class CheckListDatabaseHelper {
         database    = openHelper.getWritableDatabase();
     }
 
+
+    //AVAILABLE METHOD ========================================================================
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    //Clear the database and save a new set of AttendanceList into the database
     public void saveAttendanceList(AttendanceList attdList){
-        //clearDatabase();
+        clearDatabase();
+        List<String> regNumList = attdList.getAllCandidateRegNumList();
+
+        for(int i = 0; i < regNumList.size(); i++)
+            saveAttendance(attdList.getCandidate(regNumList.get(i)));
     }
 
+    //Simply clean the database
     public void clearDatabase(){
         database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
         database.execSQL("VACUUM");
     }
 
+    //Retrieve an attendanceList from the database
     public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>>
     getLastSavedAttendanceList(){
         HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>> map;
@@ -60,6 +71,10 @@ public class CheckListDatabaseHelper {
         return map;
     }
 
+    //INTERNAL HIDDEN TOOLS ====================================================================
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    //Save an instance of Candidate into the database
     private void saveAttendance(Candidate cdd){
         database.execSQL(SAVE_ATTENDANCE    + cdd.getStudentName()  + "', '"
                 + cdd.getRegNum()       + "', '"
@@ -68,7 +83,9 @@ public class CheckListDatabaseHelper {
                 + cdd.getStatus()       + "')");
     }
 
-    private HashMap<String, HashMap<String, Candidate>> getPaperMap(AttendanceList.Status status){
+    //Get a Map of PaperSubject with Candidates filled
+    private HashMap<String, HashMap<String, Candidate>>
+    getPaperMap(AttendanceList.Status status){
 
         HashMap<String, HashMap<String, Candidate>> paperMap = new HashMap<>();
         List<String> paperCodeList = getDistinctPaperCode();
@@ -90,8 +107,9 @@ public class CheckListDatabaseHelper {
         return paperMap;
     }
 
-    private HashMap<String, Candidate> getCandidateList(String paperCode,
-                                                        AttendanceList.Status status){
+    //Get a Map of Candidates that have the given status and paperCode
+    private HashMap<String, Candidate>
+    getCandidateList(String paperCode, AttendanceList.Status status){
         HashMap<String, Candidate> candidateMap= new HashMap<>();
         Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
                 + TABLE_INFO_COLUMN_CODE + " = ? AND " + TABLE_INFO_COLUMN_STATUS
@@ -113,7 +131,7 @@ public class CheckListDatabaseHelper {
         ptr.close();
         return candidateMap;
     }
-
+    //Get a List that contain all distinct PaperCode available
     private List<String> getDistinctPaperCode(){
         List<String> paperCodeList = new ArrayList<>();
 
@@ -130,7 +148,9 @@ public class CheckListDatabaseHelper {
     }
 
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //==========================================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //==========================================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     private class CheckListOpenHelper extends SQLiteOpenHelper{
 
