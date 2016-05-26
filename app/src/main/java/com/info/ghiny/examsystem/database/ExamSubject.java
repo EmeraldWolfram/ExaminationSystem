@@ -6,20 +6,48 @@ import java.util.Date;
  * Created by GhinY on 07/05/2016.
  */
 public class ExamSubject {
-    public String subjectCode;
-    public String subjectDescrp;
-    public Date date;
+    private String paperCode;
+    private String paperDesc;
+    private Date date;
+    private Integer startTableNum;
+    private Integer numOfCandidate;
     public enum Session {AM, PM, VM}
     public enum ExamVenue {H1, H2, H3, H4, H5, H6, H7}
-    public Session paperSession;
-    public ExamVenue examVenue;
+    private Session paperSession;
+    private ExamVenue examVenue;
 
     public ExamSubject(){
         date = new Date();
         paperSession    = Session.AM;
         examVenue       = ExamVenue.H1;
-        subjectCode     = null;
-        subjectDescrp   = null;
+        startTableNum   = 0;
+        numOfCandidate  = 0;
+        paperCode       = null;
+        paperDesc       = null;
+    }
+
+    public ExamSubject(String paperCode, String paperDesc, int startTableNum, Date date,
+                       int numOfCandidate, ExamVenue examVenue, Session paperSession){
+        this.date           = date;
+        this.paperSession   = paperSession;
+        this.examVenue      = examVenue;
+        this.startTableNum  = startTableNum;
+        this.numOfCandidate = numOfCandidate;
+        this.paperCode      = paperCode;
+        this.paperDesc      = paperDesc;
+    }
+
+    public Integer getNumOfCandidate() {
+        return numOfCandidate;
+    }
+    public Integer getStartTableNum() {
+        return startTableNum;
+    }
+    public void setNumOfCandidate(Integer numOfCandidate) {
+        this.numOfCandidate = numOfCandidate;
+    }
+    public void setStartTableNum(Integer startTableNum) {
+        this.startTableNum = startTableNum;
     }
 
     public void setDate(Date date){
@@ -45,19 +73,32 @@ public class ExamSubject {
         return examVenue.toString();
     }
 
-    public void setSubjectCode(String subjectCode){
-        this.subjectCode = subjectCode;
+    public void setPaperCode(String paperCode){
+        this.paperCode = paperCode;
     }
 
-    public String getSubjectCode(){
-        return subjectCode;
+    public String getPaperCode(){
+        return paperCode;
     }
 
-    public void setSubjectDescrp(String subjectDescrp) {
-        this.subjectDescrp = subjectDescrp;
+    public void setPaperDesc(String paperDesc) {
+        this.paperDesc = paperDesc;
     }
 
-    public String getSubjectDescrp() {
-        return subjectDescrp;
+    public String getPaperDesc() {
+        return paperDesc;
+    }
+
+    @Override
+    public String toString() {
+        String str;
+        if(paperCode != null && paperDesc != null)
+            str = paperCode + "  " + paperDesc;
+        else if(paperCode == null)
+            throw new NullPointerException("Paper Code was not filled yet");
+        else
+            throw new NullPointerException("Paper Description was not filled yet");
+
+        return str;
     }
 }

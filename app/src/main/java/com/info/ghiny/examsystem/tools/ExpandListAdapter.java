@@ -58,7 +58,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
         tableNumView.setText(childText.getTableNumber().toString());
         candidateView.setText(childText.getStudentName());
-        examPaperView.setText(childText.getPaper());
+        examPaperView.setText(childText.getPaper().toString());
 
         if(childText.getTableNumber() == 0)
             tableNumView.setText(" /");

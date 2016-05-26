@@ -5,13 +5,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
 import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.tools.ExamSystemAdapter;
+import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -33,7 +36,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 student = databaseHelper.getIdentity(result.getText());
-                barcodeView.setStatusText(student.getName());
+                barcodeView.setStatusText(student.getName() + "\n" + student.getRegNum());
                 displayResult();
                 //get The info of the student here
             }
@@ -50,8 +53,27 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
         databaseHelper = new ExamDatabaseHelper(this);
         systemAdapter = new ExamSystemAdapter(this, null);
+
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
+        assert paperList != null;
         paperList.setAdapter(systemAdapter);
+
+        RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
+        assert thisLayout != null;
+
+        thisLayout.setOnTouchListener(new OnSwipeListener(this){
+            @Override
+            public void onSwipeTop() {
+                finish();
+            }
+        });
+        paperList.setOnTouchListener(new OnSwipeListener(this){
+            @Override
+            public void onSwipeTop() {
+                finish();
+            }
+        });
+
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
         barcodeView.decodeContinuous(callback);
@@ -80,12 +102,6 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     private void displayResult(){
         //pass in the IC to getExamTable
-        TextView studentDetail = (TextView)findViewById(R.id.studentInfoText);
-        studentDetail.setText(student.getRegNum());
         systemAdapter.changeCursor(databaseHelper.getExamTable());
-    }
-
-    public void onBack(View view){
-        finish();
     }
 }

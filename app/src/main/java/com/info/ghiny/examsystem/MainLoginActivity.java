@@ -73,7 +73,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private void checkEligibilityOfTheIdendity(){
         if(examiner == null)
-            message.showMessage("Invalid QR code!");
+            message.showMessage("Not an Identity!");
         else{
             barcodeView.setStatusText(examiner.getName() + "\n" + examiner.getRegNum());
 

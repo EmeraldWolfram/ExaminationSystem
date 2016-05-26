@@ -1,76 +1,79 @@
 package com.info.ghiny.examsystem.database;
 
+import java.util.HashMap;
+
 /**
  * Created by GhinY on 14/05/2016.
  */
 public class Candidate {
     private Integer tableNumber;
     private String studentName;
+    private String regNum;
     private String paperCode;
-    private String paperDesc;
-    public enum Status {
-        PRESENT,
-        ABSENT,
-        EXEMPTED,
-        BARRED
-        }
-    private Status status;
+    private static HashMap<String, ExamSubject> paperList;
+    private AttendanceList.Status status;
 
-
+    //CONSTRUCTOR `````````````````````````````````````````````````````````````````````
     public Candidate(){
         tableNumber = 0;
-        paperCode   = null;
-        paperDesc   = null;
-        status      = Status.ABSENT;
         studentName = null;
+        regNum      = null;
+        paperCode   = null;
     }
 
-    public Candidate(int tableNumber, String paperCode, String paperDesc,
-                     Status status, String sName){
+    public Candidate(int tableNumber, String sName, String regNum, String paperCode){
         this.tableNumber = tableNumber;
-        this.paperCode  = paperCode;
-        this.paperDesc  = paperDesc;
-        this.status     = status;
         studentName     = sName;
+        this.regNum     = regNum;
+        this.paperCode  = paperCode;
     }
 
+    //Instance Method ---------------------------------------------------------------------
     public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
     }
-
     public Integer getTableNumber() {
         return tableNumber;
-    }
-
-    public void setPaperCode(String paperCode) {
-        this.paperCode = paperCode;
-    }
-    public void setPaperDesc(String paperDesc) {
-        this.paperDesc = paperDesc;
     }
 
     public String getPaperCode() {
         return paperCode;
     }
-    public String getPaperDesc() {
-        return paperDesc;
+    public ExamSubject getPaper(){return getExamSubject(paperCode);   }
+
+    public AttendanceList.Status getStatus() {
+        return status;
     }
-
-    public String getPaper(){return paperCode + "  " + paperDesc;   }
-
-    public void setStatus(Status status) {
+    public void setStatus(AttendanceList.Status status) {
         this.status = status;
-    }
-
-    public String getStatus() {
-        return status.toString();
     }
 
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
-
     public String getStudentName() {
         return studentName;
+    }
+
+    public String getRegNum() {
+        return regNum;
+    }
+
+    //Static Method ----------------------------------------------------------------------------
+    public static void setPaperList(HashMap<String, ExamSubject> papers){
+        paperList = papers;
+    }
+    public static HashMap<String, ExamSubject> getPaperList(){
+        return paperList;
+    }
+    public static String getPaperDesc(String paperCode) {
+        String paperDesc = null;
+        ExamSubject examSubject = paperList.get(paperCode);
+        if(examSubject != null)
+            paperDesc = examSubject.getPaperDesc();
+        return paperDesc;
+    }
+    private static ExamSubject getExamSubject(String paperCode){
+        return paperList.get(paperCode);
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
  * Created by GhinY on 23/05/2016.
  */
 public class CheckListDatabaseHelper {
-    private static final int DATABASE_VERSION       = 1;
+    private static final int DATABASE_VERSION       = 5;
     private static final String DATABASE_NAME       = "checkListDB";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
 
@@ -33,28 +33,26 @@ public class CheckListDatabaseHelper {
         database    = openHelper.getWritableDatabase();
     }
 
-    public void insertCandidateList(List<Candidate> candidates){
-        Candidate candidate;
-
-        for(int i=0; i < candidates.size(); i++){
-            candidate = candidates.get(i);
-            database.execSQL("INSERT INTO " + ATTENDANCE_TABLE + " ("
-                    + TABLE_INFO_COLUMN_TABLE   + ", "
-                    + TABLE_INFO_COLUMN_NAME    + ", "
-                    + TABLE_INFO_COLUMN_CODE    + ", "
-                    + TABLE_INFO_COLUMN_DESC    + ", "
-                    + TABLE_INFO_COLUMN_STATUS  + ")"
-                    + " VALUES ("+ candidate.getTableNumber()
-                    + ", '"  + candidate.getStudentName()
-                    + "', '" + candidate.getPaperCode()
-                    + "', '" + candidate.getPaperDesc()
-                    + "', '" + candidate.getStatus() + "')");
-        }
+    public void insertCandidateList(Candidate candidate){
+       // database.execSQL("INSERT INTO " + ATTENDANCE_TABLE + " ("
+       //         + TABLE_INFO_COLUMN_TABLE   + ", "
+       //         + TABLE_INFO_COLUMN_NAME    + ", "
+       //        + TABLE_INFO_COLUMN_CODE    + ", "
+       //         + TABLE_INFO_COLUMN_DESC    + ", "
+       //         + TABLE_INFO_COLUMN_STATUS  + ")"
+        //        + " VALUES ("+ candidate.getTableNumber()
+        //        + ", '"  + candidate.getStudentName()
+          //      + "', '" + candidate.getPaperCode()
+          //      + "', '" + candidate.getPaperDesc()
+            //    + "', '" + candidate.getStatus() + "')");
     }
 
-    public List<Candidate> getCandidatesList(Candidate.Status status){
+    public void clearDatabase(){
+        database.execSQL("DELETE * FROM " + ATTENDANCE_TABLE);
+    }
+
+    public List<Candidate> getCandidatesList(AttendanceList.Status status){
         List<Candidate> candidateList = new ArrayList<Candidate>();
-        String paper;
         Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
                 + TABLE_INFO_COLUMN_STATUS + " = ?", new String[]{status.toString()});
 
@@ -62,16 +60,16 @@ public class CheckListDatabaseHelper {
             do {
                 Candidate cdd = new Candidate();
 
-                cdd.setStudentName(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_NAME)));
-                cdd.setPaperCode(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_CODE)));
-                cdd.setPaperDesc(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_DESC)));
-                cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(TABLE_INFO_COLUMN_TABLE)));
-                cdd.setStatus(status);
+                //cdd.setStudentName(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_NAME)));
+                //cdd.setPaperCode(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_CODE)));
+                //cdd.setPaperDesc(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_DESC)));
+                //cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(TABLE_INFO_COLUMN_TABLE)));
+                //cdd.setStatus(status);
 
                 candidateList.add(cdd);
             } while (ptr.moveToNext());
         }
-
+        ptr.close();
         return candidateList;
     }
 

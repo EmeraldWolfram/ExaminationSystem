@@ -17,9 +17,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeOptionActivity"
-            android:screenOrientation="userPortrait"/>
-        <activity
             android:name=".ObtainInfoActivity"
             android:screenOrientation="userPortrait"/>
         <activity

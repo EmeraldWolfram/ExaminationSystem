@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checkListLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
@@ -10,31 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="1"/>
+        android:layout_above="@+id/submitButton"
+        android:layout_alignParentTop="true"/>
 
-    <TableRow
-        android:layout_weight="0"
-        android:gravity="center"
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-        <Button
-            android:id="@+id/homeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="HOME"
-            android:onClick="onHome"/>
-        <Button
-            android:id="@+id/discardButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ADD ON"
-            android:onClick="onAddOn"/>
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SUBMIT"
-            android:onClick="onSubmit"/>
-    </TableRow>
+        android:layout_alignParentBottom="true"
+        android:text="SUBMIT"
+        android:onClick="onSubmit"
+        android:gravity="center"/>
 
-</LinearLayout>
+</RelativeLayout>
