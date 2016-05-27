@@ -113,6 +113,12 @@ public class AssignInfoActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        checkListDB.saveAttendanceList(attdList);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
