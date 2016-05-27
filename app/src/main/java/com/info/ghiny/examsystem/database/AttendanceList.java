@@ -61,15 +61,16 @@ public class AttendanceList {
         return cddList;
     }
 
-
+    //=========================================================================
     //Available Methods
-
+    //=========================================================================
 
     public HashMap<Status, HashMap<String, HashMap<String, Candidate>>> getAttendanceList() {
         return attendanceList;
     }
 
-    public void setAttendanceList(HashMap<Status, HashMap<String, HashMap<String, Candidate>>> attendanceList) {
+    public void setAttendanceList(HashMap<Status, HashMap<String,
+            HashMap<String, Candidate>>> attendanceList) {
         this.attendanceList = attendanceList;
     }
 
@@ -124,7 +125,7 @@ public class AttendanceList {
         return candidate;
     }
 
-    protected List<String> getAllCandidateRegNumList(){
+    public List<String> getAllCandidateRegNumList(){
         List<String> regNumList = new ArrayList<>();
 
         for(Map.Entry<Status, HashMap<String, HashMap<String, Candidate>>> s:attendanceList.entrySet())
@@ -133,7 +134,9 @@ public class AttendanceList {
         return regNumList;
     }
 
+    //=========================================================================================
     //Private internal function used to traverse the level of Map
+    //=========================================================================================
     private void fromPaperGetRegNum(List<String> regNumList,
                                     HashMap<String, HashMap<String, Candidate>> paperMap){
         for(Map.Entry<String, HashMap<String, Candidate>> s:paperMap.entrySet())

@@ -6,21 +6,12 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <com.journeyapps.barcodescanner.CompoundBarcodeView
-        android:id="@+id/assignScanner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/tableInfoLayout">
-
-    </com.journeyapps.barcodescanner.CompoundBarcodeView>
-
     <LinearLayout
         android:id="@+id/tableInfoLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentTop="true">
         <TextView
             android:id="@+id/tableNumberText"
             android:layout_width="wrap_content"
@@ -28,13 +19,39 @@
             android:textSize="40sp"
             android:background="@drawable/table_no"/>
 
-        <TextView
-            android:id="@+id/canddAssignText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/canddAssignText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"/>
+            <TextView
+                android:id="@+id/regNumAssignText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"/>
+            <TextView
+                android:id="@+id/paperAssignText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
     </LinearLayout>
 
+    <com.journeyapps.barcodescanner.CompoundBarcodeView
+        android:id="@+id/assignScanner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/tableInfoLayout">
+
+    </com.journeyapps.barcodescanner.CompoundBarcodeView>
 
 </RelativeLayout>

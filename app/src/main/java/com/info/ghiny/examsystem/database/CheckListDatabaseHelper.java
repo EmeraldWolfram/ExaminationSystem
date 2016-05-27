@@ -53,7 +53,7 @@ public class CheckListDatabaseHelper {
     }
 
     //Simply clean the database
-    public void clearDatabase(){
+    public static void clearDatabase(){
         database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
         database.execSQL("VACUUM");
     }

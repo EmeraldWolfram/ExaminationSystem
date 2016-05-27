@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class CheckListActivity extends AppCompatActivity {
     private ExpandListAdapter adapter;
-    private CheckListDatabaseHelper databaseHelper;
     private List<String> statusHead;
     private HashMap<String, List<Candidate>> dataChild;
 
@@ -37,8 +36,6 @@ public class CheckListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_list);
-
-        databaseHelper = new CheckListDatabaseHelper(this);
 
         ExpandableListView checkList = (ExpandableListView) findViewById(R.id.assignedList);
         prepareList();
@@ -62,7 +59,7 @@ public class CheckListActivity extends AppCompatActivity {
     }
 
     public void onSubmit(View view){
-        databaseHelper.clearDatabase();
+        CheckListDatabaseHelper.clearDatabase();
         //finish();
         //INSERT TO TABLE
     }
@@ -77,11 +74,36 @@ public class CheckListActivity extends AppCompatActivity {
         statusHead.add("BARRED");
         statusHead.add("EXEMPTED");
 
-        //present = databaseHelper.getCandidatesList(AttendanceList.Status.PRESENT);
-        //absent  = databaseHelper.getCandidatesList(AttendanceList.Status.ABSENT);
-        //barred  = databaseHelper.getCandidatesList(AttendanceList.Status.BARRED);
-        //exempted = databaseHelper.getCandidatesList(AttendanceList.Status.EXEMPTED);
+        Intent grabIntent   = getIntent();
+        List<String> name   = grabIntent.getStringArrayListExtra("Name");
+        List<String> paper  = grabIntent.getStringArrayListExtra("Paper");
+        List<Integer> table = grabIntent.getIntegerArrayListExtra("Table");
+        List<String> status = grabIntent.getStringArrayListExtra("Status");
 
+        for(int i = 0; i < status.size(); i++){
+            Candidate cdd = new Candidate();
+            cdd.setStudentName(name.get(i));
+            cdd.setPaperCode(paper.get(i));
+            cdd.setTableNumber(table.get(i));
+            switch(status.get(i)){
+                case "PRESENT":
+                    cdd.setStatus(AttendanceList.Status.PRESENT);
+                    present.add(cdd);
+                    break;
+                case "BARRED":
+                    cdd.setStatus(AttendanceList.Status.BARRED);
+                    absent.add(cdd);
+                    break;
+                case "EXEMPTED":
+                    cdd.setStatus(AttendanceList.Status.EXEMPTED);
+                    exempted.add(cdd);
+                    break;
+                default:
+                    cdd.setStatus(AttendanceList.Status.ABSENT);
+                    absent.add(cdd);
+                    break;
+            }
+        }
 
         dataChild.put(statusHead.get(0), present); // Header, Child data
         dataChild.put(statusHead.get(1), absent);

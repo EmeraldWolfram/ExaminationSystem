@@ -174,4 +174,20 @@ public class AttendanceListTest {
         test.add("15WAU09184");
         assertEquals(testList, test);
     }
+
+    @Test
+    public void testBBB() throws Exception{
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.ABSENT);
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.ABSENT);
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.ABSENT);
+        attdList.addCandidate(cdd4, cdd4.getPaperCode(), AttendanceList.Status.BARRED);
+        attdList.addCandidate(cdd5, cdd5.getPaperCode(), AttendanceList.Status.EXEMPTED);
+
+        assertEquals(5, attdList.getNumberOfCandidates());
+        assertEquals(0, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.ABSENT));
+        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.BARRED));
+        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.EXEMPTED));
+
+    }
 }
