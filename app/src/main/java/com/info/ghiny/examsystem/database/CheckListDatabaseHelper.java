@@ -15,7 +15,7 @@ import java.util.List;
  * Created by GhinY on 23/05/2016.
  */
 public class CheckListDatabaseHelper {
-    private static final int DATABASE_VERSION       = 5;
+    private static final int DATABASE_VERSION       = 6;
     private static final String DATABASE_NAME       = "checkListDB";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
 
@@ -31,8 +31,8 @@ public class CheckListDatabaseHelper {
             + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_TABLE
             + ", " + TABLE_INFO_COLUMN_STATUS   + ") VALUES ('";
 
-    private SQLiteDatabase database;
-    private CheckListOpenHelper openHelper;
+    private static SQLiteDatabase database;
+    private static CheckListOpenHelper openHelper;
 
     public CheckListDatabaseHelper(Context context){
         openHelper  = new CheckListOpenHelper(context);
@@ -71,6 +71,17 @@ public class CheckListDatabaseHelper {
         return map;
     }
 
+    public boolean isEmpty(){
+        Boolean status = true;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM " + ATTENDANCE_TABLE, null);
+        if(ptr.moveToFirst())
+            status = false;
+
+        ptr.close();
+        return status;
+    }
+
     //INTERNAL HIDDEN TOOLS ====================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -96,13 +107,14 @@ public class CheckListDatabaseHelper {
         for(int i = 0; i < paperCodeList.size(); i++){
             if (ptr.moveToFirst()) {
                 do {
-                    HashMap<String, Candidate> candidateMap = new HashMap<>();
+                    HashMap<String, Candidate> candidateMap;
                     candidateMap = getCandidateList(paperCodeList.get(i), status);
 
                     paperMap.put(paperCodeList.get(i), candidateMap);
                 } while (ptr.moveToNext());
             }
         }
+        paperCodeList.clear();
         ptr.close();
         return paperMap;
     }

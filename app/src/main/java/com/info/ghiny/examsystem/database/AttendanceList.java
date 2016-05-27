@@ -63,12 +63,22 @@ public class AttendanceList {
 
 
     //Available Methods
+
+
+    public HashMap<Status, HashMap<String, HashMap<String, Candidate>>> getAttendanceList() {
+        return attendanceList;
+    }
+
+    public void setAttendanceList(HashMap<Status, HashMap<String, HashMap<String, Candidate>>> attendanceList) {
+        this.attendanceList = attendanceList;
+    }
+
     public int getNumberOfStatus(){
         return attendanceList.size();
     }
 
-    public int getNumberOfPaper(){
-        return attendanceList.get(Status.PRESENT).size();
+    public int getNumberOfPaper(Status status){
+        return attendanceList.get(status).size();
     }
 
     public int getNumberOfCandidates(){
@@ -148,6 +158,8 @@ public class AttendanceList {
 
     private void fromCandidatesRemoveCandidate(String regNum,
                                                HashMap<String, Candidate> map){
+        assert regNum != null;
+        assert map != null;
         map.remove(regNum);
     }
 
