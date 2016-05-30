@@ -27,24 +27,30 @@ public class CheckListActivity extends AppCompatActivity {
     private List<String> statusHead;
     private HashMap<String, List<Candidate>> dataChild;
 
-    List<Candidate> present;
-    List<Candidate> absent;
-    List<Candidate> barred;
-    List<Candidate> exempted;
+    private List<Candidate> present;
+    private List<Candidate> absent;
+    private List<Candidate> barred;
+    private List<Candidate> exempted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_list);
 
-        ExpandableListView checkList = (ExpandableListView) findViewById(R.id.assignedList);
+        present = new ArrayList<>();
+        absent  = new ArrayList<>();
+        barred  = new ArrayList<>();
+        exempted = new ArrayList<>();
+
         prepareList();
 
+        ExpandableListView checkList = (ExpandableListView) findViewById(R.id.assignedList);
         assert checkList != null;
         checkList.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeRight(){
-                CheckListActivity.this.finish();
+                present.clear();
+                finish();
             }
 
             @Override
@@ -65,8 +71,8 @@ public class CheckListActivity extends AppCompatActivity {
     }
 
     private void prepareList(){
-        statusHead = new ArrayList<String>();
-        dataChild = new HashMap<String, List<Candidate>>();
+        statusHead = new ArrayList<>();
+        dataChild = new HashMap<>();
 
         // Adding child data
         statusHead.add("PRESENT");
@@ -92,7 +98,7 @@ public class CheckListActivity extends AppCompatActivity {
                     break;
                 case "BARRED":
                     cdd.setStatus(AttendanceList.Status.BARRED);
-                    absent.add(cdd);
+                    barred.add(cdd);
                     break;
                 case "EXEMPTED":
                     cdd.setStatus(AttendanceList.Status.EXEMPTED);
