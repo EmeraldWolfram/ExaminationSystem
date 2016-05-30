@@ -197,6 +197,9 @@ public class AttendanceListTest {
         assertEquals(testList.get(cdd4.getRegNum()), cdd4);
     }
     //=============================================================================================
+    //REMOVE CANDIDATE
+    //If attendanceList have 3 candidates
+    //After remove 1 should left 2
     @Test
     public void testRemoveCandidate_TestFunctionality() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT);
@@ -210,6 +213,8 @@ public class AttendanceListTest {
         assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
     }
 
+    //If the attendanceList does not have the requested candidate
+    //Nothing will happen upon calling removeCandidate()
     @Test
     public void testRemoveCandidate_TestNotInListCandidate() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT);
@@ -222,7 +227,9 @@ public class AttendanceListTest {
         assertEquals(3, attdList.getNumberOfCandidates());
         assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
     }
-
+    //===========================================================================================
+    //GET CANDIDATE
+    //Obtain a candidate from the attendanceList with the given regNum(register number - 15WAU09184)
     @Test
     public void testGetCandidate() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT);
@@ -234,6 +241,7 @@ public class AttendanceListTest {
         assertEquals(testCdd, cdd1);
     }
 
+    //Return a NULL if the candidate requested wasn't exist in the attendance list
     @Test
     public void testGetCandidate_ReturnNullIfDoesExist() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT);
@@ -244,7 +252,10 @@ public class AttendanceListTest {
 
         assertNull(testCdd);
     }
-
+    //=============================================================================================
+    //GET ALL CANDIDATE REGISTER NUMBER LIST
+    //Calling getAllCandidateRegNumList() when the attendanceList is empty
+    //should return an empty List<>
     @Test
     public void testGetAllCandidateRegNumList_TestEmptyAttdList() throws Exception {
         List<String> testList   = attdList.getAllCandidateRegNumList();
@@ -253,36 +264,30 @@ public class AttendanceListTest {
         assertTrue(testList.isEmpty());
     }
 
+    //Calling getAllCandidateRegNumList() should return the candidate regNum existed in
+    //the attendanceList
     @Test
     public void testGetAllCandidateRegNumList_TestExistedList() throws Exception {
         attdList.addCandidate(new Candidate(1, "FGY", "15WAU09184",
                 "BAME 2134", AttendanceList.Status.ABSENT), "BAME 2134",
                 AttendanceList.Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT);
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.PRESENT);
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.PRESENT);
+        attdList.addCandidate(cdd4, cdd4.getPaperCode(), AttendanceList.Status.PRESENT);
+        attdList.addCandidate(cdd5, cdd5.getPaperCode(), AttendanceList.Status.PRESENT);
         List<String> testList   = attdList.getAllCandidateRegNumList();
 
         assertNotNull(testList);
+        assertEquals(6, testList.size());
         List<String> test = new ArrayList<>();
         test.add("15WAU09184");
-        assertEquals(testList, test);
+        test.add("15WAU00002");
+        test.add("15WAU00001");
+        test.add("15WAU00003");
+        test.add("15WAU00004");
+        test.add("15WAU00005");
+        assertEquals(test, testList);
     }
-
-    @Test
-    public void testAddCandidate() throws Exception {
-
-    }
-
-    @Test
-    public void testRemoveCandidate() throws Exception {
-
-    }
-
-    @Test
-    public void testGetCandidate1() throws Exception {
-
-    }
-
-    @Test
-    public void testGetAllCandidateRegNumList() throws Exception {
-
-    }
+    //=========================================================================================
 }
