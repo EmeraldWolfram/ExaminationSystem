@@ -25,7 +25,6 @@ public class CandidateTest {
     }
 
 
-
     @Test
     public void testSetPaperList_TestFunctionality() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();

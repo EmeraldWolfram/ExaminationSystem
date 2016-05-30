@@ -15,7 +15,7 @@ import java.util.List;
  * Created by GhinY on 23/05/2016.
  */
 public class CheckListDatabaseHelper {
-    private static final int DATABASE_VERSION       = 6;
+    private static final int DATABASE_VERSION       = 11;
     private static final String DATABASE_NAME       = "checkListDB";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
 
@@ -87,7 +87,8 @@ public class CheckListDatabaseHelper {
 
     //Save an instance of Candidate into the database
     private void saveAttendance(Candidate cdd){
-        database.execSQL(SAVE_ATTENDANCE    + cdd.getStudentName()  + "', '"
+        database.execSQL(SAVE_ATTENDANCE
+                + cdd.getStudentName()  + "', '"
                 + cdd.getRegNum()       + "', '"
                 + cdd.getPaperCode()    + "', "
                 + cdd.getTableNumber()  + ", '"
@@ -143,12 +144,13 @@ public class CheckListDatabaseHelper {
         ptr.close();
         return candidateMap;
     }
+
     //Get a List that contain all distinct PaperCode available
     private List<String> getDistinctPaperCode(){
         List<String> paperCodeList = new ArrayList<>();
 
-        Cursor ptr  = database.rawQuery("SELECT DISTINCT " + TABLE_INFO_COLUMN_CODE  + ", "
-                + " FROM " + ATTENDANCE_TABLE , null);
+        Cursor ptr = database.query(true, ATTENDANCE_TABLE, new String[] { TABLE_INFO_COLUMN_CODE },
+                                    null, null, TABLE_INFO_COLUMN_CODE, null, null, null);
 
         if (ptr.moveToFirst()) {
             do {
