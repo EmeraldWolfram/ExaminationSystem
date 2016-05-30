@@ -18,12 +18,12 @@ public class AttendanceList {
     private HashMap<Status, HashMap<String, HashMap<String, Candidate>>> attendanceList;
 
     public AttendanceList(){
-        attendanceList = new HashMap<Status, HashMap<String, HashMap<String, Candidate>>>();
+        attendanceList = new HashMap<>();
 
-        HashMap<String, HashMap<String, Candidate>> present = new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> absent  = new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> barred  = new HashMap<String, HashMap<String, Candidate>>();
-        HashMap<String, HashMap<String, Candidate>> exempt  = new HashMap<String, HashMap<String, Candidate>>();
+        HashMap<String, HashMap<String, Candidate>> present = new HashMap<>();
+        HashMap<String, HashMap<String, Candidate>> absent  = new HashMap<>();
+        HashMap<String, HashMap<String, Candidate>> barred  = new HashMap<>();
+        HashMap<String, HashMap<String, Candidate>> exempt  = new HashMap<>();
 
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
@@ -35,7 +35,7 @@ public class AttendanceList {
                           HashMap<String, HashMap<String, Candidate>> absent,
                           HashMap<String, HashMap<String, Candidate>> barred,
                           HashMap<String, HashMap<String, Candidate>> exempt){
-        attendanceList = new HashMap<Status, HashMap<String, HashMap<String, Candidate>>>();
+        attendanceList = new HashMap<>();
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
@@ -52,10 +52,14 @@ public class AttendanceList {
         assert status != null;
         assert paperCode != null;
 
-        HashMap<String, Candidate> cddList = null;
+        HashMap<String, Candidate> cddList = new HashMap<>();
         HashMap<String, HashMap<String, Candidate>> paperMap = getPaperList(status);
-        if(!paperMap.isEmpty()){
+        if(!paperMap.containsKey(paperCode)){
+            paperMap.put(paperCode, cddList);
+        } else {
             cddList = paperMap.get(paperCode);
+            if(cddList == null)
+                throw new NullPointerException("The requested paper was not registered");
         }
 
         return cddList;
@@ -91,20 +95,20 @@ public class AttendanceList {
         assert paperCode!= null : "Input PaperCode argument cannot be null";
         assert status   != null : "Input Status argument cannot be null";
 
-        HashMap<String, Candidate> cddList = getCandidateList(status, paperCode);
-        if(cddList == null){
-            cddList = new HashMap<String, Candidate>();
-            cddList.put(cdd.getRegNum(), cdd);
-            HashMap<String, HashMap<String, Candidate>> paperList = new HashMap<>();
-            paperList.put(paperCode, cddList);
+        try{
+            HashMap<String, Candidate> cddList = getCandidateList(status, paperCode);
+            if(cddList.isEmpty()){
+                cddList.put(cdd.getRegNum(), cdd);
+            }
+            else{
+                cdd.setStatus(status);
+                cddList.put(cdd.getRegNum(), cdd);
+            }
 
-            attendanceList.put(status, paperList);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            //DO SOMETHING, the requested paper was empty
         }
-        else{
-            cdd.setStatus(status);
-            cddList.put(cdd.getRegNum(), cdd);
-        }
-
     }
 
     public void removeCandidate(String regNum){

@@ -70,15 +70,15 @@ public class AssignInfoActivity extends AppCompatActivity {
         cddTables       = new ArrayList<>();
         cddStatus       = new ArrayList<>();
 
-        if(checkListDB.isEmpty())
-            checkListDB.saveAttendanceList(prepareList());
-        attdList.setAttendanceList(checkListDB.getLastSavedAttendanceList());
+        //if(checkListDB.isEmpty())
+        //    checkListDB.saveAttendanceList(prepareList());
+        //attdList.setAttendanceList(checkListDB.getLastSavedAttendanceList());
 
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
-            public void onSwipeTop(){
+            public void onSwipeBottom(){
                 Intent obtainIntent = new Intent(AssignInfoActivity.this, ObtainInfoActivity.class);
                 startActivity(obtainIntent);
             }
