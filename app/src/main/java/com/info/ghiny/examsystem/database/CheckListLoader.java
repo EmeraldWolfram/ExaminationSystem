@@ -9,12 +9,13 @@ import com.info.ghiny.examsystem.database.Candidate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
  * Created by GhinY on 23/05/2016.
  */
-public class CheckListDatabaseHelper {
+public class CheckListLoader {
     private static final int DATABASE_VERSION       = 11;
     private static final String DATABASE_NAME       = "checkListDB";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
@@ -25,16 +26,18 @@ public class CheckListDatabaseHelper {
     public static final String TABLE_INFO_COLUMN_CODE   = "Code";
     public static final String TABLE_INFO_COLUMN_TABLE  = "TableNo";
     public static final String TABLE_INFO_COLUMN_STATUS = "Status";
+    public static final String TABLE_INFO_COLUMN_PRG    = "Programme";
 
     private static final String SAVE_ATTENDANCE = "INSERT INTO " + ATTENDANCE_TABLE
             + " (" + TABLE_INFO_COLUMN_NAME     + ", " + TABLE_INFO_COLUMN_REGNUM
             + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_TABLE
-            + ", " + TABLE_INFO_COLUMN_STATUS   + ") VALUES ('";
+            + ", " + TABLE_INFO_COLUMN_STATUS   + ", " + TABLE_INFO_COLUMN_PRG
+            + ") VALUES ('";
 
     private static SQLiteDatabase database;
     private static CheckListOpenHelper openHelper;
 
-    public CheckListDatabaseHelper(Context context){
+    public CheckListLoader(Context context){
         openHelper  = new CheckListOpenHelper(context);
         database    = openHelper.getWritableDatabase();
     }
@@ -59,9 +62,9 @@ public class CheckListDatabaseHelper {
     }
 
     //Retrieve an attendanceList from the database
-    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>>
+    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
     getLastSavedAttendanceList(){
-        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, Candidate>>> map;
+        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> map;
         map = new HashMap<>();
         map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
         map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
@@ -92,14 +95,15 @@ public class CheckListDatabaseHelper {
                 + cdd.getRegNum()       + "', '"
                 + cdd.getPaperCode()    + "', "
                 + cdd.getTableNumber()  + ", '"
-                + cdd.getStatus()       + "')");
+                + cdd.getStatus()       + "', '"
+                + cdd.getProgramme()    + "')");
     }
 
     //Get a Map of PaperSubject with Candidates filled
-    private HashMap<String, HashMap<String, Candidate>>
+    private HashMap<String, HashMap<String, HashMap<String, Candidate>>>
     getPaperMap(AttendanceList.Status status){
 
-        HashMap<String, HashMap<String, Candidate>> paperMap = new HashMap<>();
+        HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperMap = new HashMap<>();
         List<String> paperCodeList = getDistinctPaperCode();
 
         Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
@@ -108,10 +112,10 @@ public class CheckListDatabaseHelper {
         for(int i = 0; i < paperCodeList.size(); i++){
             if (ptr.moveToFirst()) {
                 do {
-                    HashMap<String, Candidate> candidateMap;
-                    candidateMap = getCandidateList(paperCodeList.get(i), status);
+                    HashMap<String, HashMap<String, Candidate>> prgMap;
+                    prgMap = getProgrammeMap(status, paperCodeList.get(i));
 
-                    paperMap.put(paperCodeList.get(i), candidateMap);
+                    paperMap.put(paperCodeList.get(i), prgMap);
                 } while (ptr.moveToNext());
             }
         }
@@ -120,13 +124,39 @@ public class CheckListDatabaseHelper {
         return paperMap;
     }
 
+    private HashMap<String, HashMap<String, Candidate>>
+    getProgrammeMap(AttendanceList.Status status, String paperCode){
+
+        HashMap<String, HashMap<String, Candidate>> prgMap = new HashMap<>();
+        List<String> prgList = getDistinctProgramme();
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
+                + TABLE_INFO_COLUMN_STATUS + " = ? AND " + TABLE_INFO_COLUMN_CODE
+                + " = ?" , new String[]{status.toString(), paperCode});
+
+        for(int i = 0; i < prgList.size(); i++){
+            if (ptr.moveToFirst()) {
+                do {
+                    HashMap<String, Candidate> candidateMap;
+                    candidateMap = getCandidateList(paperCode, status, prgList.get(i));
+
+                    prgMap.put(prgList.get(i), candidateMap);
+                } while (ptr.moveToNext());
+            }
+        }
+        prgList.clear();
+        ptr.close();
+        return prgMap;
+    }
+
     //Get a Map of Candidates that have the given status and paperCode
     private HashMap<String, Candidate>
-    getCandidateList(String paperCode, AttendanceList.Status status){
+    getCandidateList(String paperCode, AttendanceList.Status status, String prg){
         HashMap<String, Candidate> candidateMap= new HashMap<>();
         Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
                 + TABLE_INFO_COLUMN_CODE + " = ? AND " + TABLE_INFO_COLUMN_STATUS
-                + " = ?", new String[]{paperCode, status.toString()});
+                + " = ? AND " + TABLE_INFO_COLUMN_PRG + " = ?",
+                new String[]{paperCode, status.toString(), prg});
 
         if (ptr.moveToFirst()) {
             do {
@@ -137,6 +167,7 @@ public class CheckListDatabaseHelper {
                 cdd.setRegNum(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_REGNUM)));
                 cdd.setPaperCode(paperCode);
                 cdd.setStatus(status);
+                cdd.setProgramme(prg);
 
                 candidateMap.put(cdd.getRegNum(), cdd);
             } while (ptr.moveToNext());
@@ -161,6 +192,21 @@ public class CheckListDatabaseHelper {
         return paperCodeList;
     }
 
+    private List<String> getDistinctProgramme(){
+        List<String> programmeList = new ArrayList<>();
+
+        Cursor ptr = database.query(true, ATTENDANCE_TABLE, new String[] { TABLE_INFO_COLUMN_PRG },
+                null, null, TABLE_INFO_COLUMN_PRG, null, null, null);
+
+        if (ptr.moveToFirst()) {
+            do {
+                programmeList.add(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_PRG)));
+            } while (ptr.moveToNext());
+        }
+        ptr.close();
+        return programmeList;
+    }
+
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -176,6 +222,7 @@ public class CheckListDatabaseHelper {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "( "
                     + TABLE_INFO_ID    + " INTEGER PRIMARY KEY, "
+                    + TABLE_INFO_COLUMN_PRG    + " TEXT, "
                     + TABLE_INFO_COLUMN_NAME    + " TEXT, "
                     + TABLE_INFO_COLUMN_REGNUM  + " TEXT, "
                     + TABLE_INFO_COLUMN_CODE    + " TEXT, "

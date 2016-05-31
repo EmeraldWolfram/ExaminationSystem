@@ -10,6 +10,7 @@ public class Candidate {
     private String studentName;
     private String regNum;
     private String paperCode;
+    private String programme;
     private static HashMap<String, ExamSubject> paperList;
     private AttendanceList.Status status;
 
@@ -19,12 +20,14 @@ public class Candidate {
         studentName = null;
         regNum      = null;
         paperCode   = null;
+        programme   = null;
         status      = AttendanceList.Status.ABSENT;
     }
 
-    public Candidate(int tableNumber, String sName, String regNum, String paperCode,
+    public Candidate(int tableNumber, String programme, String sName, String regNum, String paperCode,
                      AttendanceList.Status status){
         this.tableNumber = tableNumber;
+        this.programme  = programme;
         studentName     = sName;
         this.regNum     = regNum;
         this.paperCode  = paperCode;
@@ -37,6 +40,13 @@ public class Candidate {
     }
     public Integer getTableNumber() {
         return tableNumber;
+    }
+
+    public String getProgramme() {
+        return programme;
+    }
+    public void setProgramme(String programme) {
+        this.programme = programme;
     }
 
     public void setPaperCode(String paperCode) {

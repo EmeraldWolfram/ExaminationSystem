@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListDatabaseHelper;
-import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
+import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.tools.CustomToast;
@@ -31,8 +31,8 @@ import java.util.List;
  */
 public class AssignInfoActivity extends AppCompatActivity {
     private CustomToast message;
-    private ExamDatabaseHelper databaseHelper;
-    private CheckListDatabaseHelper checkListDB;
+    private ExamDatabaseLoader databaseHelper;
+    private CheckListLoader checkListDB;
     private Identity candidateID;
     private Candidate candidate;
     private AttendanceList attdList;
@@ -62,8 +62,8 @@ public class AssignInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
-        databaseHelper  = new ExamDatabaseHelper(this);
-        checkListDB     = new CheckListDatabaseHelper(this);
+        databaseHelper  = new ExamDatabaseLoader(this);
+        checkListDB     = new CheckListLoader(this);
         message         = new CustomToast(this);
         attdList        = new AttendanceList();
 
@@ -163,7 +163,8 @@ public class AssignInfoActivity extends AppCompatActivity {
             //If ExamSubject range does not meet, DO something
             cdd.setTableNumber(Integer.parseInt(tableText.toString()));
             cdd.setStatus(AttendanceList.Status.PRESENT);
-            attdList.addCandidate(cdd, cdd.getPaperCode(), AttendanceList.Status.PRESENT);
+            attdList.removeCandidate(cdd.getRegNum());
+            attdList.addCandidate(cdd, cdd.getPaperCode(), AttendanceList.Status.PRESENT, cdd.getProgramme());
 
             message.showMessage(cddText.toString()+ " Assigned to " + tableText.toString());
         }
@@ -172,23 +173,23 @@ public class AssignInfoActivity extends AppCompatActivity {
     private AttendanceList prepareList(){
         AttendanceList attdList = new AttendanceList();
 
-        Candidate cdd1 = new Candidate(0, "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd2 = new Candidate(0, "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd3 = new Candidate(0, "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd4 = new Candidate(0, "YZL", "15WAU00004", "BAME 0001", AttendanceList.Status.BARRED);
-        Candidate cdd5 = new Candidate(0, "SYL", "15WAU00005", "BAME 0001", AttendanceList.Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(0, "WJS", "15WAU00006", "BAME 0001", AttendanceList.Status.BARRED);
-        Candidate cddF = new Candidate(7, "FOONG GHIN YEW", "15WAU09184", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cddN = new Candidate(8, "NG YEN AENG", "15WAD88888", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd1 = new Candidate(0, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd2 = new Candidate(0, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd3 = new Candidate(0, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd4 = new Candidate(0, "RMB3", "YZL", "15WAU00004", "BAME 0001", AttendanceList.Status.BARRED);
+        Candidate cdd5 = new Candidate(0, "RMB3", "SYL", "15WAU00005", "BAME 0001", AttendanceList.Status.EXEMPTED);
+        Candidate cdd6 = new Candidate(0, "RMB3", "WJS", "15WAU00006", "BAME 0001", AttendanceList.Status.BARRED);
+        Candidate cddF = new Candidate(7, "RMB3", "FOONG GHIN YEW", "15WAU09184", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cddN = new Candidate(8, "RMB3", "NG YEN AENG", "15WAD88888", "BAME 0001", AttendanceList.Status.ABSENT);
 
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.ABSENT);
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.ABSENT);
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.ABSENT);
-        attdList.addCandidate(cdd4, cdd4.getPaperCode(), AttendanceList.Status.BARRED);
-        attdList.addCandidate(cdd5, cdd5.getPaperCode(), AttendanceList.Status.EXEMPTED);
-        attdList.addCandidate(cdd6, cdd6.getPaperCode(), AttendanceList.Status.BARRED);
-        attdList.addCandidate(cddF, cddF.getPaperCode(), AttendanceList.Status.ABSENT);
-        attdList.addCandidate(cddN, cddN.getPaperCode(), AttendanceList.Status.ABSENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.ABSENT, cdd1.getProgramme());
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.ABSENT, cdd2.getProgramme());
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.ABSENT, cdd3.getProgramme());
+        attdList.addCandidate(cdd4, cdd4.getPaperCode(), AttendanceList.Status.BARRED, cdd4.getProgramme());
+        attdList.addCandidate(cdd5, cdd5.getPaperCode(), AttendanceList.Status.EXEMPTED, cdd5.getProgramme());
+        attdList.addCandidate(cdd6, cdd6.getPaperCode(), AttendanceList.Status.BARRED, cdd6.getProgramme());
+        attdList.addCandidate(cddF, cddF.getPaperCode(), AttendanceList.Status.ABSENT, cddF.getProgramme());
+        attdList.addCandidate(cddN, cddN.getPaperCode(), AttendanceList.Status.ABSENT, cddN.getProgramme());
 
         return attdList;
     }

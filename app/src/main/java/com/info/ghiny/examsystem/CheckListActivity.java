@@ -6,12 +6,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListDatabaseHelper;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.tools.ExpandListAdapter;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
@@ -65,7 +63,7 @@ public class CheckListActivity extends AppCompatActivity {
     }
 
     public void onSubmit(View view){
-        CheckListDatabaseHelper.clearDatabase();
+        CheckListLoader.clearDatabase();
         //finish();
         //INSERT TO TABLE
     }

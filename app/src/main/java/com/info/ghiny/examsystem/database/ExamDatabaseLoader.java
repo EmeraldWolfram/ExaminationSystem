@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class ExamDatabaseHelper {
+public class ExamDatabaseLoader {
 
     private static final int DATABASE_VERSION   = 21;
     private static final String DATABASE_NAME   = "examSysDB";
@@ -43,7 +43,7 @@ public class ExamDatabaseHelper {
     private ExamTrackOpenHelper openHelper;
     private SQLiteDatabase database;
 
-    public ExamDatabaseHelper(Context context){
+    public ExamDatabaseLoader(Context context){
         openHelper  = new ExamTrackOpenHelper(context);
         database    = openHelper.getWritableDatabase();
     }

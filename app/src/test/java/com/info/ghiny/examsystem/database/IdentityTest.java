@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem;
+package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.database.Identity;
 

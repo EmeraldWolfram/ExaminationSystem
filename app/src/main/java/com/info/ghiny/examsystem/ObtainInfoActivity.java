@@ -4,14 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
+import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.tools.ExamSystemAdapter;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
@@ -26,7 +23,7 @@ import java.util.List;
  */
 public class ObtainInfoActivity extends AppCompatActivity {
     public ExamSystemAdapter systemAdapter;
-    public ExamDatabaseHelper databaseHelper;
+    public ExamDatabaseLoader databaseHelper;
 
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
     private CompoundBarcodeView barcodeView;
@@ -51,7 +48,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
-        databaseHelper = new ExamDatabaseHelper(this);
+        databaseHelper = new ExamDatabaseLoader(this);
         systemAdapter = new ExamSystemAdapter(this, null);
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);

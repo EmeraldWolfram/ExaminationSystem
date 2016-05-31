@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.ExamDatabaseHelper;
+import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -19,7 +19,7 @@ import java.util.List;
 public class MainLoginActivity extends AppCompatActivity {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
-    private ExamDatabaseHelper databaseHelper;
+    private ExamDatabaseLoader databaseHelper;
     private static final int PASSWORD_REQ_CODE = 888;
     private Identity examiner;
     private Intent pwIntent;
@@ -45,7 +45,7 @@ public class MainLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
 
-        databaseHelper = new ExamDatabaseHelper(this);
+        databaseHelper = new ExamDatabaseLoader(this);
         message = new CustomToast(this);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
