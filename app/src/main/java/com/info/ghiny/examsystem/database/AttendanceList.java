@@ -72,10 +72,10 @@ public class AttendanceList {
         HashMap<String, Candidate> cddList = new HashMap<>();
         HashMap<String, HashMap<String, Candidate>> prgMap = getProgrammeList(status, paperCode);
 
-        if(!prgMap.containsKey(paperCode))
-            prgMap.put(paperCode, cddList);
+        if(!prgMap.containsKey(programme))
+            prgMap.put(programme, cddList);
         else
-            cddList = prgMap.get(paperCode);
+            cddList = prgMap.get(programme);
 
         return cddList;
     }
