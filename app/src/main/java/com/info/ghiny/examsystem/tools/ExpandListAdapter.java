@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.info.ghiny.examsystem.R;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by GhinY on 22/05/2016.
@@ -60,8 +62,12 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         candidateView.setText(childText.getStudentName());
         examPaperView.setText(childText.getPaper().toString());
 
-        if(childText.getTableNumber() == 0)
-            tableNumView.setText(" /");
+        if(childText.getTableNumber() != 0)
+            tableNumView.setBackgroundResource(R.drawable.table_no);
+        else{
+            tableNumView.setText("");
+            tableNumView.setBackgroundColor(0x616161);
+        }
 
         return convertView;
     }
@@ -90,16 +96,21 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String headerTitle = (String) getGroup(groupPosition);
+        String size        = String.format(Locale.ENGLISH, "%d", getChildrenCount(groupPosition));
+
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.attendance_status, null);
         }
 
-        TextView statusHeader = (TextView) convertView
-                .findViewById(R.id.groupHeaderStatus);
+        TextView statusHeader = (TextView) convertView.findViewById(R.id.groupHeaderStatus);
+        TextView sizeOfList = (TextView) convertView.findViewById(R.id.sizeOfList);
+
         statusHeader.setTypeface(null, Typeface.BOLD);
         statusHeader.setText(headerTitle);
+        sizeOfList.setTypeface(null, Typeface.NORMAL);
+        sizeOfList.setText(size);
 
         return convertView;
     }

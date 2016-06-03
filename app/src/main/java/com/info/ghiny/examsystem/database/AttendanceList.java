@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
+import android.view.inputmethod.CursorAnchorInfo;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,11 +105,39 @@ public class AttendanceList {
     }
 
     public int getNumberOfProgramme(Status status, String paperCode){
-        return attendanceList.get(status).get(paperCode).size();
+        int size = 0;
+        if(attendanceList.get(status).containsKey(paperCode))
+            size = attendanceList.get(status).get(paperCode).size();
+        return size;
     }
 
-    public int getNumberOfCandidates(){
+    public int getTotalNumberOfCandidates(){
         return getAllCandidateRegNumList().size();
+    }
+
+    public int getNumberOfCandidates(Status status){
+        int size = 0;
+        HashMap<String, HashMap<String, HashMap<String, Candidate>>> s1 = getPaperList(status);
+        for(Map.Entry<String, HashMap<String, HashMap<String, Candidate>>> s2:
+                s1.entrySet()){
+            for(Map.Entry<String, HashMap<String, Candidate>> s3: s2.getValue().entrySet()){
+                size = size + s3.getValue().size();
+            }
+        }
+
+        return size;
+    }
+
+    public int getNumberOfCandidates(Status status, String paperCode, String programme){
+        int size = 0;
+        HashMap<String, HashMap<String, Candidate>> prgList;
+
+        if(attendanceList.get(status).containsKey(paperCode)){
+            prgList = attendanceList.get(status).get(paperCode);
+            if(prgList.containsKey(programme))
+                size = prgList.get(programme).size();
+        }
+        return size;
     }
 
     public void addCandidate(Candidate cdd, String paperCode, Status status, String programme){

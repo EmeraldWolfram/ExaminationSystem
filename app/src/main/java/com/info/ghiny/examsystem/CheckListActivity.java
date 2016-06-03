@@ -47,14 +47,7 @@ public class CheckListActivity extends AppCompatActivity {
         checkList.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeRight(){
-                present.clear();
                 finish();
-            }
-
-            @Override
-            public void onSwipeBottom() {
-                Intent obtainIntent = new Intent(CheckListActivity.this, ObtainInfoActivity.class);
-                startActivity(obtainIntent);
             }
         });
 

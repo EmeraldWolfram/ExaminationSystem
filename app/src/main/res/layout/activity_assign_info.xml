@@ -16,7 +16,8 @@
             android:id="@+id/tableNumberText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="40sp"
+            android:paddingTop="8sp"
+            android:textSize="45sp"
             android:background="@drawable/table_no"/>
 
         <LinearLayout

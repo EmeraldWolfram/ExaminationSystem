@@ -40,6 +40,9 @@ public class AssignInfoActivity extends AppCompatActivity {
     private ArrayList<String> cddPapers;
     private ArrayList<Integer> cddTables;
     private ArrayList<String> cddStatus;
+    private String prevTableStr = "";
+    private String prevCddStr = "";
+
 
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
     private CompoundBarcodeView barcodeView;
@@ -131,17 +134,24 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert tableView    != null;    assert cddView     != null;
         assert regNumView   != null;    assert paperView   != null;
 
-        if(scanString.length() < 4 && tableView.getText().toString().isEmpty())
-                tableView.setText(scanString);
+        if(scanString.length() < 4
+                && tableView.getText().toString().isEmpty()
+                && !prevTableStr.equals(scanString)){
+            tableView.setText(scanString);
+            prevTableStr = scanString;
+        }
 
-        if(scanString.length() == 12 && cddView.getText().toString().isEmpty()){
-                candidateID = databaseHelper.getIdentity(scanString);
-                candidate = attdList.getCandidate(candidateID.getRegNum());
+        if(scanString.length() == 12
+                && cddView.getText().toString().isEmpty()
+                && !prevCddStr.equals(scanString)){
+            candidateID = databaseHelper.getIdentity(scanString);
+            candidate = attdList.getCandidate(candidateID.getRegNum());
 
-                cddView.setText(candidateID.getName());
-                regNumView.setText(candidateID.getRegNum());
+            cddView.setText(candidateID.getName());
+            regNumView.setText(candidateID.getRegNum());
 
-                paperView.setText(candidate.getPaper().toString());
+            paperView.setText(candidate.getPaper().toString());
+            prevCddStr = scanString;
         }
 
         assignToList(candidate, tableView, cddView, regNumView, paperView);
@@ -179,8 +189,8 @@ public class AssignInfoActivity extends AppCompatActivity {
         Candidate cdd4 = new Candidate(0, "RMB3", "YZL", "15WAU00004", "BAME 0001", AttendanceList.Status.BARRED);
         Candidate cdd5 = new Candidate(0, "RMB3", "SYL", "15WAU00005", "BAME 0001", AttendanceList.Status.EXEMPTED);
         Candidate cdd6 = new Candidate(0, "RMB3", "WJS", "15WAU00006", "BAME 0001", AttendanceList.Status.BARRED);
-        Candidate cddF = new Candidate(7, "RMB3", "FOONG GHIN YEW", "15WAU09184", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cddN = new Candidate(8, "RMB3", "NG YEN AENG", "15WAD88888", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cddF = new Candidate(0, "RMB3", "FOONG GHIN YEW", "15WAU09184", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cddN = new Candidate(0, "RMB3", "NG YEN AENG", "15WAD88888", "BAME 0001", AttendanceList.Status.ABSENT);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.ABSENT, cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.ABSENT, cdd2.getProgramme());
