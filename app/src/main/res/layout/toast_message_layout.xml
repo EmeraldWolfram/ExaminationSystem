@@ -5,10 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/toastImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5sp"
+        android:contentDescription="@string/icon"/>
+
     <TextView
         android:id="@+id/toastTxt"
-        android:drawableStart="@drawable/warn_icon"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="#FFFFFF"
         android:textColorHighlight="#000000"
         android:layout_width="wrap_content"

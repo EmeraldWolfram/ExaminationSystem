@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -174,9 +175,11 @@ public class AssignInfoActivity extends AppCompatActivity {
             cdd.setTableNumber(Integer.parseInt(tableText.toString()));
             cdd.setStatus(AttendanceList.Status.PRESENT);
             attdList.removeCandidate(cdd.getRegNum());
-            attdList.addCandidate(cdd, cdd.getPaperCode(), AttendanceList.Status.PRESENT, cdd.getProgramme());
+            attdList.addCandidate(cdd, cdd.getPaperCode(),
+                    AttendanceList.Status.PRESENT, cdd.getProgramme());
 
-            message.showMessage(cddText.toString()+ " Assigned to " + tableText.toString());
+            message.showMessageWithImage(cddText.toString()+
+                    " Assigned to " + tableText.toString(), R.drawable.entry_icon);
         }
     }
 

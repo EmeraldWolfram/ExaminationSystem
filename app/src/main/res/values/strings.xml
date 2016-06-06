@@ -10,6 +10,7 @@
     <string name="button_opt3">CHECKING AND SUBMISSION</string>
 
     <string name="button_back">BACK</string>
+    <string name="icon">message icon</string>
 
 
 </resources>
