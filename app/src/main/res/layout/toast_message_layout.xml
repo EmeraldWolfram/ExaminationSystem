@@ -15,6 +15,7 @@
     <TextView
         android:id="@+id/toastTxt"
         android:textSize="18sp"
+        android:paddingTop="5sp"
         android:textColor="#FFFFFF"
         android:textColorHighlight="#000000"
         android:layout_width="wrap_content"

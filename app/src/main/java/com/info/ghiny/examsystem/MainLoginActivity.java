@@ -72,9 +72,10 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     private void checkEligibilityOfTheIdendity(){
-        if(examiner == null)
-            message.showMessage("Not an Identity!");
-        else{
+        if(examiner == null){
+            message.showCustomMessageWithCondition(CustomToast.notId, R.drawable.warn_icon,
+                    message.checkEqualToast(CustomToast.notId));
+        } else {
             barcodeView.setStatusText(examiner.getName() + "\n" + examiner.getRegNum());
 
             if(examiner.getEligible()) {
@@ -85,7 +86,8 @@ public class MainLoginActivity extends AppCompatActivity {
                 pwIntent.putExtra("RegNum", examiner.getRegNum());
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             } else
-                message.showMessage("Unauthorized examiner");
+                message.showCustomMessageWithCondition(CustomToast.unathr, R.drawable.warn_icon,
+                        message.checkEqualToast(CustomToast.unathr));
         }
     }
 
@@ -96,7 +98,8 @@ public class MainLoginActivity extends AppCompatActivity {
 
             if(password.isEmpty()) {
                 //If the user didn't enter a password
-                message.showMessage("Please enter password to proceed");
+                message.showCustomMessageWithCondition(CustomToast.emptyPW, R.drawable.msg_icon,
+                        message.checkEqualToast(CustomToast.emptyPW));
 
                 pwIntent.putExtra("Name", examiner.getName());
                 pwIntent.putExtra("RegNum", examiner.getRegNum());
@@ -110,7 +113,8 @@ public class MainLoginActivity extends AppCompatActivity {
             }
             else {
                 //If the user entered INCORRECT password
-                message.showMessage("The input password was wrong!");
+                message.showCustomMessageWithCondition(CustomToast.wrongPW, R.drawable.warn_icon,
+                        message.checkEqualToast(CustomToast.wrongPW));
 
                 pwIntent.putExtra("Name", examiner.getName());
                 pwIntent.putExtra("RegNum", examiner.getRegNum());

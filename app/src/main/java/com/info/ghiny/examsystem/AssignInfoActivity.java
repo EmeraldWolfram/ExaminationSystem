@@ -147,12 +147,16 @@ public class AssignInfoActivity extends AppCompatActivity {
                 && !prevCddStr.equals(scanString)){
             candidateID = databaseHelper.getIdentity(scanString);
             candidate = attdList.getCandidate(candidateID.getRegNum());
+            if (candidate != null) {
+                cddView.setText(candidateID.getName());
+                regNumView.setText(candidateID.getRegNum());
 
-            cddView.setText(candidateID.getName());
-            regNumView.setText(candidateID.getRegNum());
+                paperView.setText(candidate.getPaper().toString());
+                prevCddStr = scanString;
+            } else {
+                message.showCustomMessage("Not a candidate Identity", R.drawable.msg_icon);
+            }
 
-            paperView.setText(candidate.getPaper().toString());
-            prevCddStr = scanString;
         }
 
         assignToList(candidate, tableView, cddView, regNumView, paperView);
@@ -174,11 +178,12 @@ public class AssignInfoActivity extends AppCompatActivity {
             //If ExamSubject range does not meet, DO something
             cdd.setTableNumber(Integer.parseInt(tableText.toString()));
             cdd.setStatus(AttendanceList.Status.PRESENT);
+            cdd.setStatus(AttendanceList.Status.PRESENT);
             attdList.removeCandidate(cdd.getRegNum());
             attdList.addCandidate(cdd, cdd.getPaperCode(),
                     AttendanceList.Status.PRESENT, cdd.getProgramme());
 
-            message.showMessageWithImage(cddText.toString()+
+            message.showCustomMessage(cddText.toString()+
                     " Assigned to " + tableText.toString(), R.drawable.entry_icon);
         }
     }
