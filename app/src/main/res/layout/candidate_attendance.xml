@@ -9,7 +9,7 @@
         android:id="@+id/assignedTableText"
         android:layout_width="@android:dimen/app_icon_size"
         android:layout_height="@android:dimen/app_icon_size"
-        android:background="@drawable/table_no"
+        android:background="@drawable/table_num"
         android:textSize="40sp"
         android:layout_marginStart="2sp"
         android:layout_marginLeft="2sp"

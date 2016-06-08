@@ -147,12 +147,21 @@ public class AssignInfoActivity extends AppCompatActivity {
                 && !prevCddStr.equals(scanString)){
             candidateID = databaseHelper.getIdentity(scanString);
             candidate = attdList.getCandidate(candidateID.getRegNum());
-            if (candidate != null) {
-                cddView.setText(candidateID.getName());
-                regNumView.setText(candidateID.getRegNum());
+            if (candidate != null){
+                if(candidate.getStatus() == AttendanceList.Status.BARRED){
+                    message.showCustomMessage(candidate.getStudentName()
+                            + " have been barred",
+                            R.drawable.warn_icon);
+                } else if(candidate.getStatus() == AttendanceList.Status.EXEMPTED){
+                    message.showCustomMessage("The paper was exempted for "
+                            + candidate.getStudentName(), R.drawable.msg_icon);
+                }else{
+                    cddView.setText(candidateID.getName());
+                    regNumView.setText(candidateID.getRegNum());
 
-                paperView.setText(candidate.getPaper().toString());
-                prevCddStr = scanString;
+                    paperView.setText(candidate.getPaper().toString());
+                    prevCddStr = scanString;
+                }
             } else {
                 message.showCustomMessage("Not a candidate Identity", R.drawable.msg_icon);
             }
@@ -191,12 +200,12 @@ public class AssignInfoActivity extends AppCompatActivity {
     private AttendanceList prepareList(){
         AttendanceList attdList = new AttendanceList();
 
-        Candidate cdd1 = new Candidate(0, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd2 = new Candidate(0, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd3 = new Candidate(0, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd4 = new Candidate(0, "RMB3", "YZL", "15WAU00004", "BAME 0001", AttendanceList.Status.BARRED);
-        Candidate cdd5 = new Candidate(0, "RMB3", "SYL", "15WAU00005", "BAME 0001", AttendanceList.Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(0, "RMB3", "WJS", "15WAU00006", "BAME 0001", AttendanceList.Status.BARRED);
+        Candidate cdd1 = new Candidate(0, "RMB3", "FGY", "15WAD00001", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd2 = new Candidate(0, "RMB3", "NYN", "15WAD00002", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd3 = new Candidate(0, "RMB3", "LHN", "15WAD00003", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd4 = new Candidate(0, "RMB3", "YZL", "15WAD00004", "BAME 0001", AttendanceList.Status.BARRED);
+        Candidate cdd5 = new Candidate(0, "RMB3", "SYL", "15WAD00005", "BAME 0001", AttendanceList.Status.EXEMPTED);
+        Candidate cdd6 = new Candidate(0, "RMB3", "WJS", "15WAD00006", "BAME 0001", AttendanceList.Status.BARRED);
         Candidate cddF = new Candidate(0, "RMB3", "FOONG GHIN YEW", "15WAU09184", "BAME 0001", AttendanceList.Status.ABSENT);
         Candidate cddN = new Candidate(0, "RMB3", "NG YEN AENG", "15WAD88888", "BAME 0001", AttendanceList.Status.ABSENT);
 

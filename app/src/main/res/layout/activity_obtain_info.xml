@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/obtainInfoLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#2196F3">
 
     <com.journeyapps.barcodescanner.CompoundBarcodeView
         android:id="@+id/obtainScanner"
@@ -23,12 +24,14 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/obtainDummy">
+        android:layout_below="@id/obtainDummy"
+        android:background="#2196F3">
 
         <ListView
             android:id="@+id/paperInfoList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            />
 
     </LinearLayout>
 

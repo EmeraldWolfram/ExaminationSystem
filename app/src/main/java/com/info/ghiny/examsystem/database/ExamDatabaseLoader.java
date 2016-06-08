@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class ExamDatabaseLoader {
 
-    private static final int DATABASE_VERSION   = 21;
+    private static final int DATABASE_VERSION   = 22;
     private static final String DATABASE_NAME   = "examSysDB";
     private static final String EXAM_TABLE      = "ExamPaper";
     private static final String IDENTITY_TABLE  = "IdentityInfo";
@@ -138,6 +138,12 @@ public class ExamDatabaseLoader {
             database.execSQL(INSERT_INV + " VALUES ('641212121212', '66WWW66666', 'DR. LOKE CHUI FUNG', 1, '0123')");
             database.execSQL(INSERT_INV + " VALUES ('951108106303', '15WAU09184', 'FOONG GHIN YEW', 0, '63686689')");
             database.execSQL(INSERT_INV + " VALUES ('921212121212', '15WAD88888', 'NG YEN AENG', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100001', '15WAD00001', 'FGY', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100002', '15WAD00002', 'NYN', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100003', '15WAD00003', 'LHN', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100004', '15WAD00004', 'YZL', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100005', '15WAD00005', 'SYL', 0, '63686689')");
+            database.execSQL(INSERT_INV + " VALUES ('951111100006', '15WAD00006', 'WJS', 0, '63686689')");
         }
 
         public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion){

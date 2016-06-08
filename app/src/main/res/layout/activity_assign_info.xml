@@ -19,7 +19,7 @@
             android:layout_margin="4sp"
             android:paddingTop="4sp"
             android:textSize="45sp"
-            android:background="@drawable/table_no"/>
+            android:background="@drawable/table_num"/>
 
         <LinearLayout
             android:orientation="vertical"

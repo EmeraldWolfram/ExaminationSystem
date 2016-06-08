@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.tools;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.test.ActivityTestCase;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ public class CustomToast {
         toastView   = toastInflater.inflate(R.layout.toast_message_layout,
                 (ViewGroup) activity.findViewById(R.id.toastLayout));
         msgView     = (TextView) toastView.findViewById(R.id.toastTxt);
+        msgView.setTypeface(Typeface.createFromAsset(activity.getAssets(), "fonts/Chunkfive.otf"));
         imgView     = (ImageView) toastView.findViewById(R.id.toastImg);
         msgView.setText("");
     }
