@@ -76,12 +76,14 @@ public class CheckListActivity extends AppCompatActivity {
         List<String> paper  = grabIntent.getStringArrayListExtra("Paper");
         List<Integer> table = grabIntent.getIntegerArrayListExtra("Table");
         List<String> status = grabIntent.getStringArrayListExtra("Status");
+        List<String> prog   = grabIntent.getStringArrayListExtra("Programme");
 
         for(int i = 0; i < status.size(); i++){
             Candidate cdd = new Candidate();
             cdd.setStudentName(name.get(i));
             cdd.setPaperCode(paper.get(i));
             cdd.setTableNumber(table.get(i));
+            cdd.setProgramme(prog.get(i));
             switch(status.get(i)){
                 case "PRESENT":
                     cdd.setStatus(AttendanceList.Status.PRESENT);

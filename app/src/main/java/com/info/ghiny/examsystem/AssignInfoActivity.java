@@ -31,21 +31,24 @@ import java.util.List;
  * Created by GhinY on 13/05/2016.
  */
 public class AssignInfoActivity extends AppCompatActivity {
-    private CustomToast message;
-    private ExamDatabaseLoader databaseHelper;
-    private CheckListLoader checkListDB;
-    private Identity candidateID;
-    private Candidate candidate;
-    private AttendanceList attdList;
-    private ArrayList<String> cddNames;
-    private ArrayList<String> cddPapers;
-    private ArrayList<Integer> cddTables;
-    private ArrayList<String> cddStatus;
-    private String prevTableStr = "";
-    private String prevCddStr = "";
-
-
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
+
+    //Required Tools
+    private ExamDatabaseLoader databaseHelper;  //to obtain Identity RegNum from IC
+    private CheckListLoader checkListDB;        //temporary database in the mobile
+    private CustomToast message;                //Toast message tool
+    private Candidate candidate;                //store value of scanned Candidate
+
+    private AttendanceList attdList;            //The attdList grabbed
+    private ArrayList<String> cddNames;         //parameter to be send to CheckList
+    private ArrayList<String> cddStatus;        //parameter to be send to CheckList
+    private ArrayList<String> cddPapers;        //parameter to be send to CheckList
+    private ArrayList<String> cddProgram;        //parameter to be send to CheckList
+    private ArrayList<Integer> cddTables;       //parameter to be send to CheckList
+
+    private String prevTableStr = "";           //To store previous scanned value
+    private String prevCddStr = "";             //To store previous scanned value
+
     private CompoundBarcodeView barcodeView;
 
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -56,7 +59,6 @@ public class AssignInfoActivity extends AppCompatActivity {
                 lockScanValue(result.getText());
             }
         }
-
         @Override
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
         }
@@ -71,11 +73,13 @@ public class AssignInfoActivity extends AppCompatActivity {
         message         = new CustomToast(this);
         attdList        = new AttendanceList();
 
-        Candidate.setPaperList(fakeTheExamPaper());
+        //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        Candidate.setPaperList(fakeTheExamPaper()); //Suppose to query external database
 
         if(checkListDB.isEmpty())
-            checkListDB.saveAttendanceList(prepareList());
+            checkListDB.saveAttendanceList(prepareList());  //Suppose to query external database
         attdList.setAttendanceList(checkListDB.getLastSavedAttendanceList());
+        //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
         assert thisLayout != null;
@@ -135,6 +139,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert tableView    != null;    assert cddView     != null;
         assert regNumView   != null;    assert paperView   != null;
 
+
         if(scanString.length() < 4
                 && tableView.getText().toString().isEmpty()
                 && !prevTableStr.equals(scanString)){
@@ -145,21 +150,22 @@ public class AssignInfoActivity extends AppCompatActivity {
         if(scanString.length() == 12
                 && cddView.getText().toString().isEmpty()
                 && !prevCddStr.equals(scanString)){
-            candidateID = databaseHelper.getIdentity(scanString);
+            Identity candidateID = databaseHelper.getIdentity(scanString);
             candidate = attdList.getCandidate(candidateID.getRegNum());
             if (candidate != null){
                 if(candidate.getStatus() == AttendanceList.Status.BARRED){
+                    //BARRED candidate detected, show a message
                     message.showCustomMessage(candidate.getStudentName()
-                            + " have been barred",
-                            R.drawable.warn_icon);
+                            + " have been barred", R.drawable.warn_icon);
                 } else if(candidate.getStatus() == AttendanceList.Status.EXEMPTED){
+                    //EXEMPTED candidate detected, show a message
                     message.showCustomMessage("The paper was exempted for "
                             + candidate.getStudentName(), R.drawable.msg_icon);
                 }else{
                     cddView.setText(candidateID.getName());
                     regNumView.setText(candidateID.getRegNum());
-
                     paperView.setText(candidate.getPaper().toString());
+
                     prevCddStr = scanString;
                 }
             } else {
@@ -246,22 +252,25 @@ public class AssignInfoActivity extends AppCompatActivity {
         cddNames        = new ArrayList<>();
         cddTables       = new ArrayList<>();
         cddStatus       = new ArrayList<>();
+        cddProgram      = new ArrayList<>();
         List<String> regNumList = attdList.getAllCandidateRegNumList();
         for(int i = 0; i < regNumList.size(); i++){
             Candidate listCdd = attdList.getCandidate(regNumList.get(i));
             packageCandidateToSend(listCdd);
         }
         listIntent.putStringArrayListExtra("Name", cddNames);
-        listIntent.putStringArrayListExtra("Paper", cddPapers);
-        listIntent.putIntegerArrayListExtra("Table", cddTables);
         listIntent.putStringArrayListExtra("Status", cddStatus);
+        listIntent.putStringArrayListExtra("Paper", cddPapers);
+        listIntent.putStringArrayListExtra("Programme", cddProgram);
+        listIntent.putIntegerArrayListExtra("Table", cddTables);
 
     }
 
     private void packageCandidateToSend(Candidate cdd){
         cddNames.add(cdd.getStudentName());
-        cddPapers.add(cdd.getPaperCode());
-        cddTables.add(cdd.getTableNumber());
         cddStatus.add(cdd.getStatus().toString());
+        cddPapers.add(cdd.getPaperCode());
+        cddProgram.add(cdd.getProgramme());
+        cddTables.add(cdd.getTableNumber());
     }
 }

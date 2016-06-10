@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E1BEE7">
+    android:background="#111111">
 
     <TextView
-        android:id="@+id/groupHeaderStatus"
+        android:id="@+id/groupHeaderPaper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/sizeOfCandidate"
         android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/sizeOfCandidate"
         android:paddingTop="5sp"
         android:paddingBottom="5sp"
         android:layout_marginStart="50sp"
@@ -17,7 +18,7 @@
         android:textColor="#FFFFFF"/>
 
     <TextView
-        android:id="@+id/sizeOfList"
+        android:id="@+id/sizeOfCandidate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="5sp"

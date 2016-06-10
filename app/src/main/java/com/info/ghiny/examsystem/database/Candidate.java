@@ -28,7 +28,7 @@ public class Candidate {
                      AttendanceList.Status status){
         this.tableNumber = tableNumber;
         this.programme  = programme;
-        studentName     = sName;
+        this.studentName     = sName;
         this.regNum     = regNum;
         this.paperCode  = paperCode;
         this.status     = status;
