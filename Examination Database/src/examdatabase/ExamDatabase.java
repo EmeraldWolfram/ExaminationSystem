@@ -3,23 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package samplejdbc;
+package examdatabase;
 import java.sql.*;
 /**
  *
  * @author Krissy
  */
-public class SampleJDBC {
-
+public class ExamDatabase {
+    
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
         
-       SampleJDBC sample = new SampleJDBC();
-       
-       sample.getFromIC("931120129989");
+       ExamDatabase examDatabase = new ExamDatabase();
+      
+       examDatabase.createNewTable("ExamDatabase.db");
        
     }
     
@@ -117,6 +118,49 @@ public class SampleJDBC {
         return conn;
     }
     
+    public static void createNewTable(String filename) {
+        // SQLite connection string
+        String url = "jdbc:sqlite:"+filename;
+        
+        try (Connection conn = DriverManager.getConnection(url);
+                Statement stmt = conn.createStatement()) {
+            
+        String sql;
+        
+        
+         //SQL statement for creating a new table
+        sql = "CREATE TABLE IF NOT EXISTS CandidateInfo (\n"
+                + "	CIIndex         INT    PRIMARY KEY,\n"
+                + "	Name            TEXT    ,\n"
+                + "	RegNum          TEXT    ,\n"
+                + "	ProgrammeIndex  TEXT    \n"
+                + ");";
+        stmt.execute(sql);
+        
+        sql = "\nCREATE TABLE IF NOT EXISTS CandidateAttendance (\n"
+                + "	CAIndex         INT    PRIMARY KEY,\n"
+                + "	CandidateInfoIC TEXT    ,\n"
+                + "	PaperIndex      INT     ,\n"
+                + "	Status          TEXT    ,\n"
+                + "	Attendance      TEXT    ,\n"
+                + "	TableNumber     INT     \n"
+                + ");";
+        stmt.execute(sql);
+        
+        sql = "\nCREATE TABLE IF NOT EXISTS Programme (\n"
+                + "	ProgrammeIndex  INT    PRIMARY KEY,\n"
+                + "	Name            TEXT    ,\n"
+                + "	Faculty         TEXT    \n"
+                + ");";
+        
+        
+            // create a new table
+        stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
      /**
      * Connect to a database, if database file not found, a new database file will be created
      *
@@ -138,4 +182,7 @@ public class SampleJDBC {
         }
     }
 
+    
 }
+
+
