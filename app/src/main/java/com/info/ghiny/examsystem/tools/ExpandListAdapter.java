@@ -63,7 +63,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         examPaperView.setText(childText.getPaper().toString());
 
         if(childText.getTableNumber() != 0)
-            tableNumView.setBackgroundResource(R.drawable.table_no);
+            tableNumView.setBackgroundResource(R.drawable.table_num);
         else{
             tableNumView.setText("");
             tableNumView.setBackgroundColor(0x616161);

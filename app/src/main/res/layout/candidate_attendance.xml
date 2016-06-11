@@ -3,23 +3,22 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#616161">
+    android:background="#D0FFD0">
 
     <TextView
         android:id="@+id/assignedTableText"
         android:layout_width="@android:dimen/app_icon_size"
         android:layout_height="@android:dimen/app_icon_size"
         android:background="@drawable/table_num"
-        android:textSize="40sp"
+        android:textSize="36sp"
+        android:paddingStart="2sp"
         android:layout_marginStart="2sp"
-        android:layout_marginLeft="2sp"
         android:layout_marginBottom="2sp"
         android:layout_marginTop="2sp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_marginStart="5sp"
-        android:layout_marginLeft="5sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
@@ -28,15 +27,14 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:paddingBottom="4sp"
-            android:textColor="#76FF03" />
+            android:textColor="#156039" />
 
         <TextView
             android:id="@+id/assignedPaperText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="#76FF03"
-            android:textStyle="italic" />
+            android:textColor="#156039" />
     </LinearLayout>
 
 

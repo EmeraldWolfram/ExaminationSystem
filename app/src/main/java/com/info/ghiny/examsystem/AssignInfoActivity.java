@@ -96,9 +96,11 @@ public class AssignInfoActivity extends AppCompatActivity {
                 packageAttdListToSend(listIntent);
                 startActivity(listIntent);
             }
+            @Override
             public void onSwipeRight(){
                 finish();
             }
+
         });
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
