@@ -5,15 +5,11 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +20,10 @@ import java.util.Locale;
  */
 public class CustomAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> dataHeader;
+    private List<String> dataHeader;    //List of Programme
     private HashMap<String, List<Candidate>> dataChild;
+    //Map with  Key:    Programme
+    //          Value:  Candidate List
 
     public CustomAdapter(Context context, List<String> header,
                              HashMap<String, List<Candidate>> child){
@@ -54,7 +52,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.candidate_attendance, null);
+            convertView = infalInflater.inflate(R.layout.attendance_body, null);
         }
 
         TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
@@ -104,7 +102,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.attendance_status, null);
+            convertView = inflater.inflate(R.layout.attendance_header, null);
         }
 
         TextView statusHeader = (TextView) convertView.findViewById(R.id.groupHeaderStatus);
@@ -112,7 +110,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
 
         statusHeader.setTypeface(null, Typeface.BOLD);
         statusHeader.setText(headerTitle);
-        sizeOfList.setTypeface(null, Typeface.NORMAL);
+        sizeOfList.setTypeface(null, Typeface.ITALIC);
         sizeOfList.setText(size);
 
         return convertView;

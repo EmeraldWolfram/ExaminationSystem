@@ -2,7 +2,6 @@ package com.info.ghiny.examsystem.tools;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.candidate_attendance, null);
+            convertView = infalInflater.inflate(R.layout.attendance_body, null);
         }
 
         TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
@@ -101,7 +100,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.attendance_status, null);
+            convertView = inflater.inflate(R.layout.attendance_header, null);
         }
 
         TextView statusHeader = (TextView) convertView.findViewById(R.id.groupHeaderStatus);

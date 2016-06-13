@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#D0FFD0">
+    android:background="@color/colorLightGreen">
 
     <TextView
         android:id="@+id/assignedTableText"
