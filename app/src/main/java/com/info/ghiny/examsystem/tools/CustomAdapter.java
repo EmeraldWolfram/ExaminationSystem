@@ -24,22 +24,19 @@ import java.util.Locale;
  */
 public class CustomAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> statusHeader;
-    private HashMap<String, List<String>> paperHeader;
-    private HashMap<String, HashMap<String, List<Candidate>>> dataChild;
+    private List<String> dataHeader;
+    private HashMap<String, List<Candidate>> dataChild;
 
-    public CustomAdapter(Context context, List<String> statusHeader,
-                         HashMap<String, List<String>> paperHeader,
-                         HashMap<String, HashMap<String, List<Candidate>>> child){
-        this.context        = context;
-        this.statusHeader   = statusHeader;
-        this.paperHeader    = paperHeader;
-        this.dataChild      = child;
+    public CustomAdapter(Context context, List<String> header,
+                             HashMap<String, List<Candidate>> child){
+        this.context    = context;
+        this.dataHeader = header;
+        this.dataChild  = child;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return this.paperHeader.get(this.statusHeader.get(groupPosition)).get(childPosition);
+        return this.dataChild.get(this.dataHeader.get(groupPosition)).get(childPosition);
     }
 
     @Override
@@ -52,37 +49,46 @@ public class CustomAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView,
                              ViewGroup parent) {
 
-        final String paperData = (String) getChild(groupPosition, childPosition);
+        final Candidate childText = (Candidate)getChild(groupPosition, childPosition);
 
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) this.context
+            LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.attendance_paper, null);
+            convertView = infalInflater.inflate(R.layout.candidate_attendance, null);
         }
 
-        TextView paperNameView    = (TextView)convertView.findViewById(R.id.groupHeaderPaper);
-        TextView sizeOfCandidate  = (TextView)convertView.findViewById(R.id.sizeOfCandidate);
+        TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
+        TextView candidateView  = (TextView) convertView.findViewById(R.id.assignedCddText);
+        TextView examPaperView  = (TextView) convertView.findViewById(R.id.assignedPaperText);
 
-        paperNameView.setText(paperData);
-        sizeOfCandidate.setText("X");
+        tableNumView.setText(childText.getTableNumber().toString());
+        candidateView.setText(childText.getStudentName());
+        examPaperView.setText(childText.getPaper().toString());
+
+        if(childText.getTableNumber() != 0)
+            tableNumView.setBackgroundResource(R.drawable.table_num);
+        else{
+            tableNumView.setText("");
+            tableNumView.setBackgroundColor(0x616161);
+        }
 
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this.paperHeader.get(this.statusHeader.get(groupPosition))
+        return this.dataChild.get(this.dataHeader.get(groupPosition))
                 .size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return this.statusHeader.get(groupPosition);
+        return this.dataHeader.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this.statusHeader.size();
+        return this.dataHeader.size();
     }
 
     @Override
@@ -121,7 +127,4 @@ public class CustomAdapter extends BaseExpandableListAdapter {
     public boolean hasStableIds() {
         return false;
     }
-
-
-
 }

@@ -26,6 +26,9 @@
             android:name=".CheckListActivity"
             android:screenOrientation="userPortrait"/>
         <activity
+            android:name=".FragmentListActivity"
+            android:screenOrientation="userPortrait"/>
+        <activity
             android:name=".PopUpLogin"
             android:theme="@style/AppTheme.CustomTheme"
             android:screenOrientation="userPortrait"/>

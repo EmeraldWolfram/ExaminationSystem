@@ -56,7 +56,9 @@ public class CheckListActivity extends AppCompatActivity {
     }
 
     public void onSubmit(View view){
-        CheckListLoader.clearDatabase();
+        //CheckListLoader.clearDatabase();
+        Intent intent = new Intent(this, FragmentListActivity.class);
+        startActivity(intent);
         //finish();
         //INSERT TO TABLE
     }
