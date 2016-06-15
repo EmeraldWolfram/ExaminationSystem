@@ -102,32 +102,31 @@ public class MainLoginActivity extends AppCompatActivity {
     public void onActivityResult(int reqCode, int resCode, Intent data){
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
-            pwIntent = new Intent(this, PopUpLogin.class);
-
-            if(password.isEmpty()) {
-                //If the user didn't enter a password
-                message.showCustomMessageWithCondition(CustomToast.emptyPW, R.drawable.msg_icon,
-                        message.checkEqualToast(CustomToast.emptyPW));
-
-                pwIntent.putExtra("Name", invglt.getName());
-                pwIntent.putExtra("RegNum", invglt.getRegNum());
-
-                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-            }
-            else if (invglt.matchPassword(password)) {
-                //If the user entered CORRECT password
+            try{
+                LoginHelper.checkInputPassword(invglt, password);
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
-            }
-            else {
-                //If the user entered INCORRECT password
-                message.showCustomMessageWithCondition(CustomToast.wrongPW, R.drawable.warn_icon,
-                        message.checkEqualToast(CustomToast.wrongPW));
+            } catch(CustomException err){
 
+                pwIntent = new Intent(this, PopUpLogin.class);
                 pwIntent.putExtra("Name", invglt.getName());
                 pwIntent.putExtra("RegNum", invglt.getRegNum());
 
-                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+                switch (err.getErrorCode()){
+                    case CustomException.ERR_EMPTY_PASSWORD:
+                        message.showCustomMessageWithCondition(CustomToast.emptyPW,
+                                R.drawable.msg_icon, message.checkEqualToast(CustomToast.emptyPW));
+                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+                        break;
+                    case CustomException.ERR_WRONG_PASSWORD:
+                        message.showCustomMessageWithCondition(CustomToast.wrongPW, R.drawable.warn_icon,
+                                message.checkEqualToast(CustomToast.wrongPW));
+                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+                        break;
+                    case CustomException.ERR_NULL_IDENTITY:
+                        throw new NullPointerException("Identity should not be null");
+
+                }
             }
         }
     }

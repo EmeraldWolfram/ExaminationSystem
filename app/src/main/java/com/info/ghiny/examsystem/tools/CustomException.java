@@ -7,6 +7,9 @@ public class CustomException extends Exception {
 
     public static final int ERR_NULL_IDENTITY       = 0;
     public static final int ERR_ILLEGAL_IDENTITY    = 1;
+    public static final int ERR_EMPTY_PASSWORD      = 2;
+    public static final int ERR_WRONG_PASSWORD      = 3;
+
     private int errorCode;
     private String errorMsg;
 
