@@ -77,21 +77,27 @@ public class MainLoginActivity extends AppCompatActivity {
         try{
             LoginHelper.checkInvigilator(invglt);
 
+            //Set Text below QR scanner
             barcodeView.setStatusText(invglt.getName() + "\n" + invglt.getRegNum());
             barcodeView.pause();
 
+            //Set the value PopUp Login prompt window
             pwIntent = new Intent(this, PopUpLogin.class);
             pwIntent.putExtra("Name", invglt.getName());
             pwIntent.putExtra("RegNum", invglt.getRegNum());
 
+            //Start the activity
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         } catch (CustomException err){
+            //Error were caught
             switch (err.getErrorCode()) {
                 case CustomException.ERR_NULL_IDENTITY:
+                    //Display the error in a Toast Message
                     message.showCustomMessageWithCondition(CustomToast.notId, R.drawable.warn_icon,
                             message.checkEqualToast(CustomToast.notId));
                     break;
                 case CustomException.ERR_ILLEGAL_IDENTITY:
+                    //Display the error in a Toast Message
                     message.showCustomMessageWithCondition(CustomToast.unathr, R.drawable.warn_icon,
                             message.checkEqualToast(CustomToast.unathr));
                     break;
@@ -104,28 +110,33 @@ public class MainLoginActivity extends AppCompatActivity {
             String password = data.getStringExtra("Password");
             try{
                 LoginHelper.checkInputPassword(invglt, password);
+
+                //Successful login, start AssignActivity
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
             } catch(CustomException err){
-
+                //Error were caught during checkInputPassword
+                //Ready to start the PopUp Login prompt window
                 pwIntent = new Intent(this, PopUpLogin.class);
                 pwIntent.putExtra("Name", invglt.getName());
                 pwIntent.putExtra("RegNum", invglt.getRegNum());
 
+
                 switch (err.getErrorCode()){
+                    //Display the error of empty password in a Toast Message
                     case CustomException.ERR_EMPTY_PASSWORD:
-                        message.showCustomMessageWithCondition(CustomToast.emptyPW,
-                                R.drawable.msg_icon, message.checkEqualToast(CustomToast.emptyPW));
+                        message.showCustomMessage(CustomToast.emptyPW, R.drawable.msg_icon);
                         startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
                         break;
+                    //Display the error of wrong password in a Toast Message
                     case CustomException.ERR_WRONG_PASSWORD:
-                        message.showCustomMessageWithCondition(CustomToast.wrongPW, R.drawable.warn_icon,
-                                message.checkEqualToast(CustomToast.wrongPW));
+                        message.showCustomMessage(CustomToast.wrongPW, R.drawable.warn_icon);
                         startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
                         break;
+                    //Serious error, Identity can never be null at this state
+                    //If it happen, source must be from scanning invigilator
                     case CustomException.ERR_NULL_IDENTITY:
                         throw new NullPointerException("Identity should not be null");
-
                 }
             }
         }

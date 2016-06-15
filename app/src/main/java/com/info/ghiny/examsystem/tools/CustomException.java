@@ -9,6 +9,10 @@ public class CustomException extends Exception {
     public static final int ERR_ILLEGAL_IDENTITY    = 1;
     public static final int ERR_EMPTY_PASSWORD      = 2;
     public static final int ERR_WRONG_PASSWORD      = 3;
+    public static final int ERR_NULL_CANDIDATE      = 4;
+    public static final int ERR_STATUS_EXEMPTED     = 5;
+    public static final int ERR_STATUS_BARRED       = 6;
+    public static final int ERR_INCOMPLETE_ID       = 7;
 
     private int errorCode;
     private String errorMsg;

@@ -11,7 +11,7 @@ public class Identity {
 
 
     public Identity(){
-        this.regNum = null;
+        this.regNum   = null;
         this.password = null;
         this.eligible = false;
         this.name     = null;

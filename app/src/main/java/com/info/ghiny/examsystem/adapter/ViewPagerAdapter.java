@@ -35,6 +35,24 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             case 3:
                 fragment = new ExemptedFragment();
                 break;
+            case 4:
+                fragment = new ExemptedFragment();
+                break;
+            case 5:
+                fragment = new ExemptedFragment();
+                break;
+            case 6:
+                fragment = new ExemptedFragment();
+                break;
+            case 7:
+                fragment = new ExemptedFragment();
+                break;
+            case 8:
+                fragment = new ExemptedFragment();
+                break;
+            case 9:
+                fragment = new ExemptedFragment();
+                break;
         }
 
         return fragment;
@@ -43,7 +61,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         // get item count - equal to number of tabs
-        return 4;
+        return 10;
     }
 
     @Override
@@ -60,6 +78,24 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 title="BARRED";
                 break;
             case 3:
+                title="EXEMPTED";
+                break;
+            case 4:
+                title="EXEMPTED";
+                break;
+            case 5:
+                title="EXEMPTED";
+                break;
+            case 6:
+                title="EXEMPTED";
+                break;
+            case 7:
+                title="EXEMPTED";
+                break;
+            case 8:
+                title="EXEMPTED";
+                break;
+            case 9:
                 title="EXEMPTED";
                 break;
         }

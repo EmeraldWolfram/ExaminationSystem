@@ -16,6 +16,8 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.tools.AssignHelper;
+import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -36,6 +38,8 @@ public class AssignInfoActivity extends AppCompatActivity {
     //Required Tools
     private ExamDatabaseLoader databaseHelper;  //to obtain Identity RegNum from IC
     private CheckListLoader checkListDB;        //temporary database in the mobile
+    private AssignHelper helper;
+
     private CustomToast message;                //Toast message tool
     private Candidate candidate;                //store value of scanned Candidate
 
@@ -79,6 +83,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         if(checkListDB.isEmpty())
             checkListDB.saveAttendanceList(prepareList());  //Suppose to query external database
         attdList.setAttendanceList(checkListDB.getLastSavedAttendanceList());
+        helper          = new AssignHelper(attdList);
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
@@ -143,40 +148,47 @@ public class AssignInfoActivity extends AppCompatActivity {
 
 
         if(scanString.length() < 4
-                && tableView.getText().toString().isEmpty()
-                && !prevTableStr.equals(scanString)){
+                && tableView.getText().toString().isEmpty()){
             tableView.setText(scanString);
-            prevTableStr = scanString;
         }
 
         if(scanString.length() == 12
-                && cddView.getText().toString().isEmpty()
-                && !prevCddStr.equals(scanString)){
+                && cddView.getText().toString().isEmpty()){
             Identity candidateID = databaseHelper.getIdentity(scanString);
-            candidate = attdList.getCandidate(candidateID.getRegNum());
-            if (candidate != null){
-                if(candidate.getStatus() == AttendanceList.Status.BARRED){
-                    //BARRED candidate detected, show a message
-                    message.showCustomMessage(candidate.getStudentName()
-                            + " have been barred", R.drawable.warn_icon);
-                } else if(candidate.getStatus() == AttendanceList.Status.EXEMPTED){
-                    //EXEMPTED candidate detected, show a message
-                    message.showCustomMessage("The paper was exempted for "
-                            + candidate.getStudentName(), R.drawable.msg_icon);
-                }else{
-                    cddView.setText(candidateID.getName());
-                    regNumView.setText(candidateID.getRegNum());
-                    paperView.setText(candidate.getPaper().toString());
 
-                    prevCddStr = scanString;
+            try{
+                Candidate cdd   = helper.checkCandidate(candidateID);
+
+                //Candidate is legal, display all the candidate value
+                cddView.setText(cdd.getStudentName());
+                regNumView.setText(cdd.getRegNum());
+                paperView.setText(cdd.getPaper().toString());
+
+                //
+                assignToList(candidate, tableView, cddView, regNumView, paperView);
+            } catch(CustomException err){
+                switch (err.getErrorCode()){
+                    case CustomException.ERR_NULL_IDENTITY:
+                        message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);
+                        break;
+                    case CustomException.ERR_INCOMPLETE_ID:
+                        throw new NullPointerException("ID register Number is null");
+                    case CustomException.ERR_NULL_CANDIDATE:
+                        message.showCustomMessage(candidateID.getName() +
+                                " doest not belong to this venue", R.drawable.msg_icon);
+                        break;
+                    case CustomException.ERR_STATUS_BARRED:
+                        message.showCustomMessage(candidateID.getName() +
+                                " have been barred", R.drawable.warn_icon);
+                        break;
+                    case CustomException.ERR_STATUS_EXEMPTED:
+                        message.showCustomMessage("The paper was exempted for " +
+                                candidateID.getName(), R.drawable.msg_icon);
+                        break;
                 }
-            } else {
-                message.showCustomMessage("Not a candidate Identity", R.drawable.msg_icon);
             }
-
         }
 
-        assignToList(candidate, tableView, cddView, regNumView, paperView);
     }
 
     private void assignToList(Candidate cdd, TextView tableView,   TextView cddView,
