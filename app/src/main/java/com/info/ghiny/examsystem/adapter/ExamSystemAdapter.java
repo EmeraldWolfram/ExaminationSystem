@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.tools;
+package com.info.ghiny.examsystem.adapter;
 
 import android.content.Context;
 import android.database.Cursor;

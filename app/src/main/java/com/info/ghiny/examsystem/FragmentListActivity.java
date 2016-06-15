@@ -7,7 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 
-import com.info.ghiny.examsystem.tools.ViewPagerAdapter;
+import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
 
 /**
  * Created by GhinY on 12/06/2016.

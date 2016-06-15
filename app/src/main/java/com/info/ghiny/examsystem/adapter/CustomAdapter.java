@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.tools;
+package com.info.ghiny.examsystem.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,22 +8,24 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.database.Candidate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by GhinY on 22/05/2016.
+ * Created by GhinY on 10/06/2016.
  */
-public class ExpandListAdapter extends BaseExpandableListAdapter {
+public class CustomAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> dataHeader;
+    private List<String> dataHeader;    //List of Programme
     private HashMap<String, List<Candidate>> dataChild;
+    //Map with  Key:    Programme
+    //          Value:  Candidate List
 
-    public ExpandListAdapter(Context context, List<String> header,
+    public CustomAdapter(Context context, List<String> header,
                              HashMap<String, List<Candidate>> child){
         this.context    = context;
         this.dataHeader = header;
@@ -108,7 +110,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
         statusHeader.setTypeface(null, Typeface.BOLD);
         statusHeader.setText(headerTitle);
-        sizeOfList.setTypeface(null, Typeface.NORMAL);
+        sizeOfList.setTypeface(null, Typeface.ITALIC);
         sizeOfList.setText(size);
 
         return convertView;

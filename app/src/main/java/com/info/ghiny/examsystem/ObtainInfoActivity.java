@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.tools.ExamSystemAdapter;
+import com.info.ghiny.examsystem.adapter.ExamSystemAdapter;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;

@@ -9,8 +9,7 @@ import android.widget.ExpandableListView;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.tools.ExpandListAdapter;
+import com.info.ghiny.examsystem.adapter.ExpandListAdapter;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
 import java.util.ArrayList;
