@@ -5,11 +5,15 @@ package com.info.ghiny.examsystem.tools;
  */
 public class CustomException extends Exception {
 
-    public static final int ERR_NOT_IDENTITY = 0;
+    public static final int ERR_NULL_IDENTITY       = 0;
+    public static final int ERR_ILLEGAL_IDENTITY    = 1;
     private int errorCode;
     private String errorMsg;
 
-    public CustomException(){}
+    public CustomException(int errorCode){
+        this.errorCode  = errorCode;
+        this.errorMsg   = null;
+    }
 
     public CustomException(String message, int errorCode){
         super(message);

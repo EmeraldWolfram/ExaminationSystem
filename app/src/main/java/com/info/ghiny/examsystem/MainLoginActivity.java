@@ -9,7 +9,9 @@ import android.view.KeyEvent;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
+import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -21,7 +23,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private ExamDatabaseLoader databaseHelper;
     private static final int PASSWORD_REQ_CODE = 888;
-    private Identity examiner;
+    private Identity invglt;
     private Intent pwIntent;
     private CustomToast message;
 
@@ -30,8 +32,8 @@ public class MainLoginActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                examiner = databaseHelper.getIdentity(result.getText());
-                checkEligibilityOfTheIdendity();
+                invglt = databaseHelper.getIdentity(result.getText());
+                checkEligibilityOfTheIdentity();
             }
         }
         @Override
@@ -71,23 +73,29 @@ public class MainLoginActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void checkEligibilityOfTheIdendity(){
-        if(examiner == null){
-            message.showCustomMessageWithCondition(CustomToast.notId, R.drawable.warn_icon,
-                    message.checkEqualToast(CustomToast.notId));
-        } else {
-            barcodeView.setStatusText(examiner.getName() + "\n" + examiner.getRegNum());
+    private void checkEligibilityOfTheIdentity(){
+        try{
+            LoginHelper.checkInvigilator(invglt);
 
-            if(examiner.getEligible()) {
-                barcodeView.pause();
+            barcodeView.setStatusText(invglt.getName() + "\n" + invglt.getRegNum());
+            barcodeView.pause();
 
-                pwIntent = new Intent(this, PopUpLogin.class);
-                pwIntent.putExtra("Name", examiner.getName());
-                pwIntent.putExtra("RegNum", examiner.getRegNum());
-                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-            } else
-                message.showCustomMessageWithCondition(CustomToast.unathr, R.drawable.warn_icon,
-                        message.checkEqualToast(CustomToast.unathr));
+            pwIntent = new Intent(this, PopUpLogin.class);
+            pwIntent.putExtra("Name", invglt.getName());
+            pwIntent.putExtra("RegNum", invglt.getRegNum());
+
+            startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+        } catch (CustomException err){
+            switch (err.getErrorCode()) {
+                case CustomException.ERR_NULL_IDENTITY:
+                    message.showCustomMessageWithCondition(CustomToast.notId, R.drawable.warn_icon,
+                            message.checkEqualToast(CustomToast.notId));
+                    break;
+                case CustomException.ERR_ILLEGAL_IDENTITY:
+                    message.showCustomMessageWithCondition(CustomToast.unathr, R.drawable.warn_icon,
+                            message.checkEqualToast(CustomToast.unathr));
+                    break;
+            }
         }
     }
 
@@ -101,12 +109,12 @@ public class MainLoginActivity extends AppCompatActivity {
                 message.showCustomMessageWithCondition(CustomToast.emptyPW, R.drawable.msg_icon,
                         message.checkEqualToast(CustomToast.emptyPW));
 
-                pwIntent.putExtra("Name", examiner.getName());
-                pwIntent.putExtra("RegNum", examiner.getRegNum());
+                pwIntent.putExtra("Name", invglt.getName());
+                pwIntent.putExtra("RegNum", invglt.getRegNum());
 
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
-            else if (examiner.matchPassword(password)) {
+            else if (invglt.matchPassword(password)) {
                 //If the user entered CORRECT password
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
@@ -116,8 +124,8 @@ public class MainLoginActivity extends AppCompatActivity {
                 message.showCustomMessageWithCondition(CustomToast.wrongPW, R.drawable.warn_icon,
                         message.checkEqualToast(CustomToast.wrongPW));
 
-                pwIntent.putExtra("Name", examiner.getName());
-                pwIntent.putExtra("RegNum", examiner.getRegNum());
+                pwIntent.putExtra("Name", invglt.getName());
+                pwIntent.putExtra("RegNum", invglt.getRegNum());
 
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
