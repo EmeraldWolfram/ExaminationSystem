@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
+import com.info.ghiny.examsystem.tools.CustomException;
+
 import java.util.Date;
 
 /**
@@ -43,6 +45,7 @@ public class ExamSubject {
     public Integer getStartTableNum() {
         return startTableNum;
     }
+
     public void setNumOfCandidate(Integer numOfCandidate) {
         this.numOfCandidate = numOfCandidate;
     }
@@ -87,6 +90,20 @@ public class ExamSubject {
 
     public String getPaperDesc() {
         return paperDesc;
+    }
+
+    public boolean isValidTable(Integer tableNumber) throws CustomException{
+        boolean valid   = false;
+        int startNumber = startTableNum - 1;
+        int endNumber   = startTableNum + numOfCandidate;
+
+        if(tableNumber == null)
+            throw new CustomException("Input tableNumber is null", CustomException.ERR_NULL_TABLE);
+
+        if(tableNumber < endNumber && tableNumber > startNumber)
+            valid = true;
+
+        return valid;
     }
 
     @Override

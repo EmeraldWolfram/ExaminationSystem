@@ -149,6 +149,7 @@ public class AssignInfoActivity extends AppCompatActivity {
 
         if(scanString.length() < 4
                 && tableView.getText().toString().isEmpty()){
+            helper.checkTable(Integer.parseInt(scanString));
             tableView.setText(scanString);
         }
 
@@ -167,6 +168,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                 //
                 assignToList(candidate, tableView, cddView, regNumView, paperView);
             } catch(CustomException err){
+                //Display message according to the error caught
                 switch (err.getErrorCode()){
                     case CustomException.ERR_NULL_IDENTITY:
                         message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);

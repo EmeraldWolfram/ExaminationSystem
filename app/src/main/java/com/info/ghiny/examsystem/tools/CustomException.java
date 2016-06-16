@@ -13,6 +13,9 @@ public class CustomException extends Exception {
     public static final int ERR_STATUS_EXEMPTED     = 5;
     public static final int ERR_STATUS_BARRED       = 6;
     public static final int ERR_INCOMPLETE_ID       = 7;
+    public static final int ERR_TABLE_REASSIGN      = 8;
+    public static final int ERR_CANDIDATE_REASSIGN  = 9;
+    public static final int ERR_NULL_TABLE          = 10;
 
     private int errorCode;
     private String errorMsg;

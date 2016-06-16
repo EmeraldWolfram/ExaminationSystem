@@ -1,9 +1,12 @@
 package com.info.ghiny.examsystem.database;
 
+import com.info.ghiny.examsystem.tools.CustomException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.matchers.Null;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -13,6 +16,7 @@ import static org.junit.Assert.*;
  */
 public class ExamSubjectTest {
 
+    //=toString()===================================================================================
     @Test
     public void testToString_TestFunctionality() throws Exception {
         try{
@@ -49,6 +53,50 @@ public class ExamSubjectTest {
             fail("NullPointerException should be thrown but no error thrown!");
         }catch (NullPointerException e){
             assertEquals(e.getMessage(), "Paper Description was not filled yet");
+        }
+    }
+
+    //=isValidTable=================================================================================
+    //Table range from 12 -> 31 (20 ppl) test Lower Limit
+    //input 11 should return false to indicate not a valid table
+    @Test
+    public void testIsValidTable_Input_number_out_of_range_should_return_false() throws Exception{
+        try{
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
+                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            assertFalse(testSubject.isValidTable(11));
+            assertTrue(testSubject.isValidTable(12));
+        }catch(Exception err){
+            fail("Did not expect error to be thrown but thrown ErrorMsg " + err.getMessage() );
+        }
+    }
+
+    //Table range from 12 -> 31 (20 ppl), test Upper Limit
+    //input 11 should return false to indicate not a valid table
+    @Test
+    public void testIsValidTable_Input_number_12_should_return_true() throws Exception{
+        try{
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
+                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            assertTrue(testSubject.isValidTable(31));
+            assertFalse(testSubject.isValidTable(32));
+        }catch(Exception err){
+            fail("Did not expect error to be thrown but thrown ErrorMsg " + err.getMessage() );
+        }
+    }
+
+    //Input to isValidTable() cannot be null
+    //If null entry happen should throw ERR_NULL_TABLE
+    @Test
+    public void testIsValidTable_Input_null_should_throw_ERR_NULL_TABLE() throws Exception{
+        try{
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
+                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            boolean testLogic = testSubject.isValidTable(null);
+            fail("Expected ERR_NULL_TABLE but none thrown");
+        }catch(CustomException err){
+            assertEquals(CustomException.ERR_NULL_TABLE, err.getErrorCode());
+            assertEquals("Input tableNumber is null", err.getErrorMsg());
         }
     }
 }

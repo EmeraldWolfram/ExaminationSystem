@@ -21,7 +21,16 @@ public class AssignHelper {
     public AssignHelper(AttendanceList attdList){
         this.attdList   = attdList;     //Initialize the AttendanceList that is legit here
         this.assgnList  = new HashMap<>();
+        this.tempCdd    = null;
+        this.tempTable  = null;
     }
+
+    public Integer checkTable(Integer table){
+        //Add checking mechanism when venue number is valid
+        tempTable = table;
+        return tempTable;
+    }
+
 
     public Candidate checkCandidate(Identity id) throws CustomException{
         if(id == null)
@@ -43,6 +52,13 @@ public class AssignHelper {
 
         tempCdd = candidate;
         return tempCdd;
+    }
+
+    public boolean tryAssignCandidate() throws CustomException{
+        boolean assigned = false;
+
+
+        return assigned;
     }
 
 
