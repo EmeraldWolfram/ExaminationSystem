@@ -1,5 +1,9 @@
 package com.info.ghiny.examsystem.database;
 
+import android.support.annotation.Nullable;
+
+import com.info.ghiny.examsystem.tools.CustomException;
+
 import java.util.HashMap;
 
 /**
@@ -26,12 +30,12 @@ public class Candidate {
 
     public Candidate(int tableNumber, String programme, String sName, String regNum, String paperCode,
                      AttendanceList.Status status){
-        this.tableNumber = tableNumber;
-        this.programme  = programme;
-        this.studentName     = sName;
-        this.regNum     = regNum;
-        this.paperCode  = paperCode;
-        this.status     = status;
+        this.tableNumber    = tableNumber;
+        this.programme      = programme;
+        this.studentName    = sName;
+        this.regNum         = regNum;
+        this.paperCode      = paperCode;
+        this.status         = status;
     }
 
     //Instance Method ---------------------------------------------------------------------
@@ -55,7 +59,7 @@ public class Candidate {
     public String getPaperCode() {
         return paperCode;
     }
-    public ExamSubject getPaper(){return getExamSubject(paperCode);   }
+    public ExamSubject getPaper() throws CustomException{return getExamSubject(paperCode);   }
 
     public AttendanceList.Status getStatus() {
         return status;
@@ -80,9 +84,13 @@ public class Candidate {
     public static void setPaperList(HashMap<String, ExamSubject> papers){
         paperList = papers;
     }
+
+    @Nullable
     public static HashMap<String, ExamSubject> getPaperList(){
         return paperList;
     }
+
+    @Nullable
     public static String getPaperDesc(String paperCode) {
         String paperDesc = null;
         ExamSubject examSubject = paperList.get(paperCode);
@@ -90,7 +98,13 @@ public class Candidate {
             paperDesc = examSubject.getPaperDesc();
         return paperDesc;
     }
-    private static ExamSubject getExamSubject(String paperCode){
+
+    @Nullable
+    private static ExamSubject getExamSubject(String paperCode) throws CustomException{
+        if(paperList == null){
+            throw new CustomException("Paper List haven initialize",
+                    CustomException.ERR_EMPTY_PAPER_LIST);
+        }
         return paperList.get(paperCode);
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.tools.CustomException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,11 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
         tableNumView.setText(childText.getTableNumber().toString());
         candidateView.setText(childText.getStudentName());
-        examPaperView.setText(childText.getPaper().toString());
+        try{
+            examPaperView.setText(childText.getPaper().toString());
+        } catch(CustomException err){
+            examPaperView.setText(err.getErrorMsg());
+        }
 
         if(childText.getTableNumber() != 0)
             tableNumView.setBackgroundResource(R.drawable.table_num);

@@ -146,78 +146,70 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert tableView    != null;    assert cddView     != null;
         assert regNumView   != null;    assert paperView   != null;
 
+        Candidate cdd   = null;
+        Identity Id     = null;
+        try{
+            if(scanString.length() < 4){
+                helper.checkTable(Integer.parseInt(scanString));
+                tableView.setText(scanString);
+            }
 
-        if(scanString.length() < 4
-                && tableView.getText().toString().isEmpty()){
-            helper.checkTable(Integer.parseInt(scanString));
-            tableView.setText(scanString);
-        }
-
-        if(scanString.length() == 12
-                && cddView.getText().toString().isEmpty()){
-            Identity candidateID = databaseHelper.getIdentity(scanString);
-
-            try{
-                Candidate cdd   = helper.checkCandidate(candidateID);
-
+            if(scanString.length() == 12){
+                Id  = databaseHelper.getIdentity(scanString);
+                cdd = helper.checkCandidate(Id);
                 //Candidate is legal, display all the candidate value
                 cddView.setText(cdd.getStudentName());
                 regNumView.setText(cdd.getRegNum());
                 paperView.setText(cdd.getPaper().toString());
+            }
 
-                //
-                assignToList(candidate, tableView, cddView, regNumView, paperView);
-            } catch(CustomException err){
-                //Display message according to the error caught
-                switch (err.getErrorCode()){
-                    case CustomException.ERR_NULL_IDENTITY:
-                        message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);
-                        break;
-                    case CustomException.ERR_INCOMPLETE_ID:
-                        throw new NullPointerException("ID register Number is null");
-                    case CustomException.ERR_NULL_CANDIDATE:
-                        message.showCustomMessage(candidateID.getName() +
-                                " doest not belong to this venue", R.drawable.msg_icon);
-                        break;
-                    case CustomException.ERR_STATUS_BARRED:
-                        message.showCustomMessage(candidateID.getName() +
-                                " have been barred", R.drawable.warn_icon);
-                        break;
-                    case CustomException.ERR_STATUS_EXEMPTED:
-                        message.showCustomMessage("The paper was exempted for " +
-                                candidateID.getName(), R.drawable.msg_icon);
-                        break;
-                }
+            if(helper.tryAssignCandidate()){
+                //Candidate successfully assigned, clear display and acknowledge with message
+                tableView.setText("");  cddView.setText("");
+                regNumView.setText(""); paperView.setText("");
+                assert cdd != null;
+                message.showCustomMessage(cdd.getStudentName()+ " Assigned to "
+                        + cdd.getTableNumber().toString(), R.drawable.entry_icon);
+            }
+        } catch(CustomException err){
+            //If Id is null, it will be caught as the first Exception thrown, ERR_NULL_IDENTITY
+            //Therefore, Id can never be null for the rest of the Exceptions thrown
+            //Display message according to the error caught
+            switch (err.getErrorCode()){
+                case CustomException.ERR_NULL_IDENTITY:
+                    message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);
+                    break;
+                case CustomException.ERR_INCOMPLETE_ID:
+                    throw new NullPointerException("ID register Number is null");
+                case CustomException.ERR_NULL_CANDIDATE:
+                    message.showCustomMessage(Id.getName() +
+                            " doest not belong to this venue", R.drawable.msg_icon);
+                    break;
+                case CustomException.ERR_STATUS_BARRED:
+                    message.showCustomMessage(Id.getName() +
+                            " have been barred", R.drawable.warn_icon);
+                    break;
+                case CustomException.ERR_STATUS_EXEMPTED:
+                    message.showCustomMessage("The paper was exempted for " +
+                            Id.getName(), R.drawable.msg_icon);
+                    break;
+                case CustomException.ERR_PAPER_NOT_MATCH:
+                    //TO DO
+                    break;
+                case CustomException.ERR_TABLE_REASSIGN:
+                    //TO DO
+                    break;
+                case CustomException.ERR_CANDIDATE_REASSIGN:
+                    //TO DO
+                    break;
+                case CustomException.ERR_NULL_TABLE:
+                    //TO DP
+                    break;
             }
         }
-
     }
 
-    private void assignToList(Candidate cdd, TextView tableView,   TextView cddView,
-                              TextView regNumView,  TextView paperView){
-        CharSequence tableText  = tableView.getText();
-        CharSequence cddText    = cddView.getText();
 
-        if(!tableText.toString().isEmpty() && !cddText.toString().isEmpty()){
-            tableView.setText("");
-            cddView.setText("");
-            regNumView.setText("");
-            paperView.setText("");
-            //If candidate == null means the candidate should not be in this room
-            //If candidate.getStatus() == PRESENT means it is assigned
-            //If candidate.getStatus() != ABSENT means it is not legit to take paper
-            //If ExamSubject range does not meet, DO something
-            cdd.setTableNumber(Integer.parseInt(tableText.toString()));
-            cdd.setStatus(AttendanceList.Status.PRESENT);
-            cdd.setStatus(AttendanceList.Status.PRESENT);
-            attdList.removeCandidate(cdd.getRegNum());
-            attdList.addCandidate(cdd, cdd.getPaperCode(),
-                    AttendanceList.Status.PRESENT, cdd.getProgramme());
-
-            message.showCustomMessage(cddText.toString()+
-                    " Assigned to " + tableText.toString(), R.drawable.entry_icon);
-        }
-    }
 
     private AttendanceList prepareList(){
         AttendanceList attdList = new AttendanceList();

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.tools.CustomException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition,
                              boolean isLastChild, View convertView,
-                             ViewGroup parent) {
+                             ViewGroup parent){
 
         final Candidate childText = (Candidate)getChild(groupPosition, childPosition);
 
@@ -61,7 +62,11 @@ public class CustomAdapter extends BaseExpandableListAdapter {
 
         tableNumView.setText(childText.getTableNumber().toString());
         candidateView.setText(childText.getStudentName());
-        examPaperView.setText(childText.getPaper().toString());
+        try{
+            examPaperView.setText(childText.getPaper().toString());
+        } catch(CustomException err){
+            examPaperView.setText("Exam Papers haven been initialize");
+        }
 
         if(childText.getTableNumber() != 0)
             tableNumView.setBackgroundResource(R.drawable.table_num);

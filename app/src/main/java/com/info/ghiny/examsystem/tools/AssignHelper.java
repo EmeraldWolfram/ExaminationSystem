@@ -7,16 +7,15 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Identity;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by GhinY on 15/06/2016.
  */
 public class AssignHelper {
-    public Candidate tempCdd;
-    public Integer tempTable;
+    private Candidate tempCdd;
+    private Integer tempTable;
     private AttendanceList attdList;
-    private HashMap<Integer, String> assgnList;
+    public HashMap<Integer, String> assgnList;
 
     public AssignHelper(AttendanceList attdList){
         this.attdList   = attdList;     //Initialize the AttendanceList that is legit here
@@ -30,7 +29,6 @@ public class AssignHelper {
         tempTable = table;
         return tempTable;
     }
-
 
     public Candidate checkCandidate(Identity id) throws CustomException{
         if(id == null)
@@ -57,6 +55,30 @@ public class AssignHelper {
     public boolean tryAssignCandidate() throws CustomException{
         boolean assigned = false;
 
+        if(tempTable != null && tempCdd != null){
+            //If ExamSubject range does not meet, DO something
+            if(assgnList.containsKey(tempTable))
+                throw new CustomException("Table assigned before",
+                        CustomException.ERR_TABLE_REASSIGN);
+
+            if(assgnList.containsValue(tempCdd.getRegNum()))
+                throw new CustomException("Candidate assigned before",
+                        CustomException.ERR_CANDIDATE_REASSIGN);
+
+            if(!tempCdd.getPaper().isValidTable(tempTable))
+                throw new CustomException("Paper for table and candidate does not match",
+                        CustomException.ERR_PAPER_NOT_MATCH);
+
+            tempCdd.setTableNumber(tempTable);
+            tempCdd.setStatus(AttendanceList.Status.PRESENT);
+            attdList.removeCandidate(tempCdd.getRegNum());
+            attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
+                    AttendanceList.Status.PRESENT, tempCdd.getProgramme());
+            assgnList.put(tempTable, tempCdd.getRegNum());
+            tempCdd     = null;
+            tempTable   = null;
+            assigned    = true;
+        }
 
         return assigned;
     }

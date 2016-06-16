@@ -2,11 +2,13 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -22,12 +24,16 @@ public class AssignHelperTest {
     Candidate cdd3;
     Candidate cdd4;
     Candidate cdd5;
-
     Candidate testDummy;
+
+    HashMap<String, ExamSubject> paperList;
+    ExamSubject subject1;
+    ExamSubject subject2;
+    ExamSubject subject3;
+
     @Before
     public void setUp() throws Exception{
         attdList = new AttendanceList();
-
         cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
         cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
         cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
@@ -39,6 +45,19 @@ public class AssignHelperTest {
         attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+
+        paperList   = new HashMap<>();
+        subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, new Date(), 20,
+                ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+        subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30, new Date(), 20,
+                ExamSubject.ExamVenue.H2, ExamSubject.Session.PM);
+        subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50, new Date(), 20,
+                ExamSubject.ExamVenue.H3, ExamSubject.Session.VM);
+        paperList.put(subject1.getPaperCode(), subject1);
+        paperList.put(subject2.getPaperCode(), subject2);
+        paperList.put(subject3.getPaperCode(), subject3);
+
+        Candidate.setPaperList(paperList);
     }
 
     //If checkCandidate() receive a null input, ERR_NULL_IDENTITY will be thrown
@@ -119,6 +138,113 @@ public class AssignHelperTest {
         }
     }
 
-    //=CheckTable=================================================================================
+    //=TryAssignCandidate===========================================================================
+    //If both candidate and table weren't assign yet, tryAssignCandidate should return false
+    @Test
+    public void testTryAssignCandidate_Both_not_assign_should_return_false() throws Exception{
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            assertFalse(helper.tryAssignCandidate());
+        }catch(CustomException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    //If table is not assign only, tryAssignCandidate should return false also
+    @Test
+    public void testTryAssignCandidate_Table_not_assign_should_return_false() throws Exception{
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.checkTable(12);
+            assertFalse(helper.tryAssignCandidate());
+        }catch(CustomException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    //If candidate haven assign only, tryAssignCandidate should return false also
+    @Test
+    public void testTryAssignCandidate_Candidate_not_assign_should_return_false() throws Exception{
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            assertFalse(helper.tryAssignCandidate());
+        }catch(CustomException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    //If both Candidate and Table is valid, tryAssignCandidate should return true
+    @Test
+    public void testTryAssignCandidate_When_successful_assigned_should_return_false() throws Exception{
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.checkTable(12);
+            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            assertTrue(helper.tryAssignCandidate());
+        }catch(CustomException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    //If Table have been assigned before, ERR_TABLE_REASSIGN should be thrown
+    @Test
+    public void testTryAssignCandidate_Same_table_should_throw_ERR_TABLE_REASSIGN()throws Exception{
+        HashMap<Integer, String> assgnList = new HashMap<>();
+        assgnList.put(12, "15WAU11111");
+
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.assgnList = assgnList;
+            helper.checkTable(12);
+            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            boolean test = helper.tryAssignCandidate();
+            fail("Expected ERR_TABLE_REASSIGN but none thrown");
+        }catch(CustomException err){
+            assertEquals(CustomException.ERR_TABLE_REASSIGN, err.getErrorCode());
+            assertEquals("Table assigned before", err.getErrorMsg());
+        }
+    }
+
+    //If Candidate have been assigned before, ERR_CANDIDATE_REASSIGN should be thrown
+    @Test
+    public void testTryAssign_Same_candidate_should_throw_ERR_CANDIDATE_REASSIGN() throws Exception{
+        HashMap<Integer, String> assgnList = new HashMap<>();
+        assgnList.put(14, "15WAU00001");
+
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.assgnList = assgnList;
+            helper.checkTable(12);
+            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            boolean test = helper.tryAssignCandidate();
+            fail("Expected ERR_CANDIDATE_REASSIGN but none thrown");
+        }catch(CustomException err){
+            assertEquals(CustomException.ERR_CANDIDATE_REASSIGN, err.getErrorCode());
+            assertEquals("Candidate assigned before", err.getErrorMsg());
+        }
+    }
+
+    //If Candidate sit at a wrong table, ERR_PAPER_NOT_MATCH should be thrown
+    //Candidate's paper does not match with the table's assigned paper
+    @Test
+    public void testTryAssign_Paper_not_Match_should_throw_ERR_PAPER_NOT_MATCH() throws Exception{
+        HashMap<Integer, String> assgnList = new HashMap<>();
+        assgnList.put(14, "15WAU00005");
+
+        try{
+            AssignHelper helper = new AssignHelper(attdList);
+            helper.assgnList = assgnList;
+            helper.checkTable(55);
+            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            boolean test = helper.tryAssignCandidate();
+            fail("Expected ERR_PAPER_NOT_MATCH but none thrown");
+        }catch(CustomException err){
+            assertEquals(CustomException.ERR_PAPER_NOT_MATCH, err.getErrorCode());
+            assertEquals("Paper for table and candidate does not match", err.getErrorMsg());
+        }
+    }
+
+    
 
 }
