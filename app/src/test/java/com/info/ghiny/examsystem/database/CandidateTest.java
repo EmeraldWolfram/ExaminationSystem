@@ -24,6 +24,8 @@ public class CandidateTest {
 
         testPaper2.setPaperCode("BAME 2004");
         testPaper2.setPaperDesc("PROGRAMMING IN C");
+
+        Candidate.setPaperList(null);
     }
 
     @Test
@@ -95,6 +97,7 @@ public class CandidateTest {
         try{
             Candidate testCdd = new Candidate();
             ExamSubject getSubject = testCdd.getPaper();
+            assertEquals(testPaper2, getSubject);
             fail("Expected ERR_EMPTY_PAPER_LIST but none thrown");
         }catch (CustomException err){
             assertEquals(CustomException.ERR_EMPTY_PAPER_LIST, err.getErrorCode());
