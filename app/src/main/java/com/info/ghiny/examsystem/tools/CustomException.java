@@ -19,6 +19,7 @@ public class CustomException extends Exception {
     public static final int ERR_PAPER_NOT_MATCH     = 11;
     public static final int ERR_EMPTY_PAPER_LIST    = 12;
     public static final int ERR_NULL_PAPER          = 13;
+    public static final int ERR_EMPTY_ATTD_LIST     = 14;
 
     private int errorCode;
     private String errorMsg;

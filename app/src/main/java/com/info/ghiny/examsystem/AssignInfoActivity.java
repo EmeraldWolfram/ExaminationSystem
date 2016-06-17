@@ -37,21 +37,16 @@ public class AssignInfoActivity extends AppCompatActivity {
 
     //Required Tools
     private ExamDatabaseLoader databaseHelper;  //to obtain Identity RegNum from IC
-    private CheckListLoader checkListDB;        //temporary database in the mobile
     private AssignHelper helper;
 
     private CustomToast message;                //Toast message tool
-    private Candidate candidate;                //store value of scanned Candidate
 
     private AttendanceList attdList;            //The attdList grabbed
-    private ArrayList<String> cddNames;         //parameter to be send to CheckList
-    private ArrayList<String> cddStatus;        //parameter to be send to CheckList
-    private ArrayList<String> cddPapers;        //parameter to be send to CheckList
-    private ArrayList<String> cddProgram;        //parameter to be send to CheckList
-    private ArrayList<Integer> cddTables;       //parameter to be send to CheckList
-
-    private String prevTableStr = "";           //To store previous scanned value
-    private String prevCddStr = "";             //To store previous scanned value
+    //private ArrayList<String> cddNames;         //parameter to be send to CheckList
+    //private ArrayList<String> cddStatus;        //parameter to be send to CheckList
+    //private ArrayList<String> cddPapers;        //parameter to be send to CheckList
+    //private ArrayList<String> cddProgram;        //parameter to be send to CheckList
+    //private ArrayList<Integer> cddTables;       //parameter to be send to CheckList
 
     private CompoundBarcodeView barcodeView;
 
@@ -72,8 +67,8 @@ public class AssignInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
+        CheckListLoader checkListDB = new CheckListLoader(this);
         databaseHelper  = new ExamDatabaseLoader(this);
-        checkListDB     = new CheckListLoader(this);
         message         = new CustomToast(this);
         attdList        = new AttendanceList();
 
@@ -83,7 +78,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         if(checkListDB.isEmpty())
             checkListDB.saveAttendanceList(prepareList());  //Suppose to query external database
         attdList.setAttendanceList(checkListDB.getLastSavedAttendanceList());
-        helper          = new AssignHelper(attdList);
+        helper          = new AssignHelper();
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
@@ -98,7 +93,7 @@ public class AssignInfoActivity extends AppCompatActivity {
             @Override
             public void onSwipeLeft() {
                 Intent listIntent = new Intent(AssignInfoActivity.this, CheckListActivity.class);
-                packageAttdListToSend(listIntent);
+                //packageAttdListToSend(listIntent);
                 startActivity(listIntent);
             }
             @Override
@@ -175,6 +170,7 @@ public class AssignInfoActivity extends AppCompatActivity {
             //If Id is null, it will be caught as the first Exception thrown, ERR_NULL_IDENTITY
             //Therefore, Id can never be null for the rest of the Exceptions thrown
             //Display message according to the error caught
+            assert Id != null;
             switch (err.getErrorCode()){
                 case CustomException.ERR_NULL_IDENTITY:
                     message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);
@@ -210,6 +206,9 @@ public class AssignInfoActivity extends AppCompatActivity {
                     break;
                 case CustomException.ERR_NULL_PAPER:
                     //TO DO Candidate does not belong to this venue, find the venue and show
+                    break;
+                case CustomException.ERR_EMPTY_ATTD_LIST:
+                    //TO DO Will never happen
                     break;
             }
         }
@@ -260,7 +259,7 @@ public class AssignInfoActivity extends AppCompatActivity {
 
         return paperMap;
     }
-
+    /*
     private void packageAttdListToSend(Intent listIntent){
         cddPapers       = new ArrayList<>();
         cddNames        = new ArrayList<>();
@@ -286,5 +285,5 @@ public class AssignInfoActivity extends AppCompatActivity {
         cddPapers.add(cdd.getPaperCode());
         cddProgram.add(cdd.getProgramme());
         cddTables.add(cdd.getTableNumber());
-    }
+    }*/
 }

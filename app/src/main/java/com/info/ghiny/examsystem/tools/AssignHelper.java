@@ -1,7 +1,5 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.widget.TextView;
-
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Identity;
@@ -14,14 +12,17 @@ import java.util.HashMap;
 public class AssignHelper {
     private Candidate tempCdd;
     private Integer tempTable;
-    private AttendanceList attdList;
+    private static AttendanceList attdList;
     public HashMap<Integer, String> assgnList;
 
-    public AssignHelper(AttendanceList attdList){
-        this.attdList   = attdList;     //Initialize the AttendanceList that is legit here
+    public AssignHelper(){
         this.assgnList  = new HashMap<>();
         this.tempCdd    = null;
         this.tempTable  = null;
+    }
+
+    public static void setAttdList(AttendanceList attdList) {
+        AssignHelper.attdList = attdList;
     }
 
     public Integer checkTable(Integer table){
@@ -36,6 +37,9 @@ public class AssignHelper {
 
         if(id.getRegNum() == null)
             throw new CustomException("Incomplete Identity", CustomException.ERR_INCOMPLETE_ID);
+
+        if(attdList == null)
+            throw new CustomException("No Attendance List", CustomException.ERR_EMPTY_ATTD_LIST);
 
         Candidate candidate = attdList.getCandidate(id.getRegNum());
 
@@ -71,6 +75,8 @@ public class AssignHelper {
 
             tempCdd.setTableNumber(tempTable);
             tempCdd.setStatus(AttendanceList.Status.PRESENT);
+
+            assert attdList != null;
             attdList.removeCandidate(tempCdd.getRegNum());
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
                     AttendanceList.Status.PRESENT, tempCdd.getProgramme());
