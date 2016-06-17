@@ -23,7 +23,7 @@ public class LoginHelperTest {
             fail("Expected ERR_NULL_IDENTITY but none thrown");
         } catch (CustomException err){
             assertEquals(CustomException.ERR_NULL_IDENTITY, err.getErrorCode());
-            assertEquals("ID is null", err.getErrorMsg());
+            assertEquals("Not an Identity", err.getErrorMsg());
         }
     }
 
@@ -36,7 +36,7 @@ public class LoginHelperTest {
             fail("Expected ERR_ILLEGAL_IDENTITY but none thrown");
         } catch (CustomException err){
             assertEquals(CustomException.ERR_ILLEGAL_IDENTITY, err.getErrorCode());
-            assertEquals("ID not eligible", err.getErrorMsg());
+            assertEquals("Unauthorized Invigilator", err.getErrorMsg());
         }
     }
 
@@ -75,7 +75,7 @@ public class LoginHelperTest {
             fail("Expected ERR_EMPTY_PASSWORD but none thrown");
         } catch (CustomException err){
             assertEquals(CustomException.ERR_EMPTY_PASSWORD, err.getErrorCode());
-            assertEquals("Input pw empty", err.getErrorMsg());
+            assertEquals("Please enter a password to proceed", err.getErrorMsg());
         }
     }
 
@@ -90,7 +90,7 @@ public class LoginHelperTest {
             fail("Expected ERR_EMPTY_PASSWORD but none thrown");
         } catch (CustomException err){
             assertEquals(CustomException.ERR_EMPTY_PASSWORD, err.getErrorCode());
-            assertEquals("Input pw empty", err.getErrorMsg());
+            assertEquals("Please enter a password to proceed", err.getErrorMsg());
         }
     }
 
@@ -105,7 +105,7 @@ public class LoginHelperTest {
             fail("Expected ERR_WRONG_PASSWORD but none thrown");
         } catch (CustomException err){
             assertEquals(CustomException.ERR_WRONG_PASSWORD, err.getErrorCode());
-            assertEquals("Input pw was wrong", err.getErrorMsg());
+            assertEquals("Input password is incorrect", err.getErrorMsg());
         }
     }
 }

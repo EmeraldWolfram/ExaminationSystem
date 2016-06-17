@@ -89,19 +89,9 @@ public class MainLoginActivity extends AppCompatActivity {
             //Start the activity
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         } catch (CustomException err){
-            //Error were caught
-            switch (err.getErrorCode()) {
-                case CustomException.ERR_NULL_IDENTITY:
-                    //Display the error in a Toast Message
-                    message.showCustomMessageWithCondition(CustomToast.notId, R.drawable.warn_icon,
-                            message.checkEqualToast(CustomToast.notId));
-                    break;
-                case CustomException.ERR_ILLEGAL_IDENTITY:
-                    //Display the error in a Toast Message
-                    message.showCustomMessageWithCondition(CustomToast.unathr, R.drawable.warn_icon,
-                            message.checkEqualToast(CustomToast.unathr));
-                    break;
-            }
+            message.showCustomMessageWithCondition(err.getErrorMsg(), err.getErrorIcon(),
+                    message.checkEqualToast(err.getErrorMsg()));
+
         }
     }
 
@@ -121,22 +111,14 @@ public class MainLoginActivity extends AppCompatActivity {
                 pwIntent.putExtra("Name", invglt.getName());
                 pwIntent.putExtra("RegNum", invglt.getRegNum());
 
-
                 switch (err.getErrorCode()){
-                    //Display the error of empty password in a Toast Message
-                    case CustomException.ERR_EMPTY_PASSWORD:
-                        message.showCustomMessage(CustomToast.emptyPW, R.drawable.msg_icon);
-                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-                        break;
-                    //Display the error of wrong password in a Toast Message
-                    case CustomException.ERR_WRONG_PASSWORD:
-                        message.showCustomMessage(CustomToast.wrongPW, R.drawable.warn_icon);
-                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-                        break;
-                    //Serious error, Identity can never be null at this state
-                    //If it happen, source must be from scanning invigilator
+                    //Add different case if more feature to be add here
                     case CustomException.ERR_NULL_IDENTITY:
                         throw new NullPointerException("Identity should not be null");
+                    default:
+                        message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+                        break;
                 }
             }
         }

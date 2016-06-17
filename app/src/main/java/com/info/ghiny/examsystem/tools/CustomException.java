@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.graphics.drawable.Icon;
+
 /**
  * Created by GhinY on 15/06/2016.
  */
@@ -23,16 +25,19 @@ public class CustomException extends Exception {
 
     private int errorCode;
     private String errorMsg;
+    private int errorIconType;
 
     public CustomException(int errorCode){
-        this.errorCode  = errorCode;
-        this.errorMsg   = null;
+        this.errorCode      = errorCode;
+        this.errorMsg       = null;
+        this.errorIconType  = IconManager.WARNING;
     }
 
-    public CustomException(String message, int errorCode){
+    public CustomException(String message, int errorCode, int errorIconType){
         super(message);
-        this.errorCode  = errorCode;
-        this.errorMsg   = message;
+        this.errorCode      = errorCode;
+        this.errorMsg       = message;
+        this.errorIconType  = errorIconType;
     }
 
     public int getErrorCode(){
@@ -41,5 +46,9 @@ public class CustomException extends Exception {
 
     public String getErrorMsg() {
         return errorMsg;
+    }
+
+    public int getErrorIcon(){
+        return new IconManager().getIcon(errorIconType);
     }
 }

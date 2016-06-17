@@ -70,7 +70,7 @@ public class AssignHelperTest {
             fail("Expected ERR_NULL_IDENTITY but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_NULL_IDENTITY, err.getErrorCode());
-            assertEquals("Identity is null", err.getErrorMsg());
+            assertEquals("Not an Identity", err.getErrorMsg());
         }
     }
 
@@ -83,7 +83,7 @@ public class AssignHelperTest {
             fail("Expected ERR_NULL_CANDIDATE but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_NULL_CANDIDATE, err.getErrorCode());
-            assertEquals("Candidate not in list", err.getErrorMsg());
+            assertEquals("Mr. Test doest not belong to this venue", err.getErrorMsg());
         }
     }
 
@@ -96,7 +96,7 @@ public class AssignHelperTest {
             fail("Expected ERR_STATUS_EXEMPTED but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_STATUS_EXEMPTED, err.getErrorCode());
-            assertEquals("Candidate exempted", err.getErrorMsg());
+            assertEquals("The paper was exempted for Ms. Exm", err.getErrorMsg());
         }
     }
 
@@ -109,7 +109,7 @@ public class AssignHelperTest {
             fail("Expected ERR_STATUS_BARRED but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_STATUS_BARRED, err.getErrorCode());
-            assertEquals("Candidate barred", err.getErrorMsg());
+            assertEquals("Mr. Bar have been barred", err.getErrorMsg());
         }
     }
 
@@ -256,7 +256,7 @@ public class AssignHelperTest {
             fail("Expected ERR_PAPER_NOT_MATCH but none thrown");
         }catch(CustomException err){
             assertEquals(CustomException.ERR_PAPER_NOT_MATCH, err.getErrorCode());
-            assertEquals("Paper for table and candidate does not match", err.getErrorMsg());
+            assertEquals("FGY should not sit here\nSuggest to Table 10", err.getErrorMsg());
         }
     }
 

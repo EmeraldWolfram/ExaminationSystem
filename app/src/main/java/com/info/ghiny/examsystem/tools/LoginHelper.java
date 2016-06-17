@@ -13,23 +13,28 @@ public class LoginHelper {
     //This method take in an id and check if the id is an invigilator identity
     public static void checkInvigilator(Identity invglt) throws CustomException{
         if(invglt == null){
-            throw new CustomException("ID is null", CustomException.ERR_NULL_IDENTITY);
+            throw new CustomException("Not an Identity", CustomException.ERR_NULL_IDENTITY,
+                    IconManager.WARNING);
         } else {
             if(!invglt.getEligible())
-                throw new CustomException("ID not eligible", CustomException.ERR_ILLEGAL_IDENTITY);
+                throw new CustomException("Unauthorized Invigilator",
+                        CustomException.ERR_ILLEGAL_IDENTITY, IconManager.WARNING);
         }
     }
 
     //This method check whether the input password was the password of the invglt
     public static void checkInputPassword(Identity invglt, String pw) throws CustomException{
         if(invglt == null)
-            throw new CustomException("Input ID is null", CustomException.ERR_NULL_IDENTITY);
+            throw new CustomException("Input ID is null", CustomException.ERR_NULL_IDENTITY,
+                    IconManager.WARNING);
 
         if(pw == null || pw.isEmpty()) {
-            throw new CustomException("Input pw empty", CustomException.ERR_EMPTY_PASSWORD);
+            throw new CustomException("Please enter a password to proceed",
+                    CustomException.ERR_EMPTY_PASSWORD, IconManager.MESSAGE);
         } else {
             if (!invglt.matchPassword(pw))
-                throw new CustomException("Input pw was wrong", CustomException.ERR_WRONG_PASSWORD);
+                throw new CustomException("Input password is incorrect",
+                        CustomException.ERR_WRONG_PASSWORD, IconManager.WARNING);
         }
     }
 

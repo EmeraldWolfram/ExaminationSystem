@@ -19,6 +19,7 @@ import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
+import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -142,7 +143,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert regNumView   != null;    assert paperView   != null;
 
         Candidate cdd   = null;
-        Identity Id     = null;
+        Identity id     = null;
         try{
             if(scanString.length() < 4){
                 helper.checkTable(Integer.parseInt(scanString));
@@ -150,8 +151,8 @@ public class AssignInfoActivity extends AppCompatActivity {
             }
 
             if(scanString.length() == 12){
-                Id  = databaseHelper.getIdentity(scanString);
-                cdd = helper.checkCandidate(Id);
+                id  = databaseHelper.getIdentity(scanString);
+                cdd = helper.checkCandidate(id);
                 //Candidate is legal, display all the candidate value
                 cddView.setText(cdd.getStudentName());
                 regNumView.setText(cdd.getRegNum());
@@ -162,44 +163,39 @@ public class AssignInfoActivity extends AppCompatActivity {
                 //Candidate successfully assigned, clear display and acknowledge with message
                 tableView.setText("");  cddView.setText("");
                 regNumView.setText(""); paperView.setText("");
+
                 assert cdd != null;
                 message.showCustomMessage(cdd.getStudentName()+ " Assigned to "
-                        + cdd.getTableNumber().toString(), R.drawable.entry_icon);
+                        + cdd.getTableNumber().toString(),
+                        new IconManager().getIcon(IconManager.ASSIGNED));
             }
         } catch(CustomException err){
             //If Id is null, it will be caught as the first Exception thrown, ERR_NULL_IDENTITY
             //Therefore, Id can never be null for the rest of the Exceptions thrown
             //Display message according to the error caught
-            assert Id != null;
+            assert id != null;
             switch (err.getErrorCode()){
                 case CustomException.ERR_NULL_IDENTITY:
-                    message.showCustomMessage("Not an Identity",  R.drawable.warn_icon);
+                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
                     break;
-                case CustomException.ERR_INCOMPLETE_ID:
-                    throw new NullPointerException("ID register Number is null");
                 case CustomException.ERR_NULL_CANDIDATE:
-                    message.showCustomMessage(Id.getName() +
-                            " doest not belong to this venue", R.drawable.msg_icon);
+                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
                     break;
                 case CustomException.ERR_STATUS_BARRED:
-                    message.showCustomMessage(Id.getName() +
-                            " have been barred", R.drawable.warn_icon);
+                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
                     break;
                 case CustomException.ERR_STATUS_EXEMPTED:
-                    message.showCustomMessage("The paper was exempted for " +
-                            Id.getName(), R.drawable.msg_icon);
+                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
                     break;
                 case CustomException.ERR_PAPER_NOT_MATCH:
-                    //TO DO find appropriate table and show
+                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                    //TO DO find appropriate table and show suggestion
                     break;
                 case CustomException.ERR_TABLE_REASSIGN:
                     //TO DO prompt for update or cancel
                     break;
                 case CustomException.ERR_CANDIDATE_REASSIGN:
                     //TO DO prompt for update or cancel
-                    break;
-                case CustomException.ERR_NULL_TABLE:
-                    //TO DO Can never happen as a false will be returned when TABLE = null
                     break;
                 case CustomException.ERR_EMPTY_PAPER_LIST:
                     //TO DO Obtain the paperList 1st
@@ -210,6 +206,12 @@ public class AssignInfoActivity extends AppCompatActivity {
                 case CustomException.ERR_EMPTY_ATTD_LIST:
                     //TO DO Will never happen
                     break;
+                case CustomException.ERR_NULL_TABLE:
+                    //TO DO Can never happen as a false will be returned when TABLE = null
+                    break;
+                case CustomException.ERR_INCOMPLETE_ID:
+                    //Fatal Error, not possible Identity without Register Number
+                    throw new NullPointerException("ID register Number is null");
             }
         }
     }

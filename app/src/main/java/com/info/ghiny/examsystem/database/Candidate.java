@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.database;
 import android.support.annotation.Nullable;
 
 import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.IconManager;
 
 import java.util.HashMap;
 
@@ -63,7 +64,8 @@ public class Candidate {
     public ExamSubject getPaper() throws CustomException{
         ExamSubject subject = getExamSubject(paperCode);
         if(subject == null){
-            throw new CustomException("Paper is not in the list", CustomException.ERR_NULL_PAPER);
+            throw new CustomException("Paper is not in the list", CustomException.ERR_NULL_PAPER,
+                    IconManager.WARNING);
         }
 
         return subject;
@@ -110,12 +112,13 @@ public class Candidate {
     @Nullable
     private static ExamSubject getExamSubject(String paperCode) throws CustomException{
         if(paperCode == null){
-            throw new CustomException("Paper Code is null", CustomException.ERR_NULL_PAPER);
+            throw new CustomException("Paper Code is null", CustomException.ERR_NULL_PAPER,
+                    IconManager.WARNING);
         }
 
         if(paperList == null){
             throw new CustomException("Paper List haven initialize",
-                    CustomException.ERR_EMPTY_PAPER_LIST);
+                    CustomException.ERR_EMPTY_PAPER_LIST, IconManager.WARNING);
         }
         return paperList.get(paperCode);
     }

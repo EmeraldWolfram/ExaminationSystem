@@ -51,7 +51,8 @@ public class ExamSubjectTest {
             String testStr = testSubject.toString();
 
             fail("NullPointerException should be thrown but no error thrown!");
-        }catch (NullPointerException e){
+        }catch (Exception e){
+            assertEquals(NullPointerException.class, e.getClass());
             assertEquals(e.getMessage(), "Paper Description was not filled yet");
         }
     }

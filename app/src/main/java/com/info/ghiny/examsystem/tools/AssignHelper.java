@@ -33,23 +33,30 @@ public class AssignHelper {
 
     public Candidate checkCandidate(Identity id) throws CustomException{
         if(id == null)
-            throw new CustomException("Identity is null", CustomException.ERR_NULL_IDENTITY);
+            throw new CustomException("Not an Identity", CustomException.ERR_NULL_IDENTITY,
+                    IconManager.WARNING);
 
         if(id.getRegNum() == null)
-            throw new CustomException("Incomplete Identity", CustomException.ERR_INCOMPLETE_ID);
+            throw new CustomException("Incomplete Identity", CustomException.ERR_INCOMPLETE_ID,
+                    IconManager.WARNING);
 
         if(attdList == null)
-            throw new CustomException("No Attendance List", CustomException.ERR_EMPTY_ATTD_LIST);
+            throw new CustomException("No Attendance List", CustomException.ERR_EMPTY_ATTD_LIST,
+                    IconManager.WARNING);
 
         Candidate candidate = attdList.getCandidate(id.getRegNum());
 
         if(candidate == null){
-            throw new CustomException("Candidate not in list", CustomException.ERR_NULL_CANDIDATE);
+            throw new CustomException(id.getName() + " doest not belong to this venue",
+                    CustomException.ERR_NULL_CANDIDATE, IconManager.WARNING);
         } else {
             if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
-                throw new CustomException("Candidate exempted",CustomException.ERR_STATUS_EXEMPTED);
+                throw new CustomException("The paper was exempted for " +
+                        id.getName(),CustomException.ERR_STATUS_EXEMPTED,
+                        IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.BARRED)
-                throw new CustomException("Candidate barred", CustomException.ERR_STATUS_BARRED);
+                throw new CustomException(id.getName() + " have been barred",
+                        CustomException.ERR_STATUS_BARRED, IconManager.MESSAGE);
         }
 
         tempCdd = candidate;
@@ -63,15 +70,16 @@ public class AssignHelper {
             //If ExamSubject range does not meet, DO something
             if(assgnList.containsKey(tempTable))
                 throw new CustomException("Table assigned before",
-                        CustomException.ERR_TABLE_REASSIGN);
+                        CustomException.ERR_TABLE_REASSIGN, IconManager.MESSAGE);
 
             if(assgnList.containsValue(tempCdd.getRegNum()))
                 throw new CustomException("Candidate assigned before",
-                        CustomException.ERR_CANDIDATE_REASSIGN);
+                        CustomException.ERR_CANDIDATE_REASSIGN, IconManager.MESSAGE);
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
-                throw new CustomException("Paper for table and candidate does not match",
-                        CustomException.ERR_PAPER_NOT_MATCH);
+                throw new CustomException(tempCdd.getStudentName() + " should not sit here\n"
+                        + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
+                        CustomException.ERR_PAPER_NOT_MATCH, IconManager.WARNING);
 
             tempCdd.setTableNumber(tempTable);
             tempCdd.setStatus(AttendanceList.Status.PRESENT);

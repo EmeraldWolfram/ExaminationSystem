@@ -1,5 +1,9 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.graphics.drawable.Icon;
+
+import com.info.ghiny.examsystem.R;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +14,8 @@ import static org.junit.Assert.*;
 public class CustomExceptionTest {
 
     public void foo() throws CustomException{
-        throw new CustomException("Error Message", CustomException.ERR_NULL_IDENTITY);
+        throw new CustomException("Error Message", CustomException.ERR_NULL_IDENTITY,
+                IconManager.WARNING);
     }
 
     public void foo1() throws CustomException{
@@ -25,6 +30,7 @@ public class CustomExceptionTest {
         } catch(CustomException e){
             assertEquals("Error Message",e.getErrorMsg());
             assertEquals(CustomException.ERR_NULL_IDENTITY, e.getErrorCode());
+            assertEquals(R.drawable.warn_icon, e.getErrorIcon());
         }
     }
 
@@ -36,6 +42,7 @@ public class CustomExceptionTest {
         }catch(CustomException e){
             assertEquals(CustomException.ERR_NULL_IDENTITY, e.getErrorCode());
             assertNull(e.getMessage());
+            assertEquals(R.drawable.warn_icon, e.getErrorIcon());
         }
     }
 }

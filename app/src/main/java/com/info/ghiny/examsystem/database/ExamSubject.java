@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.IconManager;
 
 import java.util.Date;
 
@@ -98,7 +99,8 @@ public class ExamSubject {
         int endNumber   = startTableNum + numOfCandidate;
 
         if(tableNumber == null)
-            throw new CustomException("Input tableNumber is null", CustomException.ERR_NULL_TABLE);
+            throw new CustomException("Input tableNumber is null", CustomException.ERR_NULL_TABLE,
+                    IconManager.WARNING);
 
         if(tableNumber < endNumber && tableNumber > startNumber)
             valid = true;

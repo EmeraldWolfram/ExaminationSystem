@@ -25,11 +25,6 @@ public class CustomToast {
     TextView msgView;
     ImageView imgView;
 
-    public static final String notId    = "Not an Identity";
-    public static final String unathr   = "Unauthorized Invigilator";
-    public static final String emptyPW  = "Please enter a password to proceed";
-    public static final String wrongPW  = "Input password is incorrect";
-
     /*public CustomToast(Activity activity){
         this.activity = activity;
     }*/

@@ -98,7 +98,8 @@ public class CandidateTest {
     @Test
     public void testGetPaper_TestEmptyPaperList() throws Exception {
         try{
-            Candidate testCdd = new Candidate();
+            Candidate testCdd = new Candidate(1, "RMB3", "FGY", "15WAU09184",
+                    "BAME 2134", AttendanceList.Status.ABSENT);;
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(testPaper2, getSubject);
             fail("Expected ERR_EMPTY_PAPER_LIST but none thrown");
