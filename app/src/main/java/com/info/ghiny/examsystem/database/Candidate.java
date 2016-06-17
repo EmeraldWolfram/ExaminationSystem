@@ -59,7 +59,15 @@ public class Candidate {
     public String getPaperCode() {
         return paperCode;
     }
-    public ExamSubject getPaper() throws CustomException{return getExamSubject(paperCode);   }
+
+    public ExamSubject getPaper() throws CustomException{
+        ExamSubject subject = getExamSubject(paperCode);
+        if(subject == null){
+            throw new CustomException("Paper is not in the list", CustomException.ERR_NULL_PAPER);
+        }
+
+        return subject;
+    }
 
     public AttendanceList.Status getStatus() {
         return status;
@@ -101,6 +109,10 @@ public class Candidate {
 
     @Nullable
     private static ExamSubject getExamSubject(String paperCode) throws CustomException{
+        if(paperCode == null){
+            throw new CustomException("Paper Code is null", CustomException.ERR_NULL_PAPER);
+        }
+
         if(paperList == null){
             throw new CustomException("Paper List haven initialize",
                     CustomException.ERR_EMPTY_PAPER_LIST);

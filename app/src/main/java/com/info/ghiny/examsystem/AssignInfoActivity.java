@@ -194,16 +194,22 @@ public class AssignInfoActivity extends AppCompatActivity {
                             Id.getName(), R.drawable.msg_icon);
                     break;
                 case CustomException.ERR_PAPER_NOT_MATCH:
-                    //TO DO
+                    //TO DO find appropriate table and show
                     break;
                 case CustomException.ERR_TABLE_REASSIGN:
-                    //TO DO
+                    //TO DO prompt for update or cancel
                     break;
                 case CustomException.ERR_CANDIDATE_REASSIGN:
-                    //TO DO
+                    //TO DO prompt for update or cancel
                     break;
                 case CustomException.ERR_NULL_TABLE:
-                    //TO DP
+                    //TO DO Can never happen as a false will be returned when TABLE = null
+                    break;
+                case CustomException.ERR_EMPTY_PAPER_LIST:
+                    //TO DO Obtain the paperList 1st
+                    break;
+                case CustomException.ERR_NULL_PAPER:
+                    //TO DO Candidate does not belong to this venue, find the venue and show
                     break;
             }
         }

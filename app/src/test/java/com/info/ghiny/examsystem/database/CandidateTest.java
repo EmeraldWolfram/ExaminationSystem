@@ -28,6 +28,8 @@ public class CandidateTest {
         Candidate.setPaperList(null);
     }
 
+    //=SetPaperList=================================================================================
+    //Simple test on static method setPaperList whether a static variable can be assigned this way
     @Test
     public void testSetPaperList_TestFunctionality() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
@@ -42,7 +44,7 @@ public class CandidateTest {
         assertEquals(getMap.get("BAME 2134"), testPaper1);
     }
     //=GetPaper=====================================================================================
-    //Paper available in the list, the paper should be returned
+    //Paper available in the list, the requested paper should be returned without exception
     @Test
     public void testGetPaper_TestFunctionality() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
@@ -56,12 +58,11 @@ public class CandidateTest {
         }catch (CustomException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
-
     }
 
-    //If paper not in the list, a null should be returned
+    //If requested paper not in the list, ERR_NULL_PAPER shall be thrown
     @Test
-    public void testGetPaper_TestDoestNotExist() throws Exception {
+    public void testGetPaper_TestPaperDoestNotExist() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
         paperMap.put(testPaper1.getPaperCode(), testPaper1);
         try{
@@ -70,24 +71,26 @@ public class CandidateTest {
                     "BAME 2004", AttendanceList.Status.ABSENT);
 
             ExamSubject getSubject = testCdd.getPaper();
-            assertNull(getSubject);
+            fail("Exception ERR_NULL_PAPER expected but none thrown");
         }catch (CustomException err){
-            fail("No exception expected but thrown " + err.getErrorMsg());
+            assertEquals(CustomException.ERR_NULL_PAPER, err.getErrorCode());
+            assertEquals("Paper is not in the list", err.getErrorMsg());
         }
     }
 
-    //If Candidate does not have paperCode, getPaper() should return null
+    //If Candidate does not have paperCode, getPaper() should throw ERR_NULL_PAPER
     @Test
-    public void testGetPaper_TestNullPaperCode() throws Exception {
+    public void testGetPaper_TestNullPaperCode_should_throw_ERR_NULL_PAPER() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
         paperMap.put(testPaper1.getPaperCode(), testPaper1);
         try{
             Candidate.setPaperList(paperMap);
             Candidate testCdd = new Candidate();
             ExamSubject getSubject = testCdd.getPaper();
-            assertNull(getSubject);
+            fail("Expected ERR_NULL_PAPER but none thrown");
         }catch (CustomException err){
-            fail("No exception expected but thrown " + err.getErrorMsg());
+            assertEquals(CustomException.ERR_NULL_PAPER, err.getErrorCode());
+            assertEquals("Paper Code is null", err.getErrorMsg());
         }
     }
 
