@@ -19,11 +19,7 @@ public class ExamDatabase {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        
-        CreateDataBase createDataBase = new CreateDataBase("ExamDatabase.db");
-       
-
-            
+        new GUIapp().setVisible(true);
 
        
     }

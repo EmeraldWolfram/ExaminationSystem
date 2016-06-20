@@ -5,7 +5,6 @@
  */
 package examdatabase;
 
-import java.lang.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,13 +19,44 @@ public class GetData {
     
     public String type;
     public String data;
+    
+    //CandidateInfo
     public String ic; 
     public String name; 
     public String regNum;
+    
+    //CandidateAttendance
     public String status; 
     public String attendance; 
-    public int paperIndex;
-    public String progName; int day; int month; int year;
+    public String tableNum;
+    
+    //Programme
+    public String progName;
+    public String faculty;
+    
+    //Paper
+    public String date;
+    public String session;
+    
+    //PaperInfo
+    public String paperCode;
+    public String paperDesc;
+    
+    //Venue
+    public String venueName;
+    public String venueSize;
+   
+    //Invigilator And Assistant
+    public String invStatus;
+    public String invAttendnce;
+    
+    //StaffInfo
+    public String staffID;
+    public String staffName;
+    public String staffFaculty;
+    
+    
+    int day; int month; int year;
     
     public GetData(){
         
@@ -38,19 +68,29 @@ public class GetData {
     }
     
     public GetData( String ic, String name, String regNum,
-                    String status, String attendance){
-//                    int day, int month, int year){
-        
+                    String status, String attendance, String tableNum,
+                    String progName, String faculty,
+                    String date, String session,
+                    String paperCode, String paperDesc,
+                    String venueName, String venueSize
+                    ){
+
         this.ic = ic;
         this.name = name;
         this.regNum = regNum;
         this.status = status;
         this.attendance = attendance;
-//        this.day = day;
-//        this.month = month;
-//        this.year = year;
-        
+        this.tableNum = tableNum;
+        this.progName = progName;
+        this.faculty = faculty;
+        this.date = date;
+        this.session = session;
+        this.paperCode = paperCode;
+        this.paperDesc = paperDesc;
+        this.venueName = venueName;
+        this.venueSize = venueSize;
     }
+    
      /**
      * Connect to the test.db database
      *
@@ -68,34 +108,55 @@ public class GetData {
         return conn;
     }
     
+    /**
+     * Check whether the input is null or not
+     * @param input     string of a data
+     * @return          reconstruct input to SQLite code or return "IS NOT NULL" when the input is null
+     * 
+     */
     public String checkInput(String input){
-        if(input != "")
-            return "= '" + input + "'";
+        if((input == "")||(input == " ")||(input == null)||(input.isEmpty()))
+            return "IS NOT NULL";  
         else
-            return "IS NOT NULL";
-        
+            return "= '" + input + "'"; 
     }
     
+    
     /**
-     * Get the info of a candidate 
-     * @param 
+     * Get the info of a candidate from the connected database
+     * @return list     The arraylist contain the info of the candidate
      */
-    public ArrayList<GetData> getDataFromTable(){
+    public ArrayList<GetData> getDataFromTable() throws CustomException{
         String result = "";
-        String sql =    "SELECT * FROM CandidateInfo JOIN CandidateAttendance"
-                + " ON CandidateInfo.IC = CandidateAttendance.CandidateInfoIC "
-                + "WHERE IC " + checkInput(this.ic)
-                + " AND Name " + checkInput(this.name)
-                + " AND RegNum "+ checkInput(this.regNum)
-                + "\nUNION\n"
-                + "SELECT * FROM CandidateInfo LEFT OUTER JOIN CandidateAttendance"
-                + " ON CandidateInfo.IC = CandidateAttendance.CandidateInfoIC "
-                + "WHERE IC " + checkInput(this.ic)
-                + " AND Name " + checkInput(this.name)
-                + " AND RegNum "+ checkInput(this.regNum);       
-//        System.out.print(sql);
+        String sql =    "SELECT CandidateInfo.IC, CandidateInfo.Name, CandidateInfo.RegNum "
+                + ", CandidateAttendance.Status, CandidateAttendance.Attendance, CandidateAttendance.TableNumber "
+                + ", Programme.Name AS ProgName, Programme.Faculty "
+                + ", Paper.Date, Paper.Session "
+                + ", PaperInfo.PaperCode, PaperInfo.PaperDescription "
+                + ", Venue.Name AS VenueName, Venue.Size "
+                + " FROM CandidateInfo "
+                + " LEFT OUTER JOIN CandidateAttendance ON CandidateInfo.IC = CandidateAttendance.CandidateInfoIC "
+                + " LEFT OUTER JOIN Programme ON CandidateInfo.ProgrammeIndex = Programme.ProgrammeIndex "
+                + " LEFT OUTER JOIN Paper ON CandidateAttendance.PaperIndex = Paper.PaperIndex "
+                + " LEFT OUTER JOIN PaperInfo ON Paper.PIIndex = PaperInfo.PIIndex "
+                + " LEFT OUTER JOIN Venue ON Paper.VenueIndex = Venue.VenueIndex "
+                + " WHERE CandidateInfo.IC " + checkInput(this.ic)
+                + " AND CandidateInfo.Name " + checkInput(this.name)
+                + " AND CandidateInfo.RegNum "+ checkInput(this.regNum)
+                + " AND CandidateAttendance.Status "+ checkInput(this.status)
+                + " AND CandidateAttendance.Attendance "+ checkInput(this.attendance)
+                + " AND CandidateAttendance.TableNumber "+ checkInput(this.tableNum)
+                + " AND ProgName "+ checkInput(this.progName)
+                + " AND Programme.Faculty "+ checkInput(this.faculty)
+                + " AND Paper.Date "+ checkInput(this.date)
+                + " AND Paper.Session "+ checkInput(this.session)
+                + " AND PaperInfo.PaperCode "+ checkInput(this.paperCode)
+                + " AND VenueName "+ checkInput(this.venueName)
+                + " AND Venue.Size "+ checkInput(this.venueSize)              
+                ;
+
         GetData info;
-        ArrayList<GetData> list = new ArrayList<GetData>();
+        ArrayList<GetData> list = new ArrayList<>();
         
         try (Connection conn = this.connect();
             Statement stmt  = conn.createStatement();
@@ -104,11 +165,20 @@ public class GetData {
             // loop through the result set
             while (rs.next()) {
 
-                info = new GetData(  rs.getString("IC"), 
+                info = new GetData(     rs.getString("IC"), 
                                         rs.getString("Name"),
                                         rs.getString("RegNum"),
                                         rs.getString("Status"),
-                                        rs.getString("Attendance")
+                                        rs.getString("Attendance"),
+                                        rs.getString("TableNumber"),
+                                        rs.getString("ProgName"),
+                                        rs.getString("Faculty"),
+                                        rs.getString("Date"),
+                                        rs.getString("Session"),
+                                        rs.getString("PaperCode"),
+                                        rs.getString("PaperDescription"),
+                                        rs.getString("VenueName"),
+                                        rs.getString("Size")
                 );
                    list.add(info);
             }
@@ -124,54 +194,12 @@ public class GetData {
 //            System.out.println(st.ic+" "+st.name+" "+st.regNum+
 //                                " "+st.status+" "+st.attendance);     
 //        }  
-        
-        return list;
+        if(list.isEmpty())
+            throw new CustomException("No data found.");
+        else
+            return list;
     }
     
-    /**
-     * To select an entire row of data
-     */
-    public ArrayList<GetData> selectAllFromCandidateInfo(){
-        String sql = "SELECT * FROM CandidateInfo ";
-        String result = "";
-        GetData info;
-        ArrayList<GetData> list = new ArrayList<GetData>();  
-
-        try (Connection conn = this.connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-            
-            // loop through the result set
-            
-            while (rs.next()) {
-//                System.out.println(rs.getInt("CIIndex") +  "\t\t" + 
-//                                   rs.getString("IC") +  "\t\t" + 
-//                                   rs.getString("Name") + "\t\t" +
-//                                   rs.getString("RegNum") + "\t\t" +
-//                                   rs.getInt("ProgrammeIndex"));
-//                result = result + "\n" + rs.getString("CIIndex") +  "\t\t" + 
-//                                   rs.getString("IC") + "\t\t" +
-//                                   rs.getString("Name") + "\t\t" +
-//                                   rs.getString("RegNum") + "\t\t" +
-//                                   rs.getString("ProgrammeIndex");
-                   info = new GetData(  rs.getString("IC"), 
-                                        rs.getString("Name"),
-                                        rs.getString("RegNum"),
-                                        rs.getString("Status"),
-                                        rs.getString("Attedance")
-                   );
-                   list.add(info);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        
-        Iterator itr = list.iterator();  
-        while(itr.hasNext()){  
-            GetData st=(GetData)itr.next();  
-            System.out.println(st.ic+" "+st.name+" "+st.regNum);  
-        }  
-        return list;
-    }
+ 
 }
 

@@ -80,6 +80,14 @@ public class CreateDataBase {
                 + ");";
         stmt.execute(sql);
         
+        sql = "\nCREATE TABLE IF NOT EXISTS StaffInfo (\n"
+                + "	SIIndex     INT        PRIMARY KEY,\n"
+                + "     StaffID     TEXT   ,\n"
+                + "     Name        TEXT    \n"
+                + "     Faculty     TEXT    \n"
+                + ");";
+        stmt.execute(sql);
+        
         sql = "\nCREATE TABLE IF NOT EXISTS InvigilatorAndAssistant (\n"
                 + "	IAIndex        INT        PRIMARY KEY,\n"
                 + "	SIIndex        INT    ,\n"
