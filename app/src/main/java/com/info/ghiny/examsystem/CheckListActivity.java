@@ -10,6 +10,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.adapter.ExpandListAdapter;
+import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class CheckListActivity extends AppCompatActivity {
     private ExpandListAdapter adapter;
+    private AssignHelper helper;
     private List<String> statusHead;
     private HashMap<String, List<Candidate>> dataChild;
 
@@ -33,6 +35,8 @@ public class CheckListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_list);
+
+        helper = new AssignHelper();
 
         present = new ArrayList<>();
         absent  = new ArrayList<>();
@@ -72,29 +76,21 @@ public class CheckListActivity extends AppCompatActivity {
         statusHead.add("BARRED");
         statusHead.add("EXEMPTED");
 
-        Intent grabIntent   = getIntent();
-        List<String> name   = grabIntent.getStringArrayListExtra("Name");
-        List<String> paper  = grabIntent.getStringArrayListExtra("Paper");
-        List<Integer> table = grabIntent.getIntegerArrayListExtra("Table");
-        List<String> status = grabIntent.getStringArrayListExtra("Status");
-        List<String> prog   = grabIntent.getStringArrayListExtra("Programme");
+        AttendanceList attdList = AssignHelper.getAttdList();
+        List<String> candidates = attdList.getAllCandidateRegNumList();
 
-        for(int i = 0; i < status.size(); i++){
-            Candidate cdd = new Candidate();
-            cdd.setStudentName(name.get(i));
-            cdd.setPaperCode(paper.get(i));
-            cdd.setTableNumber(table.get(i));
-            cdd.setProgramme(prog.get(i));
-            switch(status.get(i)){
-                case "PRESENT":
+        for(int i = 0; i < candidates.size(); i++){
+            Candidate cdd = attdList.getCandidate(candidates.get(i));
+            switch(cdd.getStatus()){
+                case PRESENT:
                     cdd.setStatus(AttendanceList.Status.PRESENT);
                     present.add(cdd);
                     break;
-                case "BARRED":
+                case BARRED:
                     cdd.setStatus(AttendanceList.Status.BARRED);
                     barred.add(cdd);
                     break;
-                case "EXEMPTED":
+                case EXEMPTED:
                     cdd.setStatus(AttendanceList.Status.EXEMPTED);
                     exempted.add(cdd);
                     break;

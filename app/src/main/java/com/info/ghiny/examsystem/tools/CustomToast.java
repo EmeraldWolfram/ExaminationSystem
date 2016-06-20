@@ -25,10 +25,6 @@ public class CustomToast {
     TextView msgView;
     ImageView imgView;
 
-    /*public CustomToast(Activity activity){
-        this.activity = activity;
-    }*/
-
     public CustomToast(Activity activity){
         this.activity = activity;
         LayoutInflater toastInflater = activity.getLayoutInflater();
@@ -78,7 +74,7 @@ public class CustomToast {
 
     public void showCustomMessageWithCondition(String textMessage, int resImageId, boolean sameMsg){
         if(message != null){
-            if(!sameMsg){
+            if(!sameMsg || msgView.getText().toString().isEmpty()){
                 message.cancel();
                 customMakeText(textMessage, resImageId);
                 message.show();
@@ -97,6 +93,7 @@ public class CustomToast {
         return isTrue;
     }
 
+    //=============================================================================================
     private void customMakeText(String textMessage, int resImageId){
         message = new Toast(activity);
         message.setDuration(Toast.LENGTH_LONG);

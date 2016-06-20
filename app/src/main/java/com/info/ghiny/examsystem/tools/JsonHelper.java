@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.content.Context;
+
 import org.json.JSONObject;
 
 /**
@@ -7,4 +9,9 @@ import org.json.JSONObject;
  */
 public class JsonHelper {
 
+    public static Context staticContext;
+
+    public static void setContext(Context context){
+        staticContext = context;
+    }
 }

@@ -1,17 +1,23 @@
 package com.info.ghiny.examsystem.tools;
 
+import com.info.ghiny.examsystem.CheckListActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Date;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -19,6 +25,8 @@ import static org.junit.Assert.*;
 public class AssignHelperTest {
 
     AttendanceList attdList;
+    CheckListLoader dbLoader;
+    ExamDatabaseLoader exLoader;
     Candidate cdd1;
     Candidate cdd2;
     Candidate cdd3;
@@ -57,7 +65,16 @@ public class AssignHelperTest {
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        AssignHelper.setAttdList(attdList);
+        dbLoader = Mockito.mock(CheckListLoader.class);
+        when(dbLoader.isEmpty()).thenReturn(false);
+        when(dbLoader.getLastSavedAttendanceList())
+                .thenReturn(attdList.getAttendanceList())
+                .thenReturn(null);
+
+        exLoader = Mockito.mock(ExamDatabaseLoader.class);
+
+        AssignHelper.setClDBLoader(dbLoader);
+        AssignHelper.setExternalLoader(exLoader);
         Candidate.setPaperList(paperList);
     }
 
@@ -65,6 +82,7 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_Null_input_should_throw_ERR_NULL_IDENTITY() throws Exception {
         try{
+            when(exLoader.getIdentity(null)).thenReturn(null);
             AssignHelper helper = new AssignHelper();
             testDummy =helper.checkCandidate(null);
             fail("Expected ERR_NULL_IDENTITY but none thrown");
@@ -79,7 +97,9 @@ public class AssignHelperTest {
     public void testCheckCandidate_ID_Not_in_AttdList_should_throw_ERR_4() throws Exception {
         try{
             AssignHelper helper = new AssignHelper();
-            testDummy = helper.checkCandidate(new Identity("15WAU22222", "0", false, "Mr. Test"));
+            when(exLoader.getIdentity("15WAU22222"))
+                    .thenReturn(new Identity("15WAU22222", "0", false, "Mr. Test"));
+            testDummy = helper.checkCandidate("15WAU22222");
             fail("Expected ERR_NULL_CANDIDATE but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_NULL_CANDIDATE, err.getErrorCode());
@@ -92,7 +112,10 @@ public class AssignHelperTest {
     public void testCheckCandidate_EXEMPTED_Candidate_detected_should_throw_ERR_5() throws Exception {
         try{
             AssignHelper helper = new AssignHelper();
-            testDummy = helper.checkCandidate(new Identity("15WAU00005", "0", false, "Ms. Exm"));
+            when(exLoader.getIdentity("15WAU00005"))
+                    .thenReturn(new Identity("15WAU00005", "0", false, "Ms. Exm"));
+
+            testDummy = helper.checkCandidate("15WAU00005");
             fail("Expected ERR_STATUS_EXEMPTED but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_STATUS_EXEMPTED, err.getErrorCode());
@@ -105,7 +128,9 @@ public class AssignHelperTest {
     public void testCheckCandidate_BARRED_Candidate_detected_should_throw_ERR_6() throws Exception {
         try{
             AssignHelper helper = new AssignHelper();
-            testDummy = helper.checkCandidate(new Identity("15WAU00004", "0", false, "Mr. Bar"));
+            when(exLoader.getIdentity("15WAU00004"))
+                    .thenReturn(new Identity("15WAU00004", "0", false, "Mr. Bar"));
+            testDummy = helper.checkCandidate("15WAU00004");
             fail("Expected ERR_STATUS_BARRED but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_STATUS_BARRED, err.getErrorCode());
@@ -118,7 +143,9 @@ public class AssignHelperTest {
     public void testCheckCandidate_ID_without_regNum_should_throw_ERR_7() throws Exception {
         try{
             AssignHelper helper = new AssignHelper();
-            testDummy = helper.checkCandidate(new Identity());
+            when(exLoader.getIdentity("15WAU00004"))
+                    .thenReturn(new Identity());
+            testDummy = helper.checkCandidate("15WAU00004");
             fail("Expected ERR_INCOMPLETE_ID but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_INCOMPLETE_ID, err.getErrorCode());
@@ -131,7 +158,9 @@ public class AssignHelperTest {
     public void testCheckCandidate_Valid_ID_should_return_in_Candidate_Form() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
-            testDummy = helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+            testDummy = helper.checkCandidate("15WAU00001");
             assertNotNull(testDummy);
             assertEquals(testDummy, cdd1);
         } catch(CustomException err){
@@ -144,8 +173,10 @@ public class AssignHelperTest {
     public void testCheckCandidate_should_throw_ERR_EMPTY_ATTD_LIST() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
-            AssignHelper.setAttdList(null);
-            testDummy = helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            AssignHelper.setClDBLoader(dbLoader);
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+            testDummy = helper.checkCandidate("15WAU00001");
             fail("Expected ERR_EMPTY_ATTD_LIST but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_EMPTY_ATTD_LIST, err.getErrorCode());
@@ -182,7 +213,9 @@ public class AssignHelperTest {
     public void testTryAssignCandidate_Candidate_not_assign_should_return_false() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
-            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+            helper.checkCandidate("15WAU00001");
             assertFalse(helper.tryAssignCandidate());
         }catch(CustomException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -195,7 +228,9 @@ public class AssignHelperTest {
         try{
             AssignHelper helper = new AssignHelper();
             helper.checkTable(12);
-            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+            helper.checkCandidate("15WAU00001");
             assertTrue(helper.tryAssignCandidate());
         }catch(CustomException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -212,7 +247,9 @@ public class AssignHelperTest {
             AssignHelper helper = new AssignHelper();
             helper.assgnList = assgnList;
             helper.checkTable(12);
-            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+            helper.checkCandidate("15WAU00001");
             boolean test = helper.tryAssignCandidate();
             fail("Expected ERR_TABLE_REASSIGN but none thrown");
         }catch(CustomException err){
@@ -230,8 +267,10 @@ public class AssignHelperTest {
         try{
             AssignHelper helper = new AssignHelper();
             helper.assgnList = assgnList;
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
             helper.checkTable(12);
-            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            helper.checkCandidate("15WAU00001");
             boolean test = helper.tryAssignCandidate();
             fail("Expected ERR_CANDIDATE_REASSIGN but none thrown");
         }catch(CustomException err){
@@ -250,8 +289,10 @@ public class AssignHelperTest {
         try{
             AssignHelper helper = new AssignHelper();
             helper.assgnList = assgnList;
+            when(exLoader.getIdentity("15WAU00001"))
+                    .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
             helper.checkTable(55);
-            helper.checkCandidate(new Identity("15WAU00001", "0", false, "FGY"));
+            helper.checkCandidate("15WAU00001");
             boolean test = helper.tryAssignCandidate();
             fail("Expected ERR_PAPER_NOT_MATCH but none thrown");
         }catch(CustomException err){

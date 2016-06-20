@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
+import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.CustomToast;
 
 /**
  * Created by GhinY on 12/06/2016.
@@ -17,6 +20,7 @@ public class FragmentListActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter pagerAdapter;
     private TabLayout tabLayout;
+    CustomToast message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,9 @@ public class FragmentListActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setTabsFromPagerAdapter(pagerAdapter);
 
+    }
+
+    public void onUpload(View view){
 
     }
 

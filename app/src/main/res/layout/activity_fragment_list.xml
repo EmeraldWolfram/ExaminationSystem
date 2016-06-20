@@ -26,6 +26,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="20dp"
+        android:onClick="onUpload"
         android:src="@android:drawable/stat_sys_upload" />
 
 </RelativeLayout>

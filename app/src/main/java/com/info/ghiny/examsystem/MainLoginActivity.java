@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
@@ -73,7 +74,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void checkEligibilityOfTheIdentity(){
+    public void checkEligibilityOfTheIdentity(){
         try{
             LoginHelper.checkInvigilator(invglt);
 
@@ -102,6 +103,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 LoginHelper.checkInputPassword(invglt, password);
 
                 //Successful login, start AssignActivity
+                //Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
             } catch(CustomException err){
@@ -123,4 +125,6 @@ public class MainLoginActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }
