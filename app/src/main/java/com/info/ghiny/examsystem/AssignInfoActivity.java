@@ -1,11 +1,13 @@
 package com.info.ghiny.examsystem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.RelativeLayout;
@@ -41,9 +43,9 @@ public class AssignInfoActivity extends AppCompatActivity {
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
-    private ExamDatabaseLoader databaseHelper;  //to obtain Identity RegNum from IC
     private AssignHelper helper;
     private CustomToast message;                //Toast message tool
+    private Candidate cdd;
 
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -64,13 +66,13 @@ public class AssignInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
-        message                     = new CustomToast(this);
-        helper                      = new AssignHelper();
-        CheckListLoader checkListDB = new CheckListLoader(this);
-        databaseHelper              = new ExamDatabaseLoader(this);
+        message = new CustomToast(this);
+        helper  = new AssignHelper();
+        CheckListLoader clDBLoader      = new CheckListLoader(this);
+        ExamDatabaseLoader exDBLoader   = new ExamDatabaseLoader(this);
 
-        AssignHelper.setClDBLoader(checkListDB);
-        AssignHelper.setExternalLoader(databaseHelper);
+        AssignHelper.setClDBLoader(clDBLoader);
+        AssignHelper.setExternalLoader(exDBLoader);
 
         //Set swiping gesture
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
@@ -133,7 +135,6 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert regNumView   != null;    assert paperView   != null;
 
         try{
-            Candidate cdd = null;
 
             if(scanString.length() < 4){
                 helper.checkTable(Integer.parseInt(scanString));
@@ -153,7 +154,6 @@ public class AssignInfoActivity extends AppCompatActivity {
                 tableView.setText("");  cddView.setText("");
                 regNumView.setText(""); paperView.setText("");
 
-                assert cdd != null;
                 message.showCustomMessage(cdd.getStudentName()+ " Assigned to "
                         + cdd.getTableNumber().toString(),
                         new IconManager().getIcon(IconManager.ASSIGNED));
@@ -163,36 +163,68 @@ public class AssignInfoActivity extends AppCompatActivity {
             //Therefore, Id can never be null for the rest of the Exceptions thrown
             //Display message according to the error caught
             switch (err.getErrorCode()){
-                case CustomException.ERR_PAPER_NOT_MATCH:
-                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
-                    //TO DO find appropriate table and show suggestion
-                    break;
                 case CustomException.ERR_TABLE_REASSIGN:
-                    //TO DO prompt for update or cancel
+                    showReassignDialog(err.getMessage(), err.getErrorCode());
                     break;
                 case CustomException.ERR_CANDIDATE_REASSIGN:
-                    //TO DO prompt for update or cancel
+                    showReassignDialog(err.getMessage(), err.getErrorCode());
                     break;
                 case CustomException.ERR_EMPTY_PAPER_LIST:
                     //TO DO Obtain the paperList 1st
                     break;
-                case CustomException.ERR_NULL_PAPER:
-                    //TO DO Candidate does not belong to this venue, find the venue and show
-                    break;
                 case CustomException.ERR_EMPTY_ATTD_LIST:
                     //TO DO Will never happen
                     break;
-                case CustomException.ERR_NULL_TABLE:
-                    //TO DO Can never happen as a false will be returned when TABLE = null
-                    break;
                 case CustomException.ERR_INCOMPLETE_ID:
-                    //Fatal Error, not possible Identity without Register Number
-                    throw new NullPointerException("ID register Number is null");
+                    showMessageDialog(err.getErrorMsg());
                 default:
                     message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
 
             }
         }
+    }
+
+    public void showReassignDialog(String message, final int errorCode){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage(message);
+        dialog.setCancelable(true);
+        dialog.setPositiveButton(
+                "UPDATE",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //Update the previous assigned candidate and table set
+                        helper.updateNewCandidate(errorCode);
+                        dialog.cancel();
+                    }
+                });
+        dialog.setNegativeButton(
+                "REMAIN",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //Remain the previous assigned candidate and table set
+                        helper.cancelNewAssign();
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = dialog.create();
+        alert.show();
+    }
+
+    public void showMessageDialog(String message){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage(message);
+        dialog.setCancelable(true);
+
+        dialog.setNeutralButton(
+                "Okay",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = dialog.create();
+        alert.show();
     }
 
 }

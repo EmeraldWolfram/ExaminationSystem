@@ -78,6 +78,7 @@ public class AssignHelperTest {
         Candidate.setPaperList(paperList);
     }
 
+    //= CheckCandidate =============================================================================
     //If checkCandidate() receive a null input, ERR_NULL_IDENTITY will be thrown
     @Test
     public void testCheckCandidate_Null_input_should_throw_ERR_NULL_IDENTITY() throws Exception {
@@ -149,7 +150,7 @@ public class AssignHelperTest {
             fail("Expected ERR_INCOMPLETE_ID but none thrown");
         } catch(CustomException err){
             assertEquals(CustomException.ERR_INCOMPLETE_ID, err.getErrorCode());
-            assertEquals("Incomplete Identity", err.getErrorMsg());
+            assertEquals("FATAL: Unable to process ID", err.getErrorMsg());
         }
     }
 
@@ -227,10 +228,10 @@ public class AssignHelperTest {
     public void testTryAssignCandidate_When_successful_assigned_should_return_false() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
-            helper.checkTable(12);
             when(exLoader.getIdentity("15WAU00001"))
                     .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
             helper.checkCandidate("15WAU00001");
+            helper.checkTable(12);
             assertTrue(helper.tryAssignCandidate());
         }catch(CustomException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -254,7 +255,8 @@ public class AssignHelperTest {
             fail("Expected ERR_TABLE_REASSIGN but none thrown");
         }catch(CustomException err){
             assertEquals(CustomException.ERR_TABLE_REASSIGN, err.getErrorCode());
-            assertEquals("Table assigned before", err.getErrorMsg());
+            assertEquals("Previous: Table 12 assigned to null\nNew: Table 12 assign to FGY",
+                    err.getErrorMsg());
         }
     }
 
@@ -275,7 +277,8 @@ public class AssignHelperTest {
             fail("Expected ERR_CANDIDATE_REASSIGN but none thrown");
         }catch(CustomException err){
             assertEquals(CustomException.ERR_CANDIDATE_REASSIGN, err.getErrorCode());
-            assertEquals("Candidate assigned before", err.getErrorMsg());
+            assertEquals("Previous: FGY assigned to Table 1\nNew: FGY assign to 12",
+                    err.getErrorMsg());
         }
     }
 
@@ -301,6 +304,69 @@ public class AssignHelperTest {
         }
     }
 
+    //= UpdateNewCandidate() =======================================================================
+    /*************************************************
+     * Table 14 previously assigned to Cdd1
+     * Table 14 then assign to Cdd2
+     * updateNewCandidate():
+     * + should reset Cdd1 to Table 0 and ABSENT
+     * + should assign Cdd2 to Table 14 and PRESENT
+    *************************************************/
+    @Test
+    public void testUpdateNewCandidate_reaasign_table() throws Exception{
+        AssignHelper helper = new AssignHelper();
+        assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        when(exLoader.getIdentity(anyString()))
+                .thenReturn(new Identity("15WAU00001", "0", false, "FGY"))
+                .thenReturn(new Identity("15WAU00002", "0", false, "NYN"));
+
+        helper.checkTable(14);
+        helper.checkCandidate("15WAU00001");
+        helper.tryAssignCandidate();
+
+        helper.checkTable(14);
+        helper.checkCandidate("15WAU00002");
+
+        helper.updateNewCandidate(CustomException.ERR_TABLE_REASSIGN);
+
+        assertEquals(1, helper.assgnList.size());
+        assertEquals("15WAU00002", helper.assgnList.get(14));
+        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+        assertEquals(2, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        assertEquals(AttendanceList.Status.ABSENT, cdd1.getStatus());
+        assertEquals(AttendanceList.Status.PRESENT, cdd2.getStatus());
+    }
+    /*************************************************
+     * Table 12 previously assigned to Cdd1
+     * Table 14 then assign to Cdd1
+     * updateNewCandidate():
+     * + should renew Cdd1 to Table 14
+     *************************************************/
+    @Test
+    public void testUpdateNewCandidate_reassign_candidate() throws Exception{
+        AssignHelper helper = new AssignHelper();
+        assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        when(exLoader.getIdentity(anyString()))
+                .thenReturn(new Identity("15WAU00001", "0", false, "FGY"))
+                .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
+
+        helper.checkTable(12);
+        helper.checkCandidate("15WAU00001");
+        helper.tryAssignCandidate();
+
+        helper.checkTable(14);
+        helper.checkCandidate("15WAU00001");
+
+        helper.updateNewCandidate(CustomException.ERR_CANDIDATE_REASSIGN);
+
+        assertEquals(1, helper.assgnList.size());
+        assertNull(helper.assgnList.get(12));
+        assertEquals("15WAU00001", helper.assgnList.get(14));
+        assertEquals(14, (int)attdList.getCandidate("15WAU00001").getTableNumber());
+        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+    }
+
+    //= CancelNewAssign ============================================================================
 
 
 }

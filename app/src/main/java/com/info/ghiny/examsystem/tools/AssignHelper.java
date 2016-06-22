@@ -21,21 +21,20 @@ public class AssignHelper {
     private static AttendanceList attdList;
     public HashMap<Integer, String> assgnList;
 
-    //Constructor
+    //= Constructor ================================================================================
     public AssignHelper(){
         this.assgnList  = new HashMap<>();
         this.tempCdd    = null;
         this.tempTable  = null;
     }
 
+    //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
     public static void setClDBLoader(CheckListLoader dBLoader) {
         assert dBLoader != null;
         if(dBLoader.isEmpty()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
         }
-        Candidate.setPaperList(fakeTheExamPaper());
-
         AssignHelper.clDBLoader = dBLoader;
 
         attdList = new AttendanceList();
@@ -46,6 +45,8 @@ public class AssignHelper {
     public static void setExternalLoader(ExamDatabaseLoader dbLoader){
         assert dbLoader != null;
         exDBLoader = dbLoader;
+        if(Candidate.getPaperList() == null)
+            Candidate.setPaperList(fakeTheExamPaper()); //Suppose to query external DB
     }
 
     //A getter to retrieve the list to display in Activity
@@ -53,7 +54,7 @@ public class AssignHelper {
         return attdList;
     }
 
-    //=============================================================================================
+    //= Assign =====================================================================================
     //check-in Table
     public Integer checkTable(Integer table){
         //Add checking mechanism when venue size is valid
@@ -70,8 +71,8 @@ public class AssignHelper {
                     IconManager.WARNING);
 
         if(id.getRegNum() == null)
-            throw new CustomException("Incomplete Identity", CustomException.ERR_INCOMPLETE_ID,
-                    IconManager.WARNING);
+            throw new CustomException("FATAL: Unable to process ID",
+                    CustomException.ERR_INCOMPLETE_ID, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
             throw new CustomException("No Attendance List", CustomException.ERR_EMPTY_ATTD_LIST,
@@ -103,11 +104,16 @@ public class AssignHelper {
         if(tempTable != null && tempCdd != null){
             //If ExamSubject range does not meet, DO something
             if(assgnList.containsKey(tempTable))
-                throw new CustomException("Table assigned before",
+                throw new CustomException("Previous: Table " + tempTable + " assigned to "
+                        + attdList.getCandidate(assgnList.get(tempTable)) + "\nNew: Table "
+                        + tempTable + " assign to " + tempCdd.getStudentName(),
                         CustomException.ERR_TABLE_REASSIGN, IconManager.MESSAGE);
 
             if(assgnList.containsValue(tempCdd.getRegNum()))
-                throw new CustomException("Candidate assigned before",
+                throw new CustomException("Previous: " + tempCdd.getStudentName()
+                        + " assigned to Table "
+                        + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
+                        + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
                         CustomException.ERR_CANDIDATE_REASSIGN, IconManager.MESSAGE);
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
@@ -120,8 +126,8 @@ public class AssignHelper {
 
             assert attdList != null;
             attdList.removeCandidate(tempCdd.getRegNum());
-            attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
-                    AttendanceList.Status.PRESENT, tempCdd.getProgramme());
+            attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
+                    tempCdd.getProgramme());
             assgnList.put(tempTable, tempCdd.getRegNum());
             tempCdd     = null;
             tempTable   = null;
@@ -131,7 +137,41 @@ public class AssignHelper {
         return assigned;
     }
 
-    //FAKE Function for demo purposes   ============================================================
+    //= On Dialog ==================================================================================
+    //Replace previously assigned Table Candidate set with New Table Candidate set
+    public void updateNewCandidate(int errCode){
+        if(errCode == CustomException.ERR_TABLE_REASSIGN){
+            //Table reassign, reset the previous assigned candidate in the list to ABSENT
+            Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
+            attdList.removeCandidate(cdd.getRegNum());
+            cdd.setTableNumber(0);
+            cdd.setStatus(AttendanceList.Status.ABSENT);
+            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+            assgnList.remove(tempTable);
+        } else {
+            //Candidate reassign, remove the previously assignment
+            assgnList.remove(tempCdd.getTableNumber());
+        }
+
+        tempCdd.setStatus(AttendanceList.Status.PRESENT);
+        tempCdd.setTableNumber(tempTable);
+
+        attdList.removeCandidate(tempCdd.getRegNum());
+        attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
+                tempCdd.getProgramme());
+        assgnList.put(tempTable, tempCdd.getRegNum());
+
+        tempCdd     = null;
+        tempTable   = null;
+    }
+
+    //Remain previously assigned Table Candidate set and discard New Table Candidate set
+    public void cancelNewAssign(){
+        tempCdd     = null;
+        tempTable   = null;
+    }
+
+    //= FAKE Function for demo purposes ============================================================
     private static AttendanceList prepareList(){
         AttendanceList attdList = new AttendanceList();
 

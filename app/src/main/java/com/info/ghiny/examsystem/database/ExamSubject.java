@@ -112,7 +112,7 @@ public class ExamSubject {
     }
 
     @Override
-    public String toString() {
+    public String toString() throws NullPointerException{
         String str;
         if(paperCode != null && paperDesc != null)
             str = paperCode + "  " + paperDesc;

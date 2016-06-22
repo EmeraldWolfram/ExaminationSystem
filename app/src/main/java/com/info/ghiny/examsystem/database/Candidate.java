@@ -29,8 +29,8 @@ public class Candidate {
         status      = AttendanceList.Status.ABSENT;
     }
 
-    public Candidate(int tableNumber, String programme, String sName, String regNum, String paperCode,
-                     AttendanceList.Status status){
+    public Candidate(int tableNumber, String programme, String sName, String regNum,
+                     String paperCode, AttendanceList.Status status){
         this.tableNumber    = tableNumber;
         this.programme      = programme;
         this.studentName    = sName;
