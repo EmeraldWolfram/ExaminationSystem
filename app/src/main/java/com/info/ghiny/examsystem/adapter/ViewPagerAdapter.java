@@ -8,6 +8,7 @@ import com.info.ghiny.examsystem.AbsentFragment;
 import com.info.ghiny.examsystem.BarredFragment;
 import com.info.ghiny.examsystem.ExemptedFragment;
 import com.info.ghiny.examsystem.PresentFragment;
+import com.info.ghiny.examsystem.QuarantinedFragment;
 
 /**
  * Created by GhinY on 12/06/2016.
@@ -35,6 +36,9 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             case 3:
                 fragment = new ExemptedFragment();
                 break;
+            case 4:
+                fragment = new QuarantinedFragment();
+                break;
         }
 
         return fragment;
@@ -43,7 +47,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         // get item count - equal to number of tabs
-        return 4;
+        return 5;
     }
 
     @Override
@@ -62,6 +66,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             case 3:
                 title="EXEMPTED";
                 break;
+            case 4:
+                title="QUARANTINED";
         }
 
         return title;

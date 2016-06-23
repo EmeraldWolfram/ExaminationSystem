@@ -105,8 +105,8 @@ public class AssignHelper {
             //If ExamSubject range does not meet, DO something
             if(assgnList.containsKey(tempTable))
                 throw new CustomException("Previous: Table " + tempTable + " assigned to "
-                        + attdList.getCandidate(assgnList.get(tempTable)) + "\nNew: Table "
-                        + tempTable + " assign to " + tempCdd.getStudentName(),
+                        + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
+                        + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
                         CustomException.ERR_TABLE_REASSIGN, IconManager.MESSAGE);
 
             if(assgnList.containsValue(tempCdd.getRegNum()))

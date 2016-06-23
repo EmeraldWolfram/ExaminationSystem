@@ -242,20 +242,23 @@ public class AssignHelperTest {
     @Test
     public void testTryAssignCandidate_Same_table_should_throw_ERR_TABLE_REASSIGN()throws Exception{
         HashMap<Integer, String> assgnList = new HashMap<>();
-        assgnList.put(12, "15WAU11111");
 
         try{
             AssignHelper helper = new AssignHelper();
-            helper.assgnList = assgnList;
-            helper.checkTable(12);
-            when(exLoader.getIdentity("15WAU00001"))
+            when(exLoader.getIdentity(anyString()))
+                    .thenReturn(new Identity("15WAU00002", "0", false, "NYN"))
                     .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
-            helper.checkCandidate("15WAU00001");
+            helper.checkTable(12);
+            helper.checkCandidate("15WAU00002");
             boolean test = helper.tryAssignCandidate();
+            //Second assign 12
+            helper.checkTable(12);
+            helper.checkCandidate("15WAU00001");
+            test = helper.tryAssignCandidate();
             fail("Expected ERR_TABLE_REASSIGN but none thrown");
         }catch(CustomException err){
             assertEquals(CustomException.ERR_TABLE_REASSIGN, err.getErrorCode());
-            assertEquals("Previous: Table 12 assigned to null\nNew: Table 12 assign to FGY",
+            assertEquals("Previous: Table 12 assigned to NYN\nNew: Table 12 assign to FGY",
                     err.getErrorMsg());
         }
     }

@@ -20,7 +20,7 @@ public class FragmentListActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter pagerAdapter;
     private TabLayout tabLayout;
-    CustomToast message;
+    private CustomToast message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

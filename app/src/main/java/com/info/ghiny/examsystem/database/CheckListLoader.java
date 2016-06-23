@@ -17,8 +17,8 @@ import java.util.List;
  */
 public class CheckListLoader {
     private static final int DATABASE_VERSION       = 11;
-    private static final String DATABASE_NAME       = "checkListDB";
-    private static final String ATTENDANCE_TABLE    = "AttdTable";
+    public static final String DATABASE_NAME       = "checkListDB";
+    public static final String ATTENDANCE_TABLE    = "AttdTable";
 
     public static final String TABLE_INFO_ID            = "_id";
     public static final String TABLE_INFO_COLUMN_NAME   = "Name";

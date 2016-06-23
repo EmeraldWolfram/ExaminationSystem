@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class CheckListActivity extends AppCompatActivity {
     private ExpandListAdapter adapter;
-    private AssignHelper helper;
     private List<String> statusHead;
     private HashMap<String, List<Candidate>> dataChild;
 
@@ -35,8 +34,6 @@ public class CheckListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_list);
-
-        helper = new AssignHelper();
 
         present = new ArrayList<>();
         absent  = new ArrayList<>();
