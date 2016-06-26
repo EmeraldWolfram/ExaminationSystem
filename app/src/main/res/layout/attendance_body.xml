@@ -3,18 +3,16 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorLightGreen">
+    android:layout_margin="6dp"
+    android:padding="4dp"
+    android:background="@drawable/custom_attendance">
 
     <TextView
         android:id="@+id/assignedTableText"
         android:layout_width="@android:dimen/app_icon_size"
         android:layout_height="@android:dimen/app_icon_size"
-        android:background="@drawable/table_num"
         android:textSize="36sp"
-        android:paddingStart="2sp"
-        android:layout_marginStart="2sp"
-        android:layout_marginBottom="2sp"
-        android:layout_marginTop="2sp"/>
+        android:padding="2sp" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -25,12 +23,12 @@
             android:id="@+id/assignedCddText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:paddingBottom="4sp"
+            android:textSize="18sp"
+            android:paddingBottom="2sp"
             android:textColor="#156039" />
 
         <TextView
-            android:id="@+id/assignedPaperText"
+            android:id="@+id/assignedPrgText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"

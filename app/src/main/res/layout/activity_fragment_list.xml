@@ -7,7 +7,7 @@
     tools:context=".FragmentListActivity">
 
     <android.support.design.widget.TabLayout
-        android:background="@color/colorDarkGreen"
+        android:background="@color/colorDarkerGreen"
         android:layout_alignParentTop="true"
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"

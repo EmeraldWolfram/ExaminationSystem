@@ -56,11 +56,8 @@ public class AttendanceListTest {
         prgList1.put("RBS3", new HashMap<String, Candidate>());
 
         prgList2 = new HashMap<>();
-        prgList2.put("RAF3", new HashMap<String, Candidate>());
 
         prgList3 = new HashMap<>();
-        prgList3.put("DMI1", new HashMap<String, Candidate>());
-        prgList3.put("DMC2", new HashMap<String, Candidate>());
 
         cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
         cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
@@ -84,7 +81,7 @@ public class AttendanceListTest {
         cddList4.put("15WAU00005", cdd5);
     }
 
-    //GET PAPER LIST =============================================================================
+    //= GET PAPER LIST =============================================================================
     //Calling getPaperList on an empty attendanceList will not return null.
     //It will return an empty HashMap<>
     @Test
@@ -106,8 +103,8 @@ public class AttendanceListTest {
                 testMap = attdList.getPaperList(AttendanceList.Status.PRESENT);
         assertEquals(4, testMap.size());
     }
-    //==============================================================================================
-    //GET PROGRAMME LIST
+
+    //= GET PROGRAMME LIST =========================================================================
     //Calling getProgrammeList upon an empty AttendancList should
     //not return null but return an empty HashMap<>
     @Test
@@ -134,8 +131,8 @@ public class AttendanceListTest {
         assertTrue(prgList.containsKey("RBS3"));
         assertEquals(3, attdList.getNumberOfProgramme(AttendanceList.Status.PRESENT, "BAME 0001"));
     }
-    //==============================================================================================
-    //GET CANDIDATE LIST
+
+    //= GET CANDIDATE LIST =========================================================================
     //Calling getCandidateList upon an empty AttendanceList should
     //not return null but return an empty HashMap<>
     @Test
@@ -188,8 +185,7 @@ public class AttendanceListTest {
 
         assertTrue(testList.isEmpty());
     }
-    //==========================================================================================
-    //ADD CANDIDATE
+    //= ADD CANDIDATE ==============================================================================
     //Calling addCandidate to an empty Attendance List should create the List
     @Test
     public void testAddCandidate_EmptyCandidateList() throws Exception {
@@ -250,8 +246,7 @@ public class AttendanceListTest {
         assertEquals(testList.get(cdd4.getRegNum()), cdd4);
     }
 
-    //=============================================================================================
-    //REMOVE CANDIDATE
+    //= REMOVE CANDIDATE ===========================================================================
     //If attendanceList have 3 candidates
     //After remove 1 should left 2
     @Test
@@ -288,8 +283,7 @@ public class AttendanceListTest {
         assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
     }
 
-    //===========================================================================================
-    //GET CANDIDATE
+    //= GET CANDIDATE ==============================================================================
     //Obtain a candidate from the attendanceList with the given regNum(register number)
     @Test
     public void testGetCandidate() throws Exception {
@@ -320,8 +314,7 @@ public class AttendanceListTest {
         assertNull(testCdd);
     }
 
-    //=============================================================================================
-    //GET ALL CANDIDATE REGISTER NUMBER LIST
+    //= GET ALL CANDIDATE REGISTER NUMBER LIST =====================================================
     //Calling getAllCandidateRegNumList() when the attendanceList is empty
     //should return an empty List<>
     @Test
@@ -363,7 +356,19 @@ public class AttendanceListTest {
         assertEquals(test, testList);
     }
 
-    //=========================================================================================
+    //= GET NUMBER OF CANDIDATES ===================================================================
+    /**
+     * getTotalNumberOfCandidate() method should return the total number of
+     * candidate to be examine WITHOUT considering the status
+     *
+     * getNumberOfCandidates(Status) method should return the nuber of Candidate
+     * that have the input status
+     *
+     * In this test, there are 3 ABSENT, 1 BARRED and 1 EXEMPTED candidates
+     * Therefore,
+     * getTotal...() return 5
+     * getNumbe...() return 3, 1, 1 for ABSENT, BARRED, EXEMPTED respectively
+     */
     @Test
     public void testGetNumberOfCandidates() throws Exception{
         attdList.getCandidateList(AttendanceList.Status.ABSENT, "BAME 0001", "RMB3")
@@ -378,6 +383,10 @@ public class AttendanceListTest {
         assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
         assertEquals(3, attdList.getNumberOfCandidates(
                 AttendanceList.Status.ABSENT, "BAME 0001", "RMB3"));
+        assertEquals(0, attdList.getNumberOfCandidates(
+                AttendanceList.Status.ABSENT, "BAME 0002", "RMB3"));
+        assertEquals(0, attdList.getNumberOfCandidates(
+                AttendanceList.Status.ABSENT, "BAME 0001", "RMB2"));
 
         assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.BARRED));
         assertEquals(1, attdList.getNumberOfCandidates(
@@ -386,8 +395,5 @@ public class AttendanceListTest {
         assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
         assertEquals(1, attdList.getNumberOfCandidates(
                 AttendanceList.Status.EXEMPTED, "BAME 0003", "RMB3"));
-
-        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT, "XX", "X"));
-
     }
 }

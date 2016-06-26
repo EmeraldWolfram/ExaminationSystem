@@ -49,6 +49,10 @@ public class AssignHelper {
             Candidate.setPaperList(fakeTheExamPaper()); //Suppose to query external DB
     }
 
+    public static void setAttdList(AttendanceList attdList) {
+        AssignHelper.attdList = attdList;
+    }
+
     //A getter to retrieve the list to display in Activity
     public static AttendanceList getAttdList() {
         return attdList;

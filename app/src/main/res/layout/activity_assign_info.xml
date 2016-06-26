@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/assignInfoActivityLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorOldGreen">
+    android:background="@color/colorDarkGreen">
 
     <LinearLayout
         android:id="@+id/tableInfoLayout"
@@ -15,14 +14,13 @@
         android:layout_alignParentTop="true">
         <TextView
             android:id="@+id/tableNumberText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_margin="4sp"
-            android:paddingTop="4sp"
-            android:paddingStart="4sp"
-            android:paddingEnd="0sp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:textSize="45sp"
-            android:background="@drawable/table_num"/>
+            android:background="@drawable/rounded_table"/>
 
         <LinearLayout
             android:orientation="vertical"

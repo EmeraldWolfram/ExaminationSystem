@@ -1,8 +1,8 @@
 package com.info.ghiny.examsystem.database;
 
-import android.view.inputmethod.CursorAnchorInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +86,7 @@ public class AttendanceList {
     //Available Methods
     //=========================================================================
 
+    //------------------- AttendanceList Setter Getter ------------------------------------
     public HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
     getAttendanceList() {
         return attendanceList;
@@ -95,7 +96,7 @@ public class AttendanceList {
             HashMap<String, Candidate>>>> attendanceList) {
         this.attendanceList = attendanceList;
     }
-
+    //------------------- Methods Calculate Number of Item _-------------------------------
     public int getNumberOfStatus(){
         return attendanceList.size();
     }
@@ -140,6 +141,7 @@ public class AttendanceList {
         return size;
     }
 
+    //------------------- Major Attendance Taking Tools --------------------------------------
     public void addCandidate(Candidate cdd, String paperCode, Status status, String programme){
         assert cdd      != null : "Input Candidate argument cannot be null";
         assert paperCode!= null : "Input PaperCode argument cannot be null";

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#053F05</color>
+    <color name="colorDarkestGreen">#006400</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#ff4081</color>
+    <color name="colorAccent">#32FFC8</color>
     <color name="colorGreen">#ceffce</color>
 
-    <color name="colorDarkGreen">#156039</color>
-    <color name="colorOldGreen">#00b500</color>
+    <color name="colorDarkerGreen">#008C00</color>
+    <color name="colorDarkGreen">#00b500</color>
     <color name="colorLightGreen">#D0FFD0</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="tableNo">#61616161</color>
 </resources>

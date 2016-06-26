@@ -48,7 +48,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView,
                              ViewGroup parent){
 
-        final Candidate childText = (Candidate)getChild(groupPosition, childPosition);
+        Candidate childCdd = (Candidate)getChild(groupPosition, childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
@@ -58,21 +58,16 @@ public class CustomAdapter extends BaseExpandableListAdapter {
 
         TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
         TextView candidateView  = (TextView) convertView.findViewById(R.id.assignedCddText);
-        TextView examPaperView  = (TextView) convertView.findViewById(R.id.assignedPaperText);
+        TextView cddPrgView     = (TextView) convertView.findViewById(R.id.assignedPrgText);
 
-        tableNumView.setText(childText.getTableNumber().toString());
-        candidateView.setText(childText.getStudentName());
-        try{
-            examPaperView.setText(childText.getPaper().toString());
-        } catch(CustomException err){
-            examPaperView.setText("Exam Papers haven been initialize");
-        }
+        tableNumView.setText(childCdd.getTableNumber().toString());
+        candidateView.setText(childCdd.getStudentName());
+        cddPrgView.setText(childCdd.getProgramme());
 
-        if(childText.getTableNumber() != 0)
-            tableNumView.setBackgroundResource(R.drawable.table_num);
+        if(childCdd.getTableNumber() != 0)
+            tableNumView.setBackgroundResource(R.drawable.rounded_table);
         else{
             tableNumView.setText("");
-            tableNumView.setBackgroundColor(0x616161);
         }
 
         return convertView;
@@ -80,8 +75,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this.dataChild.get(this.dataHeader.get(groupPosition))
-                .size();
+        return this.dataChild.get(this.dataHeader.get(groupPosition)).size();
     }
 
     @Override
@@ -107,11 +101,11 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.attendance_header, null);
+            convertView = inflater.inflate(R.layout.attendance_paper, null);
         }
 
-        TextView statusHeader = (TextView) convertView.findViewById(R.id.groupHeaderStatus);
-        TextView sizeOfList = (TextView) convertView.findViewById(R.id.sizeOfList);
+        TextView statusHeader   = (TextView) convertView.findViewById(R.id.groupHeaderPaper);
+        TextView sizeOfList     = (TextView) convertView.findViewById(R.id.sizeOfCandidate);
 
         statusHeader.setTypeface(null, Typeface.BOLD);
         statusHeader.setText(headerTitle);
@@ -128,6 +122,6 @@ public class CustomAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 }

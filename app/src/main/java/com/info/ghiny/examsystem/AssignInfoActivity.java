@@ -85,7 +85,7 @@ public class AssignInfoActivity extends AppCompatActivity {
             }
             @Override
             public void onSwipeLeft() {
-                Intent listIntent = new Intent(AssignInfoActivity.this, CheckListActivity.class);
+                Intent listIntent = new Intent(AssignInfoActivity.this, FragmentListActivity.class);
                 startActivity(listIntent);
             }
             @Override
