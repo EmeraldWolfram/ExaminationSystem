@@ -64,8 +64,8 @@ public class Candidate {
     public ExamSubject getPaper() throws CustomException{
         ExamSubject subject = getExamSubject(paperCode);
         if(subject == null){
-            throw new CustomException("Paper is not in the list", CustomException.ERR_NULL_PAPER,
-                    IconManager.WARNING);
+            throw new CustomException("There is no suitable paper for this candidate in this room",
+                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
         }
 
         return subject;
@@ -112,13 +112,13 @@ public class Candidate {
     @Nullable
     private static ExamSubject getExamSubject(String paperCode) throws CustomException{
         if(paperCode == null){
-            throw new CustomException("Paper Code is null", CustomException.ERR_NULL_PAPER,
-                    IconManager.WARNING);
+            throw new CustomException("FATAL: Candidate don't have paper",
+                    CustomException.MESSAGE_TOAST, IconManager.WARNING);
         }
 
         if(paperList == null){
             throw new CustomException("Paper List haven initialize",
-                    CustomException.ERR_EMPTY_PAPER_LIST, IconManager.WARNING);
+                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
         }
         return paperList.get(paperCode);
     }

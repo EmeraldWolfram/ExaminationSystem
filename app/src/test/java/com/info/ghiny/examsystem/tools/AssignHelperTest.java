@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.tools;
 
-import com.info.ghiny.examsystem.CheckListActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -79,77 +78,77 @@ public class AssignHelperTest {
     }
 
     //= CheckCandidate =============================================================================
-    //If checkCandidate() receive a null input, ERR_NULL_IDENTITY will be thrown
+    //If checkCandidate() receive a null input, MESSAGE_TOAST will be thrown
     @Test
-    public void testCheckCandidate_Null_input_should_throw_ERR_NULL_IDENTITY() throws Exception {
+    public void testCheckCandidate_Null_input_should_throw_MESSAGE_TOAST() throws Exception {
         try{
             when(exLoader.getIdentity(null)).thenReturn(null);
             AssignHelper helper = new AssignHelper();
             testDummy =helper.checkCandidate(null);
-            fail("Expected ERR_NULL_IDENTITY but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_NULL_IDENTITY, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not an Identity", err.getErrorMsg());
         }
     }
 
-    //If checkCandidate() receive an ID that was not in the list, ERR_NULL_CANDIDATE will be thrown
+    //If checkCandidate() receive an ID that was not in the list, MESSAGE_TOAST will be thrown
     @Test
-    public void testCheckCandidate_ID_Not_in_AttdList_should_throw_ERR_4() throws Exception {
+    public void testCheckCandidate_ID_Not_in_AttdList_should_throw_MESSAGE_TOAST() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
             when(exLoader.getIdentity("15WAU22222"))
                     .thenReturn(new Identity("15WAU22222", "0", false, "Mr. Test"));
             testDummy = helper.checkCandidate("15WAU22222");
-            fail("Expected ERR_NULL_CANDIDATE but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_NULL_CANDIDATE, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Mr. Test doest not belong to this venue", err.getErrorMsg());
         }
     }
 
     //Check if checkCandidate() can detect a candidate with status Exempted
     @Test
-    public void testCheckCandidate_EXEMPTED_Candidate_detected_should_throw_ERR_5() throws Exception {
+    public void testCheckCandidate_detect_EXEMPTED_Candidate_throw_MESSAGE_TOAST() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
             when(exLoader.getIdentity("15WAU00005"))
                     .thenReturn(new Identity("15WAU00005", "0", false, "Ms. Exm"));
 
             testDummy = helper.checkCandidate("15WAU00005");
-            fail("Expected ERR_STATUS_EXEMPTED but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_STATUS_EXEMPTED, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("The paper was exempted for Ms. Exm", err.getErrorMsg());
         }
     }
 
     //Check if checkCandidate() can detect a candidate with status Barred
     @Test
-    public void testCheckCandidate_BARRED_Candidate_detected_should_throw_ERR_6() throws Exception {
+    public void testCheckCandidate_detect_BARRED_Candidate_throw_MESSAGE_TOAST() throws Exception {
         try{
             AssignHelper helper = new AssignHelper();
             when(exLoader.getIdentity("15WAU00004"))
                     .thenReturn(new Identity("15WAU00004", "0", false, "Mr. Bar"));
             testDummy = helper.checkCandidate("15WAU00004");
-            fail("Expected ERR_STATUS_BARRED but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_STATUS_BARRED, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Mr. Bar have been barred", err.getErrorMsg());
         }
     }
 
     //Check if checkCandidate() can detect the input Identity that doesn't have a regNum
     @Test
-    public void testCheckCandidate_ID_without_regNum_should_throw_ERR_7() throws Exception {
+    public void testCheckCandidate_ID_without_regNum_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
             when(exLoader.getIdentity("15WAU00004"))
                     .thenReturn(new Identity());
             testDummy = helper.checkCandidate("15WAU00004");
-            fail("Expected ERR_INCOMPLETE_ID but none thrown");
+            fail("Expected MESSAGE_DIALOG but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_INCOMPLETE_ID, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("FATAL: Unable to process ID", err.getErrorMsg());
         }
     }
@@ -169,18 +168,18 @@ public class AssignHelperTest {
         }
     }
 
-    //Check if checkCandidate() can detect an empty attd list, should throw ERR_EMPTY_ATTD_LIST
+    //Check if checkCandidate() can detect an empty attd list, should throw MESSAGE_DIALOG
     @Test
-    public void testCheckCandidate_should_throw_ERR_EMPTY_ATTD_LIST() throws Exception{
+    public void testCheckCandidate_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
             AssignHelper.setClDBLoader(dbLoader);
             when(exLoader.getIdentity("15WAU00001"))
                     .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
             testDummy = helper.checkCandidate("15WAU00001");
-            fail("Expected ERR_EMPTY_ATTD_LIST but none thrown");
+            fail("Expected MESSAGE_DIALOG but none thrown");
         } catch(CustomException err){
-            assertEquals(CustomException.ERR_EMPTY_ATTD_LIST, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("No Attendance List", err.getErrorMsg());
         }
     }
@@ -225,7 +224,7 @@ public class AssignHelperTest {
 
     //If both Candidate and Table is valid, tryAssignCandidate should return true
     @Test
-    public void testTryAssignCandidate_When_successful_assigned_should_return_false() throws Exception{
+    public void testTryAssignCandidate_When_successful_assigned_should_return_true() throws Exception{
         try{
             AssignHelper helper = new AssignHelper();
             when(exLoader.getIdentity("15WAU00001"))
@@ -238,9 +237,9 @@ public class AssignHelperTest {
         }
     }
 
-    //If Table have been assigned before, ERR_TABLE_REASSIGN should be thrown
+    //If Table have been assigned before, UPDATE_PROMPT should be thrown
     @Test
-    public void testTryAssignCandidate_Same_table_should_throw_ERR_TABLE_REASSIGN()throws Exception{
+    public void testTryAssignCandidate_Same_table_should_throw_UPDATE_PROMPT()throws Exception{
         HashMap<Integer, String> assgnList = new HashMap<>();
 
         try{
@@ -255,17 +254,17 @@ public class AssignHelperTest {
             helper.checkTable(12);
             helper.checkCandidate("15WAU00001");
             test = helper.tryAssignCandidate();
-            fail("Expected ERR_TABLE_REASSIGN but none thrown");
+            fail("Expected UPDATE_PROMPT but none thrown");
         }catch(CustomException err){
-            assertEquals(CustomException.ERR_TABLE_REASSIGN, err.getErrorCode());
+            assertEquals(CustomException.UPDATE_PROMPT, err.getErrorType());
             assertEquals("Previous: Table 12 assigned to NYN\nNew: Table 12 assign to FGY",
                     err.getErrorMsg());
         }
     }
 
-    //If Candidate have been assigned before, ERR_CANDIDATE_REASSIGN should be thrown
+    //If Candidate have been assigned before, UPDATE_PROMPT should be thrown
     @Test
-    public void testTryAssign_Same_candidate_should_throw_ERR_CANDIDATE_REASSIGN() throws Exception{
+    public void testTryAssign_Same_candidate_should_throw_UPDATE_PROMPT() throws Exception{
         HashMap<Integer, String> assgnList = new HashMap<>();
         assgnList.put(14, "15WAU00001");
 
@@ -277,9 +276,9 @@ public class AssignHelperTest {
             helper.checkTable(12);
             helper.checkCandidate("15WAU00001");
             boolean test = helper.tryAssignCandidate();
-            fail("Expected ERR_CANDIDATE_REASSIGN but none thrown");
+            fail("Expected UPDATE_PROMPT but none thrown");
         }catch(CustomException err){
-            assertEquals(CustomException.ERR_CANDIDATE_REASSIGN, err.getErrorCode());
+            assertEquals(CustomException.UPDATE_PROMPT, err.getErrorType());
             assertEquals("Previous: FGY assigned to Table 1\nNew: FGY assign to 12",
                     err.getErrorMsg());
         }
@@ -288,7 +287,7 @@ public class AssignHelperTest {
     //If Candidate sit at a wrong table, ERR_PAPER_NOT_MATCH should be thrown
     //Candidate's paper does not match with the table's assigned paper
     @Test
-    public void testTryAssign_Paper_not_Match_should_throw_ERR_PAPER_NOT_MATCH() throws Exception{
+    public void testTryAssign_Paper_not_Match_should_throw_MESSAGE_TOAST() throws Exception{
         HashMap<Integer, String> assgnList = new HashMap<>();
         assgnList.put(14, "15WAU00005");
 
@@ -300,9 +299,9 @@ public class AssignHelperTest {
             helper.checkTable(55);
             helper.checkCandidate("15WAU00001");
             boolean test = helper.tryAssignCandidate();
-            fail("Expected ERR_PAPER_NOT_MATCH but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         }catch(CustomException err){
-            assertEquals(CustomException.ERR_PAPER_NOT_MATCH, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("FGY should not sit here\nSuggest to Table 10", err.getErrorMsg());
         }
     }
@@ -330,7 +329,7 @@ public class AssignHelperTest {
         helper.checkTable(14);
         helper.checkCandidate("15WAU00002");
 
-        helper.updateNewCandidate(CustomException.ERR_TABLE_REASSIGN);
+        helper.updateNewCandidate();
 
         assertEquals(1, helper.assgnList.size());
         assertEquals("15WAU00002", helper.assgnList.get(14));
@@ -360,7 +359,7 @@ public class AssignHelperTest {
         helper.checkTable(14);
         helper.checkCandidate("15WAU00001");
 
-        helper.updateNewCandidate(CustomException.ERR_CANDIDATE_REASSIGN);
+        helper.updateNewCandidate();
 
         assertEquals(1, helper.assgnList.size());
         assertNull(helper.assgnList.get(12));

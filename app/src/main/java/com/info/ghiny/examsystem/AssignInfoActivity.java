@@ -2,26 +2,18 @@ package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
-import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.database.JdbcDatabase;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
@@ -31,9 +23,6 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -159,32 +148,25 @@ public class AssignInfoActivity extends AppCompatActivity {
                         new IconManager().getIcon(IconManager.ASSIGNED));
             }
         } catch(CustomException err){
-            //If Id is null, it will be caught as the first Exception thrown, ERR_NULL_IDENTITY
-            //Therefore, Id can never be null for the rest of the Exceptions thrown
-            //Display message according to the error caught
-            switch (err.getErrorCode()){
-                case CustomException.ERR_TABLE_REASSIGN:
-                    showReassignDialog(err.getMessage(), err.getErrorCode());
-                    break;
-                case CustomException.ERR_CANDIDATE_REASSIGN:
-                    showReassignDialog(err.getMessage(), err.getErrorCode());
-                    break;
-                case CustomException.ERR_EMPTY_PAPER_LIST:
-                    //TO DO Obtain the paperList 1st
-                    break;
-                case CustomException.ERR_EMPTY_ATTD_LIST:
-                    //TO DO Will never happen
-                    break;
-                case CustomException.ERR_INCOMPLETE_ID:
-                    showMessageDialog(err.getErrorMsg());
-                default:
-                    message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
-
-            }
+            displayError(err);
         }
     }
 
-    public void showReassignDialog(String message, final int errorCode){
+    public void displayError(CustomException err){
+        switch(err.getErrorType()){
+            case CustomException.UPDATE_PROMPT:
+                showReassignDialog(err.getMessage());
+                break;
+            case CustomException.MESSAGE_DIALOG:
+                showMessageDialog(err.getMessage());
+                break;
+            case CustomException.MESSAGE_TOAST:
+                message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                break;
+        }
+    }
+
+    public void showReassignDialog(String message){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setMessage(message);
         dialog.setCancelable(true);
@@ -193,7 +175,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //Update the previous assigned candidate and table set
-                        helper.updateNewCandidate(errorCode);
+                        helper.updateNewCandidate();
                         dialog.cancel();
                     }
                 });

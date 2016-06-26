@@ -71,30 +71,30 @@ public class AssignHelper {
         Identity id = exDBLoader.getIdentity(scanString);
 
         if(id == null)
-            throw new CustomException("Not an Identity", CustomException.ERR_NULL_IDENTITY,
+            throw new CustomException("Not an Identity", CustomException.MESSAGE_TOAST,
                     IconManager.WARNING);
 
         if(id.getRegNum() == null)
             throw new CustomException("FATAL: Unable to process ID",
-                    CustomException.ERR_INCOMPLETE_ID, IconManager.WARNING);
+                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
-            throw new CustomException("No Attendance List", CustomException.ERR_EMPTY_ATTD_LIST,
+            throw new CustomException("No Attendance List", CustomException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
         Candidate candidate = attdList.getCandidate(id.getRegNum());
 
         if(candidate == null){
             throw new CustomException(id.getName() + " doest not belong to this venue",
-                    CustomException.ERR_NULL_CANDIDATE, IconManager.WARNING);
+                    CustomException.MESSAGE_TOAST, IconManager.WARNING);
         } else {
             if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
                 throw new CustomException("The paper was exempted for " +
-                        id.getName(),CustomException.ERR_STATUS_EXEMPTED,
+                        id.getName(),CustomException.MESSAGE_TOAST,
                         IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.BARRED)
                 throw new CustomException(id.getName() + " have been barred",
-                        CustomException.ERR_STATUS_BARRED, IconManager.MESSAGE);
+                        CustomException.MESSAGE_TOAST, IconManager.MESSAGE);
         }
 
         tempCdd = candidate;
@@ -111,19 +111,19 @@ public class AssignHelper {
                 throw new CustomException("Previous: Table " + tempTable + " assigned to "
                         + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
                         + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
-                        CustomException.ERR_TABLE_REASSIGN, IconManager.MESSAGE);
+                        CustomException.UPDATE_PROMPT, IconManager.MESSAGE);
 
             if(assgnList.containsValue(tempCdd.getRegNum()))
                 throw new CustomException("Previous: " + tempCdd.getStudentName()
                         + " assigned to Table "
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
                         + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
-                        CustomException.ERR_CANDIDATE_REASSIGN, IconManager.MESSAGE);
+                        CustomException.UPDATE_PROMPT, IconManager.MESSAGE);
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
                 throw new CustomException(tempCdd.getStudentName() + " should not sit here\n"
                         + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
-                        CustomException.ERR_PAPER_NOT_MATCH, IconManager.WARNING);
+                        CustomException.MESSAGE_TOAST, IconManager.WARNING);
 
             tempCdd.setTableNumber(tempTable);
             tempCdd.setStatus(AttendanceList.Status.PRESENT);
@@ -143,8 +143,8 @@ public class AssignHelper {
 
     //= On Dialog ==================================================================================
     //Replace previously assigned Table Candidate set with New Table Candidate set
-    public void updateNewCandidate(int errCode){
-        if(errCode == CustomException.ERR_TABLE_REASSIGN){
+    public void updateNewCandidate(){
+        if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
             attdList.removeCandidate(cdd.getRegNum());

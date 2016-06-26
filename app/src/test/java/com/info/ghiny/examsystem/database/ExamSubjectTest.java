@@ -2,12 +2,9 @@ package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.tools.CustomException;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Null;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -87,16 +84,16 @@ public class ExamSubjectTest {
     }
 
     //Input to isValidTable() cannot be null
-    //If null entry happen should throw ERR_NULL_TABLE
+    //If null entry happen should throw MESSAGE_DIALOG
     @Test
-    public void testIsValidTable_Input_null_should_throw_ERR_NULL_TABLE() throws Exception{
+    public void testIsValidTable_Input_null_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
             ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
                     ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
             boolean testLogic = testSubject.isValidTable(null);
             fail("Expected ERR_NULL_TABLE but none thrown");
         }catch(CustomException err){
-            assertEquals(CustomException.ERR_NULL_TABLE, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("Input tableNumber is null", err.getErrorMsg());
         }
     }

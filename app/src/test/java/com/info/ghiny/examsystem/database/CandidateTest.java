@@ -60,7 +60,7 @@ public class CandidateTest {
         }
     }
 
-    //If requested paper not in the list, ERR_NULL_PAPER shall be thrown
+    //If requested paper not in the list, MESSAGE_DIALOG shall be thrown
     @Test
     public void testGetPaper_TestPaperDoestNotExist() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
@@ -71,30 +71,31 @@ public class CandidateTest {
                     "BAME 2004", AttendanceList.Status.ABSENT);
 
             ExamSubject getSubject = testCdd.getPaper();
-            fail("Exception ERR_NULL_PAPER expected but none thrown");
+            fail("Exception MESSAGE_DIALOG expected but none thrown");
         }catch (CustomException err){
-            assertEquals(CustomException.ERR_NULL_PAPER, err.getErrorCode());
-            assertEquals("Paper is not in the list", err.getErrorMsg());
+            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("There is no suitable paper for this candidate in this room",
+                    err.getErrorMsg());
         }
     }
 
-    //If Candidate does not have paperCode, getPaper() should throw ERR_NULL_PAPER
+    //If Candidate does not have paperCode, getPaper() should throw MESSAGE_TOAST
     @Test
-    public void testGetPaper_TestNullPaperCode_should_throw_ERR_NULL_PAPER() throws Exception {
+    public void testGetPaper_TestNullPaperCode_should_throw_MESSAGE_TOAST() throws Exception {
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
         paperMap.put(testPaper1.getPaperCode(), testPaper1);
         try{
             Candidate.setPaperList(paperMap);
             Candidate testCdd = new Candidate();
             ExamSubject getSubject = testCdd.getPaper();
-            fail("Expected ERR_NULL_PAPER but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         }catch (CustomException err){
-            assertEquals(CustomException.ERR_NULL_PAPER, err.getErrorCode());
-            assertEquals("Paper Code is null", err.getErrorMsg());
+            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("FATAL: Candidate don't have paper", err.getErrorMsg());
         }
     }
 
-    //If PaperList is not initialized, getPaper() should throw ERR_EMPTY_PAPER_LIST
+    //If PaperList is not initialized, getPaper() should throw MESSAGE_DIALOG
     @Test
     public void testGetPaper_TestEmptyPaperList() throws Exception {
         try{
@@ -102,9 +103,9 @@ public class CandidateTest {
                     "BAME 2134", AttendanceList.Status.ABSENT);;
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(testPaper2, getSubject);
-            fail("Expected ERR_EMPTY_PAPER_LIST but none thrown");
+            fail("Expected MESSAGE_DIALOG but none thrown");
         }catch (CustomException err){
-            assertEquals(CustomException.ERR_EMPTY_PAPER_LIST, err.getErrorCode());
+            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("Paper List haven initialize", err.getErrorMsg());
         }
     }

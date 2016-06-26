@@ -14,22 +14,22 @@ import static org.junit.Assert.*;
 public class CustomExceptionTest {
 
     public void foo() throws CustomException{
-        throw new CustomException("Error Message", CustomException.ERR_NULL_IDENTITY,
+        throw new CustomException("Error Message", CustomException.MESSAGE_TOAST,
                 IconManager.WARNING);
     }
 
     public void foo1() throws CustomException{
-        throw new CustomException(CustomException.ERR_NULL_IDENTITY);
+        throw new CustomException(CustomException.MESSAGE_TOAST);
     }
 
     @Test
     public void testThrowException() throws Exception {
         try{
             foo();
-            fail("Expected ERR_NULL_IDENTITY but none thrown");
+            fail("Expected MESSAGE_TOAST but none thrown");
         } catch(CustomException e){
             assertEquals("Error Message",e.getErrorMsg());
-            assertEquals(CustomException.ERR_NULL_IDENTITY, e.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, e.getErrorType());
             assertEquals(R.drawable.warn_icon, e.getErrorIcon());
         }
     }
@@ -40,7 +40,7 @@ public class CustomExceptionTest {
             foo1();
             fail("Expected ERR_NULL_IDENTITY but none thrown");
         }catch(CustomException e){
-            assertEquals(CustomException.ERR_NULL_IDENTITY, e.getErrorCode());
+            assertEquals(CustomException.MESSAGE_TOAST, e.getErrorType());
             assertNull(e.getMessage());
             assertEquals(R.drawable.warn_icon, e.getErrorIcon());
         }

@@ -102,7 +102,7 @@ public class ExamSubject {
         int endNumber   = startTableNum + numOfCandidate;
 
         if(tableNumber == null)
-            throw new CustomException("Input tableNumber is null", CustomException.ERR_NULL_TABLE,
+            throw new CustomException("Input tableNumber is null", CustomException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
         if(tableNumber < endNumber && tableNumber > startNumber)

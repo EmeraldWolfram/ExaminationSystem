@@ -9,7 +9,6 @@ import android.view.KeyEvent;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
@@ -113,15 +112,8 @@ public class MainLoginActivity extends AppCompatActivity {
                 pwIntent.putExtra("Name", invglt.getName());
                 pwIntent.putExtra("RegNum", invglt.getRegNum());
 
-                switch (err.getErrorCode()){
-                    //Add different case if more feature to be add here
-                    case CustomException.ERR_NULL_IDENTITY:
-                        throw new NullPointerException("Identity should not be null");
-                    default:
-                        message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
-                        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-                        break;
-                }
+                message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
         }
     }
