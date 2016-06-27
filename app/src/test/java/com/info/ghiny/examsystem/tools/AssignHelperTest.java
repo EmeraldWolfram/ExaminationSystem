@@ -399,4 +399,35 @@ public class AssignHelperTest {
         assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
     }
 
+    /*************************************************************
+     * Table 14 previously assigned to Cdd1
+     * Table 14 then assign to Cdd2
+     * cancelNewAssign():
+     * + should remain the previous assigned table and candidate
+     *************************************************************/
+    @Test
+    public void testCancelNewAssign_reaasign_table() throws Exception{
+        AssignHelper helper = new AssignHelper();
+        assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        when(exLoader.getIdentity(anyString()))
+                .thenReturn(new Identity("15WAU00001", "0", false, "FGY"))
+                .thenReturn(new Identity("15WAU00002", "0", false, "NYN"));
+
+        helper.checkTable(14);
+        helper.checkCandidate("15WAU00001");
+        helper.tryAssignCandidate();
+
+        helper.checkTable(14);
+        helper.checkCandidate("15WAU00002");
+
+        helper.cancelNewAssign();
+
+        assertEquals(1, helper.assgnList.size());
+        assertEquals("15WAU00001", helper.assgnList.get(14));
+        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+        assertEquals(2, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        assertEquals(AttendanceList.Status.PRESENT, cdd1.getStatus());
+        assertEquals(AttendanceList.Status.ABSENT, cdd2.getStatus());
+    }
+
 }
