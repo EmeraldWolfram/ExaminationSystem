@@ -10,6 +10,7 @@ public class ProcessException extends Exception {
     public static final int MESSAGE_TOAST   = 0;
     public static final int UPDATE_PROMPT   = 1;
     public static final int MESSAGE_DIALOG  = 2;
+    public static final int FATAL_MESSAGE   = 3;
 
     private int errorType;
     private String errorMsg;

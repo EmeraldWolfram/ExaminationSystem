@@ -1,5 +1,8 @@
 package com.info.ghiny.examsystem.database;
 
+import com.info.ghiny.examsystem.tools.IconManager;
+import com.info.ghiny.examsystem.tools.ProcessException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -47,64 +50,89 @@ public class JdbcDatabase {
         curDriver   = driver;
     }
 
-    public Connection estaConnection() throws Exception{
-        Class.forName(curDriver);
-        return DriverManager.getConnection(curAddress);
+    public Connection estaConnection() throws ProcessException{
+        Connection con = null;
+        try{
+            Class.forName(curDriver);
+            con = DriverManager.getConnection(curAddress);
+        } catch(Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+        return con;
     }
 
-    public void createTableIfNotExist() throws Exception{
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
+    public void createTableIfNotExist() throws ProcessException{
+        try{
+            Connection con = estaConnection();
+            Statement stmt = con.createStatement();
 
-        stmt.execute(CREATE_TABLE);
+            stmt.execute(CREATE_TABLE);
 
-        stmt.close();
-        con.close();
+            stmt.close();
+            con.close();
+        } catch(Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
     }
 
-    public boolean isEmpty() throws Exception{
+    public boolean isEmpty() throws ProcessException{
         Boolean status = true;
+        try{
+            Connection con = estaConnection();
+            Statement stmt = con.createStatement();
 
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
+            stmt.execute(CREATE_TABLE);
+            ResultSet ptr = stmt.executeQuery("SELECT * FROM " + ATTENDANCE_TABLE);
 
-        stmt.execute(CREATE_TABLE);
-        ResultSet ptr = stmt.executeQuery("SELECT * FROM " + ATTENDANCE_TABLE);
+            if(ptr.first())
+                status = false;
 
-        if(ptr.first())
-            status = false;
-
-        ptr.close();
-        stmt.close();
-        con.close();
+            ptr.close();
+            stmt.close();
+            con.close();
+        } catch(Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
         return status;
     }
 
-    public void clearDatabase() throws Exception{
+    public void clearDatabase() throws ProcessException{
+        try {
+            Connection con = estaConnection();
+            Statement stmt = con.createStatement();
 
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
+            stmt.execute(CREATE_TABLE);
+            stmt.executeUpdate("DELETE FROM " + ATTENDANCE_TABLE);
+            stmt.executeUpdate("VACUUM");
 
-        stmt.execute(CREATE_TABLE);
-        stmt.executeUpdate("DELETE FROM " + ATTENDANCE_TABLE);
-        stmt.executeUpdate("VACUUM");
-
-        stmt.close();
-        con.close();
+            stmt.close();
+            con.close();
+        } catch (Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
     }
 
-    public void saveAttendanceList(AttendanceList attdList) throws Exception{
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
-        List<String> regNumList = attdList.getAllCandidateRegNumList();
+    public void saveAttendanceList(AttendanceList attdList) throws ProcessException{
+        try {
+            Connection con = estaConnection();
+            Statement stmt = con.createStatement();
+            List<String> regNumList = attdList.getAllCandidateRegNumList();
 
-        stmt.execute(CREATE_TABLE);
+            stmt.execute(CREATE_TABLE);
 
-        for(int i = 0; i < regNumList.size(); i++)
-            saveAttendance(attdList.getCandidate(regNumList.get(i)), stmt);
+            for (int i = 0; i < regNumList.size(); i++)
+                saveAttendance(attdList.getCandidate(regNumList.get(i)), stmt);
 
-        stmt.close();
-        con.close();
+            stmt.close();
+            con.close();
+        } catch (Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
     }
 
     private void saveAttendance(Candidate cdd, Statement stmt) throws Exception{
@@ -124,16 +152,20 @@ public class JdbcDatabase {
     }
 
     public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-    getLastSavedAttendanceList() throws Exception{
+    getLastSavedAttendanceList() throws ProcessException{
         createTableIfNotExist();
-        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> map;
+        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
+                 map = new HashMap<>();
 
-        map = new HashMap<>();
-        map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
-        map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
-        map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
-        map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
-
+        try {
+            map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
+            map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
+            map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
+            map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
+        } catch (Exception err){
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
         return map;
     }
 
