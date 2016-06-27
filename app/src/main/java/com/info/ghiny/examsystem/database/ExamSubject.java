@@ -1,9 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.IconManager;
 
 import java.util.Date;
@@ -96,13 +93,13 @@ public class ExamSubject {
         return paperDesc;
     }
 
-    public boolean isValidTable(Integer tableNumber) throws CustomException{
+    public boolean isValidTable(Integer tableNumber) throws ProcessException {
         boolean valid   = false;
         int startNumber = startTableNum - 1;
         int endNumber   = startTableNum + numOfCandidate;
 
         if(tableNumber == null)
-            throw new CustomException("Input tableNumber is null", CustomException.MESSAGE_DIALOG,
+            throw new ProcessException("Input tableNumber is null", ProcessException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
         if(tableNumber < endNumber && tableNumber > startNumber)

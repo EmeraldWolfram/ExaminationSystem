@@ -15,19 +15,19 @@ import java.util.HashMap;
  * Created by GhinY on 15/06/2016.
  */
 public class AssignHelper {
-    private Candidate tempCdd;
-    private Integer tempTable;
+    public static Candidate tempCdd = null;
+    public static Integer tempTable = null;
+    public static HashMap<Integer, String> assgnList = new HashMap<>();
+
+    public static final int MAYBE_TABLE     = 0;
+    public static final int MAYBE_CANDIDATE = 1;
+
     private static ExamDatabaseLoader exDBLoader;
     private static JdbcDatabase JdbcLoader;
     private static CheckListLoader clDBLoader;
     private static AttendanceList attdList;
-    public HashMap<Integer, String> assgnList;
-    //= Constructor ================================================================================
-    public AssignHelper(){
-        this.assgnList  = new HashMap<>();
-        this.tempCdd    = null;
-        this.tempTable  = null;
-    }
+
+
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
     public static void setClDBLoader(CheckListLoader dBLoader) {
@@ -59,42 +59,56 @@ public class AssignHelper {
     }
 
     //= Assign =====================================================================================
+    public static int checkScan(String scanStr) throws ProcessException{
+        int flag;
+
+        if(scanStr.length() < 4 && scanStr.length() > 0)
+            flag    =   MAYBE_TABLE;
+        else if(scanStr.length() == 12)
+            flag    =   MAYBE_CANDIDATE;
+        else
+            throw new ProcessException("Not a valid QR",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+
+        return flag;
+    }
+
     //check-in Table
-    public Integer checkTable(Integer table){
+    public static Integer checkTable(Integer table){
         //Add checking mechanism when venue size is valid
         tempTable = table;
         return tempTable;
     }
 
     //check-in Candidate and also check if the candidate is eligible
-    public Candidate checkCandidate(String scanString) throws CustomException{
+    public static Candidate checkCandidate(String scanString) throws ProcessException {
         Identity id = exDBLoader.getIdentity(scanString);
 
         if(id == null)
-            throw new CustomException("Not an Identity", CustomException.MESSAGE_TOAST,
+            throw new ProcessException("Not an Identity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
 
         if(id.getRegNum() == null)
-            throw new CustomException("FATAL: Unable to process ID",
-                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
+            throw new ProcessException("FATAL: Unable to process ID",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
-            throw new CustomException("No Attendance List", CustomException.MESSAGE_DIALOG,
+            throw new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
         Candidate candidate = attdList.getCandidate(id.getRegNum());
 
         if(candidate == null){
-            throw new CustomException(id.getName() + " doest not belong to this venue",
-                    CustomException.MESSAGE_TOAST, IconManager.WARNING);
+            throw new ProcessException(id.getName() + " doest not belong to this venue",
+                    ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         } else {
             if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
-                throw new CustomException("The paper was exempted for " +
-                        id.getName(),CustomException.MESSAGE_TOAST,
+                throw new ProcessException("The paper was exempted for " +
+                        id.getName(), ProcessException.MESSAGE_TOAST,
                         IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.BARRED)
-                throw new CustomException(id.getName() + " have been barred",
-                        CustomException.MESSAGE_TOAST, IconManager.MESSAGE);
+                throw new ProcessException(id.getName() + " have been barred",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }
 
         tempCdd = candidate;
@@ -102,28 +116,28 @@ public class AssignHelper {
     }
 
     //assign the check-in Table Candidate Set in to the List
-    public boolean tryAssignCandidate() throws CustomException{
+    public static boolean tryAssignCandidate() throws ProcessException {
         boolean assigned = false;
 
         if(tempTable != null && tempCdd != null){
             //If ExamSubject range does not meet, DO something
             if(assgnList.containsKey(tempTable))
-                throw new CustomException("Previous: Table " + tempTable + " assigned to "
+                throw new ProcessException("Previous: Table " + tempTable + " assigned to "
                         + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
                         + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
-                        CustomException.UPDATE_PROMPT, IconManager.MESSAGE);
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
 
             if(assgnList.containsValue(tempCdd.getRegNum()))
-                throw new CustomException("Previous: " + tempCdd.getStudentName()
+                throw new ProcessException("Previous: " + tempCdd.getStudentName()
                         + " assigned to Table "
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
                         + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
-                        CustomException.UPDATE_PROMPT, IconManager.MESSAGE);
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
-                throw new CustomException(tempCdd.getStudentName() + " should not sit here\n"
+                throw new ProcessException(tempCdd.getStudentName() + " should not sit here\n"
                         + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
-                        CustomException.MESSAGE_TOAST, IconManager.WARNING);
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
 
             tempCdd.setTableNumber(tempTable);
             tempCdd.setStatus(AttendanceList.Status.PRESENT);
@@ -143,7 +157,7 @@ public class AssignHelper {
 
     //= On Dialog ==================================================================================
     //Replace previously assigned Table Candidate set with New Table Candidate set
-    public void updateNewCandidate(){
+    public static void updateNewCandidate(){
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
@@ -170,7 +184,7 @@ public class AssignHelper {
     }
 
     //Remain previously assigned Table Candidate set and discard New Table Candidate set
-    public void cancelNewAssign(){
+    public static void cancelNewAssign(){
         tempCdd     = null;
         tempTable   = null;
     }

@@ -9,7 +9,8 @@ import android.view.KeyEvent;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -25,7 +26,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private static final int PASSWORD_REQ_CODE = 888;
     private Identity invglt;
     private Intent pwIntent;
-    private CustomToast message;
+    private ErrorManager errorManager;
 
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -48,7 +49,7 @@ public class MainLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_login);
 
         databaseHelper = new ExamDatabaseLoader(this);
-        message = new CustomToast(this);
+        errorManager    = new ErrorManager(this);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
         barcodeView.decodeContinuous(callback);
@@ -88,10 +89,10 @@ public class MainLoginActivity extends AppCompatActivity {
 
             //Start the activity
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-        } catch (CustomException err){
-            message.showCustomMessageWithCondition(err.getErrorMsg(), err.getErrorIcon(),
-                    message.checkEqualToast(err.getErrorMsg()));
-
+        } catch (ProcessException err){
+            barcodeView.pause();
+            errorManager.displayError(err);
+            barcodeView.resume();
         }
     }
 
@@ -102,17 +103,17 @@ public class MainLoginActivity extends AppCompatActivity {
                 LoginHelper.checkInputPassword(invglt, password);
 
                 //Successful login, start AssignActivity
-                //Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
-            } catch(CustomException err){
+            } catch(ProcessException err){
                 //Error were caught during checkInputPassword
                 //Ready to start the PopUp Login prompt window
                 pwIntent = new Intent(this, PopUpLogin.class);
                 pwIntent.putExtra("Name", invglt.getName());
                 pwIntent.putExtra("RegNum", invglt.getRegNum());
 
-                message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                errorManager.displayError(err);
+
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
         }

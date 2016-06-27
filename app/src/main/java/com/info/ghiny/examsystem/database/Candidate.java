@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.database;
 
 import android.support.annotation.Nullable;
 
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.IconManager;
 
 import java.util.HashMap;
@@ -61,11 +61,11 @@ public class Candidate {
         return paperCode;
     }
 
-    public ExamSubject getPaper() throws CustomException{
+    public ExamSubject getPaper() throws ProcessException {
         ExamSubject subject = getExamSubject(paperCode);
         if(subject == null){
-            throw new CustomException("There is no suitable paper for this candidate in this room",
-                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
+            throw new ProcessException("There is no suitable paper for this candidate in this room",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
 
         return subject;
@@ -110,15 +110,15 @@ public class Candidate {
     }
 
     @Nullable
-    private static ExamSubject getExamSubject(String paperCode) throws CustomException{
+    private static ExamSubject getExamSubject(String paperCode) throws ProcessException {
         if(paperCode == null){
-            throw new CustomException("FATAL: Candidate don't have paper",
-                    CustomException.MESSAGE_TOAST, IconManager.WARNING);
+            throw new ProcessException("FATAL: Candidate don't have paper",
+                    ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
 
         if(paperList == null){
-            throw new CustomException("Paper List haven initialize",
-                    CustomException.MESSAGE_DIALOG, IconManager.WARNING);
+            throw new ProcessException("Paper List haven initialize",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
         return paperList.get(paperCode);
     }

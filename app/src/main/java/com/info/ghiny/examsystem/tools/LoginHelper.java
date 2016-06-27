@@ -11,30 +11,30 @@ import com.info.ghiny.examsystem.database.Identity;
  */
 public class LoginHelper {
     //This method take in an id and check if the id is an invigilator identity
-    public static void checkInvigilator(Identity invglt) throws CustomException{
+    public static void checkInvigilator(Identity invglt) throws ProcessException {
         if(invglt == null){
-            throw new CustomException("Not an Identity", CustomException.MESSAGE_TOAST,
+            throw new ProcessException("Not an Identity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         } else {
             if(!invglt.getEligible())
-                throw new CustomException("Unauthorized Invigilator",
-                        CustomException.MESSAGE_TOAST, IconManager.WARNING);
+                throw new ProcessException("Unauthorized Invigilator",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
     }
 
     //This method check whether the input password was the password of the invglt
-    public static void checkInputPassword(Identity invglt, String pw) throws CustomException{
+    public static void checkInputPassword(Identity invglt, String pw) throws ProcessException {
         if(invglt == null)
-            throw new CustomException("Input ID is null", CustomException.MESSAGE_TOAST,
+            throw new ProcessException("Input ID is null", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
 
         if(pw == null || pw.isEmpty()) {
-            throw new CustomException("Please enter a password to proceed",
-                    CustomException.MESSAGE_TOAST, IconManager.MESSAGE);
+            throw new ProcessException("Please enter a password to proceed",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         } else {
             if (!invglt.matchPassword(pw))
-                throw new CustomException("Input password is incorrect",
-                        CustomException.MESSAGE_TOAST, IconManager.WARNING);
+                throw new ProcessException("Input password is incorrect",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
     }
 

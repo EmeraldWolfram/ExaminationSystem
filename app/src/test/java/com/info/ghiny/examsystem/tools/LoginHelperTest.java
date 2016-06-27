@@ -18,8 +18,8 @@ public class LoginHelperTest {
         try{
             LoginHelper.checkInvigilator(null);
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not an Identity", err.getErrorMsg());
         }
     }
@@ -31,8 +31,8 @@ public class LoginHelperTest {
             Identity id = new Identity("12WW", "0123", false, "MR. TEST");
             LoginHelper.checkInvigilator(id);
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Unauthorized Invigilator", err.getErrorMsg());
         }
     }
@@ -43,7 +43,7 @@ public class LoginHelperTest {
         try{
             Identity id = new Identity("12WW", "0123", true, "MR. TEST");
             LoginHelper.checkInvigilator(id);
-        } catch (CustomException err){
+        } catch (ProcessException err){
             fail("Expect no error but obtained ErrMsg - " + err.getErrorMsg());
         }
     }
@@ -55,8 +55,8 @@ public class LoginHelperTest {
         try{
             LoginHelper.checkInputPassword(null, null);
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Input ID is null", err.getErrorMsg());
         }
     }
@@ -70,8 +70,8 @@ public class LoginHelperTest {
             LoginHelper.checkInputPassword(id, null);
 
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Please enter a password to proceed", err.getErrorMsg());
         }
     }
@@ -85,8 +85,8 @@ public class LoginHelperTest {
             LoginHelper.checkInputPassword(id, "");
 
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Please enter a password to proceed", err.getErrorMsg());
         }
     }
@@ -100,8 +100,8 @@ public class LoginHelperTest {
             LoginHelper.checkInputPassword(id, "01234");
 
             fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Input password is incorrect", err.getErrorMsg());
         }
     }

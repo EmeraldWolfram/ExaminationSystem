@@ -9,7 +9,6 @@ import android.view.View;
 
 
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
-import com.info.ghiny.examsystem.tools.CustomException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 
 /**

@@ -15,7 +15,8 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
@@ -32,8 +33,8 @@ public class AssignInfoActivity extends AppCompatActivity {
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
-    private AssignHelper helper;
     private CustomToast message;                //Toast message tool
+    private ErrorManager errManager;
     private Candidate cdd;
 
     private CompoundBarcodeView barcodeView;
@@ -55,8 +56,9 @@ public class AssignInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
-        message = new CustomToast(this);
-        helper  = new AssignHelper();
+        errManager  = new ErrorManager(this);
+        message     = new CustomToast(this);
+
         CheckListLoader clDBLoader      = new CheckListLoader(this);
         ExamDatabaseLoader exDBLoader   = new ExamDatabaseLoader(this);
 
@@ -124,21 +126,22 @@ public class AssignInfoActivity extends AppCompatActivity {
         assert regNumView   != null;    assert paperView   != null;
 
         try{
+            int scanPossibly    =   AssignHelper.checkScan(scanString);
 
-            if(scanString.length() < 4){
-                helper.checkTable(Integer.parseInt(scanString));
+            if(scanPossibly == AssignHelper.MAYBE_TABLE){
+                AssignHelper.checkTable(Integer.parseInt(scanString));
                 tableView.setText(scanString);
             }
 
-            if(scanString.length() == 12){
-                cdd = helper.checkCandidate(scanString);
+            if(scanPossibly == AssignHelper.MAYBE_CANDIDATE){
+                cdd = AssignHelper.checkCandidate(scanString);
                 //Candidate is legal, display all the candidate value
                 cddView.setText(cdd.getStudentName());
                 regNumView.setText(cdd.getRegNum());
                 paperView.setText(cdd.getPaper().toString());
             }
 
-            if(helper.tryAssignCandidate()){
+            if(AssignHelper.tryAssignCandidate()){
                 //Candidate successfully assigned, clear display and acknowledge with message
                 tableView.setText("");  cddView.setText("");
                 regNumView.setText(""); paperView.setText("");
@@ -147,71 +150,11 @@ public class AssignInfoActivity extends AppCompatActivity {
                         + cdd.getTableNumber().toString(),
                         new IconManager().getIcon(IconManager.ASSIGNED));
             }
-        } catch(CustomException err){
-            displayError(err);
+        } catch(ProcessException err){
+            barcodeView.pause();
+            errManager.displayError(err);
+            barcodeView.resume();
         }
-    }
-
-    public void displayError(CustomException err){
-        barcodeView.pause();
-        switch(err.getErrorType()){
-            case CustomException.UPDATE_PROMPT:
-                showReassignDialog(err.getMessage());
-                break;
-            case CustomException.MESSAGE_DIALOG:
-                showMessageDialog(err.getMessage());
-                break;
-            case CustomException.MESSAGE_TOAST:
-                message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
-                barcodeView.resume();
-                break;
-        }
-    }
-
-    public void showReassignDialog(String message){
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setMessage(message);
-        dialog.setCancelable(true);
-        dialog.setPositiveButton(
-                "UPDATE",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Update the previous assigned candidate and table set
-                        helper.updateNewCandidate();
-                        barcodeView.resume();
-                        dialog.cancel();
-                    }
-                });
-        dialog.setNegativeButton(
-                "REMAIN",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Remain the previous assigned candidate and table set
-                        helper.cancelNewAssign();
-                        barcodeView.resume();
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = dialog.create();
-        alert.show();
-    }
-
-    public void showMessageDialog(String message){
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setMessage(message);
-        dialog.setCancelable(true);
-
-        dialog.setNeutralButton(
-                "Okay",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        barcodeView.resume();
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alert = dialog.create();
-        alert.show();
     }
 
 }

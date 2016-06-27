@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ProcessException;
 
 import org.junit.Test;
 
@@ -92,8 +92,8 @@ public class ExamSubjectTest {
                     ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
             boolean testLogic = testSubject.isValidTable(null);
             fail("Expected ERR_NULL_TABLE but none thrown");
-        }catch(CustomException err){
-            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
+        }catch(ProcessException err){
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("Input tableNumber is null", err.getErrorMsg());
         }
     }

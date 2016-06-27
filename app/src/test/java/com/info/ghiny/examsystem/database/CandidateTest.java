@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.CustomException;
+import com.info.ghiny.examsystem.tools.ProcessException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class CandidateTest {
                     "BAME 2134", AttendanceList.Status.ABSENT);
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(getSubject, testPaper1);
-        }catch (CustomException err){
+        }catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
     }
@@ -72,8 +72,8 @@ public class CandidateTest {
 
             ExamSubject getSubject = testCdd.getPaper();
             fail("Exception MESSAGE_DIALOG expected but none thrown");
-        }catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
+        }catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("There is no suitable paper for this candidate in this room",
                     err.getErrorMsg());
         }
@@ -89,8 +89,8 @@ public class CandidateTest {
             Candidate testCdd = new Candidate();
             ExamSubject getSubject = testCdd.getPaper();
             fail("Expected MESSAGE_TOAST but none thrown");
-        }catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_TOAST, err.getErrorType());
+        }catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("FATAL: Candidate don't have paper", err.getErrorMsg());
         }
     }
@@ -104,8 +104,8 @@ public class CandidateTest {
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(testPaper2, getSubject);
             fail("Expected MESSAGE_DIALOG but none thrown");
-        }catch (CustomException err){
-            assertEquals(CustomException.MESSAGE_DIALOG, err.getErrorType());
+        }catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals("Paper List haven initialize", err.getErrorMsg());
         }
     }

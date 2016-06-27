@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.tools.CustomException;
 
 import java.util.HashMap;
 import java.util.List;
