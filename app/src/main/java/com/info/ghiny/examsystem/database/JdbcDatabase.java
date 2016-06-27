@@ -14,11 +14,12 @@ import java.util.List;
 public class JdbcDatabase {
 
     private static final int DB_VERSION = 1;
-    private static final String PACKAGE = "com.info.ghiny.examsystem";
-    private static final String DB_NAME = "CheckList.db";
+    public static final String DB_NAME = "CheckList.db";
 
+    private static final String PACKAGE = "com.info.ghiny.examsystem";
     public static final String DRIVER  = "org.sqldroid.SQLDroidDriver";
-    public static final String ADDRESS = "jdbc:sqldroid:/data/data/" + PACKAGE + "/" + DB_NAME;
+    public static final String ADDRESS = "jdbc:sqldroid:/data/data/" + PACKAGE
+                                            + "/databases/" + DB_NAME;
 
     private static final String ATTENDANCE_TABLE        = "AttdTable";
     public static final String TABLE_INFO_ID            = "_id";
@@ -32,6 +33,15 @@ public class JdbcDatabase {
     private String curDriver;
     private String curAddress;
 
+    private String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + ATTENDANCE_TABLE  + "( "
+            + TABLE_INFO_ID             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TABLE_INFO_COLUMN_REGNUM  + " TEXT    NOT NULL, "
+            + TABLE_INFO_COLUMN_NAME    + " TEXT    NOT NULL, "
+            + TABLE_INFO_COLUMN_STATUS  + " TEXT    NOT NULL, "
+            + TABLE_INFO_COLUMN_CODE    + " TEXT    NOT NULL, "
+            + TABLE_INFO_COLUMN_PRG     + " TEXT    NOT NULL, "
+            + TABLE_INFO_COLUMN_TABLE   + " INT     NOT NULL)";
+
     public JdbcDatabase(String driver, String url){
         curAddress  = url;
         curDriver   = driver;
@@ -43,63 +53,13 @@ public class JdbcDatabase {
     }
 
     public void createTableIfNotExist() throws Exception{
-        Connection con  = estaConnection();
-
-        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + ATTENDANCE_TABLE  + "( "
-                + TABLE_INFO_ID             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + TABLE_INFO_COLUMN_REGNUM  + " TEXT    NOT NULL, "
-                + TABLE_INFO_COLUMN_NAME    + " TEXT    NOT NULL, "
-                + TABLE_INFO_COLUMN_STATUS  + " TEXT    NOT NULL, "
-                + TABLE_INFO_COLUMN_CODE    + " TEXT    NOT NULL, "
-                + TABLE_INFO_COLUMN_PRG     + " TEXT    NOT NULL, "
-                + TABLE_INFO_COLUMN_TABLE   + " INT     NOT NULL)";
-
-        Statement stmt = con.createStatement();
-        stmt.executeUpdate(CREATE_TABLE);
-
-        stmt.close();
-        con.close();
-    }
-
-    public void clearDatabase() throws Exception{
         Connection con = estaConnection();
         Statement stmt = con.createStatement();
 
-        stmt.executeUpdate("DELETE FROM " + ATTENDANCE_TABLE);
-        stmt.executeUpdate("VACUUM");
+        stmt.execute(CREATE_TABLE);
 
         stmt.close();
         con.close();
-    }
-
-    public void saveAttendanceList(AttendanceList attdList) throws Exception{
-        //clearDatabase();
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
-        List<String> regNumList = attdList.getAllCandidateRegNumList();
-
-        for(int i = 0; i < regNumList.size(); i++)
-            saveAttendance(attdList.getCandidate(regNumList.get(i)), stmt);
-
-        stmt.close();
-        con.close();
-    }
-
-    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-    getLastSavedAttendanceList() throws Exception{
-        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> map;
-        Connection con = estaConnection();
-        Statement stmt = con.createStatement();
-
-        map = new HashMap<>();
-        map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT, stmt));
-        //map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT, stmt));
-        //map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED, stmt));
-        //map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED, stmt));
-
-        stmt.close();
-        con.close();
-        return map;
     }
 
     public boolean isEmpty() throws Exception{
@@ -108,7 +68,9 @@ public class JdbcDatabase {
         Connection con = estaConnection();
         Statement stmt = con.createStatement();
 
-        ResultSet ptr = stmt.executeQuery("SELECT * FROM " + ATTENDANCE_TABLE + ";");
+        stmt.execute(CREATE_TABLE);
+        ResultSet ptr = stmt.executeQuery("SELECT * FROM " + ATTENDANCE_TABLE);
+
         if(ptr.first())
             status = false;
 
@@ -118,26 +80,70 @@ public class JdbcDatabase {
         return status;
     }
 
+    public void clearDatabase() throws Exception{
+
+        Connection con = estaConnection();
+        Statement stmt = con.createStatement();
+
+        stmt.execute(CREATE_TABLE);
+        stmt.executeUpdate("DELETE FROM " + ATTENDANCE_TABLE);
+        stmt.executeUpdate("VACUUM");
+
+        stmt.close();
+        con.close();
+    }
+
+    public void saveAttendanceList(AttendanceList attdList) throws Exception{
+        Connection con = estaConnection();
+        Statement stmt = con.createStatement();
+        List<String> regNumList = attdList.getAllCandidateRegNumList();
+
+        stmt.execute(CREATE_TABLE);
+
+        for(int i = 0; i < regNumList.size(); i++)
+            saveAttendance(attdList.getCandidate(regNumList.get(i)), stmt);
+
+        stmt.close();
+        con.close();
+    }
+
     private void saveAttendance(Candidate cdd, Statement stmt) throws Exception{
         String SAVE_ATTENDANCE = "INSERT INTO "     + ATTENDANCE_TABLE
                 + " (" + TABLE_INFO_COLUMN_NAME     + ", " + TABLE_INFO_COLUMN_REGNUM
-                + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_TABLE
-                + ", " + TABLE_INFO_COLUMN_STATUS   + ", " + TABLE_INFO_COLUMN_PRG
+                + ", " + TABLE_INFO_COLUMN_TABLE    + ", " + TABLE_INFO_COLUMN_STATUS
+                + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_PRG
                 + ") VALUES ('";
 
         stmt.executeUpdate(SAVE_ATTENDANCE
                 + cdd.getStudentName()  + "', '"
-                + cdd.getRegNum()       + "', '"
-                + cdd.getPaperCode()    + "', "
+                + cdd.getRegNum()       + "', "
                 + cdd.getTableNumber()  + ", '"
                 + cdd.getStatus()       + "', '"
+                + cdd.getPaperCode()    + "', '"
                 + cdd.getProgramme()    + "')");
     }
 
+    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
+    getLastSavedAttendanceList() throws Exception{
+        createTableIfNotExist();
+        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> map;
+
+        map = new HashMap<>();
+        map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
+        map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
+        map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
+        map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
+
+        return map;
+    }
+
     private HashMap<String, HashMap<String, HashMap<String, Candidate>>>
-    getPaperMap(AttendanceList.Status status, Statement stmt) throws Exception{
+    getPaperMap(AttendanceList.Status status) throws Exception{
 
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperMap = new HashMap<>();
+        Connection con = estaConnection();
+        Statement stmt = con.createStatement();
+
         List<String> paperCodeList = getDistinctPaperCode(stmt);
 
         ResultSet ptr = stmt.executeQuery("SELECT * FROM "  + ATTENDANCE_TABLE + " WHERE "
@@ -155,6 +161,8 @@ public class JdbcDatabase {
         }
         paperCodeList.clear();
         ptr.close();
+        stmt.close();
+        con.close();
         return paperMap;
     }
 

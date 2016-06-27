@@ -153,6 +153,7 @@ public class AssignInfoActivity extends AppCompatActivity {
     }
 
     public void displayError(CustomException err){
+        barcodeView.pause();
         switch(err.getErrorType()){
             case CustomException.UPDATE_PROMPT:
                 showReassignDialog(err.getMessage());
@@ -162,6 +163,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                 break;
             case CustomException.MESSAGE_TOAST:
                 message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
+                barcodeView.resume();
                 break;
         }
     }
@@ -176,6 +178,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         //Update the previous assigned candidate and table set
                         helper.updateNewCandidate();
+                        barcodeView.resume();
                         dialog.cancel();
                     }
                 });
@@ -185,6 +188,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         //Remain the previous assigned candidate and table set
                         helper.cancelNewAssign();
+                        barcodeView.resume();
                         dialog.cancel();
                     }
                 });
@@ -201,6 +205,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                 "Okay",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        barcodeView.resume();
                         dialog.cancel();
                     }
                 });

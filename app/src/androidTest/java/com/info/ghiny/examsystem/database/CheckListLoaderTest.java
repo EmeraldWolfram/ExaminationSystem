@@ -119,8 +119,7 @@ public class CheckListLoaderTest {
     /*********************************************************************
      * getLastSavedAttd()
      *
-     * should return an empty HashMap of AttendanceList
-     * instead of null when the database is empty.
+     * should return a HashMap of AttendanceList as in the database
      **********************************************************************/
     @Test
     public void testGetLastSavedAttendanceList() throws Exception {

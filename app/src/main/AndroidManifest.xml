@@ -23,9 +23,6 @@
             android:name=".AssignInfoActivity"
             android:screenOrientation="userPortrait"/>
         <activity
-            android:name=".CheckListActivity"
-            android:screenOrientation="userPortrait"/>
-        <activity
             android:name=".FragmentListActivity"
             android:screenOrientation="userPortrait"/>
         <activity
