@@ -90,7 +90,7 @@ public class AssignHelper {
 
         if(id.getRegNum() == null)
             throw new ProcessException("FATAL: Unable to process ID",
-                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
             throw new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
@@ -104,11 +104,13 @@ public class AssignHelper {
         } else {
             if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
                 throw new ProcessException("The paper was exempted for " +
-                        id.getName(), ProcessException.MESSAGE_TOAST,
-                        IconManager.MESSAGE);
+                        id.getName(), ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.BARRED)
                 throw new ProcessException(id.getName() + " have been barred",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            if(candidate.getStatus() == AttendanceList.Status.QUARANTIZED)
+                throw new ProcessException("The paper was quarantized for " +
+                        id.getName(), ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }
 
         tempCdd = candidate;

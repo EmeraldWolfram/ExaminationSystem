@@ -31,6 +31,7 @@ public class AssignHelperTest {
     Candidate cdd3;
     Candidate cdd4;
     Candidate cdd5;
+    Candidate cdd6;
     Candidate testDummy;
 
     HashMap<String, ExamSubject> paperList;
@@ -46,12 +47,14 @@ public class AssignHelperTest {
         cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
         cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
         cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
+        cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", AttendanceList.Status.QUARANTIZED);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
         attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+        attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
         paperList   = new HashMap<>();
         subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, new Date(), 20,
@@ -137,6 +140,21 @@ public class AssignHelperTest {
         }
     }
 
+    //Check if checkCandidate() can detect a candidate with status Quarantized
+    @Test
+    public void testCheckCandidate_detect_QUARANTINZED_Candidate_throw_MESSAGE_TOAST() throws Exception{
+        try{
+            when(exLoader.getIdentity("15WAR00006"))
+                    .thenReturn(new Identity("15WAR00006", "0", false, "Ms. Qua"));
+
+            testDummy = AssignHelper.checkCandidate("15WAR00006");
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch(ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The paper was quarantized for Ms. Qua", err.getErrorMsg());
+        }
+    }
+
     //Check if checkCandidate() can detect the input Identity that doesn't have a regNum
     @Test
     public void testCheckCandidate_ID_without_regNum_should_throw_MESSAGE_DIALOG() throws Exception{
@@ -146,7 +164,7 @@ public class AssignHelperTest {
             testDummy = AssignHelper.checkCandidate("15WAU00004");
             fail("Expected MESSAGE_DIALOG but none thrown");
         } catch(ProcessException err){
-            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("FATAL: Unable to process ID", err.getErrorMsg());
         }
     }

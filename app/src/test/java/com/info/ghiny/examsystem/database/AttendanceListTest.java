@@ -191,13 +191,13 @@ public class AttendanceListTest {
     public void testAddCandidate_EmptyCandidateList() throws Exception {
         assertEquals(0, attdList.getTotalNumberOfCandidates());
         assertEquals(0, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
-        assertEquals(4, attdList.getNumberOfStatus());
+        assertEquals(5, attdList.getNumberOfStatus());
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
 
         assertEquals(1, attdList.getTotalNumberOfCandidates());
         assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
-        assertEquals(4, attdList.getNumberOfStatus());
+        assertEquals(5, attdList.getNumberOfStatus());
     }
 
     //If the candidate to be added was existed in the list, the new added
@@ -206,14 +206,14 @@ public class AttendanceListTest {
     public void testAddCandidate_SameCandidateOccured() throws Exception {
         assertEquals(0, attdList.getTotalNumberOfCandidates());
         assertEquals(0, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
-        assertEquals(4, attdList.getNumberOfStatus());
+        assertEquals(5, attdList.getNumberOfStatus());
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
 
         assertEquals(1, attdList.getTotalNumberOfCandidates());
         assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
-        assertEquals(4, attdList.getNumberOfStatus());
+        assertEquals(5, attdList.getNumberOfStatus());
     }
 
     //Adding different candidate with the same paper should append the candidate List

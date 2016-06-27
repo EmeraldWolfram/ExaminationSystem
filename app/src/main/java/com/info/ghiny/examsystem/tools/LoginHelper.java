@@ -25,7 +25,7 @@ public class LoginHelper {
     //This method check whether the input password was the password of the invglt
     public static void checkInputPassword(Identity invglt, String pw) throws ProcessException {
         if(invglt == null)
-            throw new ProcessException("Input ID is null", ProcessException.MESSAGE_TOAST,
+            throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);
 
         if(pw == null || pw.isEmpty()) {

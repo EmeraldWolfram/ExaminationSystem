@@ -162,6 +162,7 @@ public class JdbcDatabase {
             map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
             map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
             map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
+            map.put(AttendanceList.Status.QUARANTIZED, getPaperMap(AttendanceList.Status.QUARANTIZED));
         } catch (Exception err){
             throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);

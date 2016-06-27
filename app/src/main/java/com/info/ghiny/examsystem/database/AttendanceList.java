@@ -15,7 +15,8 @@ public class AttendanceList {
         PRESENT,
         ABSENT,
         EXEMPTED,
-        BARRED
+        BARRED,
+        QUARANTIZED
     }
     private HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
             attendanceList;
@@ -27,22 +28,26 @@ public class AttendanceList {
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> absent  = new HashMap<>();
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> barred  = new HashMap<>();
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt  = new HashMap<>();
+        HashMap<String, HashMap<String, HashMap<String, Candidate>>> quaran  = new HashMap<>();
 
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
+        attendanceList.put(Status.QUARANTIZED, quaran);
     }
 
     public AttendanceList(HashMap<String, HashMap<String, HashMap<String, Candidate>>> present,
                           HashMap<String, HashMap<String, HashMap<String, Candidate>>> absent,
                           HashMap<String, HashMap<String, HashMap<String, Candidate>>> barred,
-                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt){
+                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt,
+                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> quaran){
         attendanceList = new HashMap<>();
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
+        attendanceList.put(Status.QUARANTIZED, quaran);
     }
 
     //Inherit Methods
