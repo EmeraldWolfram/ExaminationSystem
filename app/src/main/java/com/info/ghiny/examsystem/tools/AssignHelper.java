@@ -6,6 +6,7 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.JdbcDatabase;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,17 +18,16 @@ public class AssignHelper {
     private Candidate tempCdd;
     private Integer tempTable;
     private static ExamDatabaseLoader exDBLoader;
+    private static JdbcDatabase JdbcLoader;
     private static CheckListLoader clDBLoader;
     private static AttendanceList attdList;
     public HashMap<Integer, String> assgnList;
-
     //= Constructor ================================================================================
     public AssignHelper(){
         this.assgnList  = new HashMap<>();
         this.tempCdd    = null;
         this.tempTable  = null;
     }
-
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
     public static void setClDBLoader(CheckListLoader dBLoader) {
