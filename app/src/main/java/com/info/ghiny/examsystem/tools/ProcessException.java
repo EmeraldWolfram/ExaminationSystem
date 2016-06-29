@@ -15,29 +15,48 @@ public class ProcessException extends Exception {
     private int errorType;
     private String errorMsg;
     private int errorIconType;
+    private ExceptionAction errorAction;
 
     public ProcessException(int errorType){
         this.errorType      = errorType;
         this.errorMsg       = null;
         this.errorIconType  = IconManager.WARNING;
+        this.errorAction    = new ExceptionAction();
     }
 
-    public ProcessException(String message, int errorType, int errorIconType){
-        super(message);
-        this.errorType      = errorType;
-        this.errorMsg       = message;
-        this.errorIconType  = errorIconType;
+    public ProcessException(String errMsg, int errType, int errIconType){
+        super(errMsg);
+        this.errorType      = errType;
+        this.errorMsg       = errMsg;
+        this.errorIconType  = errIconType;
     }
-
+/*
+    public ProcessException(String errMsg, int errType, int errIconType, ExceptionAction errAction){
+        super(errMsg);
+        this.errorType      = errType;
+        this.errorMsg       = errMsg;
+        this.errorIconType  = errIconType;
+        this.errorAction    = errAction;
+    }
+*/
     public int getErrorType(){
         return errorType;
     }
 
     public String getErrorMsg() {
+        if(errorMsg == null){
+            errorMsg = "";
+        }
         return errorMsg;
     }
 
     public int getErrorIcon(){
         return new IconManager().getIcon(errorIconType);
     }
+
+    public void onPositive(){}
+
+    public void onNegative(){}
+
+    public void onNeutral(){}
 }

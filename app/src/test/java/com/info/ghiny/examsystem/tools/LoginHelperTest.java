@@ -56,7 +56,7 @@ public class LoginHelperTest {
             LoginHelper.checkInputPassword(null, null);
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("Input ID is null", err.getErrorMsg());
         }
     }

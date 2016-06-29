@@ -67,8 +67,8 @@ public class AssignHelper {
         else if(scanStr.length() == 12)
             flag    =   MAYBE_CANDIDATE;
         else
-            throw new ProcessException("Not a valid QR",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
+                    IconManager.MESSAGE);
 
         return flag;
     }
@@ -103,14 +103,14 @@ public class AssignHelper {
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         } else {
             if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
-                throw new ProcessException("The paper was exempted for " +
-                        id.getName(), ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+                throw new ProcessException("The paper was exempted for " + id.getName(),
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.BARRED)
                 throw new ProcessException(id.getName() + " have been barred",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             if(candidate.getStatus() == AttendanceList.Status.QUARANTIZED)
-                throw new ProcessException("The paper was quarantized for " +
-                        id.getName(), ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+                throw new ProcessException("The paper was quarantized for " + id.getName(),
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }
 
         tempCdd = candidate;
@@ -127,14 +127,34 @@ public class AssignHelper {
                 throw new ProcessException("Previous: Table " + tempTable + " assigned to "
                         + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
                         + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
-                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
+                    @Override
+                    public void onPositive() {
+                        updateNewCandidate();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        cancelNewAssign();
+                    }
+                };
 
             if(assgnList.containsValue(tempCdd.getRegNum()))
                 throw new ProcessException("Previous: " + tempCdd.getStudentName()
                         + " assigned to Table "
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
                         + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
-                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
+                    @Override
+                    public void onPositive() {
+                        updateNewCandidate();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        cancelNewAssign();
+                    }
+                };
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
                 throw new ProcessException(tempCdd.getStudentName() + " should not sit here\n"

@@ -21,10 +21,10 @@ public class ErrorManager {
     public void displayError(ProcessException err){
         switch(err.getErrorType()){
             case ProcessException.UPDATE_PROMPT:
-                showReassignDialog(err.getMessage());
+                showReassignDialog(err);
                 break;
             case ProcessException.MESSAGE_DIALOG:
-                showMessageDialog(err.getMessage());
+                showMessageDialog(err);
                 break;
             case ProcessException.MESSAGE_TOAST:
                 showToastMessage(err);
@@ -40,16 +40,17 @@ public class ErrorManager {
         message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
     }
 
-    public void showReassignDialog(String message){
+    public void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
-        dialog.setMessage(message);
+        dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setPositiveButton(
                 "UPDATE",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //Update the previous assigned candidate and table set
-                        AssignHelper.updateNewCandidate();
+                        err.onPositive();
+                        //AssignHelper.updateNewCandidate();
                         dialog.cancel();
                     }
                 });
@@ -58,7 +59,8 @@ public class ErrorManager {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //Remain the previous assigned candidate and table set
-                        AssignHelper.cancelNewAssign();
+                        err.onNegative();
+                        //AssignHelper.cancelNewAssign();
                         dialog.cancel();
                     }
                 });
@@ -66,15 +68,16 @@ public class ErrorManager {
         alert.show();
     }
 
-    public void showMessageDialog(String message){
+    public void showMessageDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
-        dialog.setMessage(message);
+        dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
 
         dialog.setNeutralButton(
                 "Okay",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        err.onNeutral();
                         dialog.cancel();
                     }
                 });
