@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_margin="10dp"
+        android:id="@+id/imageAssignButton"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:src="@drawable/ic_crop_free_black_150dp"
+        android:background="@drawable/custom_border"
+        android:onClick="onAssign"
+        android:contentDescription="assign"/>
+
+    <ImageButton
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_margin="10dp"
+        android:id="@+id/imageInfoButton"
+        android:layout_row="0"
+        android:src="@drawable/ic_person_black_150dp"
+        android:layout_column="11"
+        android:background="@drawable/custom_border"
+        android:onClick="onInfo"
+        android:contentDescription="candidate info"/>
+
+    <ImageButton
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_margin="10dp"
+        android:id="@+id/imageSubmitButton"
+        android:layout_row="1"
+        android:src="@drawable/ic_cloud_upload_black_150dp"
+        android:layout_column="0"
+        android:background="@drawable/custom_border"
+        android:onClick="onSubmission"
+        android:contentDescription="submission"/>
+
+    <ImageButton
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_margin="10dp"
+        android:id="@+id/imageSettingButton"
+        android:layout_row="1"
+        android:src="@drawable/ic_build_black_150dp"
+        android:layout_column="11"
+        android:onClick="onSetting"
+        android:background="@drawable/custom_border"/>
+
+</GridLayout>

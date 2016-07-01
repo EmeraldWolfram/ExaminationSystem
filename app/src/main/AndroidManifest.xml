@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.info.ghiny.examsystem">
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,9 +25,11 @@
             android:name=".FragmentListActivity"
             android:screenOrientation="userPortrait"/>
         <activity
+            android:name=".HomeOptionActivity"
+            android:screenOrientation="userPortrait"/>
+        <activity
             android:name=".PopUpLogin"
             android:theme="@style/AppTheme.CustomTheme"
             android:screenOrientation="userPortrait"/>
     </application>
-
 </manifest>
