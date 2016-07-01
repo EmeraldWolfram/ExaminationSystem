@@ -89,7 +89,81 @@ public class ProcessExceptionTest {
 
             err.onNegative();
             assertEquals(-20, test);
-
         }
+    }
+
+    /*************************************************************************
+     *  throwException
+     *  Call methods without initialization
+     *  should do nothing
+     *  when the methods called
+     *************************************************************************/
+    @Test
+    public void testThrowException_CallFunctionWithoutButton() throws Exception {
+        try {
+            throw new ProcessException("Something",
+                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+        } catch (ProcessException err) {
+            assertEquals("Something", err.getMessage());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals(R.drawable.msg_icon, err.getErrorIcon());
+
+            err.onNeutral();
+            assertEquals(0, test);
+
+            err.onPositive();
+            assertEquals(0, test);
+
+            err.onNegative();
+            assertEquals(0, test);
+        }
+    }
+
+    /**
+     *  throwException()
+     *  With different override onPositive() and onNegative()
+     *
+     *  In the first throw, onPositive change value "test" to 10
+     *  In the second throw, onPositive change value "test" to 20
+     *
+     */
+    @Test
+    public void testThrowException_with2DifferentMethodsSet() throws Exception{
+        ProcessException err1 = new ProcessException("First Exception",
+                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
+            @Override
+            public void onPositive() {
+                changeValue(10);
+            }
+
+            @Override
+            public void onNegative() {
+                changeValue(-10);
+            }
+        };
+        ProcessException err2 = new ProcessException("Second Exception",
+                ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
+            @Override
+            public void onPositive() {
+                changeValue(20);
+            }
+
+            @Override
+            public void onNegative() {
+                changeValue(-20);
+            }
+        };
+        err1.onPositive();
+        assertEquals(test, 10);
+
+        err1.onNegative();
+        assertEquals(test, -10);
+
+
+        err2.onPositive();
+        assertEquals(test, 20);
+
+        err2.onNegative();
+        assertEquals(test, -20);
     }
 }
