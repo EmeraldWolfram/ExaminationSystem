@@ -59,6 +59,10 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         TextView candidateView  = (TextView) convertView.findViewById(R.id.assignedCddText);
         TextView cddPrgView     = (TextView) convertView.findViewById(R.id.assignedPrgText);
 
+        tableNumView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Chunkfive.otf"));
+        candidateView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf"));
+        cddPrgView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+
         tableNumView.setText(childCdd.getTableNumber().toString());
         candidateView.setText(childCdd.getStudentName());
         cddPrgView.setText(childCdd.getProgramme());
@@ -106,9 +110,9 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         TextView statusHeader   = (TextView) convertView.findViewById(R.id.groupHeaderPaper);
         TextView sizeOfList     = (TextView) convertView.findViewById(R.id.sizeOfCandidate);
 
-        statusHeader.setTypeface(null, Typeface.BOLD);
+        statusHeader.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf"));
         statusHeader.setText(headerTitle);
-        sizeOfList.setTypeface(null, Typeface.ITALIC);
+        sizeOfList.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/DroidSerif-Regular.ttf"));
         sizeOfList.setText(size);
 
         return convertView;

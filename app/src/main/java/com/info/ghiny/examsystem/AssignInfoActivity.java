@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -124,6 +125,11 @@ public class AssignInfoActivity extends AppCompatActivity {
 
         assert tableView    != null;    assert cddView     != null;
         assert regNumView   != null;    assert paperView   != null;
+
+        tableView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Chunkfive.otf"));
+        cddView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
+        regNumView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        paperView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         try{
             int scanPossibly    =   AssignHelper.checkScan(scanString);

@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -24,8 +25,12 @@ public class PopUpLogin extends Activity {
 
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
+        TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
         nameView.setText(name);
+        nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
         regNView.setText(regNum);
+        regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
+        entView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

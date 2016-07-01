@@ -2,9 +2,11 @@ package com.info.ghiny.examsystem;
 
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
@@ -48,10 +50,15 @@ public class MainLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
 
+        TextView idView = (TextView)findViewById(R.id.identityText);
+        assert idView != null;
+        idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+
         databaseHelper = new ExamDatabaseLoader(this);
         errorManager    = new ErrorManager(this);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
+        assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
         barcodeView.setStatusText("Searching for Authorized Invigilator's Identity");
     }
