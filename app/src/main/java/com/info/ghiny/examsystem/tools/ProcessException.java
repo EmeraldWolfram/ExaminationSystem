@@ -1,6 +1,9 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.content.DialogInterface;
 import android.graphics.drawable.Icon;
+
+import java.util.HashMap;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -12,16 +15,15 @@ public class ProcessException extends Exception {
     public static final int MESSAGE_DIALOG  = 2;
     public static final int FATAL_MESSAGE   = 3;
 
+    private HashMap<String, DialogInterface.OnClickListener> buttonMap;
     private int errorType;
     private String errorMsg;
     private int errorIconType;
-    private ExceptionAction errorAction;
 
     public ProcessException(int errorType){
         this.errorType      = errorType;
         this.errorMsg       = null;
         this.errorIconType  = IconManager.WARNING;
-        this.errorAction    = new ExceptionAction();
     }
 
     public ProcessException(String errMsg, int errType, int errIconType){
@@ -29,16 +31,31 @@ public class ProcessException extends Exception {
         this.errorType      = errType;
         this.errorMsg       = errMsg;
         this.errorIconType  = errIconType;
+        this.buttonMap   = new HashMap<>();
     }
-/*
-    public ProcessException(String errMsg, int errType, int errIconType, ExceptionAction errAction){
-        super(errMsg);
-        this.errorType      = errType;
-        this.errorMsg       = errMsg;
-        this.errorIconType  = errIconType;
-        this.errorAction    = errAction;
+
+    public void setListener(String btnText, DialogInterface.OnClickListener listener){
+        buttonMap.put(btnText, listener);
     }
-*/
+
+    public DialogInterface.OnClickListener getListener(String btnText){
+        DialogInterface.OnClickListener listener = buttonMap.get(btnText);
+
+        if(listener == null){
+            listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            };
+        }
+
+        return listener;
+    }
+
+    public String[] getButtons(){
+        return (String[])buttonMap.keySet().toArray();
+    }
+
     public int getErrorType(){
         return errorType;
     }
@@ -54,9 +71,9 @@ public class ProcessException extends Exception {
         return new IconManager().getIcon(errorIconType);
     }
 
-    public void onPositive(){}
+    //public void onPositive(){}
 
-    public void onNegative(){}
+    //public void onNegative(){}
 
-    public void onNeutral(){}
+    //public void onNeutral(){}
 }

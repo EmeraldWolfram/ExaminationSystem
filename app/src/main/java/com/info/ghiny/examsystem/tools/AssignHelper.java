@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.content.DialogInterface;
+
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -8,6 +10,7 @@ import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
 import com.info.ghiny.examsystem.database.JdbcDatabase;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -27,6 +30,23 @@ public class AssignHelper {
     private static CheckListLoader clDBLoader;
     private static AttendanceList attdList;
 
+    private static final DialogInterface.OnClickListener updateListener =
+            new DialogInterface.OnClickListener(){
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            updateNewCandidate();
+            dialog.cancel();
+        }
+    };
+
+    private static final DialogInterface.OnClickListener cancelListener =
+            new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    cancelNewAssign();
+                    dialog.cancel();
+                }
+            };
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
@@ -123,38 +143,30 @@ public class AssignHelper {
 
         if(tempTable != null && tempCdd != null){
             //If ExamSubject range does not meet, DO something
-            if(assgnList.containsKey(tempTable))
-                throw new ProcessException("Previous: Table " + tempTable + " assigned to "
+            ProcessException err;
+            if(assgnList.containsKey(tempTable)){
+                err = new ProcessException("Previous: Table " + tempTable + " assigned to "
                         + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
                         + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
-                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
-                    @Override
-                    public void onPositive() {
-                        updateNewCandidate();
-                    }
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+                err.setListener("UPDATE", updateListener);
+                err.setListener("REMAIN", cancelListener);
+                throw err;
+            }
 
-                    @Override
-                    public void onNegative() {
-                        cancelNewAssign();
-                    }
-                };
 
-            if(assgnList.containsValue(tempCdd.getRegNum()))
-                throw new ProcessException("Previous: " + tempCdd.getStudentName()
+
+            if(assgnList.containsValue(tempCdd.getRegNum())){
+                err = new ProcessException("Previous: " + tempCdd.getStudentName()
                         + " assigned to Table "
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
                         + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
-                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
-                    @Override
-                    public void onPositive() {
-                        updateNewCandidate();
-                    }
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+                err.setListener("UPDATE", updateListener);
+                err.setListener("REMAIN", cancelListener);
+                throw err;
+            }
 
-                    @Override
-                    public void onNegative() {
-                        cancelNewAssign();
-                    }
-                };
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
                 throw new ProcessException(tempCdd.getStudentName() + " should not sit here\n"
@@ -179,7 +191,7 @@ public class AssignHelper {
 
     //= On Dialog ==================================================================================
     //Replace previously assigned Table Candidate set with New Table Candidate set
-    public static void updateNewCandidate(){
+    public static void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
@@ -238,14 +250,14 @@ public class AssignHelper {
     private static HashMap<String, ExamSubject> fakeTheExamPaper(){
         HashMap<String, ExamSubject> paperMap = new HashMap<>();
 
-        ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25, new Date(), 10,
-                ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
-        ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55, new Date(), 10,
-                ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
-        ExamSubject subject3 = new ExamSubject("BAME 0003", "SUBJECT 3", 10, new Date(), 10,
-                ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
-        ExamSubject subject4 = new ExamSubject("BAME 0004", "SUBJECT 4", 70, new Date(), 10,
-                ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+        ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25, Calendar.getInstance(),
+                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+        ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55, Calendar.getInstance(),
+                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+        ExamSubject subject3 = new ExamSubject("BAME 0003", "SUBJECT 3", 10, Calendar.getInstance(),
+                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+        ExamSubject subject4 = new ExamSubject("BAME 0004", "SUBJECT 4", 70, Calendar.getInstance(),
+                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
 
         paperMap.put(subject1.getPaperCode(), subject1);
         paperMap.put(subject2.getPaperCode(), subject2);

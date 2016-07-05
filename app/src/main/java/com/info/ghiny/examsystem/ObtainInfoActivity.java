@@ -24,10 +24,10 @@ import java.util.List;
 public class ObtainInfoActivity extends AppCompatActivity {
     public ExamSystemAdapter systemAdapter;
     public ExamDatabaseLoader databaseHelper;
+    private Identity student;
 
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
     private CompoundBarcodeView barcodeView;
-    private Identity student;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {

@@ -2,7 +2,6 @@ package com.info.ghiny.examsystem.database;
 
 import android.support.annotation.Nullable;
 
-import com.info.ghiny.examsystem.tools.ExceptionAction;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.IconManager;
 

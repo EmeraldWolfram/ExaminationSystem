@@ -44,26 +44,8 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
-        dialog.setPositiveButton(
-                "UPDATE",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Update the previous assigned candidate and table set
-                        err.onPositive();
-                        //AssignHelper.updateNewCandidate();
-                        dialog.cancel();
-                    }
-                });
-        dialog.setNegativeButton(
-                "REMAIN",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Remain the previous assigned candidate and table set
-                        err.onNegative();
-                        //AssignHelper.cancelNewAssign();
-                        dialog.cancel();
-                    }
-                });
+        dialog.setPositiveButton(err.getButtons()[0], err.getListener(err.getButtons()[0]));
+        dialog.setNegativeButton(err.getButtons()[1], err.getListener(err.getButtons()[1]));
         AlertDialog alert = dialog.create();
         alert.show();
     }
@@ -72,16 +54,7 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
-
-        dialog.setNeutralButton(
-                "Okay",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        err.onNeutral();
-                        dialog.cancel();
-                    }
-                });
-
+        dialog.setNeutralButton(err.getButtons()[0], err.getListener(err.getButtons()[0]));
         AlertDialog alert = dialog.create();
         alert.show();
     }
@@ -91,9 +64,7 @@ public class ErrorManager {
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
 
-        dialog.setNeutralButton(
-                "Okay",
-                new DialogInterface.OnClickListener() {
+        dialog.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         act.finish();
                         dialog.cancel();

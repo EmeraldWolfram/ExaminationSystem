@@ -1,7 +1,10 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.content.DialogInterface;
+
 import com.info.ghiny.examsystem.R;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -22,6 +25,34 @@ public class ProcessExceptionTest {
 
     public void changeValue(int value){
         test = value;
+    }
+
+    DialogInterface.OnClickListener testListener1;
+    DialogInterface.OnClickListener testListener2;
+    DialogInterface.OnClickListener testListener3;
+    DialogInterface.OnClickListener testListener4;
+
+    @Before
+    public void setUp() throws Exception{
+        testListener1 = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        };
+
+        testListener2 = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        };
+
+        testListener3 = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        };
+
+        testListener4 = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        };
     }
 
     /**
@@ -63,32 +94,18 @@ public class ProcessExceptionTest {
     @Test
     public void testThrowExceptionWithButton() throws Exception{
         try{
+            ProcessException err = new ProcessException("Something",
+                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
 
-            throw new ProcessException("Something",
-                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
-                @Override
-                public void onPositive() {
-                    changeValue(20);
-                }
-
-                @Override
-                public void onNegative() {
-                    changeValue(-20);
-                }
-            };
+            err.setListener("First", testListener1);
+            err.setListener("Second", testListener2);
+            throw err;
         } catch (ProcessException err){
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
             assertEquals(R.drawable.msg_icon, err.getErrorIcon());
-
-            err.onNeutral();
-            assertEquals(0, test);
-
-            err.onPositive();
-            assertEquals(20, test);
-
-            err.onNegative();
-            assertEquals(-20, test);
+            assertEquals(testListener1, err.getListener("First"));
+            assertEquals(testListener2, err.getListener("Second"));
         }
     }
 
@@ -96,7 +113,7 @@ public class ProcessExceptionTest {
      *  throwException
      *  Call methods without initialization
      *  should do nothing
-     *  when the methods called
+     *  should not be null
      *************************************************************************/
     @Test
     public void testThrowException_CallFunctionWithoutButton() throws Exception {
@@ -107,63 +124,31 @@ public class ProcessExceptionTest {
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals(R.drawable.msg_icon, err.getErrorIcon());
-
-            err.onNeutral();
-            assertEquals(0, test);
-
-            err.onPositive();
-            assertEquals(0, test);
-
-            err.onNegative();
-            assertEquals(0, test);
-        }
+            assertNotNull(err.getListener("Whatever"));
     }
+}
 
     /**
      *  throwException()
-     *  With different override onPositive() and onNegative()
+     *  With different methods
      *
-     *  In the first throw, onPositive change value "test" to 10
-     *  In the second throw, onPositive change value "test" to 20
-     *
+     *  The first throw and second throw should not overlap
      */
     @Test
     public void testThrowException_with2DifferentMethodsSet() throws Exception{
         ProcessException err1 = new ProcessException("First Exception",
-                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
-            @Override
-            public void onPositive() {
-                changeValue(10);
-            }
-
-            @Override
-            public void onNegative() {
-                changeValue(-10);
-            }
-        };
+                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+        err1.setListener("ButtonA", testListener1);
+        err1.setListener("ButtonB", testListener2);
         ProcessException err2 = new ProcessException("Second Exception",
-                ProcessException.UPDATE_PROMPT, IconManager.MESSAGE){
-            @Override
-            public void onPositive() {
-                changeValue(20);
-            }
+                ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+        err2.setListener("ButtonC", testListener3);
+        err2.setListener("ButtonD", testListener4);
 
-            @Override
-            public void onNegative() {
-                changeValue(-20);
-            }
-        };
-        err1.onPositive();
-        assertEquals(test, 10);
+        assertEquals(testListener1, err1.getListener("ButtonA"));
+        assertEquals(testListener2, err1.getListener("ButtonB"));
+        assertEquals(testListener3, err2.getListener("ButtonC"));
+        assertEquals(testListener4, err2.getListener("ButtonD"));
 
-        err1.onNegative();
-        assertEquals(test, -10);
-
-
-        err2.onPositive();
-        assertEquals(test, 20);
-
-        err2.onNegative();
-        assertEquals(test, -20);
     }
 }

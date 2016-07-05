@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.tools.ProcessException;
 
 import org.junit.Test;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -60,8 +61,8 @@ public class ExamSubjectTest {
     @Test
     public void testIsValidTable_Input_number_out_of_range_should_return_false() throws Exception{
         try{
-            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
-                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12,
+                    Calendar.getInstance(), 20, ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
             assertFalse(testSubject.isValidTable(11));
             assertTrue(testSubject.isValidTable(12));
         }catch(Exception err){
@@ -74,8 +75,8 @@ public class ExamSubjectTest {
     @Test
     public void testIsValidTable_Input_number_12_should_return_true() throws Exception{
         try{
-            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
-                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12,
+                    Calendar.getInstance(), 20, ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
             assertTrue(testSubject.isValidTable(31));
             assertFalse(testSubject.isValidTable(32));
         }catch(Exception err){
@@ -88,8 +89,8 @@ public class ExamSubjectTest {
     @Test
     public void testIsValidTable_Input_null_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
-            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12, new Date(), 20,
-                    ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+            ExamSubject testSubject = new ExamSubject("BAME0001", "SUBJECT 1", 12,
+                    Calendar.getInstance(), 20, ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
             boolean testLogic = testSubject.isValidTable(null);
             fail("Expected ERR_NULL_TABLE but none thrown");
         }catch(ProcessException err){

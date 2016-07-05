@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by GhinY on 13/05/2016.
  */
@@ -78,6 +81,14 @@ public class ExamDatabaseLoader {
             pointer.close();
             return null;
         }
+    }
+
+    public List<String> getPapersExamine(String regNum){
+        return new ArrayList<>();
+    }
+
+    public ExamSubject getPaperInfo(String paperCode){
+        return new ExamSubject();
     }
 
     //**********************INTERNAL CLASS***************************

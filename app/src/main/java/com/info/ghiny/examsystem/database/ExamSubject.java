@@ -1,9 +1,9 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.ExceptionAction;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.IconManager;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Date;
 public class ExamSubject {
     private String paperCode;
     private String paperDesc;
-    private Date date;
+    private Calendar date;
     private Integer startTableNum;
     private Integer numOfCandidate;
     public enum Session {AM, PM, VM}
@@ -21,7 +21,7 @@ public class ExamSubject {
     private ExamVenue examVenue;
 
     public ExamSubject(){
-        date = new Date();
+        date = Calendar.getInstance();
         paperSession    = Session.AM;
         examVenue       = ExamVenue.H1;
         startTableNum   = 0;
@@ -30,7 +30,7 @@ public class ExamSubject {
         paperDesc       = null;
     }
 
-    public ExamSubject(String paperCode, String paperDesc, int startTableNum, Date date,
+    public ExamSubject(String paperCode, String paperDesc, int startTableNum, Calendar date,
                        int numOfCandidate, ExamVenue examVenue, Session paperSession){
         this.date           = date;
         this.paperSession   = paperSession;
@@ -55,10 +55,10 @@ public class ExamSubject {
         this.startTableNum = startTableNum;
     }
 
-    public void setDate(Date date){
+    public void setDate(Calendar date){
         this.date = date;
     }
-    public Date getDate(){
+    public Calendar getDate(){
         return date;
     }
 

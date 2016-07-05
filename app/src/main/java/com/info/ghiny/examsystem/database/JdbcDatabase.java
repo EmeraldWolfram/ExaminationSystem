@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.ExceptionAction;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 
