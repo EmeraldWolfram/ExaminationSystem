@@ -8,10 +8,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
-import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.adapter.ExamSystemAdapter;
+import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -22,19 +25,18 @@ import java.util.List;
  * Created by GhinY on 07/05/2016.
  */
 public class ObtainInfoActivity extends AppCompatActivity {
-    public ExamSystemAdapter systemAdapter;
-    public ExamDatabaseLoader databaseHelper;
-    private Identity student;
-
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
+
+    private ExamDatabaseLoader exDBLoader;
+    private ExamSubjectAdapter listAdapter;
+    private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                student = databaseHelper.getIdentity(result.getText());
-                barcodeView.setStatusText(student.getName() + "\n" + student.getRegNum());
-                displayResult();
+                barcodeView.setStatusText(result.getText());
+                displayResult(result.getText());
                 //get The info of the student here
             }
         }
@@ -48,16 +50,18 @@ public class ObtainInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
-        databaseHelper = new ExamDatabaseLoader(this);
-        systemAdapter = new ExamSystemAdapter(this, null);
+        exDBLoader  = new ExamDatabaseLoader(this);
+        errManager  = new ErrorManager(this);
+        listAdapter = new ExamSubjectAdapter();
+
+        ObtainInfoHelper.setExamDBLoader(exDBLoader);
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;
-        paperList.setAdapter(systemAdapter);
+        paperList.setAdapter(listAdapter);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
-
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeTop() {
@@ -97,8 +101,13 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void displayResult(){
-        //pass in the IC to getExamTable
-        systemAdapter.changeCursor(databaseHelper.getExamTable());
+    private void displayResult(String scanStr){
+        try{
+            List<ExamSubject> papers = ObtainInfoHelper.getCandidatePapers(scanStr);
+            listAdapter.updatePapers(papers);
+        } catch (ProcessException err){
+            errManager.displayError(err);
+        }
+
     }
 }

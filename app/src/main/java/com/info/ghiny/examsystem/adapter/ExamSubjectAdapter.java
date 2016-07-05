@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +53,26 @@ public class ExamSubjectAdapter extends BaseAdapter {
 
         ExamSubject subject = (ExamSubject)getItem(position);
         TextView examPaper  = (TextView)convertView.findViewById(R.id.paperCodeNameText);
-        TextView examInfo   = (TextView)convertView.findViewById(R.id.paperDetailText);
+        TextView examDay    = (TextView)convertView.findViewById(R.id.paperDayText);
+        TextView examVenue  = (TextView)convertView.findViewById(R.id.paperVenueText);
+        TextView examSes    = (TextView)convertView.findViewById(R.id.paperSessionText);
+
+        Integer days = ObtainInfoHelper.getDaysLeft(subject.getDate());
+        String dayLeft;
+
+        if(days == -1)
+            dayLeft = "ENDED";
+        else if(days == 0)
+            dayLeft = "TODAY";
+        else if(days == 1)
+            dayLeft = "TOMORROW";
+        else
+            dayLeft = days.toString() + " days left";
 
         examPaper.setText(subject.toString());
-        examInfo.setText(subject.getExamVenue());
+        examDay.setText(dayLeft);
+        examVenue.setText(subject.getExamVenue());
+        examSes.setText(subject.getPaperSession());
 
         return convertView;
     }

@@ -55,9 +55,6 @@ public class ExamDatabaseLoader {
     //TO DO:
     // 1. iterate calling getStudentExamPaper to get the paper code
     // 2. return the exam paper info using SELECT * FROM EXAM_TABLE WHERE paperCode = '...'
-    public Cursor getExamTable(){
-        return database.rawQuery("SELECT * FROM " + EXAM_TABLE, null);
-    }
 
     public Identity getIdentity(String icNumber){
         Identity identity = new Identity();
