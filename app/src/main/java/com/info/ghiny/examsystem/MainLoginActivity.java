@@ -35,8 +35,7 @@ public class MainLoginActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                invglt = databaseHelper.getIdentity(result.getText());
-                checkEligibilityOfTheIdentity();
+                checkEligibilityOfTheIdentity(result.getText());
             }
         }
         @Override
@@ -55,7 +54,7 @@ public class MainLoginActivity extends AppCompatActivity {
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         databaseHelper = new ExamDatabaseLoader(this);
-        errorManager    = new ErrorManager(this);
+        errorManager   = new ErrorManager(this);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
@@ -81,8 +80,9 @@ public class MainLoginActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    public void checkEligibilityOfTheIdentity(){
+    public void checkEligibilityOfTheIdentity(String scanStr){
         try{
+            invglt = databaseHelper.getIdentity(scanStr);
             LoginHelper.checkInvigilator(invglt);
 
             //Set Text below QR scanner

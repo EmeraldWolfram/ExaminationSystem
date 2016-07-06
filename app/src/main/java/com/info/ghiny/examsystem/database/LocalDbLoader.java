@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by GhinY on 18/06/2016.
  */
-public class JdbcDatabase {
+public class LocalDbLoader {
 
     private static final int DB_VERSION = 1;
     public static final String DB_NAME = "CheckList.db";
@@ -45,7 +45,7 @@ public class JdbcDatabase {
             + TABLE_INFO_COLUMN_PRG     + " TEXT    NOT NULL, "
             + TABLE_INFO_COLUMN_TABLE   + " INT     NOT NULL)";
 
-    public JdbcDatabase(String driver, String url){
+    public LocalDbLoader(String driver, String url){
         curAddress  = url;
         curDriver   = driver;
     }

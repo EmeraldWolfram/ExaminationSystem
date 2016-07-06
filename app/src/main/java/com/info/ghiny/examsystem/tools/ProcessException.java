@@ -15,6 +15,10 @@ public class ProcessException extends Exception {
     public static final int MESSAGE_DIALOG  = 2;
     public static final int FATAL_MESSAGE   = 3;
 
+    public static final String updateButton = "UPDATE";
+    public static final String cancelButton = "CANCEL";
+    public static final String okayButton   = "OKAY";
+
     private HashMap<String, DialogInterface.OnClickListener> buttonMap;
     private int errorType;
     private String errorMsg;
@@ -52,10 +56,6 @@ public class ProcessException extends Exception {
         return listener;
     }
 
-    public String[] getButtons(){
-        return (String[])buttonMap.keySet().toArray();
-    }
-
     public int getErrorType(){
         return errorType;
     }
@@ -70,10 +70,4 @@ public class ProcessException extends Exception {
     public int getErrorIcon(){
         return new IconManager().getIcon(errorIconType);
     }
-
-    //public void onPositive(){}
-
-    //public void onNegative(){}
-
-    //public void onNeutral(){}
 }

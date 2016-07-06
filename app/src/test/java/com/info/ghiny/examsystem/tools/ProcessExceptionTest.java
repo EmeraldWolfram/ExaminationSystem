@@ -13,7 +13,6 @@ import static org.junit.Assert.*;
  * Created by GhinY on 15/06/2016.
  */
 public class ProcessExceptionTest {
-    int test = 0;
     public void foo() throws ProcessException {
         throw new ProcessException("Error Message", ProcessException.MESSAGE_TOAST,
                 IconManager.WARNING);
@@ -21,10 +20,6 @@ public class ProcessExceptionTest {
 
     public void foo1() throws ProcessException {
         throw new ProcessException(null, ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-    }
-
-    public void changeValue(int value){
-        test = value;
     }
 
     DialogInterface.OnClickListener testListener1;
@@ -97,8 +92,8 @@ public class ProcessExceptionTest {
             ProcessException err = new ProcessException("Something",
                     ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
 
-            err.setListener("First", testListener1);
-            err.setListener("Second", testListener2);
+            err.setListener(ProcessException.okayButton, testListener1);
+            err.setListener(ProcessException.cancelButton, testListener2);
             throw err;
         } catch (ProcessException err){
             assertEquals("Something", err.getMessage());
@@ -138,17 +133,17 @@ public class ProcessExceptionTest {
     public void testThrowException_with2DifferentMethodsSet() throws Exception{
         ProcessException err1 = new ProcessException("First Exception",
                     ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
-        err1.setListener("ButtonA", testListener1);
-        err1.setListener("ButtonB", testListener2);
+        err1.setListener(ProcessException.updateButton, testListener1);
+        err1.setListener(ProcessException.cancelButton, testListener2);
         ProcessException err2 = new ProcessException("Second Exception",
                 ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
-        err2.setListener("ButtonC", testListener3);
-        err2.setListener("ButtonD", testListener4);
+        err2.setListener(ProcessException.updateButton, testListener3);
+        err2.setListener(ProcessException.cancelButton, testListener4);
 
-        assertEquals(testListener1, err1.getListener("ButtonA"));
-        assertEquals(testListener2, err1.getListener("ButtonB"));
-        assertEquals(testListener3, err2.getListener("ButtonC"));
-        assertEquals(testListener4, err2.getListener("ButtonD"));
+        assertEquals(testListener1, err1.getListener(ProcessException.updateButton));
+        assertEquals(testListener2, err1.getListener(ProcessException.cancelButton));
+        assertEquals(testListener3, err2.getListener(ProcessException.updateButton));
+        assertEquals(testListener4, err2.getListener(ProcessException.cancelButton));
 
     }
 }

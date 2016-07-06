@@ -2,16 +2,16 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 public class AssignHelperTest {
 
     AttendanceList attdList;
-    CheckListLoader dbLoader;
+    LocalDbLoader dBLoader;
     ExamDatabaseLoader exLoader;
     Candidate cdd1;
     Candidate cdd2;
@@ -57,26 +57,25 @@ public class AssignHelperTest {
         attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
         paperList   = new HashMap<>();
-        subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, new Date(), 20,
+        subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, Calendar.getInstance(), 20,
                 ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
-        subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30, new Date(), 20,
+        subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30, Calendar.getInstance(), 20,
                 ExamSubject.ExamVenue.H2, ExamSubject.Session.PM);
-        subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50, new Date(), 20,
+        subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50, Calendar.getInstance(), 20,
                 ExamSubject.ExamVenue.H3, ExamSubject.Session.VM);
         paperList.put(subject1.getPaperCode(), subject1);
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        dbLoader = Mockito.mock(CheckListLoader.class);
-        when(dbLoader.isEmpty()).thenReturn(false);
-        when(dbLoader.getLastSavedAttendanceList())
+        dBLoader = Mockito.mock(LocalDbLoader.class);
+        when(dBLoader.isEmpty()).thenReturn(false);
+        when(dBLoader.getLastSavedAttendanceList())
                 .thenReturn(attdList.getAttendanceList())
                 .thenReturn(null);
 
         exLoader = Mockito.mock(ExamDatabaseLoader.class);
 
-        AssignHelper.setClDBLoader(dbLoader);
-        AssignHelper.setExternalLoader(exLoader);
+        AssignHelper.initLoader(dBLoader, exLoader);
         AssignHelper.tempCdd = null;
         AssignHelper.tempTable = null;
         AssignHelper.assgnList = new HashMap<>();
@@ -117,7 +116,6 @@ public class AssignHelperTest {
         try{
             when(exLoader.getIdentity("15WAU00005"))
                     .thenReturn(new Identity("15WAU00005", "0", false, "Ms. Exm"));
-
             testDummy = AssignHelper.checkCandidate("15WAU00005");
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
@@ -187,7 +185,7 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
-            AssignHelper.setClDBLoader(dbLoader);
+            AssignHelper.initLoader(dBLoader, exLoader);
             when(exLoader.getIdentity("15WAU00001"))
                     .thenReturn(new Identity("15WAU00001", "0", false, "FGY"));
             testDummy = AssignHelper.checkCandidate("15WAU00001");
@@ -461,7 +459,7 @@ public class AssignHelperTest {
     @Test
     public void testCheckScan_MAYBE_CANDIDATE() throws Exception{
         try{
-            int flag = AssignHelper.checkScan("666666666666");
+            int flag = AssignHelper.checkScan("15WAU00001");
             assertEquals(AssignHelper.MAYBE_CANDIDATE, flag);
         }catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getMessage());

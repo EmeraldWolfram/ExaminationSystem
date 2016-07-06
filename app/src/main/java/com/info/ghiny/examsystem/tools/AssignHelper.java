@@ -8,10 +8,9 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.database.JdbcDatabase;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -26,8 +25,7 @@ public class AssignHelper {
     public static final int MAYBE_CANDIDATE = 1;
 
     private static ExamDatabaseLoader exDBLoader;
-    private static JdbcDatabase JdbcLoader;
-    private static CheckListLoader clDBLoader;
+    private static LocalDbLoader JdbcLoader;
     private static AttendanceList attdList;
 
     private static final DialogInterface.OnClickListener updateListener =
@@ -50,23 +48,21 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    public static void setClDBLoader(CheckListLoader dBLoader) {
-        assert dBLoader != null;
+    public static void initLoader(LocalDbLoader dBLoader, ExamDatabaseLoader exDBLoader)
+            throws ProcessException{
+        assert dBLoader != null; assert exDBLoader != null;
+
+        AssignHelper.exDBLoader  = exDBLoader;
         if(dBLoader.isEmpty()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
         }
-        AssignHelper.clDBLoader = dBLoader;
-
-        attdList = new AttendanceList();
-        attdList.setAttendanceList(clDBLoader.getLastSavedAttendanceList());
-    }
-
-    //Static setter to load in the external Database
-    public static void setExternalLoader(ExamDatabaseLoader dbLoader){
-        assert dbLoader != null;
-        exDBLoader = dbLoader;
         if(Candidate.getPaperList() == null)
             Candidate.setPaperList(fakeTheExamPaper()); //Suppose to query external DB
+
+        AssignHelper.JdbcLoader = dBLoader;
+
+        attdList = new AttendanceList();
+        attdList.setAttendanceList(JdbcLoader.getLastSavedAttendanceList());
     }
 
     public static void setAttdList(AttendanceList attdList) {
@@ -78,17 +74,26 @@ public class AssignHelper {
         return attdList;
     }
 
+    public static Candidate getCandidate() {
+        return tempCdd;
+    }
+
+    public static Integer getTable() {
+        return tempTable;
+    }
+
     //= Assign =====================================================================================
     public static int checkScan(String scanStr) throws ProcessException{
         int flag;
 
-        if(scanStr.length() < 4 && scanStr.length() > 0)
-            flag    =   MAYBE_TABLE;
-        else if(scanStr.length() == 12)
-            flag    =   MAYBE_CANDIDATE;
-        else
+        if(scanStr.length() < 4 && scanStr.length() > 0){
+            flag    = MAYBE_TABLE;
+        } else if(scanStr.length() == 10){
+            flag    = MAYBE_CANDIDATE;
+        } else {
             throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
                     IconManager.MESSAGE);
+        }
 
         return flag;
     }
@@ -149,12 +154,10 @@ public class AssignHelper {
                         + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
                         + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
                         ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
-                err.setListener("UPDATE", updateListener);
-                err.setListener("REMAIN", cancelListener);
+                err.setListener(ProcessException.updateButton, updateListener);
+                err.setListener(ProcessException.cancelButton, cancelListener);
                 throw err;
             }
-
-
 
             if(assgnList.containsValue(tempCdd.getRegNum())){
                 err = new ProcessException("Previous: " + tempCdd.getStudentName()
@@ -162,8 +165,8 @@ public class AssignHelper {
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
                         + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
                         ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
-                err.setListener("UPDATE", updateListener);
-                err.setListener("REMAIN", cancelListener);
+                err.setListener(ProcessException.updateButton, updateListener);
+                err.setListener(ProcessException.cancelButton, cancelListener);
                 throw err;
             }
 

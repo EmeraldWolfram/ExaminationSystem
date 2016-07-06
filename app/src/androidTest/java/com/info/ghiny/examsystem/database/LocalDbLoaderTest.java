@@ -18,16 +18,16 @@ import static org.junit.Assert.*;
  * Created by GhinY on 27/06/2016.
  */
 @RunWith(AndroidJUnit4.class)
-public class JdbcDatabaseTest {
-    JdbcDatabase db;
+public class LocalDbLoaderTest {
+    LocalDbLoader db;
     String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
                                 "(Name, RegNum, TableNo, Status, Code, Programme) VALUES (";
 
     @Before
     public void setUp() throws Exception {
-        //getTargetContext().deleteDatabase(JdbcDatabase.ADDRESS);
-        getTargetContext().deleteDatabase(JdbcDatabase.DB_NAME);
-        db = new JdbcDatabase(JdbcDatabase.DRIVER, JdbcDatabase.ADDRESS);
+        //getTargetContext().deleteDatabase(LocalDbLoader.ADDRESS);
+        getTargetContext().deleteDatabase(LocalDbLoader.DB_NAME);
+        db = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
     }
 
     //= EstaConnection() ===========================================================================
@@ -36,7 +36,7 @@ public class JdbcDatabaseTest {
      *  establish a connection with the database
      *
      *  when there is no .db found, estaConnection create a database file
-     *  in the url while constructing the JdbcDatabase object.
+     *  in the url while constructing the LocalDbLoader object.
      *
      *  This test check if estaConnection() return a connection to a Read and Write DB
      */

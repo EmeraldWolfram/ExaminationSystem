@@ -44,8 +44,10 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
-        dialog.setPositiveButton(err.getButtons()[0], err.getListener(err.getButtons()[0]));
-        dialog.setNegativeButton(err.getButtons()[1], err.getListener(err.getButtons()[1]));
+        dialog.setPositiveButton(ProcessException.updateButton,
+                err.getListener(ProcessException.updateButton));
+        dialog.setNegativeButton(ProcessException.cancelButton,
+                err.getListener(ProcessException.cancelButton));
         AlertDialog alert = dialog.create();
         alert.show();
     }
@@ -54,7 +56,8 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
-        dialog.setNeutralButton(err.getButtons()[0], err.getListener(err.getButtons()[0]));
+        dialog.setNeutralButton(ProcessException.okayButton,
+                err.getListener(ProcessException.okayButton));
         AlertDialog alert = dialog.create();
         alert.show();
     }
