@@ -29,20 +29,20 @@ public class UpdateMark {
     
     //StudentMark
     public Integer coursework ;
-    public Integer pratical;
+    public Integer practical;
     
     public UpdateMark(  String regNum, String paperCode,
-                        Integer pratical, Integer coursework){
+                        Integer practical, Integer coursework){
       
         this.regNum = regNum;
         this.paperCode = paperCode;
         this.coursework = coursework;
-        this.pratical = pratical;
+        this.practical = practical;
     }
     
     public void setMark(){
         String sql = "UPDATE StudentMark "
-                + "SET Coursework = ?, Pratical = ? "
+                + "SET Coursework = ?, Practical = ? "
 //                + "FROM StudentMark JOIN PaperInfo ON StudentMark.PIIndex = PaperInfo.PIIndex"
                 + "WHERE RegNum = ? AND PIIndex = (SELECT PIIndex FROM PaperInfo WHERE PaperCode = ? );";
         
@@ -54,8 +54,8 @@ public class UpdateMark {
             if(coursework != null)
             pstmt.setInt(1,coursework);
             
-            if(pratical != null)
-            pstmt.setInt(2,pratical);
+            if(practical != null)
+            pstmt.setInt(2,practical);
             
             pstmt.setString(3,regNum);
             pstmt.setString(4,paperCode);

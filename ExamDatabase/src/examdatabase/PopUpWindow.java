@@ -5,7 +5,8 @@
  */
 package examdatabase;
 
-import javax.swing.JFrame;
+import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  *
@@ -13,6 +14,19 @@ import javax.swing.JFrame;
  */
 public class PopUpWindow extends JFrame{
     
-    public PopUpWindow(){}
+    
+    public PopUpWindow(String name){
+        super(name);
+    }
+    
+    public void setUpWindow(){
+        
+        JPanel panel = new JPanel();
+        JTextField textFied = new JTextField();
+        JLabel label = new JLabel("Enter value between 100 and 0");
+        
+        
+        
+    }
     
 }

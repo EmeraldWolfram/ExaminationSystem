@@ -23,7 +23,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="1" attributes="0">
-          <Component id="jTabbedPane1" alignment="0" max="32767" attributes="0"/>
+          <Component id="jTabbedPane1" alignment="0" pref="1073" max="32767" attributes="0"/>
           <Component id="jPanel5" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -108,13 +108,7 @@
                                           <Component id="nameField" linkSize="1" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="nameHelp" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="nameHelp1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="nameHelp2" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="nameHelp" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -195,7 +189,6 @@
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="icField" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="nameHelp1" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="dateField" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -207,7 +200,6 @@
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="idField" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="nameHelp2" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="sessionBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -383,32 +375,11 @@
                     <Component class="javax.swing.JLabel" name="nameHelp">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;pre&gt;&#xa;Example&#xa; &apos;200%&apos;&#x9;&#x9;Finds any values that start with 200&#xa; &apos;%200%&apos;&#x9;Finds any values that have 200 in any position&#xa; &apos;_00%&apos;&#x9;&#x9;Finds any values that have 00 in the second and third positions&#xa; &apos;2_%_%&apos;&#x9;Finds any values that start with 2 and are at least 3 characters in length&#xa; &apos;%2&apos;&#x9;&#x9;Finds any values that end with 2&#xa; &apos;_2%3&apos;&#x9;&#x9;Finds any values that have a 2 in the second position and end with a 3&#xa;&apos;2___3&apos;&#x9;&#x9;Finds any values in a five-digit number that start with 2 and end with 3&#xa;&lt;/pre&gt;&#xa;&lt;/html&gt;"/>
+                        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;pre&gt;&#xa;Example&#xa; &apos;ta%&apos;&#x9;&#x9;Finds values that start with &apos;ta&apos;&#xa; &apos;%arc%&apos;&#x9;Finds values that have &apos;arc&apos; in any position&#xa; &apos;_ar%&apos;&#x9;&#x9;Finds values that have &apos;a&apos; in the 2nd and &apos;r&apos; 3rd positions&#xa; &apos;t_%_%&apos;&#x9;Finds values that start with &apos;t&apos; and are at least 3 characters in length&#xa; &apos;%c&apos;&#x9;&#x9;Finds values that end with &apos;c&apos;&#xa; &apos;_a%u&apos;&#x9;&#x9;Finds values that have an &apos;a&apos; in the 2nd position &#xa;&#x9;&#x9;and end with a &apos;u&apos;&#xa;&lt;/pre&gt;&#xa;&lt;/html&gt;"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelpMouseClicked"/>
                         <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelpMouseEntered"/>
                         <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelpMouseExited"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="nameHelp1">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="Help"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp1MouseEntered"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp1MouseExited"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="nameHelp2">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="Help"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp2MouseEntered"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp2MouseExited"/>
                       </Events>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="facultyBox">
@@ -567,12 +538,15 @@
                           <EmptySpace pref="218" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   <Component id="statusMessage" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="96" max="-2" attributes="0"/>
-                                  <Component id="restoreButton" linkSize="9" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="218" max="-2" attributes="0"/>
                                   <Component id="updateButton" linkSize="9" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="132" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="restoreButton" linkSize="9" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="tableHelp" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
@@ -588,12 +562,11 @@
                           <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                           <Component id="jPanel4" min="-2" pref="108" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="statusMessage" min="-2" max="-2" attributes="0"/>
-                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                  <Component id="updateButton" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="restoreButton" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="updateButton" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="restoreButton" linkSize="10" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="tableHelp" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="statusMessage" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jScrollPane4" pref="410" max="32767" attributes="0"/>
@@ -630,13 +603,7 @@
                                   <Component id="nameField1" linkSize="3" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="103" alignment="0" groupAlignment="0" attributes="0">
-                                      <Component id="nameHelp6" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="nameHelp7" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="nameHelp8" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="nameHelp2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel24" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -666,7 +633,7 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="nameField1" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel25" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="nameHelp6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="nameHelp2" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="programmeBox2" linkSize="8" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -674,7 +641,6 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="icField1" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="nameHelp7" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel23" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="facultyBox2" linkSize="8" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -682,7 +648,6 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel27" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="idField1" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="nameHelp8" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel24" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="paperCodeBox2" linkSize="8" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="searchButton1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -762,34 +727,14 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="nameHelp6">
+                    <Component class="javax.swing.JLabel" name="nameHelp2">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="Help"/>
+                        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;pre&gt;&#xa;Example&#xa; &apos;ta%&apos;&#x9;&#x9;Finds values that start with &apos;ta&apos;&#xa; &apos;%arc%&apos;&#x9;Finds values that have &apos;arc&apos; in any position&#xa; &apos;_ar%&apos;&#x9;&#x9;Finds values that have &apos;a&apos; in the 2nd and &apos;r&apos; 3rd positions&#xa; &apos;t_%_%&apos;&#x9;Finds values that start with &apos;t&apos; and are at least 3 characters in length&#xa; &apos;%c&apos;&#x9;&#x9;Finds values that end with &apos;c&apos;&#xa; &apos;_a%u&apos;&#x9;&#x9;Finds values that have an &apos;a&apos; in the 2nd position &#xa;&#x9;&#x9;and end with a &apos;u&apos;&#xa;&lt;/pre&gt;&#xa;&lt;/html&gt;"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp6MouseEntered"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp6MouseExited"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="nameHelp7">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="Help"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp7MouseEntered"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp7MouseExited"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="nameHelp8">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="[?]"/>
-                        <Property name="toolTipText" type="java.lang.String" value="Help"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp8MouseEntered"/>
-                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp8MouseExited"/>
+                        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp2MouseEntered"/>
+                        <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="nameHelp2MouseExited"/>
                       </Events>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="programmeBox2">
@@ -841,8 +786,8 @@
                             <Column editable="false" title="Programme" type="java.lang.Object"/>
                             <Column editable="false" title="Faculty" type="java.lang.Object"/>
                             <Column editable="false" title="Paper Code" type="java.lang.Object"/>
-                            <Column editable="true" title="Pratical" type="java.lang.Integer"/>
-                            <Column editable="true" title="Coursework" type="java.lang.Integer"/>
+                            <Column editable="false" title="Practical" type="java.lang.Integer"/>
+                            <Column editable="false" title="Coursework" type="java.lang.Integer"/>
                           </Table>
                         </Property>
                         <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -893,6 +838,9 @@
                           <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="markTableMouseClicked"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -915,6 +863,16 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="restoreButtonjButton1ActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="tableHelp">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="[?]"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;pre&gt;&#xa;&quot;Save&quot;&#x9;&#x9;Save the changed value&#xa;&quot;Restore&quot;&#x9;Restore to the last saved value&#xa;&#xa;Double click the cells under Practical and Coursework to edit the mark.&#xa;Press enter after edited.&#xa;&lt;/pre&gt;&#xa;&lt;/html&gt;"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tableHelpMouseEntered"/>
+                    <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tableHelpMouseExited"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -974,7 +932,7 @@
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="1">
-                <StringItem index="0" value="MAY/JUN"/>
+                <StringItem index="0" value="FEB_MAR"/>
               </StringArray>
             </Property>
           </Properties>

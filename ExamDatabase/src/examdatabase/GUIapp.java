@@ -7,6 +7,8 @@ package examdatabase;
 
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -14,6 +16,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -35,11 +38,15 @@ public final class GUIapp extends javax.swing.JFrame {
      * Creates new form GUIapp
      */
     public GUIapp() {
+        new ConnectDB().setConnection("FEB_MAR", "2016");
         initComponents();
         setComboBox();
         examTable.setAutoCreateRowSorter(true);
-    }
+        markTable.setAutoCreateRowSorter(true);
 
+  
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -77,8 +84,6 @@ public final class GUIapp extends javax.swing.JFrame {
         tableNumberField = new javax.swing.JTextField();
         warningMessage = new javax.swing.JLabel();
         nameHelp = new javax.swing.JLabel();
-        nameHelp1 = new javax.swing.JLabel();
-        nameHelp2 = new javax.swing.JLabel();
         facultyBox = new javax.swing.JComboBox<>();
         programmeBox = new javax.swing.JComboBox<>();
         paperCodeBox = new javax.swing.JComboBox<>();
@@ -98,9 +103,7 @@ public final class GUIapp extends javax.swing.JFrame {
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         warningMessage1 = new javax.swing.JLabel();
-        nameHelp6 = new javax.swing.JLabel();
-        nameHelp7 = new javax.swing.JLabel();
-        nameHelp8 = new javax.swing.JLabel();
+        nameHelp2 = new javax.swing.JLabel();
         programmeBox2 = new javax.swing.JComboBox<>();
         facultyBox2 = new javax.swing.JComboBox<>();
         paperCodeBox2 = new javax.swing.JComboBox<>();
@@ -109,6 +112,7 @@ public final class GUIapp extends javax.swing.JFrame {
         updateButton = new javax.swing.JButton();
         statusMessage = new javax.swing.JLabel();
         restoreButton = new javax.swing.JButton();
+        tableHelp = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         yearBox = new javax.swing.JComboBox<>();
@@ -191,38 +195,13 @@ public final class GUIapp extends javax.swing.JFrame {
         warningMessage.setForeground(new java.awt.Color(255, 0, 0));
 
         nameHelp.setText("[?]");
-        nameHelp.setToolTipText("<html>\n<pre>\nExample\n '200%'\t\tFinds any values that start with 200\n '%200%'\tFinds any values that have 200 in any position\n '_00%'\t\tFinds any values that have 00 in the second and third positions\n '2_%_%'\tFinds any values that start with 2 and are at least 3 characters in length\n '%2'\t\tFinds any values that end with 2\n '_2%3'\t\tFinds any values that have a 2 in the second position and end with a 3\n'2___3'\t\tFinds any values in a five-digit number that start with 2 and end with 3\n</pre>\n</html>");
+        nameHelp.setToolTipText("<html>\n<pre>\nExample\n 'ta%'\t\tFinds values that start with 'ta'\n '%arc%'\tFinds values that have 'arc' in any position\n '_ar%'\t\tFinds values that have 'a' in the 2nd and 'r' 3rd positions\n 't_%_%'\tFinds values that start with 't' and are at least 3 characters in length\n '%c'\t\tFinds values that end with 'c'\n '_a%u'\t\tFinds values that have an 'a' in the 2nd position \n\t\tand end with a 'u'\n</pre>\n</html>");
         nameHelp.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                nameHelpMouseClicked(evt);
-            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 nameHelpMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 nameHelpMouseExited(evt);
-            }
-        });
-
-        nameHelp1.setText("[?]");
-        nameHelp1.setToolTipText("Help");
-        nameHelp1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nameHelp1MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                nameHelp1MouseExited(evt);
-            }
-        });
-
-        nameHelp2.setText("[?]");
-        nameHelp2.setToolTipText("Help");
-        nameHelp2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nameHelp2MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                nameHelp2MouseExited(evt);
             }
         });
 
@@ -255,11 +234,7 @@ public final class GUIapp extends javax.swing.JFrame {
                             .addComponent(icField, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(nameHelp)
-                                .addComponent(nameHelp1, javax.swing.GroupLayout.Alignment.TRAILING))
-                            .addComponent(nameHelp2))
+                        .addComponent(nameHelp)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel15)
@@ -328,7 +303,6 @@ public final class GUIapp extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel11)
                             .addComponent(icField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nameHelp1)
                             .addComponent(jLabel14)
                             .addComponent(dateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
@@ -339,7 +313,6 @@ public final class GUIapp extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12)
                             .addComponent(idField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nameHelp2)
                             .addComponent(jLabel13)
                             .addComponent(sessionBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)
@@ -442,36 +415,14 @@ public final class GUIapp extends javax.swing.JFrame {
 
         warningMessage1.setForeground(new java.awt.Color(255, 0, 0));
 
-        nameHelp6.setText("[?]");
-        nameHelp6.setToolTipText("Help");
-        nameHelp6.addMouseListener(new java.awt.event.MouseAdapter() {
+        nameHelp2.setText("[?]");
+        nameHelp2.setToolTipText("<html>\n<pre>\nExample\n 'ta%'\t\tFinds values that start with 'ta'\n '%arc%'\tFinds values that have 'arc' in any position\n '_ar%'\t\tFinds values that have 'a' in the 2nd and 'r' 3rd positions\n 't_%_%'\tFinds values that start with 't' and are at least 3 characters in length\n '%c'\t\tFinds values that end with 'c'\n '_a%u'\t\tFinds values that have an 'a' in the 2nd position \n\t\tand end with a 'u'\n</pre>\n</html>");
+        nameHelp2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nameHelp6MouseEntered(evt);
+                nameHelp2MouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                nameHelp6MouseExited(evt);
-            }
-        });
-
-        nameHelp7.setText("[?]");
-        nameHelp7.setToolTipText("Help");
-        nameHelp7.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nameHelp7MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                nameHelp7MouseExited(evt);
-            }
-        });
-
-        nameHelp8.setText("[?]");
-        nameHelp8.setToolTipText("Help");
-        nameHelp8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nameHelp8MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                nameHelp8MouseExited(evt);
+                nameHelp2MouseExited(evt);
             }
         });
 
@@ -497,11 +448,7 @@ public final class GUIapp extends javax.swing.JFrame {
                     .addComponent(icField1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nameField1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(nameHelp6)
-                        .addComponent(nameHelp7, javax.swing.GroupLayout.Alignment.TRAILING))
-                    .addComponent(nameHelp8))
+                .addComponent(nameHelp2)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel24)
@@ -529,21 +476,19 @@ public final class GUIapp extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nameField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel25)
-                    .addComponent(nameHelp6)
+                    .addComponent(nameHelp2)
                     .addComponent(jLabel22)
                     .addComponent(programmeBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
                     .addComponent(icField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nameHelp7)
                     .addComponent(jLabel23)
                     .addComponent(facultyBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(3, 3, 3)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel27)
                     .addComponent(idField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nameHelp8)
                     .addComponent(jLabel24)
                     .addComponent(paperCodeBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(searchButton1))
@@ -561,14 +506,14 @@ public final class GUIapp extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Student Name", "RegNum", "Student IC", "Programme", "Faculty", "Paper Code", "Pratical", "Coursework"
+                "Student Name", "RegNum", "Student IC", "Programme", "Faculty", "Paper Code", "Practical", "Coursework"
             }
         ) {
             Class[] types = new Class [] {
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true, true
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -577,6 +522,11 @@ public final class GUIapp extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        markTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                markTableMouseClicked(evt);
             }
         });
         jScrollPane4.setViewportView(markTable);
@@ -597,6 +547,17 @@ public final class GUIapp extends javax.swing.JFrame {
             }
         });
 
+        tableHelp.setText("[?]");
+        tableHelp.setToolTipText("<html>\n<pre>\n\"Save\"\t\tSave the changed value\n\"Restore\"\tRestore to the last saved value\n\nDouble click the cells under Practical and Coursework to edit the mark.\nPress enter after edited.\n</pre>\n</html>");
+        tableHelp.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tableHelpMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                tableHelpMouseExited(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -606,12 +567,15 @@ public final class GUIapp extends javax.swing.JFrame {
                 .addContainerGap(218, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(statusMessage)
-                        .addGap(96, 96, 96)
-                        .addComponent(restoreButton)
-                        .addGap(31, 31, 31)
+                        .addGap(218, 218, 218)
                         .addComponent(updateButton)
-                        .addGap(132, 132, 132))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(restoreButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tableHelp)
+                        .addGap(34, 34, 34))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(205, Short.MAX_VALUE))))
@@ -625,11 +589,11 @@ public final class GUIapp extends javax.swing.JFrame {
                 .addGap(14, 14, 14)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(statusMessage)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(updateButton)
-                        .addComponent(restoreButton)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(updateButton)
+                    .addComponent(restoreButton)
+                    .addComponent(tableHelp)
+                    .addComponent(statusMessage))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE))
         );
@@ -644,7 +608,7 @@ public final class GUIapp extends javax.swing.JFrame {
 
         yearBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2015" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MAY/JUN" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "FEB_MAR" }));
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -673,7 +637,7 @@ public final class GUIapp extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1073, Short.MAX_VALUE)
             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -744,29 +708,12 @@ public final class GUIapp extends javax.swing.JFrame {
         // TODO add your handling code here:
         nameHelp.setText("<HTML><U>[?]</U></HTML>");
         nameHelp.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//        nameHelp.setDefaultCursor(Cursor.HAND_CURSOR);
     }//GEN-LAST:event_nameHelpMouseEntered
 
     private void nameHelpMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelpMouseExited
         // TODO add your handling code here:
         nameHelp.setText("[?]");
     }//GEN-LAST:event_nameHelpMouseExited
-
-    private void nameHelp1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp1MouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp1MouseEntered
-
-    private void nameHelp1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp1MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp1MouseExited
-
-    private void nameHelp2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp2MouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp2MouseEntered
-
-    private void nameHelp2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp2MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp2MouseExited
 
     private void venueFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_venueFieldActionPerformed
         // TODO add your handling code here:
@@ -795,7 +742,7 @@ public final class GUIapp extends javax.swing.JFrame {
             for(i = 0; i<list.size(); i++){
                 tableModel.addRow(new Object[]{list.get(i).name, list.get(i).regNum, list.get(i).ic,
                                             list.get(i).progName, list.get(i).faculty, 
-                                            list.get(i).paperCode,list.get(i).pratical,
+                                            list.get(i).paperCode,list.get(i).practical,
                                             list.get(i).coursework
                                             });
             }
@@ -818,29 +765,18 @@ public final class GUIapp extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nameField1jTextField1ActionPerformed
 
-    private void nameHelp6MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp6MouseEntered
+    private void nameHelp2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp2MouseEntered
         // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp6MouseEntered
+        
+        nameHelp2.setText("<HTML><U>[?]</U></HTML>");
+        nameHelp2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_nameHelp2MouseEntered
 
-    private void nameHelp6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp6MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp6MouseExited
-
-    private void nameHelp7MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp7MouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp7MouseEntered
-
-    private void nameHelp7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp7MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp7MouseExited
-
-    private void nameHelp8MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp8MouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp8MouseEntered
-
-    private void nameHelp8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp8MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameHelp8MouseExited
+    private void nameHelp2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelp2MouseExited
+        // TODO add your handling code here
+        
+        nameHelp.setText("[?]");
+    }//GEN-LAST:event_nameHelp2MouseExited
 
     private void updateButtonjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonjButton1ActionPerformed
         // TODO add your handling code here:
@@ -878,13 +814,6 @@ public final class GUIapp extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_updateButtonjButton1ActionPerformed
 
-    private void nameHelpMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nameHelpMouseClicked
-        // TODO add your handling code here:
-        JFrame help = new JFrame("Help");
-        
-
-    }//GEN-LAST:event_nameHelpMouseClicked
-
     private void facultyBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facultyBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_facultyBoxActionPerformed
@@ -921,7 +850,7 @@ public final class GUIapp extends javax.swing.JFrame {
                     listData = listTable.get(i).getDataCheckMark();
                     tableModel.addRow(new Object[]{listData.get(0).name, listData.get(0).regNum, listData.get(0).ic,
                                                 listData.get(0).progName, listData.get(0).faculty, 
-                                                listData.get(0).paperCode,listData.get(0).pratical,
+                                                listData.get(0).paperCode,listData.get(0).practical,
                                                 listData.get(0).coursework
                                                 });
                 }catch (CustomException ex) {
@@ -932,6 +861,46 @@ public final class GUIapp extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_restoreButtonjButton1ActionPerformed
+
+    private void tableHelpMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableHelpMouseExited
+        // TODO add your handling code here:
+        nameHelp.setText("[?]");
+    }//GEN-LAST:event_tableHelpMouseExited
+
+    private void tableHelpMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableHelpMouseEntered
+        // TODO add your handling code here:
+        tableHelp.setText("[?]");
+        tableHelp.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_tableHelpMouseEntered
+
+    private void markTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_markTableMouseClicked
+        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            JTable target = (JTable)evt.getSource();
+            int row = target.getSelectedRow();
+            int column = target.getSelectedColumn();
+
+            if ((column == 6)||(column == 7)){
+                JFrame frame = new JFrame("Insert mark");
+                Integer mark;
+                String inputValue = JOptionPane.showInputDialog(frame, "Enter mark between 0 to 100?");
+                
+                if(isInteger(inputValue)){
+                    mark = Integer.parseInt(inputValue);
+                    
+                    if ((mark >= 0)&&(mark <= 100)){
+                        markTable.setValueAt(mark, row, column);
+                    }
+                    else
+                        statusMessage.setText("Value is not number between 0 to 100");
+                }
+                else
+                    statusMessage.setText("Value is not a number");
+                
+            }
+        }
+    }//GEN-LAST:event_markTableMouseClicked
+    
     
     public void setComboBox(){
        ArrayList<String> list = new GetData().getList("Programme", "Name");
@@ -960,6 +929,30 @@ public final class GUIapp extends javax.swing.JFrame {
        
        
     }
+    
+    public boolean isInteger(String str) {
+    if (str == null) {
+        return false;
+    }
+    int length = str.length();
+    if (length == 0) {
+        return false;
+    }
+    int i = 0;
+    if (str.charAt(0) == '-') {
+        if (length == 1) {
+            return false;
+        }
+        i = 1;
+    }
+    for (; i < length; i++) {
+        char c = str.charAt(i);
+        if (c < '0' || c > '9') {
+            return false;
+        }
+    }
+    return true;
+}
     
     /**
      * @param args the command line arguments
@@ -1040,11 +1033,7 @@ public final class GUIapp extends javax.swing.JFrame {
     private javax.swing.JTextField nameField;
     private javax.swing.JTextField nameField1;
     private javax.swing.JLabel nameHelp;
-    private javax.swing.JLabel nameHelp1;
     private javax.swing.JLabel nameHelp2;
-    private javax.swing.JLabel nameHelp6;
-    private javax.swing.JLabel nameHelp7;
-    private javax.swing.JLabel nameHelp8;
     private javax.swing.JComboBox<String> paperCodeBox;
     private javax.swing.JComboBox<String> paperCodeBox2;
     private javax.swing.JComboBox<String> programmeBox;
@@ -1055,6 +1044,7 @@ public final class GUIapp extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> sessionBox;
     private javax.swing.JComboBox<String> statusBox;
     private javax.swing.JLabel statusMessage;
+    private javax.swing.JLabel tableHelp;
     private javax.swing.JTextField tableNumberField;
     private javax.swing.JButton updateButton;
     private javax.swing.JTextField venueField;

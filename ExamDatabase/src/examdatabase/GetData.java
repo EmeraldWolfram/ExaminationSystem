@@ -57,7 +57,7 @@ public class GetData {
     
     //StudentMark
     public Integer coursework;
-    public Integer pratical;
+    public Integer practical;
     
     int day; int month; int year;
     
@@ -74,7 +74,7 @@ public class GetData {
                     String progName, String faculty,
                     String date,
                     String paperCode, String paperDesc,
-                    Integer coursework, Integer pratical
+                    Integer coursework, Integer practical
                     ){
 
         this.ic = ic;
@@ -86,8 +86,7 @@ public class GetData {
         this.paperCode = paperCode;
         this.paperDesc = paperDesc;
         this.coursework = coursework;
-        this. pratical = pratical;
-        
+        this. practical = practical;
 
     }
     
@@ -215,7 +214,7 @@ public class GetData {
         String sql =    "SELECT CandidateInfo.IC, CandidateInfo.Name, CandidateInfo.RegNum "
                 + ", Programme.Name AS ProgName, Programme.Faculty "
                 + ", Paper.Date, Paper.Session "
-                + ", StudentMark.Coursework, StudentMark.Pratical"
+                + ", StudentMark.Coursework, StudentMark.Practical"
                 + ", PaperInfo.PaperCode, PaperInfo.PaperDescription "
                 + " FROM StudentMark "
                 + " LEFT OUTER JOIN CandidateInfo ON StudentMark.RegNum = CandidateInfo.RegNum "
@@ -252,7 +251,7 @@ public class GetData {
                                         rs.getString("PaperCode"),
                                         rs.getString("PaperDescription"),
                                         rs.getInt("Coursework"),
-                                        rs.getInt("Pratical")
+                                        rs.getInt("Practical")
                 );
                    list.add(info);
             }

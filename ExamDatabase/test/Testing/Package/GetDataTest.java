@@ -5,13 +5,12 @@
  */
 package Testing.Package;
 
+import examdatabase.ConnectDB;
 import examdatabase.CustomException;
 import examdatabase.GetData;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static jdk.nashorn.internal.objects.NativeError.getStackTrace;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -27,6 +26,8 @@ public class GetDataTest {
     
     @Before
     public void oneTimeSetUp(){
+        new ConnectDB().setConnection("FEB_MAR", "2016");
+        
         adlas = new GetData(    "829911092234", "Adlas", "16WAR25342", 
                                 "Legal", "Present", "56",
                                 "OGC2", "FASC",
@@ -319,6 +320,36 @@ public class GetDataTest {
             String message = ex.getMessage();
             assertEquals("No data found.", message);
         }
+
+    }
+    
+    @Test
+    public void testGetDataLIKEname_begining_with_a_char(){
+        GetData getData = new GetData("","A%","","","","","","","","","","","","");
+        
+        ArrayList<GetData> list = null;
+        
+        try {
+            list = getData.getDataFromTable();
+        } catch (CustomException ex) {
+        }
+        
+        CustomAssertion.assertDataEqual(adlas,list.get(0));
+
+    }
+    
+    @Test
+    public void testGetDataLIKEname_begining_with_L_char_and_other_2_char(){
+        GetData getData = new GetData("","L__","","","","","","","","","","","","");
+        
+        ArrayList<GetData> list = null;
+        
+        try {
+            list = getData.getDataFromTable();
+        } catch (CustomException ex) {
+        }
+        
+        CustomAssertion.assertDataEqual(liu,list.get(0));
 
     }
 }

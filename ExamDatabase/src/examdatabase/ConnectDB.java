@@ -15,8 +15,16 @@ import java.sql.SQLException;
  */
 public class ConnectDB {
     
+    static String month;
+    static String year;
     
     public ConnectDB(){
+        
+    }
+    
+    public void setConnection(String month, String year){
+        this.month = month;
+        this.year = year;
         
     }
     
@@ -25,9 +33,10 @@ public class ConnectDB {
      *
      * @return the Connection object
      */
-    public Connection connect() {
+    public static Connection connect() {
         // SQLite connection string
-        String url = "jdbc:sqlite:ExamDatabase.db";
+        
+        String url = "jdbc:sqlite:"+month+"_"+year+".db";
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
