@@ -2,23 +2,28 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.when;
+
 
 /**
  * Created by GhinY on 01/07/2016.
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ExternalDbLoader.class)
 public class ObtainInfoHelperTest {
     ExamDatabaseLoader exDBLoader;
     List<ExamSubject> papers;
@@ -38,8 +43,7 @@ public class ObtainInfoHelperTest {
         subject4 = new ExamSubject("BAME 0004", "SUBJECT 4", 70, Calendar.getInstance(),
                 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
 
-        exDBLoader = Mockito.mock(ExamDatabaseLoader.class);
-        ObtainInfoHelper.setExamDBLoader(exDBLoader);
+        PowerMockito.mockStatic(ExternalDbLoader.class);
     }
     //= GetCandidatePapers =========================================================================
     /**
@@ -51,11 +55,11 @@ public class ObtainInfoHelperTest {
     @Test
     public void testGetCandidatePapers_Throw_Error_if_candidate_not_found() throws Exception {
         try{
-            when(exDBLoader.getIdentity(anyString())).thenReturn(null);
-            papers = ObtainInfoHelper.getCandidatePapers("951108106303");
+            when(ExternalDbLoader.getPapersExamineByCdd("15WAU09184")).thenReturn(null);
+            papers = ObtainInfoHelper.getCandidatePapers("15WAU09184");
             fail("Expected MESSAGE_TOAST but nothing was thrown");
         } catch (ProcessException err){
-            assertEquals("Not an StaffIdentity", err.getErrorMsg());
+            assertEquals("Not a candidate ID", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
         }
     }
@@ -69,11 +73,10 @@ public class ObtainInfoHelperTest {
     @Test
     public void testGetCandidatePapers_CandidateWithoutPapers() throws Exception {
         try{
-            StaffIdentity id = new StaffIdentity("15WAU00001", "0123", false, "Seong");
-            when(exDBLoader.getIdentity(anyString())).thenReturn(id);
-            when(exDBLoader.getPapersExamine(id.getRegNum())).thenReturn(new ArrayList<String>());
+            when(ExternalDbLoader.getPapersExamineByCdd("15WAU00001"))
+                    .thenReturn(new ArrayList<ExamSubject>());
 
-            papers = ObtainInfoHelper.getCandidatePapers("900000102222");
+            papers = ObtainInfoHelper.getCandidatePapers("15WAU00001");
 
             assertNotNull(papers);
             assertEquals(0, papers.size());
@@ -91,19 +94,14 @@ public class ObtainInfoHelperTest {
     @Test
     public void testGetCandidatePapers_CandidateWithPapers() throws Exception {
         try{
-            StaffIdentity id = new StaffIdentity("15WAU00001", "0123", false, "Seong");
+            List<ExamSubject> paperCodeList = new ArrayList<>();
+            paperCodeList.add(subject1);
+            paperCodeList.add(subject2);
+            paperCodeList.add(subject3);
 
-            List<String> paperCodeList = new ArrayList<>();
-            paperCodeList.add(subject1.getPaperCode());
-            paperCodeList.add(subject2.getPaperCode());
-            paperCodeList.add(subject3.getPaperCode());
+            when(ExternalDbLoader.getPapersExamineByCdd("15WAU00001")).thenReturn(paperCodeList);
 
-            when(exDBLoader.getIdentity(anyString())).thenReturn(id);
-            when(exDBLoader.getPapersExamine(id.getRegNum())).thenReturn(paperCodeList);
-            when(exDBLoader.getPaperInfo(anyString())).thenReturn(subject1)
-                    .thenReturn(subject2).thenReturn(subject3);
-
-            papers = ObtainInfoHelper.getCandidatePapers("900000102222");
+            papers = ObtainInfoHelper.getCandidatePapers("15WAU00001");
 
             assertNotNull(papers);
             assertEquals(3, papers.size());

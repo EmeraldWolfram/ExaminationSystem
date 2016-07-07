@@ -102,6 +102,10 @@ public class AssignHelper {
 
     //check-in Candidate and also check if the candidate is eligible
     public static Candidate checkCandidate(String scanString) throws ProcessException {
+        if(scanString == null){
+            throw new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
+        }
         //StaffIdentity id = exDBLoader.getIdentity(scanString);
 
         //if(id == null)

@@ -11,7 +11,7 @@ public class StaffIdentityTest {
 
     @Test
     public void testMatchPasswordGivenSameIdShouldReturnTrue() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
 
         boolean returnItem = actualId.matchPassword("0000");
         assertTrue(returnItem);
@@ -19,7 +19,7 @@ public class StaffIdentityTest {
 
     @Test
     public void testMatchPasswordGivenDiffIdShouldReturnFalse() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
 
         boolean returnItem = actualId.matchPassword("0001");
         assertFalse(returnItem);
@@ -27,7 +27,7 @@ public class StaffIdentityTest {
 
     @Test
     public void testMatchPasswordGivenDiffPassShouldReturnFalse() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
 
         boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);

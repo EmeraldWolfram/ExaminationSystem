@@ -9,17 +9,14 @@ import java.util.List;
  */
 public class ExternalDbLoader {
 
-    private static StaffIdentity staff;
-
     public ExternalDbLoader(){}
 
     public static StaffIdentity getStaffIdentity(String scanIdNumber){
-        StaffIdentity id = new StaffIdentity();
+        StaffIdentity id = null;
         //send the idNumberScanned across
         //wait for JSON file
         //Parse JSON to StaffIdentity class and return
 
-        staff = id;
         return id;
     }
 

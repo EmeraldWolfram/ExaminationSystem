@@ -19,12 +19,12 @@ public class StaffIdentity {
         this.venueHandling  = null;
     }
 
-    public StaffIdentity(String regNum, String password, boolean eligible, String name){
-        this.regNum     = regNum;
-        this.password   = password;
-        this.eligible   = eligible;
-        this.name       = name;
-        this.venueHandling  = null;
+    public StaffIdentity(String regNum, String password, boolean elg, String name, String venue){
+        this.regNum         = regNum;
+        this.password       = password;
+        this.eligible       = elg;
+        this.name           = name;
+        this.venueHandling  = venue;
     }
 
     public boolean matchPassword(String password){

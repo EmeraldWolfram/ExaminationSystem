@@ -10,9 +10,20 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
  * without touching the UI interface. This allow automated test without using a hardware
  * mobile.
  */
+
 public class LoginHelper {
     private static StaffIdentity staff;
     //This method take in an id and check if the id is an invigilator identity
+
+
+    public static StaffIdentity getStaff() {
+        return staff;
+    }
+
+    public static void setStaff(StaffIdentity staff) {
+        LoginHelper.staff = staff;
+    }
+
     public static void checkInvigilator(StaffIdentity invglt) throws ProcessException {
         if(invglt == null){
             throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
@@ -25,7 +36,7 @@ public class LoginHelper {
     }
 
     public static void identifyStaff(String scanIdNum) throws ProcessException {
-        staff = ExternalDbLoader.getStaffIdentity(scanIdNum);
+        setStaff(ExternalDbLoader.getStaffIdentity(scanIdNum));
         if(staff == null){
             throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
