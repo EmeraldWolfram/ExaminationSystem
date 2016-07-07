@@ -1,18 +1,13 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.content.Intent;
-
-import com.info.ghiny.examsystem.ObtainInfoActivity;
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.SyncFailedException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -60,7 +55,7 @@ public class ObtainInfoHelperTest {
             papers = ObtainInfoHelper.getCandidatePapers("951108106303");
             fail("Expected MESSAGE_TOAST but nothing was thrown");
         } catch (ProcessException err){
-            assertEquals("Not an Identity", err.getErrorMsg());
+            assertEquals("Not an StaffIdentity", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
         }
     }
@@ -74,7 +69,7 @@ public class ObtainInfoHelperTest {
     @Test
     public void testGetCandidatePapers_CandidateWithoutPapers() throws Exception {
         try{
-            Identity id = new Identity("15WAU00001", "0123", false, "Seong");
+            StaffIdentity id = new StaffIdentity("15WAU00001", "0123", false, "Seong");
             when(exDBLoader.getIdentity(anyString())).thenReturn(id);
             when(exDBLoader.getPapersExamine(id.getRegNum())).thenReturn(new ArrayList<String>());
 
@@ -96,7 +91,7 @@ public class ObtainInfoHelperTest {
     @Test
     public void testGetCandidatePapers_CandidateWithPapers() throws Exception {
         try{
-            Identity id = new Identity("15WAU00001", "0123", false, "Seong");
+            StaffIdentity id = new StaffIdentity("15WAU00001", "0123", false, "Seong");
 
             List<String> paperCodeList = new ArrayList<>();
             paperCodeList.add(subject1.getPaperCode());

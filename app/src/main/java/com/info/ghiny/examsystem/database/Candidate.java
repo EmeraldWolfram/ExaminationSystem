@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class Candidate {
     private Integer tableNumber;
-    private String studentName;
+    private String examIndex;
     private String regNum;
     private String paperCode;
     private String programme;
@@ -22,7 +22,7 @@ public class Candidate {
     //CONSTRUCTOR `````````````````````````````````````````````````````````````````````
     public Candidate(){
         tableNumber = 0;
-        studentName = null;
+        examIndex = null;
         regNum      = null;
         paperCode   = null;
         programme   = null;
@@ -33,7 +33,7 @@ public class Candidate {
                      String paperCode, AttendanceList.Status status){
         this.tableNumber    = tableNumber;
         this.programme      = programme;
-        this.studentName    = sName;
+        this.examIndex = sName;
         this.regNum         = regNum;
         this.paperCode      = paperCode;
         this.status         = status;
@@ -77,11 +77,11 @@ public class Candidate {
         this.status = status;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
+    public void setExamIndex(String examIndex) {
+        this.examIndex = examIndex;
     }
-    public String getStudentName() {
-        return studentName;
+    public String getExamIndex() {
+        return examIndex;
     }
 
     public void setRegNum(String regNum) {this.regNum = regNum;}

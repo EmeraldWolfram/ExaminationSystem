@@ -64,7 +64,7 @@ public class CustomAdapter extends BaseExpandableListAdapter {
         cddPrgView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         tableNumView.setText(childCdd.getTableNumber().toString());
-        candidateView.setText(childCdd.getStudentName());
+        candidateView.setText(childCdd.getExamIndex());
         cddPrgView.setText(childCdd.getProgramme());
 
         if(childCdd.getTableNumber() != 0)

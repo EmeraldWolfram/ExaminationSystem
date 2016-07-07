@@ -3,25 +3,28 @@ package com.info.ghiny.examsystem.database;
 /**
  * Created by GhinY on 06/05/2016.
  */
-public class Identity {
+public class StaffIdentity {
     private String regNum;
     private String password;
     private boolean eligible;
     private String name;
+    private String venueHandling;
 
 
-    public Identity(){
+    public StaffIdentity(){
         this.regNum   = null;
         this.password = null;
         this.eligible = false;
         this.name     = null;
+        this.venueHandling  = null;
     }
 
-    public Identity(String regNum, String password, boolean eligible, String name){
+    public StaffIdentity(String regNum, String password, boolean eligible, String name){
         this.regNum     = regNum;
         this.password   = password;
         this.eligible   = eligible;
         this.name       = name;
+        this.venueHandling  = null;
     }
 
     public boolean matchPassword(String password){
@@ -32,6 +35,14 @@ public class Identity {
 
     //Setter and getter, TO DO: Remove setIdentity as this is for testing purpose
 
+
+    public String getVenueHandling() {
+        return venueHandling;
+    }
+
+    public void setVenueHandling(String venueHandling) {
+        this.venueHandling = venueHandling;
+    }
 
     public void setName(String name) {
         this.name = name;

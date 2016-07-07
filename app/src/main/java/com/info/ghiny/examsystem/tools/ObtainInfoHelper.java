@@ -1,10 +1,9 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.content.Intent;
-
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,19 +20,24 @@ public class ObtainInfoHelper {
     }
 
     public static List<ExamSubject> getCandidatePapers(String scanValue) throws ProcessException{
-        List<ExamSubject> subjects = new ArrayList<>();
+        //List<ExamSubject> subjects = new ArrayList<>();
 
-        Identity id = examDBLoader.getIdentity(scanValue);
-        if(id == null)
-            throw new ProcessException("Not an Identity", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
+        //StaffIdentity id = examDBLoader.getIdentity(scanValue);
+        //if(id == null)
+        //    throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
+        //            IconManager.WARNING);
 
-        List<String> papers = examDBLoader.getPapersExamine(id.getRegNum());
+        //List<String> papers = examDBLoader.getPapersExamine(id.getRegNum());
 
-        for(int i = 0; i < papers.size(); i++){
-            ExamSubject subject = examDBLoader.getPaperInfo(papers.get(i));
-            subjects.add(subject);
+        List<ExamSubject> subjects = ExternalDbLoader.getPapersExamineByCdd(scanValue);
+        if(subjects == null){
+            throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
+                    IconManager.MESSAGE);
         }
+        //for(int i = 0; i < papers.size(); i++){
+        //    ExamSubject subject = examDBLoader.getPaperInfo(papers.get(i));
+        //    subjects.add(subject);
+        //}
 
         return subjects;
     }

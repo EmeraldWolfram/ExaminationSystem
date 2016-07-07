@@ -10,10 +10,9 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -26,7 +25,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private ExamDatabaseLoader databaseHelper;
     private static final int PASSWORD_REQ_CODE = 888;
-    private Identity invglt;
+    private StaffIdentity invglt;
     private Intent pwIntent;
     private ErrorManager errorManager;
 
@@ -59,7 +58,7 @@ public class MainLoginActivity extends AppCompatActivity {
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Searching for Authorized Invigilator's Identity");
+        barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
     }
 
     @Override
@@ -82,8 +81,10 @@ public class MainLoginActivity extends AppCompatActivity {
 
     public void checkEligibilityOfTheIdentity(String scanStr){
         try{
-            invglt = databaseHelper.getIdentity(scanStr);
-            LoginHelper.checkInvigilator(invglt);
+            //invglt = databaseHelper.getIdentity(scanStr);
+            //LoginHelper.checkInvigilator(invglt);
+
+            LoginHelper.identifyStaff(scanStr);
 
             //Set Text below QR scanner
             barcodeView.setStatusText(invglt.getName() + "\n" + invglt.getRegNum());
@@ -107,7 +108,9 @@ public class MainLoginActivity extends AppCompatActivity {
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                LoginHelper.checkInputPassword(invglt, password);
+                //LoginHelper.checkInputPassword(invglt, password);
+
+                LoginHelper.matchStaffPw(password);
 
                 //Successful login, start AssignActivity
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);

@@ -143,7 +143,7 @@ public class AssignInfoActivity extends AppCompatActivity {
             if(scanPossibly == AssignHelper.MAYBE_CANDIDATE){
                 cdd = AssignHelper.checkCandidate(scanString);
                 //Candidate is legal, display all the candidate value
-                cddView.setText(cdd.getStudentName());
+                cddView.setText(cdd.getExamIndex());
                 regNumView.setText(cdd.getRegNum());
                 paperView.setText(cdd.getPaper().toString());
             }
@@ -153,7 +153,7 @@ public class AssignInfoActivity extends AppCompatActivity {
                 tableView.setText("");  cddView.setText("");
                 regNumView.setText(""); paperView.setText("");
 
-                message.showCustomMessage(cdd.getStudentName()+ " Assigned to "
+                message.showCustomMessage(cdd.getExamIndex()+ " Assigned to "
                         + cdd.getTableNumber().toString(),
                         new IconManager().getIcon(IconManager.ASSIGNED));
             }

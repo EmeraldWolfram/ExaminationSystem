@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -20,8 +21,9 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class LocalDbLoaderTest {
     LocalDbLoader db;
+
     String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
-                                "(Name, RegNum, TableNo, Status, Code, Programme) VALUES (";
+                                "(ExamIndex, RegNum, TableNo, Status, Code, Programme) VALUES (";
 
     @Before
     public void setUp() throws Exception {
@@ -81,9 +83,9 @@ public class LocalDbLoaderTest {
         }
     }
 
-    //= isEmpty() ==================================================================================
+    //= EmptyAttdInDB() ==================================================================================
     /**
-     * isEmpty()
+     * emptyAttdInDB()
      *
      * create an empty table and return a false
      * when the target table does not exist in the database
@@ -92,7 +94,7 @@ public class LocalDbLoaderTest {
     public void testIsEmpty_whenTheTableExist() throws Exception {
         try{
             db.createTableIfNotExist();
-            assertTrue(db.isEmpty());
+            assertTrue(db.emptyAttdInDB());
 
             Connection con = db.estaConnection();
             Statement stmt = con.createStatement();
@@ -101,24 +103,24 @@ public class LocalDbLoaderTest {
 
             stmt.close();
             con.close();
-            assertFalse(db.isEmpty());
+            assertFalse(db.emptyAttdInDB());
         } catch(Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
     }
 
     /**********************************************************************
-     * isEmpty()
+     * emptyAttdInDB()
      * should return true when the database is empty without table
      * should return false when the database is not empty
      *
-     * At first, the database was empty and isEmpty() return true
-     * When a Candidate was saved, isEmpty() return false
+     * At first, the database was empty and emptyAttdInDB() return true
+     * When a Candidate was saved, emptyAttdInDB() return false
      **********************************************************************/
     @Test
     public void testIsEmpty_whenTheTable_NOT_Exist() throws Exception {
         try{
-            assertTrue(db.isEmpty());
+            assertTrue(db.emptyAttdInDB());
             Connection con = db.estaConnection();
             Statement stmt = con.createStatement();
             stmt.executeUpdate(SAVE_ATTENDANCE
@@ -126,7 +128,7 @@ public class LocalDbLoaderTest {
 
             stmt.close();
             con.close();
-            assertFalse(db.isEmpty());
+            assertFalse(db.emptyAttdInDB());
         } catch(Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -151,9 +153,9 @@ public class LocalDbLoaderTest {
             stmt.close();
             con.close();
             //End of initialization
-            assertFalse(db.isEmpty());
+            assertFalse(db.emptyAttdInDB());
             db.clearDatabase();
-            assertTrue(db.isEmpty());
+            assertTrue(db.emptyAttdInDB());
 
 
         } catch(Exception err){
@@ -203,7 +205,7 @@ public class LocalDbLoaderTest {
             ResultSet rs = stmt.executeQuery("SELECT * FROM AttdTable;");
 
             assertTrue(rs.first());
-            assertEquals("FGY",        rs.getString("Name"));
+            assertEquals("FGY",        rs.getString("ExamIndex"));
             assertEquals("15WAU00001", rs.getString("RegNum"));
             assertEquals(1,            rs.getInt("TableNo"));
             assertEquals("ABSENT",     rs.getString("Status"));
@@ -211,7 +213,7 @@ public class LocalDbLoaderTest {
             assertEquals("RMB3",       rs.getString("Programme"));
 
             assertTrue(rs.next());
-            assertEquals("NYN",        rs.getString("Name"));
+            assertEquals("NYN",        rs.getString("ExamIndex"));
             assertEquals("15WAU00002", rs.getString("RegNum"));
             assertEquals(1,            rs.getInt("TableNo"));
             assertEquals("ABSENT",     rs.getString("Status"));
@@ -249,7 +251,7 @@ public class LocalDbLoaderTest {
             ResultSet rs = stmt.executeQuery("SELECT * FROM AttdTable;");
 
             assertTrue(rs.first());
-            assertEquals("FGY",        rs.getString("Name"));
+            assertEquals("FGY",        rs.getString("ExamIndex"));
             assertEquals("15WAU00001", rs.getString("RegNum"));
             assertEquals(1,            rs.getInt("TableNo"));
             assertEquals("ABSENT",     rs.getString("Status"));
@@ -257,7 +259,7 @@ public class LocalDbLoaderTest {
             assertEquals("RMB3",       rs.getString("Programme"));
 
             assertTrue(rs.next());
-            assertEquals("NYN",        rs.getString("Name"));
+            assertEquals("NYN",        rs.getString("ExamIndex"));
             assertEquals("15WAU00002", rs.getString("RegNum"));
             assertEquals(1,            rs.getInt("TableNo"));
             assertEquals("ABSENT",     rs.getString("Status"));
@@ -273,65 +275,63 @@ public class LocalDbLoaderTest {
         }
     }
 
-    //= getLastSavedAttendanceList() ===============================================================
+    //= queryAttendanceList() ===============================================================
 
     /**
-     *  getLastSavedAttendanceList()
+     *  queryAttendanceList()
      *
      *  if Table doesn't not exist in the database
      *  An empty table will be created and this method return an empty HashMap<>
      *
      */
     @Test
-    public void testGetLastSavedAttendanceList_EmptyDatabase() throws Exception {
+    public void testQueryAttendanceList_EmptyDatabase() throws Exception {
         try{
-            HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-                    map1 = db.getLastSavedAttendanceList();
+            AttendanceList map1 = db.queryAttendanceList();
 
             assertNotNull(map1);
-            assertEquals(4, map1.size());
-            assertEquals(0, map1.get(AttendanceList.Status.PRESENT).size());
-            assertEquals(0, map1.get(AttendanceList.Status.ABSENT).size());
-            assertEquals(0, map1.get(AttendanceList.Status.BARRED).size());
-            assertEquals(0, map1.get(AttendanceList.Status.EXEMPTED).size());
-
+            assertEquals(5, map1.getNumberOfStatus());
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
     }//Add try catch in the methods to throw another Error
 
     /*********************************************************************
-     * getLastSavedAttd()
+     * queryAttendanceList()
      *
      * should return an empty HashMap of AttendanceList
      * instead of null when the database is empty.
      **********************************************************************/
     @Test
-    public void testGetLastSavedAttendanceList_EmptyTable() throws Exception {
+    public void testQueryAttendanceList_EmptyTable() throws Exception {
         try{
             db.createTableIfNotExist();
-            HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-                    map1 = db.getLastSavedAttendanceList();
+            AttendanceList        map1 = db.queryAttendanceList();
 
             assertNotNull(map1);
-            assertEquals(4, map1.size());
-            assertEquals(0, map1.get(AttendanceList.Status.PRESENT).size());
-            assertEquals(0, map1.get(AttendanceList.Status.ABSENT).size());
-            assertEquals(0, map1.get(AttendanceList.Status.BARRED).size());
-            assertEquals(0, map1.get(AttendanceList.Status.EXEMPTED).size());
-
+            assertEquals(5, map1.getNumberOfStatus());
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
     }
 
     /*********************************************************************
-     * getLastSavedAttd()
+     * queryAttendanceList()
      *
      * should return a HashMap of AttendanceList as in the database
      **********************************************************************/
     @Test
-    public void testGetLastSavedAttendanceList() throws Exception {
+    public void testQueryAttendanceList() throws Exception {
         try{
             db.createTableIfNotExist();
             Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001",
@@ -340,17 +340,127 @@ public class LocalDbLoaderTest {
             attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
             db.saveAttendanceList(attdList);
 
-            HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-                    map1 = db.getLastSavedAttendanceList();
+            AttendanceList        map1 = db.queryAttendanceList();
 
             assertNotNull(map1);
-            assertEquals(4, map1.size());
-            assertEquals(0, map1.get(AttendanceList.Status.PRESENT).size());
-            assertEquals(1, map1.get(AttendanceList.Status.ABSENT).size());
-            assertEquals(0, map1.get(AttendanceList.Status.BARRED).size());
-            assertEquals(0, map1.get(AttendanceList.Status.EXEMPTED).size());
+            assertEquals(5, map1.getNumberOfStatus());
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+            assertEquals(1, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
         } catch(Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
     }
+
+    //= SavePaperList() ============================================================================
+    /****************************************************************
+     * savePaperList()
+     * should save the 2 subjects into the database
+     ****************************************************************/
+    @Test
+    public void testSavePaperList() throws Exception {
+        try{
+            ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
+                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+            ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
+                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+
+            HashMap<String, ExamSubject> subjects = new HashMap<>();
+            subjects.put(subject1.getPaperCode(), subject1);
+            subjects.put(subject2.getPaperCode(), subject2);
+
+            db.createTableIfNotExist();
+            db.savePaperList(subjects);
+
+            Connection con = db.estaConnection();
+            Statement stmt = con.createStatement();
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM PaperTable;");
+
+            assertTrue(rs.first());
+            assertEquals("BAME 0002",   rs.getString(LocalDbLoader.PAPER_CODE));
+            assertEquals("SUBJECT 2",   rs.getString(LocalDbLoader.PAPER_DESC));
+            assertEquals(55,            rs.getInt(LocalDbLoader.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+
+            assertTrue(rs.next());
+            assertEquals("BAME 0001",   rs.getString(LocalDbLoader.PAPER_CODE));
+            assertEquals("SUBJECT 1",   rs.getString(LocalDbLoader.PAPER_DESC));
+            assertEquals(25,            rs.getInt(LocalDbLoader.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch(Exception err){
+            fail("No exception expected but " + err.getMessage() + " was thrown.");
+        }
+    }
+
+    /****************************************************************
+     * savePaperList()
+     * should save the 2 subjects into the database even table does not exist
+     ****************************************************************/
+    @Test
+    public void testSavePaperList_TableNotExistYet() throws Exception {
+        try{
+            ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
+                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+            ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
+                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+
+            HashMap<String, ExamSubject> subjects = new HashMap<>();
+            subjects.put(subject1.getPaperCode(), subject1);
+            subjects.put(subject2.getPaperCode(), subject2);
+
+            db.savePaperList(subjects);
+
+            Connection con = db.estaConnection();
+            Statement stmt = con.createStatement();
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM PaperTable;");
+
+            assertTrue(rs.first());
+            assertEquals("BAME 0002",   rs.getString(LocalDbLoader.PAPER_CODE));
+            assertEquals("SUBJECT 2",   rs.getString(LocalDbLoader.PAPER_DESC));
+            assertEquals(55,            rs.getInt(LocalDbLoader.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+
+            assertTrue(rs.next());
+            assertEquals("BAME 0001",   rs.getString(LocalDbLoader.PAPER_CODE));
+            assertEquals("SUBJECT 1",   rs.getString(LocalDbLoader.PAPER_DESC));
+            assertEquals(25,            rs.getInt(LocalDbLoader.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch(Exception err){
+            fail("No exception expected but " + err.getMessage() + " was thrown.");
+        }
+    }
+
+    //= EmptyPapersInDB() ===========================================================================
+    /**
+     *
+     */
+    @Test
+    public void testEmptyPapersInDB() throws Exception{
+        try{
+            assertTrue(db.emptyPapersInDB());
+
+            HashMap<String, ExamSubject> map = new HashMap<>();
+            ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
+                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+            map.put(subject1.getPaperCode(), subject1);
+            db.savePaperList(map);
+
+            assertFalse(db.emptyPapersInDB());
+        } catch(Exception err){
+            fail("No exception expected but " + err.getMessage() + " was thrown.");
+        }
+    }
+
 }

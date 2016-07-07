@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.tools;
 
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.junit.Test;
 
@@ -20,15 +20,15 @@ public class LoginHelperTest {
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Not an Identity", err.getErrorMsg());
+            assertEquals("Not an StaffIdentity", err.getErrorMsg());
         }
     }
 
-    //If input Identity have false "eligible", MESSAGE_TOAST should be thrown
+    //If input StaffIdentity have false "eligible", MESSAGE_TOAST should be thrown
     @Test
     public void testCheckInvigilator_Illegal_ID_Should_Throw_MESSAGE_TOAST()throws Exception{
         try{
-            Identity id = new Identity("12WW", "0123", false, "MR. TEST");
+            StaffIdentity id = new StaffIdentity("12WW", "0123", false, "MR. TEST");
             LoginHelper.checkInvigilator(id);
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
@@ -41,7 +41,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckInvigilator_Nothing_Happen_if_Legal_ID_input()throws Exception{
         try{
-            Identity id = new Identity("12WW", "0123", true, "MR. TEST");
+            StaffIdentity id = new StaffIdentity("12WW", "0123", true, "MR. TEST");
             LoginHelper.checkInvigilator(id);
         } catch (ProcessException err){
             fail("Expect no error but obtained ErrMsg - " + err.getErrorMsg());
@@ -65,7 +65,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckInputPassword_NULL_PW_should_throw_MESSAGE_TOAST() throws Exception{
         try{
-            Identity id = new Identity("12WW", "0123", true, "MR. TEST");
+            StaffIdentity id = new StaffIdentity("12WW", "0123", true, "MR. TEST");
 
             LoginHelper.checkInputPassword(id, null);
 
@@ -80,7 +80,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckInputPassword_EMPTY_PW_should_throw_MESSAGE_TOAST() throws Exception{
         try{
-            Identity id = new Identity("12WW", "0123", true, "MR. TEST");
+            StaffIdentity id = new StaffIdentity("12WW", "0123", true, "MR. TEST");
 
             LoginHelper.checkInputPassword(id, "");
 
@@ -95,7 +95,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckInputPassword_Wrong_PW_should_throw_MESSAGE_TOAST() throws Exception{
         try{
-            Identity id = new Identity("12WW", "0123", true, "MR. TEST");
+            StaffIdentity id = new StaffIdentity("12WW", "0123", true, "MR. TEST");
 
             LoginHelper.checkInputPassword(id, "01234");
 

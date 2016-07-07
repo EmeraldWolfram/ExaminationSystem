@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.tools;
 
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -10,10 +11,11 @@ import com.info.ghiny.examsystem.database.Identity;
  * mobile.
  */
 public class LoginHelper {
+    private static StaffIdentity staff;
     //This method take in an id and check if the id is an invigilator identity
-    public static void checkInvigilator(Identity invglt) throws ProcessException {
+    public static void checkInvigilator(StaffIdentity invglt) throws ProcessException {
         if(invglt == null){
-            throw new ProcessException("Not an Identity", ProcessException.MESSAGE_TOAST,
+            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         } else {
             if(!invglt.getEligible())
@@ -22,8 +24,21 @@ public class LoginHelper {
         }
     }
 
+    public static void identifyStaff(String scanIdNum) throws ProcessException {
+        staff = ExternalDbLoader.getStaffIdentity(scanIdNum);
+        if(staff == null){
+            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
+        } else {
+            //Check staff status
+            if(!staff.getEligible())
+                throw new ProcessException("Unauthorized Invigilator",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+        }
+    }
+    //==============================================================================================
     //This method check whether the input password was the password of the invglt
-    public static void checkInputPassword(Identity invglt, String pw) throws ProcessException {
+    public static void checkInputPassword(StaffIdentity invglt, String pw) throws ProcessException {
         if(invglt == null)
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);
@@ -33,6 +48,21 @@ public class LoginHelper {
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         } else {
             if (!invglt.matchPassword(pw))
+                throw new ProcessException("Input password is incorrect",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+        }
+    }
+
+    public static void matchStaffPw(String inputPw) throws ProcessException{
+        if(staff == null)
+            throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
+                    IconManager.WARNING);
+
+        if(inputPw == null || inputPw.isEmpty()){
+            throw new ProcessException("Please enter a password to proceed",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+        }else {
+            if (!staff.matchPassword(inputPw))
                 throw new ProcessException("Input password is incorrect",
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }

@@ -1,7 +1,5 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.database.Identity;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -9,11 +7,11 @@ import static org.junit.Assert.*;
 /**
  * Created by GhinY on 16/05/2016.
  */
-public class IdentityTest {
+public class StaffIdentityTest {
 
     @Test
     public void testMatchPasswordGivenSameIdShouldReturnTrue() throws Exception {
-        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
 
         boolean returnItem = actualId.matchPassword("0000");
         assertTrue(returnItem);
@@ -21,7 +19,7 @@ public class IdentityTest {
 
     @Test
     public void testMatchPasswordGivenDiffIdShouldReturnFalse() throws Exception {
-        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
 
         boolean returnItem = actualId.matchPassword("0001");
         assertFalse(returnItem);
@@ -29,7 +27,7 @@ public class IdentityTest {
 
     @Test
     public void testMatchPasswordGivenDiffPassShouldReturnFalse() throws Exception {
-        Identity actualId   = new Identity("15WAU09184", "0000", true, "FOONG");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG");
 
         boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);

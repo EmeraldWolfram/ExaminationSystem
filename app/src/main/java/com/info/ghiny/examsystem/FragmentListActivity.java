@@ -9,6 +9,8 @@ import android.view.View;
 
 
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomToast;
 
 /**
@@ -34,7 +36,7 @@ public class FragmentListActivity extends AppCompatActivity {
     }
 
     public void onUpload(View view){
-
+        //ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
     }
 
 }

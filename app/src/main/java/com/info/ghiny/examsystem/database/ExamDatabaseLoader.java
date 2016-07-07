@@ -56,8 +56,8 @@ public class ExamDatabaseLoader {
     // 1. iterate calling getStudentExamPaper to get the paper code
     // 2. return the exam paper info using SELECT * FROM EXAM_TABLE WHERE paperCode = '...'
 
-    public Identity getIdentity(String icNumber){
-        Identity identity = new Identity();
+    public StaffIdentity getIdentity(String icNumber){
+        StaffIdentity staffIdentity = new StaffIdentity();
         boolean legit = false;
 
         Cursor pointer = database.rawQuery("SELECT * FROM "  + IDENTITY_TABLE + " WHERE "
@@ -67,13 +67,13 @@ public class ExamDatabaseLoader {
             if(pointer.getInt(pointer.getColumnIndex(IDENTITY_COLUMN_LEGIT)) != 0)
                 legit = true;
 
-            identity.setRegNum(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_REG)));
-            identity.setName(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_NAME)));
-            identity.setEligible(legit);
-            identity.setPassword(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_PASS)));
+            staffIdentity.setRegNum(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_REG)));
+            staffIdentity.setName(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_NAME)));
+            staffIdentity.setEligible(legit);
+            staffIdentity.setPassword(pointer.getString(pointer.getColumnIndex(IDENTITY_COLUMN_PASS)));
 
             pointer.close();
-            return identity;
+            return staffIdentity;
         } else{
             pointer.close();
             return null;

@@ -99,8 +99,8 @@ public class ProcessExceptionTest {
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
             assertEquals(R.drawable.msg_icon, err.getErrorIcon());
-            assertEquals(testListener1, err.getListener("First"));
-            assertEquals(testListener2, err.getListener("Second"));
+            assertEquals(testListener1, err.getListener(ProcessException.okayButton));
+            assertEquals(testListener2, err.getListener(ProcessException.cancelButton));
         }
     }
 

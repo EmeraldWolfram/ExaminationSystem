@@ -4,10 +4,10 @@ import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.Identity;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import java.util.Calendar;
@@ -53,16 +53,19 @@ public class AssignHelper {
         assert dBLoader != null; assert exDBLoader != null;
 
         AssignHelper.exDBLoader  = exDBLoader;
-        if(dBLoader.isEmpty()){
+        if(dBLoader.emptyAttdInDB()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
+
+            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
         }
-        if(Candidate.getPaperList() == null)
-            Candidate.setPaperList(fakeTheExamPaper()); //Suppose to query external DB
+        if(dBLoader.emptyPapersInDB()) {
+            dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
+            /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
+        }
 
         AssignHelper.JdbcLoader = dBLoader;
-
-        attdList = new AttendanceList();
-        attdList.setAttendanceList(JdbcLoader.getLastSavedAttendanceList());
+        attdList    = JdbcLoader.queryAttendanceList();
+        Candidate.setPaperList(dBLoader.queryPapers());
     }
 
     public static void setAttdList(AttendanceList attdList) {
@@ -72,14 +75,6 @@ public class AssignHelper {
     //A getter to retrieve the list to display in Activity
     public static AttendanceList getAttdList() {
         return attdList;
-    }
-
-    public static Candidate getCandidate() {
-        return tempCdd;
-    }
-
-    public static Integer getTable() {
-        return tempTable;
     }
 
     //= Assign =====================================================================================
@@ -107,35 +102,40 @@ public class AssignHelper {
 
     //check-in Candidate and also check if the candidate is eligible
     public static Candidate checkCandidate(String scanString) throws ProcessException {
-        Identity id = exDBLoader.getIdentity(scanString);
+        //StaffIdentity id = exDBLoader.getIdentity(scanString);
 
-        if(id == null)
-            throw new ProcessException("Not an Identity", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
+        //if(id == null)
+        //    throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
+        //            IconManager.WARNING);
 
-        if(id.getRegNum() == null)
-            throw new ProcessException("FATAL: Unable to process ID",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        //if(id.getRegNum() == null)
+        //    throw new ProcessException("FATAL: Unable to process ID",
+        //            ProcessException.FATAL_MESSAGE, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
             throw new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
-        Candidate candidate = attdList.getCandidate(id.getRegNum());
+        //Candidate candidate = attdList.getCandidate(id.getRegNum());
+        Candidate candidate = attdList.getCandidate(scanString);
 
         if(candidate == null){
-            throw new ProcessException(id.getName() + " doest not belong to this venue",
+            throw new ProcessException(scanString + " doest not belong to this venue",
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         } else {
-            if(candidate.getStatus() == AttendanceList.Status.EXEMPTED)
-                throw new ProcessException("The paper was exempted for " + id.getName(),
+            if(candidate.getStatus() == AttendanceList.Status.EXEMPTED){
+                throw new ProcessException("The paper was exempted for " + candidate.getExamIndex(),
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-            if(candidate.getStatus() == AttendanceList.Status.BARRED)
-                throw new ProcessException(id.getName() + " have been barred",
+            }
+            if(candidate.getStatus() == AttendanceList.Status.BARRED){
+                throw new ProcessException(candidate.getExamIndex() + " have been barred",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-            if(candidate.getStatus() == AttendanceList.Status.QUARANTIZED)
-                throw new ProcessException("The paper was quarantized for " + id.getName(),
+            }
+            if(candidate.getStatus() == AttendanceList.Status.QUARANTIZED){
+                throw new ProcessException("The paper was quarantized for "
+                        + candidate.getExamIndex(),
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            }
         }
 
         tempCdd = candidate;
@@ -151,8 +151,8 @@ public class AssignHelper {
             ProcessException err;
             if(assgnList.containsKey(tempTable)){
                 err = new ProcessException("Previous: Table " + tempTable + " assigned to "
-                        + attdList.getCandidate(assgnList.get(tempTable)).getStudentName()
-                        + "\nNew: Table " + tempTable + " assign to " + tempCdd.getStudentName(),
+                        + attdList.getCandidate(assgnList.get(tempTable)).getExamIndex()
+                        + "\nNew: Table " + tempTable + " assign to " + tempCdd.getExamIndex(),
                         ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
                 err.setListener(ProcessException.updateButton, updateListener);
                 err.setListener(ProcessException.cancelButton, cancelListener);
@@ -160,10 +160,10 @@ public class AssignHelper {
             }
 
             if(assgnList.containsValue(tempCdd.getRegNum())){
-                err = new ProcessException("Previous: " + tempCdd.getStudentName()
+                err = new ProcessException("Previous: " + tempCdd.getExamIndex()
                         + " assigned to Table "
                         + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
-                        + "\nNew: " + tempCdd.getStudentName() + " assign to " + tempTable,
+                        + "\nNew: " + tempCdd.getExamIndex() + " assign to " + tempTable,
                         ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
                 err.setListener(ProcessException.updateButton, updateListener);
                 err.setListener(ProcessException.cancelButton, cancelListener);
@@ -172,7 +172,7 @@ public class AssignHelper {
 
 
             if(!tempCdd.getPaper().isValidTable(tempTable))
-                throw new ProcessException(tempCdd.getStudentName() + " should not sit here\n"
+                throw new ProcessException(tempCdd.getExamIndex() + " should not sit here\n"
                         + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
 
