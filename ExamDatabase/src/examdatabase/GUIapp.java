@@ -5,6 +5,7 @@
  */
 package examdatabase;
 
+
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -18,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 /**
  *
@@ -183,6 +185,11 @@ public final class GUIapp extends javax.swing.JFrame {
         attendanceBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Absent", "Present" }));
 
         statusBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Legal", "Barred", "Exempted" }));
+        statusBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statusBoxActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Table Number:");
 
@@ -205,6 +212,7 @@ public final class GUIapp extends javax.swing.JFrame {
             }
         });
 
+        facultyBox.setEditable(true);
         facultyBox.setModel(facultyBoxModel);
         facultyBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -212,6 +220,7 @@ public final class GUIapp extends javax.swing.JFrame {
             }
         });
 
+        programmeBox.setEditable(true);
         programmeBox.setModel(programmeBoxModel);
 
         paperCodeBox.setModel(paperCodeBoxModel);
@@ -900,6 +909,10 @@ public final class GUIapp extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_markTableMouseClicked
+
+    private void statusBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_statusBoxActionPerformed
     
     
     public void setComboBox(){
@@ -910,7 +923,7 @@ public final class GUIapp extends javax.swing.JFrame {
        for(int i = 0; i<list.size(); i++){
            programmeBoxModel.addElement(list.get(i));
        }
-       AutoCompletion.enable(statusBox);
+       AutoCompleteDecorator.decorate(programmeBox);
        
        //get the distinct paperCode list from database
        list = new GetData().getList("PaperInfo", "PaperCode");
@@ -927,6 +940,11 @@ public final class GUIapp extends javax.swing.JFrame {
            facultyBoxModel.addElement(list.get(i));
        }
        
+       
+       new AutoCompletion(facultyBox).enable(facultyBox);
+       
+
+     
        
     }
     

@@ -19,7 +19,10 @@ public class ExamDatabase {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        new GUIapp().setVisible(true);
+//        new GUIapp().setVisible(true);
+        new ConnectDB().setConnection("FEB_MAR", "2016_for_test");
+        
+        new RebuildDataBase();
        
     }
     

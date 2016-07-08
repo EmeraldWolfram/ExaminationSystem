@@ -62,13 +62,12 @@ public class UpdateMark {
             
             pstmt.executeUpdate();
             
-            sql = "SELECT id, first, last, age FROM Registration";
-//            ResultSet rs = stmt.executeQuery(sql);
       
-//          pstmt.close();
-//          conn.close();
+          pstmt.close();
+          conn.close();
         } catch ( Exception e ) {
           System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+          System.out.println(e.getMessage());
           System.exit(0);
         }
         

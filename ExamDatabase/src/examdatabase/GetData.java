@@ -235,10 +235,10 @@ public class GetData {
         GetData info;
         ArrayList<GetData> list = new ArrayList<>();
         
-        try (Connection conn = new ConnectDB().connect();
+        try {
+            Connection conn = new ConnectDB().connect();
             Statement stmt  = conn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql)){
-            
+            ResultSet rs    = stmt.executeQuery(sql);
             // loop through the result set
             while (rs.next()) {
 
@@ -256,11 +256,13 @@ public class GetData {
                    list.add(info);
             }
             
+            rs.close();
+            stmt.close();
+            conn.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        
         if(list.isEmpty())
             throw new CustomException("No data found.");
         else
