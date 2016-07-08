@@ -32,25 +32,26 @@ public class ExternalDbLoader {
     }
 
     public static StaffIdentity getStaffIdentity(String scanIdNumber){
-        StaffIdentity id;
+        StaffIdentity id = null;
         String str = JsonHelper.formatString(JsonHelper.TYPE_IDENTITY, scanIdNumber);
 
-        tcpClient.sendMessage(str);
-        while(!msgReadyFlag)
-            id = null;
+        if(str != null){
+            tcpClient.sendMessage(str);
+            while(!msgReadyFlag)
+                id = null;
+            id = JsonHelper.parseStaffIdentity(msgReceived);
+            msgReceived     = null;
+            msgReadyFlag    = false;
+            LoginHelper.setStaff(id);
+        }
 
-        id = JsonHelper.parseStaffIdentity(msgReceived);
-        msgReceived     = null;
-        msgReadyFlag    = false;
-        LoginHelper.setStaff(id);
 
         return id;
     }
 
     public static AttendanceList dlAttdList(){
         AttendanceList attdList;
-        String str = JsonHelper.formatString(JsonHelper.TYPE_VENUE,
-                LoginHelper.getStaff().getVenueHandling());
+        String str = JsonHelper.formatString(JsonHelper.TYPE_VENUE, LoginHelper.getStaff().getVenueHandling());
 
         tcpClient.sendMessage(str);
         while(!msgReadyFlag)

@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.junit.Before;
 import org.junit.Test;

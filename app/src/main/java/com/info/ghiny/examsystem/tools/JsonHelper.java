@@ -27,6 +27,7 @@ public class JsonHelper {
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
+    public static final String LIST_INVI    = "In-Charge";
     public static final String LIST_LIST    = "CddList";
     public static final String COLLECTOR    = "Collector";
     public static final String COLLECTED    = "BundleCode";
@@ -55,6 +56,7 @@ public class JsonHelper {
         try{
             list.put(KEY_TYPE, TYPE_LIST);
             list.put(LIST_SIZE, regNumList.size());
+            list.put(LIST_INVI, LoginHelper.getStaff().getRegNum());
             list.put(LIST_VENUE, LoginHelper.getStaff().getVenueHandling());
 
             for(int i = 0; i < regNumList.size(); i++){
@@ -105,7 +107,7 @@ public class JsonHelper {
             invglt.setEligible(legit);
 
         } catch(Exception err){
-            err.printStackTrace();
+            //err.printStackTrace();
             return null;
         }
         return invglt;
