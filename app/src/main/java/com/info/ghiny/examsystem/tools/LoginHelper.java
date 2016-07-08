@@ -14,8 +14,7 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
 public class LoginHelper {
     private static StaffIdentity staff;
     //This method take in an id and check if the id is an invigilator identity
-
-
+    //= Setter & Getter ============================================================================
     public static StaffIdentity getStaff() {
         return staff;
     }
@@ -24,14 +23,18 @@ public class LoginHelper {
         LoginHelper.staff = staff;
     }
 
-    public static void checkInvigilator(StaffIdentity invglt) throws ProcessException {
-        if(invglt == null){
-            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
+    //= Useable Methods ============================================================================
+    public static void verifyChief(String scanStr) throws ProcessException{
+        if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
+            String[] chiefArr = scanStr.split(":");
+            String ipAddr   = chiefArr[1];
+            int portNum     = Integer.parseInt(chiefArr[2]);
+
+            TCPClient.setServerIp(ipAddr);
+            TCPClient.setServerPort(portNum);
         } else {
-            if(!invglt.getEligible())
-                throw new ProcessException("Unauthorized Invigilator",
-                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+            throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
         }
     }
 
@@ -47,7 +50,22 @@ public class LoginHelper {
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
     }
-    //==============================================================================================
+
+    public static void matchStaffPw(String inputPw) throws ProcessException{
+        if(staff == null)
+            throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
+                    IconManager.WARNING);
+
+        if(inputPw == null || inputPw.isEmpty()){
+            throw new ProcessException("Please enter a password to proceed",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+        }else {
+            if (!staff.matchPassword(inputPw))
+                throw new ProcessException("Input password is incorrect",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+        }
+    }
+    //= Removable Methods ==========================================================================
     //This method check whether the input password was the password of the invglt
     public static void checkInputPassword(StaffIdentity invglt, String pw) throws ProcessException {
         if(invglt == null)
@@ -64,17 +82,13 @@ public class LoginHelper {
         }
     }
 
-    public static void matchStaffPw(String inputPw) throws ProcessException{
-        if(staff == null)
-            throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
+    public static void checkInvigilator(StaffIdentity invglt) throws ProcessException {
+        if(invglt == null){
+            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
-
-        if(inputPw == null || inputPw.isEmpty()){
-            throw new ProcessException("Please enter a password to proceed",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-        }else {
-            if (!staff.matchPassword(inputPw))
-                throw new ProcessException("Input password is incorrect",
+        } else {
+            if(!invglt.getEligible())
+                throw new ProcessException("Unauthorized Invigilator",
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
     }

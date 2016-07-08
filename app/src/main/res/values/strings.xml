@@ -3,6 +3,7 @@
 
     <string name="img_name">TARUC Exam System</string>
     <string name="id_text">Examinator ID Verification:</string>
+    <string name="ip_text">Chief Connection:</string>
     <string name="login_text">LOGIN</string>
 
     <string name="button_opt1">OBTAIN STUDENT INFO</string>

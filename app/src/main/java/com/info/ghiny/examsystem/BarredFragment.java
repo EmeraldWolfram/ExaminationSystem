@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import com.info.ghiny.examsystem.adapter.CustomAdapter;
+import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
@@ -36,7 +36,7 @@ public class BarredFragment extends Fragment {
                 FragmentHelper.getChildList(AttendanceList.Status.BARRED);
 
         ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.barredList);
-        barredList.setAdapter(new CustomAdapter(getContext(), header, child));
+        barredList.setAdapter(new FragListAdapter(getContext(), header, child));
 
         return view;
     }

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import com.info.ghiny.examsystem.adapter.CustomAdapter;
+import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
@@ -35,7 +35,7 @@ public class ExemptedFragment extends Fragment {
                 FragmentHelper.getChildList(AttendanceList.Status.EXEMPTED);
 
         ExpandableListView exemList = (ExpandableListView)view.findViewById(R.id.exemptedList);
-        exemList.setAdapter(new CustomAdapter(getContext(), header, child));
+        exemList.setAdapter(new FragListAdapter(getContext(), header, child));
 
         return view;
     }

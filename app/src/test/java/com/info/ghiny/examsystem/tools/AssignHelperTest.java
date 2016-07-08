@@ -2,9 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import org.junit.Before;
@@ -15,7 +13,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -25,7 +22,6 @@ public class AssignHelperTest {
 
     AttendanceList attdList;
     LocalDbLoader dBLoader;
-    ExamDatabaseLoader exLoader;
     Candidate cdd1;
     Candidate cdd2;
     Candidate cdd3;
@@ -73,9 +69,8 @@ public class AssignHelperTest {
                 .thenReturn(attdList)
                 .thenReturn(null);
 
-        exLoader = Mockito.mock(ExamDatabaseLoader.class);
 
-        AssignHelper.initLoader(dBLoader, exLoader);
+        AssignHelper.initLoader(dBLoader);
         AssignHelper.tempCdd = null;
         AssignHelper.tempTable = null;
         AssignHelper.assgnList = new HashMap<>();
@@ -161,7 +156,7 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
-            AssignHelper.initLoader(dBLoader, exLoader);
+            AssignHelper.initLoader(dBLoader);
             testDummy = AssignHelper.checkCandidate("15WAU00001");
             fail("Expected MESSAGE_DIALOG but none thrown");
         } catch(ProcessException err){

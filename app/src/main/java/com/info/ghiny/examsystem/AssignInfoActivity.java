@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ErrorManager;
@@ -60,8 +59,7 @@ public class AssignInfoActivity extends AppCompatActivity {
 
         try{
             LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            ExamDatabaseLoader exDBLoader   = new ExamDatabaseLoader(this);
-            AssignHelper.initLoader(jdbcLoader, exDBLoader);
+            AssignHelper.initLoader(jdbcLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
         }

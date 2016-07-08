@@ -22,8 +22,56 @@ public class LoginHelperTest {
     StaffIdentity staffId;
     @Before
     public void setUp() throws Exception{
+        TCPClient.setServerIp(null);
+        TCPClient.setServerPort(0);
         staffId = new StaffIdentity("12WW", "0123", true, "MR. TEST", "H3");
         PowerMockito.mockStatic(ExternalDbLoader.class);
+    }
+    //= VerifyChief() ==============================================================================
+    /**
+     *  verifyChief()
+     *
+     *  when input String was correct Chief Address format
+     *  TCP Client ServerIP and ServerPort will be set
+     */
+    @Test
+    public void testVerifyChief_If_correct_String_format() throws Exception{
+        try{
+            assertNull(TCPClient.SERVERIP);
+            assertEquals(0, TCPClient.SERVERPORT);
+
+            String str = "$CHIEF:192.168.0.1:5000:$";
+            LoginHelper.verifyChief(str);
+
+            assertEquals("192.168.0.1", TCPClient.SERVERIP);
+            assertEquals(5000, TCPClient.SERVERPORT);
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    /**
+     *  verifyChief()
+     *
+     *  when input String was incorrect Chief Address format
+     *  MESSAGE TOAST shall be thrown
+     */
+    @Test
+    public void testVerifyChief_If_wrong_String_format() throws Exception{
+        try{
+            assertNull(TCPClient.SERVERIP);
+            assertEquals(0, TCPClient.SERVERPORT);
+
+            String str = "$CHIEF:192.168.0.1:5000:";
+            LoginHelper.verifyChief(str);
+
+            fail("Expected MESSAFE TOAST Exception but none were thrown");
+        } catch (ProcessException err){
+            assertNull(TCPClient.SERVERIP);
+            assertEquals(0, TCPClient.SERVERPORT);
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Not a chief address", err.getErrorMsg());
+        }
     }
 
     //=CheckInvigilator=============================================================================

@@ -18,15 +18,15 @@ import java.util.Locale;
 /**
  * Created by GhinY on 10/06/2016.
  */
-public class CustomAdapter extends BaseExpandableListAdapter {
+public class FragListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> dataHeader;    //List of Programme
     private HashMap<String, List<Candidate>> dataChild;
     //Map with  Key:    Programme
     //          Value:  Candidate List
 
-    public CustomAdapter(Context context, List<String> header,
-                             HashMap<String, List<Candidate>> child){
+    public FragListAdapter(Context context, List<String> header,
+                           HashMap<String, List<Candidate>> child){
         this.context    = context;
         this.dataHeader = header;
         this.dataChild  = child;

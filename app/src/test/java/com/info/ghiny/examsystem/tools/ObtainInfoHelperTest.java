@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.tools;
 
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
@@ -25,7 +24,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ExternalDbLoader.class)
 public class ObtainInfoHelperTest {
-    ExamDatabaseLoader exDBLoader;
     List<ExamSubject> papers;
     ExamSubject subject1;
     ExamSubject subject2;

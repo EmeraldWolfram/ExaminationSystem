@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.info.ghiny.examsystem.tools.LoginHelper;
+
 import org.w3c.dom.Text;
 
 /**
@@ -20,15 +22,12 @@ public class PopUpLogin extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pop_up_window);
 
-        String name     = getIntent().getStringExtra("Name");
-        String regNum   = getIntent().getStringExtra("RegNum");
-
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
         TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
-        nameView.setText(name);
+        nameView.setText(LoginHelper.getStaff().getName());
         nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
-        regNView.setText(regNum);
+        regNView.setText(LoginHelper.getStaff().getRegNum());
         regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
         entView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 

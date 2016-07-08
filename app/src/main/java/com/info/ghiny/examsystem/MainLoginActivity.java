@@ -3,14 +3,15 @@ package com.info.ghiny.examsystem;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.LoginHelper;
@@ -23,9 +24,7 @@ import java.util.List;
 public class MainLoginActivity extends AppCompatActivity {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
-    private ExamDatabaseLoader databaseHelper;
     private static final int PASSWORD_REQ_CODE = 888;
-    private StaffIdentity invglt;
     private Intent pwIntent;
     private ErrorManager errorManager;
 
@@ -52,8 +51,10 @@ public class MainLoginActivity extends AppCompatActivity {
         assert idView != null;
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
-        databaseHelper = new ExamDatabaseLoader(this);
         errorManager   = new ErrorManager(this);
+
+        ChiefLink connect = new ChiefLink();
+        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
@@ -81,21 +82,13 @@ public class MainLoginActivity extends AppCompatActivity {
 
     public void checkEligibilityOfTheIdentity(String scanStr){
         try{
-            //invglt = databaseHelper.getIdentity(scanStr);
-            //LoginHelper.checkInvigilator(invglt);
-
             LoginHelper.identifyStaff(scanStr);
 
-            //Set Text below QR scanner
-            barcodeView.setStatusText(invglt.getName() + "\n" + invglt.getRegNum());
+            barcodeView.setStatusText(LoginHelper.getStaff().getName() + "\n" +
+                    LoginHelper.getStaff().getRegNum());
             barcodeView.pause();
 
-            //Set the value PopUp Login prompt window
             pwIntent = new Intent(this, PopUpLogin.class);
-            pwIntent.putExtra("Name", invglt.getName());
-            pwIntent.putExtra("RegNum", invglt.getRegNum());
-
-            //Start the activity
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         } catch (ProcessException err){
             barcodeView.pause();
@@ -108,8 +101,6 @@ public class MainLoginActivity extends AppCompatActivity {
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                //LoginHelper.checkInputPassword(invglt, password);
-
                 LoginHelper.matchStaffPw(password);
 
                 //Successful login, start AssignActivity
@@ -119,11 +110,7 @@ public class MainLoginActivity extends AppCompatActivity {
                 //Error were caught during checkInputPassword
                 //Ready to start the PopUp Login prompt window
                 pwIntent = new Intent(this, PopUpLogin.class);
-                pwIntent.putExtra("Name", invglt.getName());
-                pwIntent.putExtra("RegNum", invglt.getRegNum());
-
                 errorManager.displayError(err);
-
                 startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
             }
         }

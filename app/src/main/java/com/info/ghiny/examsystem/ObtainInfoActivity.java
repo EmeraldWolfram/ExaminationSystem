@@ -9,7 +9,6 @@ import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
@@ -27,7 +26,6 @@ import java.util.List;
 public class ObtainInfoActivity extends AppCompatActivity {
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
 
-    private ExamDatabaseLoader exDBLoader;
     private ExamSubjectAdapter listAdapter;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
@@ -50,11 +48,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
-        exDBLoader  = new ExamDatabaseLoader(this);
         errManager  = new ErrorManager(this);
         listAdapter = new ExamSubjectAdapter();
-
-        ObtainInfoHelper.setExamDBLoader(exDBLoader);
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;

@@ -8,10 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import com.info.ghiny.examsystem.adapter.CustomAdapter;
+import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 
 import java.util.HashMap;
@@ -36,7 +35,7 @@ public class PresentFragment extends Fragment {
                 FragmentHelper.getChildList(AttendanceList.Status.PRESENT);
 
         ExpandableListView presentList  = (ExpandableListView) view.findViewById(R.id.presentList);
-        presentList.setAdapter(new CustomAdapter(getContext(), header, cddChild));
+        presentList.setAdapter(new FragListAdapter(getContext(), header, cddChild));
 
         return view;
     }

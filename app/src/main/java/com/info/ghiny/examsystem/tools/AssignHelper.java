@@ -4,10 +4,7 @@ import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import java.util.Calendar;
@@ -24,7 +21,6 @@ public class AssignHelper {
     public static final int MAYBE_TABLE     = 0;
     public static final int MAYBE_CANDIDATE = 1;
 
-    private static ExamDatabaseLoader exDBLoader;
     private static LocalDbLoader JdbcLoader;
     private static AttendanceList attdList;
 
@@ -48,11 +44,10 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    public static void initLoader(LocalDbLoader dBLoader, ExamDatabaseLoader exDBLoader)
+    public static void initLoader(LocalDbLoader dBLoader)
             throws ProcessException{
-        assert dBLoader != null; assert exDBLoader != null;
+        assert dBLoader != null;
 
-        AssignHelper.exDBLoader  = exDBLoader;
         if(dBLoader.emptyAttdInDB()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
 
