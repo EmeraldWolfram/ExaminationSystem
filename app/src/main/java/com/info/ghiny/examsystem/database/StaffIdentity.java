@@ -4,7 +4,13 @@ package com.info.ghiny.examsystem.database;
  * Created by GhinY on 06/05/2016.
  */
 public class StaffIdentity {
-    private String regNum;
+    public static final String STAFF_NAME   = "Name";
+    public static final String STAFF_PASS   = "Password";
+    public static final String STAFF_ID_NO  = "IdNo";
+    public static final String STAFF_LEGIT  = "Eligible";
+    public static final String STAFF_VENUE  = "Venue";
+
+    private String idNo;
     private String password;
     private boolean eligible;
     private String name;
@@ -12,15 +18,15 @@ public class StaffIdentity {
 
 
     public StaffIdentity(){
-        this.regNum   = null;
+        this.idNo = null;
         this.password = null;
         this.eligible = false;
         this.name     = null;
         this.venueHandling  = null;
     }
 
-    public StaffIdentity(String regNum, String password, boolean elg, String name, String venue){
-        this.regNum         = regNum;
+    public StaffIdentity(String idNo, String password, boolean elg, String name, String venue){
+        this.idNo = idNo;
         this.password       = password;
         this.eligible       = elg;
         this.name           = name;
@@ -58,6 +64,6 @@ public class StaffIdentity {
     public void setPassword(String newPassword){    this.password = newPassword;}
     protected String getPassword(){ return this.password;}
 
-    public void setRegNum(String newRegNum){    this.regNum = newRegNum;}
-    public String getRegNum(){    return this.regNum;}
+    public void setIdNo(String newRegNum){    this.idNo = newRegNum;}
+    public String getIdNo(){    return this.idNo;}
 }

@@ -199,8 +199,6 @@ public class LoginHelperTest {
     @Test
     public void testIdentifyStaff()throws Exception{
         try{
-            assertNull(LoginHelper.getStaff());
-
             when(ExternalDbLoader.getStaffIdentity("12WW"))
                     .thenReturn(staffId);
             LoginHelper.identifyStaff("12WW");

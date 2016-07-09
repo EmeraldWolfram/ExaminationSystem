@@ -197,6 +197,21 @@ public class AttendanceList {
         return regNumList;
     }
 
+    public Status parseStatus(String statusString){
+        switch (statusString){
+            case "PRESENT":
+                return Status.PRESENT;
+            case "BARRED":
+                return Status.BARRED;
+            case "EXEMPTED":
+                return Status.EXEMPTED;
+            case "QUARANTIZED":
+                return Status.QUARANTIZED;
+            default:
+                return Status.ABSENT;
+        }
+    }
+
     //=========================================================================================
     //Private internal function used to traverse the level of Map
     //=========================================================================================

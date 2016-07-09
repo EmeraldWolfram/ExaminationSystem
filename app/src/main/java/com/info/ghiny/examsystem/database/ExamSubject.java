@@ -10,20 +10,23 @@ import java.util.Date;
  * Created by GhinY on 07/05/2016.
  */
 public class ExamSubject {
+
+    public static final String PAPER_SESSION    = "Session";
+    public static final String PAPER_VENUE      = "Venue";
+
     private String paperCode;
     private String paperDesc;
     private Calendar date;
     private Integer startTableNum;
     private Integer numOfCandidate;
     public enum Session {AM, PM, VM}
-    public enum ExamVenue {H1, H2, H3, H4, H5, H6, H7}
     private Session paperSession;
-    private ExamVenue examVenue;
+    private String examVenue;
 
     public ExamSubject(){
         date = Calendar.getInstance();
         paperSession    = Session.AM;
-        examVenue       = ExamVenue.H1;
+        examVenue       = null;
         startTableNum   = 0;
         numOfCandidate  = 0;
         paperCode       = null;
@@ -31,7 +34,7 @@ public class ExamSubject {
     }
 
     public ExamSubject(String paperCode, String paperDesc, int startTableNum, Calendar date,
-                       int numOfCandidate, ExamVenue examVenue, Session paperSession){
+                       int numOfCandidate, String examVenue, Session paperSession){
         this.date           = date;
         this.paperSession   = paperSession;
         this.examVenue      = examVenue;
@@ -70,7 +73,7 @@ public class ExamSubject {
         return paperSession.toString();
     }
 
-    public void setExamVenue(ExamVenue venue){
+    public void setExamVenue(String venue){
         this.examVenue = venue;
     }
 
@@ -120,5 +123,16 @@ public class ExamSubject {
             throw new NullPointerException("Paper Description was not filled yet");
 
         return str;
+    }
+
+    public Session parseSession(String session){
+        switch (session){
+            case "PM":
+                return Session.PM;
+            case "VM":
+                return Session.VM;
+            default:
+                return Session.AM;
+        }
     }
 }

@@ -33,13 +33,13 @@ public class ObtainInfoHelperTest {
     @Before
     public void setUp() throws Exception {
         subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25, Calendar.getInstance(),
-                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                10, "H2", ExamSubject.Session.AM);
         subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55, Calendar.getInstance(),
-                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                10, "H2", ExamSubject.Session.AM);
         subject3 = new ExamSubject("BAME 0003", "SUBJECT 3", 10, Calendar.getInstance(),
-                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                10, "H2", ExamSubject.Session.AM);
         subject4 = new ExamSubject("BAME 0004", "SUBJECT 4", 70, Calendar.getInstance(),
-                10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                10, "H2", ExamSubject.Session.AM);
 
         PowerMockito.mockStatic(ExternalDbLoader.class);
     }

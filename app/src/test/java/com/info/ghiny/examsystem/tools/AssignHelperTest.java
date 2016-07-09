@@ -55,11 +55,11 @@ public class AssignHelperTest {
 
         paperList   = new HashMap<>();
         subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, Calendar.getInstance(), 20,
-                ExamSubject.ExamVenue.H1, ExamSubject.Session.AM);
+                "H1", ExamSubject.Session.AM);
         subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30, Calendar.getInstance(), 20,
-                ExamSubject.ExamVenue.H2, ExamSubject.Session.PM);
+                "H2", ExamSubject.Session.PM);
         subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50, Calendar.getInstance(), 20,
-                ExamSubject.ExamVenue.H3, ExamSubject.Session.VM);
+                "H3", ExamSubject.Session.VM);
         paperList.put(subject1.getPaperCode(), subject1);
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);

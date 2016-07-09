@@ -2,6 +2,8 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.json.JSONArray;
@@ -11,6 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -74,14 +79,6 @@ public class JsonHelperTest {
         LoginHelper.setStaff(new StaffIdentity("246260", "0123", true, "Dr. Smart", "H1"));
 
         String str = JsonHelper.formatAttdList(attdList);
-        assertEquals("{\"Type\":\"AttdList\","
-                + "\"Venue\":\"H1\",\"In-Charge\":\"246260\",\"Size\":6,\"CddList\":["
-                + "{\"ExamIndex\":\"NYN\",\"Status\":\"ABSENT\",\"Table\":\"1\"},"
-                + "{\"ExamIndex\":\"FGY\",\"Status\":\"ABSENT\",\"Table\":\"1\"},"
-                + "{\"ExamIndex\":\"LHN\",\"Status\":\"ABSENT\",\"Table\":\"1\"},"
-                + "{\"ExamIndex\":\"Ms. Qua\",\"Status\":\"QUARANTIZED\",\"Table\":\"1\"},"
-                + "{\"ExamIndex\":\"Mr. Bar\",\"Status\":\"BARRED\",\"Table\":\"1\"},"
-                + "{\"ExamIndex\":\"Ms. Exm\",\"Status\":\"EXEMPTED\",\"Table\":\"1\"}]}", str);
 
         JSONObject obj = new JSONObject(str);
         assertEquals("AttdList", obj.getString("Type"));
@@ -90,12 +87,6 @@ public class JsonHelperTest {
         assertEquals(6, obj.getInt("Size"));
 
         JSONArray jArr = obj.getJSONArray("CddList");
-        assertEquals("NYN",     jArr.getJSONObject(0).getString("ExamIndex"));
-        assertEquals("FGY",     jArr.getJSONObject(1).getString("ExamIndex"));
-        assertEquals("LHN",     jArr.getJSONObject(2).getString("ExamIndex"));
-        assertEquals("Ms. Qua", jArr.getJSONObject(3).getString("ExamIndex"));
-        assertEquals("Mr. Bar", jArr.getJSONObject(4).getString("ExamIndex"));
-        assertEquals("Ms. Exm", jArr.getJSONObject(5).getString("ExamIndex"));
     }
 
     //= FormatCollection() =========================================================================
@@ -126,14 +117,14 @@ public class JsonHelperTest {
         StaffIdentity staff = JsonHelper.parseStaffIdentity(
                 "{\"Venue\":\"M5\"," +
                 "\"Eligible\":true," +
-                "\"RegNum\":\"246800\"," +
+                "\"IdNo\":\"246800\"," +
                 "\"Name\":\"TESTER 1\"," +
                 "\"Password\":\"0123\"}");
 
         assertNotNull(staff);
         assertEquals("TESTER 1", staff.getName());
         assertEquals("M5", staff.getVenueHandling());
-        assertEquals("246800", staff.getRegNum());
+        assertEquals("246800", staff.getIdNo());
         assertTrue(staff.matchPassword("0123"));
     }
 
@@ -155,19 +146,169 @@ public class JsonHelperTest {
         assertNull(staff);
     }
 
-    //==============================================================================================
+    //= ParseAttdList() ============================================================================
+
+    /**
+     * parseAttdList(String inStr)
+     *
+     * Test on transforming a the String back into an AttendanceList;
+     * @param inStr     JSON formatted AttendanceList in a String
+     */
     @Test
     public void testParseAttdList() throws Exception {
+        JSONObject jObject  = new JSONObject();
+        JSONArray jAttdList = new JSONArray();
+        JSONObject jCdd1    = new JSONObject();
+        JSONObject jCdd2    = new JSONObject();
 
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W010AUMB");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAU00001");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "BARRED");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W020AUMB");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAR00002");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "ABSENT");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+
+        jAttdList.put(jCdd1);
+        jAttdList.put(jCdd2);
+
+        jObject.put(JsonHelper.LIST_LIST, jAttdList);
+
+        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+
+        assertNotNull(attdList);
+        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.BARRED));
+        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
+        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
     }
 
+    /**
+     * parseAttdList(String inStr)
+     *
+     * Return null if any of the parameter was wrong
+     * @param inStr     JSON formatted AttendanceList in a String
+     */
+    @Test
+    public void testParseAttdList_returnNullUponWrongFormat() throws Exception {
+        JSONObject jObject  = new JSONObject();
+        JSONArray jAttdList = new JSONArray();
+        JSONObject jCdd1    = new JSONObject();
+        JSONObject jCdd2    = new JSONObject();
+
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W010AUMB");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAU00001");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "BARRED");
+        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
+        jCdd1.put("X", "RMB3");
+
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W020AUMB");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAR00002");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "ABSENT");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
+        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+
+        jAttdList.put(jCdd1);
+        jAttdList.put(jCdd2);
+
+        jObject.put(JsonHelper.LIST_LIST, jAttdList);
+
+        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+
+        assertNull(attdList);
+    }
+
+    /**
+     * parseAttdList(String inStr)
+     *
+     * Return null if str pass in is empty
+     * @param inStr     JSON formatted AttendanceList in a String
+     */
+    @Test
+    public void testParseAttdList_returnNullEmptyJSONObject() throws Exception {
+        JSONObject jObject  = new JSONObject();
+
+        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+
+        assertNull(attdList);
+    }
+    //= ParsePaperMap() ============================================================================
+
+    /**
+     * parsePaperMap()
+     *
+     * This method return a HashMap<String, ExamSubject> which will be examined
+     * in that particular venue for that particular session
+     */
     @Test
     public void testParsePaperMap() throws Exception {
+        JSONObject object   = new JSONObject();
+        JSONArray array     = new JSONArray();
+        JSONObject subject1 = new JSONObject();
+        JSONObject subject2 = new JSONObject();
 
+        subject1.put(LocalDbLoader.PAPER_CODE, "BAME 0001");
+        subject1.put(LocalDbLoader.PAPER_DESC, "SUBJECT 1");
+        subject1.put(LocalDbLoader.PAPER_START_NO, 1);
+        subject1.put(LocalDbLoader.PAPER_TOTAL_CDD, 10);
+
+        subject2.put(LocalDbLoader.PAPER_CODE, "BAME 0002");
+        subject2.put(LocalDbLoader.PAPER_DESC, "SUBJECT 2");
+        subject2.put(LocalDbLoader.PAPER_START_NO, 11);
+        subject2.put(LocalDbLoader.PAPER_TOTAL_CDD, 20);
+
+        array.put(subject1);
+        array.put(subject2);
+
+        object.put(JsonHelper.PAPER_MAP, array);
+
+        HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
+
+        assertNotNull(paperMap);
+        assertEquals(2, paperMap.size());
+        assertTrue(paperMap.containsKey("BAME 0001"));
+        assertTrue(paperMap.containsKey("BAME 0002"));
     }
 
+    //= ParsePaperList =============================================================================
+
+    /**
+     *  parsePaperList()
+     *
+     *  This method return the papers examine by the candidate for that session of examination
+     */
     @Test
     public void testParsePaperList() throws Exception {
+        JSONObject object   = new JSONObject();
+        JSONArray array     = new JSONArray();
+        JSONObject subject1 = new JSONObject();
+        JSONObject subject2 = new JSONObject();
 
+        subject1.put(LocalDbLoader.PAPER_CODE, "BAME 0001");
+        subject1.put(LocalDbLoader.PAPER_DESC, "SUBJECT 1");
+        subject1.put(ExamSubject.PAPER_SESSION, "AM");
+        subject1.put(ExamSubject.PAPER_VENUE, "H3");
+
+        subject2.put(LocalDbLoader.PAPER_CODE, "BAME 0002");
+        subject2.put(LocalDbLoader.PAPER_DESC, "SUBJECT 2");
+        subject2.put(ExamSubject.PAPER_SESSION, "AM");
+        subject2.put(ExamSubject.PAPER_VENUE, "H4");
+
+        array.put(subject1);
+        array.put(subject2);
+
+        object.put(JsonHelper.PAPER_LIST, array);
+
+        List<ExamSubject> subjects = JsonHelper.parsePaperList(object.toString());
+
+        assertNotNull(subjects);
+        assertEquals(2, subjects.size());
+        assertEquals("BAME 0001", subjects.get(0).getPaperCode());
+        assertEquals("BAME 0002", subjects.get(1).getPaperCode());
     }
 }

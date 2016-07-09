@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.tools.LoginHelper;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by GhinY on 21/05/2016.
  */
@@ -27,7 +25,7 @@ public class PopUpLogin extends Activity {
         TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
         nameView.setText(LoginHelper.getStaff().getName());
         nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
-        regNView.setText(LoginHelper.getStaff().getRegNum());
+        regNView.setText(LoginHelper.getStaff().getIdNo());
         regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
         entView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 

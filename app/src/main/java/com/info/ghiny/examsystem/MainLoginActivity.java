@@ -10,7 +10,6 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
@@ -85,7 +84,7 @@ public class MainLoginActivity extends AppCompatActivity {
             LoginHelper.identifyStaff(scanStr);
 
             barcodeView.setStatusText(LoginHelper.getStaff().getName() + "\n" +
-                    LoginHelper.getStaff().getRegNum());
+                    LoginHelper.getStaff().getIdNo());
             barcodeView.pause();
 
             pwIntent = new Intent(this, PopUpLogin.class);

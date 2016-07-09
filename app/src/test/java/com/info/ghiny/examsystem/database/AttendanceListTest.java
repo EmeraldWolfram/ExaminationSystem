@@ -396,4 +396,23 @@ public class AttendanceListTest {
         assertEquals(1, attdList.getNumberOfCandidates(
                 AttendanceList.Status.EXEMPTED, "BAME 0003", "RMB3"));
     }
+
+    @Test
+    public void testParseStatus() throws Exception{
+        AttendanceList attdList = new AttendanceList();
+
+        AttendanceList.Status present   = attdList.parseStatus("PRESENT");
+        AttendanceList.Status absent    = attdList.parseStatus("ABSENT");
+        AttendanceList.Status absent2   = attdList.parseStatus("BLA BLA");
+        AttendanceList.Status barred    = attdList.parseStatus("BARRED");
+        AttendanceList.Status exempted  = attdList.parseStatus("EXEMPTED");
+        AttendanceList.Status quarantized = attdList.parseStatus("QUARANTIZED");
+
+        assertEquals(AttendanceList.Status.PRESENT, present);
+        assertEquals(AttendanceList.Status.ABSENT, absent);
+        assertEquals(AttendanceList.Status.BARRED, barred);
+        assertEquals(AttendanceList.Status.EXEMPTED, exempted);
+        assertEquals(AttendanceList.Status.QUARANTIZED, quarantized);
+        assertEquals(AttendanceList.Status.ABSENT, absent2);
+    }
 }

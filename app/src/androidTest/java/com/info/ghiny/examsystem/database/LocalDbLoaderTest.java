@@ -363,9 +363,9 @@ public class LocalDbLoaderTest {
     public void testSavePaperList() throws Exception {
         try{
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
             ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
-                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
 
             HashMap<String, ExamSubject> subjects = new HashMap<>();
             subjects.put(subject1.getPaperCode(), subject1);
@@ -407,9 +407,9 @@ public class LocalDbLoaderTest {
     public void testSavePaperList_TableNotExistYet() throws Exception {
         try{
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
             ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
-                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
 
             HashMap<String, ExamSubject> subjects = new HashMap<>();
             subjects.put(subject1.getPaperCode(), subject1);
@@ -453,7 +453,7 @@ public class LocalDbLoaderTest {
 
             HashMap<String, ExamSubject> map = new HashMap<>();
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, ExamSubject.ExamVenue.H2, ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
             map.put(subject1.getPaperCode(), subject1);
             db.savePaperList(map);
 
