@@ -80,9 +80,9 @@ public class JsonHelper {
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
                 cddObj = new JSONObject();
-                cddObj.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, cdd.getExamIndex());
-                cddObj.put(LocalDbLoader.TABLE_INFO_COLUMN_TABLE, cdd.getTableNumber().toString());
-                cddObj.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, cdd.getStatus().toString());
+                cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
+                cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
+                cddObj.put(Candidate.CDD_STATUS, cdd.getStatus().toString());
                 cddList.put(cddObj);
             }
             list.put(LIST_LIST, cddList);
@@ -150,14 +150,14 @@ public class JsonHelper {
                 JSONObject jsonCdd  = cddArr.getJSONObject(i);
                 Candidate cdd       = new Candidate();
 
-                cdd.setExamIndex(jsonCdd.getString(LocalDbLoader.TABLE_INFO_COLUMN_INDEX));
-                cdd.setRegNum(jsonCdd.getString(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM));
+                cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
+                cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
 
-                String status   = jsonCdd.getString(LocalDbLoader.TABLE_INFO_COLUMN_STATUS);
+                String status   = jsonCdd.getString(Candidate.CDD_STATUS);
                 cdd.setStatus(attdList.parseStatus(status));
                 cdd.setTableNumber(0);
-                cdd.setPaperCode(jsonCdd.getString(LocalDbLoader.TABLE_INFO_COLUMN_CODE));
-                cdd.setProgramme(jsonCdd.getString(LocalDbLoader.TABLE_INFO_COLUMN_PRG));
+                cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
+                cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
 
                 attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
             }
@@ -178,10 +178,10 @@ public class JsonHelper {
                 JSONObject jSubject = subjectArr.getJSONObject(i);
                 ExamSubject subject = new ExamSubject();
 
-                subject.setPaperCode(jSubject.getString(LocalDbLoader.PAPER_CODE));
-                subject.setPaperDesc(jSubject.getString(LocalDbLoader.PAPER_DESC));
-                subject.setStartTableNum(jSubject.getInt(LocalDbLoader.PAPER_START_NO));
-                subject.setNumOfCandidate(jSubject.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+                subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                subject.setStartTableNum(jSubject.getInt(ExamSubject.PAPER_START_NO));
+                subject.setNumOfCandidate(jSubject.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
                 map.put(subject.getPaperCode(), subject);
             }
@@ -202,8 +202,8 @@ public class JsonHelper {
                 JSONObject jSubject = subjectArr.getJSONObject(i);
                 ExamSubject subject = new ExamSubject();
 
-                subject.setPaperCode(jSubject.getString(LocalDbLoader.PAPER_CODE));
-                subject.setPaperDesc(jSubject.getString(LocalDbLoader.PAPER_DESC));
+                subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
 
                 String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
                 subject.setPaperSession(subject.parseSession(session));

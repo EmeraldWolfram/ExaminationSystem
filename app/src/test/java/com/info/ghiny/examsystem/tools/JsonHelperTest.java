@@ -160,17 +160,17 @@ public class JsonHelperTest {
         JSONObject jCdd1    = new JSONObject();
         JSONObject jCdd2    = new JSONObject();
 
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W010AUMB");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAU00001");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "BARRED");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+        jCdd1.put(Candidate.CDD_EXAM_INDEX, "W010AUMB");
+        jCdd1.put(Candidate.CDD_REG_NUM, "15WAU00001");
+        jCdd1.put(Candidate.CDD_STATUS, "BARRED");
+        jCdd1.put(Candidate.CDD_PAPER, "BAME 0001");
+        jCdd1.put(Candidate.CDD_PROG, "RMB3");
 
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W020AUMB");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAR00002");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "ABSENT");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+        jCdd2.put(Candidate.CDD_EXAM_INDEX, "W020AUMB");
+        jCdd2.put(Candidate.CDD_REG_NUM, "15WAR00002");
+        jCdd2.put(Candidate.CDD_STATUS, "ABSENT");
+        jCdd2.put(Candidate.CDD_PAPER, "BAME 0001");
+        jCdd2.put(Candidate.CDD_PROG, "RMB3");
 
         jAttdList.put(jCdd1);
         jAttdList.put(jCdd2);
@@ -200,17 +200,17 @@ public class JsonHelperTest {
         JSONObject jCdd1    = new JSONObject();
         JSONObject jCdd2    = new JSONObject();
 
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W010AUMB");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAU00001");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "BARRED");
-        jCdd1.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
+        jCdd1.put(Candidate.CDD_EXAM_INDEX, "W010AUMB");
+        jCdd1.put(Candidate.CDD_REG_NUM, "15WAU00001");
+        jCdd1.put(Candidate.CDD_STATUS, "BARRED");
+        jCdd1.put(Candidate.CDD_PAPER, "BAME 0001");
         jCdd1.put("X", "RMB3");
 
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_INDEX, "W020AUMB");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_REGNUM, "15WAR00002");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, "ABSENT");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_CODE, "BAME 0001");
-        jCdd2.put(LocalDbLoader.TABLE_INFO_COLUMN_PRG, "RMB3");
+        jCdd2.put(Candidate.CDD_EXAM_INDEX, "W020AUMB");
+        jCdd2.put(Candidate.CDD_REG_NUM, "15WAR00002");
+        jCdd2.put(Candidate.CDD_STATUS, "ABSENT");
+        jCdd2.put(Candidate.CDD_PAPER, "BAME 0001");
+        jCdd2.put(Candidate.CDD_PROG, "RMB3");
 
         jAttdList.put(jCdd1);
         jAttdList.put(jCdd2);
@@ -251,15 +251,15 @@ public class JsonHelperTest {
         JSONObject subject1 = new JSONObject();
         JSONObject subject2 = new JSONObject();
 
-        subject1.put(LocalDbLoader.PAPER_CODE, "BAME 0001");
-        subject1.put(LocalDbLoader.PAPER_DESC, "SUBJECT 1");
-        subject1.put(LocalDbLoader.PAPER_START_NO, 1);
-        subject1.put(LocalDbLoader.PAPER_TOTAL_CDD, 10);
+        subject1.put(ExamSubject.PAPER_CODE, "BAME 0001");
+        subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
+        subject1.put(ExamSubject.PAPER_START_NO, 1);
+        subject1.put(ExamSubject.PAPER_TOTAL_CDD, 10);
 
-        subject2.put(LocalDbLoader.PAPER_CODE, "BAME 0002");
-        subject2.put(LocalDbLoader.PAPER_DESC, "SUBJECT 2");
-        subject2.put(LocalDbLoader.PAPER_START_NO, 11);
-        subject2.put(LocalDbLoader.PAPER_TOTAL_CDD, 20);
+        subject2.put(ExamSubject.PAPER_CODE, "BAME 0002");
+        subject2.put(ExamSubject.PAPER_DESC, "SUBJECT 2");
+        subject2.put(ExamSubject.PAPER_START_NO, 11);
+        subject2.put(ExamSubject.PAPER_TOTAL_CDD, 20);
 
         array.put(subject1);
         array.put(subject2);
@@ -288,13 +288,13 @@ public class JsonHelperTest {
         JSONObject subject1 = new JSONObject();
         JSONObject subject2 = new JSONObject();
 
-        subject1.put(LocalDbLoader.PAPER_CODE, "BAME 0001");
-        subject1.put(LocalDbLoader.PAPER_DESC, "SUBJECT 1");
+        subject1.put(ExamSubject.PAPER_CODE, "BAME 0001");
+        subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
         subject1.put(ExamSubject.PAPER_SESSION, "AM");
         subject1.put(ExamSubject.PAPER_VENUE, "H3");
 
-        subject2.put(LocalDbLoader.PAPER_CODE, "BAME 0002");
-        subject2.put(LocalDbLoader.PAPER_DESC, "SUBJECT 2");
+        subject2.put(ExamSubject.PAPER_CODE, "BAME 0002");
+        subject2.put(ExamSubject.PAPER_DESC, "SUBJECT 2");
         subject2.put(ExamSubject.PAPER_SESSION, "AM");
         subject2.put(ExamSubject.PAPER_VENUE, "H4");
 

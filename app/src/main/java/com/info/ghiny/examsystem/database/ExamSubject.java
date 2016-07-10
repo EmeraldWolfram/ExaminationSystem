@@ -11,6 +11,11 @@ import java.util.Date;
  */
 public class ExamSubject {
 
+    public static final String PAPER_DB_ID      = "Paper_id";
+    public static final String PAPER_CODE       = "PaperCode";
+    public static final String PAPER_DESC       = "PaperDesc";
+    public static final String PAPER_START_NO   = "PaperStartNo";
+    public static final String PAPER_TOTAL_CDD  = "PaperTotalCdd";
     public static final String PAPER_SESSION    = "Session";
     public static final String PAPER_VENUE      = "Venue";
 

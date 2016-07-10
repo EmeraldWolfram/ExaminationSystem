@@ -151,16 +151,16 @@ public class ExternalDbLoaderTest {
 
         assertEquals(attdList, returnList);
     }
-    //= DlAttdList() ===============================================================================
+    //= DlPaperList() ===============================================================================
 
     /**
-     * dlAttdList(String venue)
+     * dlPaperList(String venue)
      *
      * format venue into JSON Object
      * Send out the JSON Object
      * Wait for JSON Object
-     * Parse to AttendanceList format
-     * return as AttendanceList
+     * Parse to HashMap<String, ExamSubject> format
+     * return as HashMap<String, ExamSubject>
      *
      * @param venue     Venue of the staff handling in String. Eg. "H3"
      */

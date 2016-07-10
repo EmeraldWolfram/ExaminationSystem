@@ -11,6 +11,14 @@ import java.util.HashMap;
  * Created by GhinY on 14/05/2016.
  */
 public class Candidate {
+    public static final String CDD_EXAM_INDEX   = "ExamIndex";
+    public static final String CDD_REG_NUM      = "RegNum";
+    public static final String CDD_STATUS       = "Status";
+    public static final String CDD_PROG         = "Programme";
+    public static final String CDD_TABLE        = "TableNo";
+    public static final String CDD_PAPER        = "Code";
+    public static final String CDD_DB_ID        = "Cdd_id";
+
     private Integer tableNumber;
     private String examIndex;
     private String regNum;

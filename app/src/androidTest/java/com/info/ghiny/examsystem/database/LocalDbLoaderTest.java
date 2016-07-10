@@ -380,16 +380,16 @@ public class LocalDbLoaderTest {
             ResultSet rs = stmt.executeQuery("SELECT * FROM PaperTable;");
 
             assertTrue(rs.first());
-            assertEquals("BAME 0002",   rs.getString(LocalDbLoader.PAPER_CODE));
-            assertEquals("SUBJECT 2",   rs.getString(LocalDbLoader.PAPER_DESC));
-            assertEquals(55,            rs.getInt(LocalDbLoader.PAPER_START_NO));
-            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+            assertEquals("BAME 0002",   rs.getString(ExamSubject.PAPER_CODE));
+            assertEquals("SUBJECT 2",   rs.getString(ExamSubject.PAPER_DESC));
+            assertEquals(55,            rs.getInt(ExamSubject.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
             assertTrue(rs.next());
-            assertEquals("BAME 0001",   rs.getString(LocalDbLoader.PAPER_CODE));
-            assertEquals("SUBJECT 1",   rs.getString(LocalDbLoader.PAPER_DESC));
-            assertEquals(25,            rs.getInt(LocalDbLoader.PAPER_START_NO));
-            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+            assertEquals("BAME 0001",   rs.getString(ExamSubject.PAPER_CODE));
+            assertEquals("SUBJECT 1",   rs.getString(ExamSubject.PAPER_DESC));
+            assertEquals(25,            rs.getInt(ExamSubject.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
             rs.close();
             stmt.close();
@@ -423,16 +423,16 @@ public class LocalDbLoaderTest {
             ResultSet rs = stmt.executeQuery("SELECT * FROM PaperTable;");
 
             assertTrue(rs.first());
-            assertEquals("BAME 0002",   rs.getString(LocalDbLoader.PAPER_CODE));
-            assertEquals("SUBJECT 2",   rs.getString(LocalDbLoader.PAPER_DESC));
-            assertEquals(55,            rs.getInt(LocalDbLoader.PAPER_START_NO));
-            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+            assertEquals("BAME 0002",   rs.getString(ExamSubject.PAPER_CODE));
+            assertEquals("SUBJECT 2",   rs.getString(ExamSubject.PAPER_DESC));
+            assertEquals(55,            rs.getInt(ExamSubject.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
             assertTrue(rs.next());
-            assertEquals("BAME 0001",   rs.getString(LocalDbLoader.PAPER_CODE));
-            assertEquals("SUBJECT 1",   rs.getString(LocalDbLoader.PAPER_DESC));
-            assertEquals(25,            rs.getInt(LocalDbLoader.PAPER_START_NO));
-            assertEquals(10,            rs.getInt(LocalDbLoader.PAPER_TOTAL_CDD));
+            assertEquals("BAME 0001",   rs.getString(ExamSubject.PAPER_CODE));
+            assertEquals("SUBJECT 1",   rs.getString(ExamSubject.PAPER_DESC));
+            assertEquals(25,            rs.getInt(ExamSubject.PAPER_START_NO));
+            assertEquals(10,            rs.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
             rs.close();
             stmt.close();

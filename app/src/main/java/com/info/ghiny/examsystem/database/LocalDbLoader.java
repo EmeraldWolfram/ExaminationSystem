@@ -23,40 +23,27 @@ public class LocalDbLoader {
     public static final String ADDRESS = "jdbc:sqldroid:/data/data/" + PACKAGE
                                             + "/databases/" + DB_NAME;
 
-    private static final String ATTENDANCE_TABLE        = "AttdTable";
-    public static final String TABLE_INFO_ID            = "_id";
-    public static final String TABLE_INFO_COLUMN_INDEX  = "ExamIndex";
-    public static final String TABLE_INFO_COLUMN_REGNUM = "RegNum";
-    public static final String TABLE_INFO_COLUMN_STATUS = "Status";
-    public static final String TABLE_INFO_COLUMN_CODE   = "Code";
-    public static final String TABLE_INFO_COLUMN_PRG    = "Programme";
-    public static final String TABLE_INFO_COLUMN_TABLE  = "TableNo";
-
-    private static final String PAPERS_TABLE    = "PaperTable";
-    public static final String PAPER_ID         = "_id";
-    public static final String PAPER_CODE       = "PaperCode";
-    public static final String PAPER_DESC       = "PaperDesc";
-    public static final String PAPER_START_NO   = "PaperStartNo";
-    public static final String PAPER_TOTAL_CDD  = "PaperTotalCdd";
+    private static final String ATTENDANCE_TABLE    = "AttdTable";
+    private static final String PAPERS_TABLE        = "PaperTable";
 
     private String curDriver;
     private String curAddress;
 
     private String CREATE_ATTD_TABLE = "CREATE TABLE IF NOT EXISTS " + ATTENDANCE_TABLE  + "( "
-            + TABLE_INFO_ID             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + TABLE_INFO_COLUMN_REGNUM  + " TEXT    NOT NULL, "
-            + TABLE_INFO_COLUMN_INDEX    + " TEXT    NOT NULL, "
-            + TABLE_INFO_COLUMN_STATUS  + " TEXT    NOT NULL, "
-            + TABLE_INFO_COLUMN_CODE    + " TEXT    NOT NULL, "
-            + TABLE_INFO_COLUMN_PRG     + " TEXT    NOT NULL, "
-            + TABLE_INFO_COLUMN_TABLE   + " INT     NOT NULL)";
+            + Candidate.CDD_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Candidate.CDD_REG_NUM     + " TEXT    NOT NULL, "
+            + Candidate.CDD_EXAM_INDEX  + " TEXT    NOT NULL, "
+            + Candidate.CDD_STATUS      + " TEXT    NOT NULL, "
+            + Candidate.CDD_PAPER       + " TEXT    NOT NULL, "
+            + Candidate.CDD_PROG        + " TEXT    NOT NULL, "
+            + Candidate.CDD_TABLE       + " INT     NOT NULL)";
 
     private String CREATE_PAPERS_TABLE = "CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
-            + PAPER_ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + PAPER_CODE        + " TEXT    NOT NULL, "
-            + PAPER_DESC        + " TEXT    NOT NULL, "
-            + PAPER_START_NO    + " INTEGER NOT NULL, "
-            + PAPER_TOTAL_CDD   + " INTEGER NOT NULL)";
+            + ExamSubject.PAPER_DB_ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + ExamSubject.PAPER_CODE        + " TEXT    NOT NULL, "
+            + ExamSubject.PAPER_DESC        + " TEXT    NOT NULL, "
+            + ExamSubject.PAPER_START_NO    + " INTEGER NOT NULL, "
+            + ExamSubject.PAPER_TOTAL_CDD   + " INTEGER NOT NULL)";
 
     public LocalDbLoader(String driver, String url){
         curAddress  = url;
@@ -232,10 +219,10 @@ public class LocalDbLoader {
                 do{
                     ExamSubject subject = new ExamSubject();
 
-                    subject.setPaperCode(ptr.getString(PAPER_CODE));
-                    subject.setPaperDesc(ptr.getString(PAPER_DESC));
-                    subject.setStartTableNum(ptr.getInt(PAPER_START_NO));
-                    subject.setNumOfCandidate(ptr.getInt(PAPER_TOTAL_CDD));
+                    subject.setPaperCode(ptr.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(ptr.getString(ExamSubject.PAPER_DESC));
+                    subject.setStartTableNum(ptr.getInt(ExamSubject.PAPER_START_NO));
+                    subject.setNumOfCandidate(ptr.getInt(ExamSubject.PAPER_TOTAL_CDD));
                     paperMap.put(subject.getPaperCode(), subject);
                 }while (ptr.next());
             }
@@ -254,9 +241,9 @@ public class LocalDbLoader {
     //= Private methods ============================================================================
     private void saveAttendance(Candidate cdd, Statement stmt) throws Exception{
         String SAVE_ATTENDANCE = "INSERT OR REPLACE INTO "     + ATTENDANCE_TABLE
-                + " (" + TABLE_INFO_COLUMN_INDEX     + ", " + TABLE_INFO_COLUMN_REGNUM
-                + ", " + TABLE_INFO_COLUMN_TABLE    + ", " + TABLE_INFO_COLUMN_STATUS
-                + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_PRG
+                + " (" + Candidate.CDD_EXAM_INDEX   + ", " + Candidate.CDD_REG_NUM
+                + ", " + Candidate.CDD_TABLE        + ", " + Candidate.CDD_STATUS
+                + ", " + Candidate.CDD_PAPER        + ", " + Candidate.CDD_PROG
                 + ") VALUES ('";
 
         stmt.executeUpdate(SAVE_ATTENDANCE
@@ -270,8 +257,8 @@ public class LocalDbLoader {
 
     private void savePaper(ExamSubject paper, Statement stmt) throws Exception{
         String SAVE_PAPER = "INSERT OR REPLACE INTO "  + PAPERS_TABLE
-                + " (" + PAPER_CODE     + ", " + PAPER_DESC
-                + ", " + PAPER_START_NO + ", " + PAPER_TOTAL_CDD
+                + " (" + ExamSubject.PAPER_CODE     + ", " + ExamSubject.PAPER_DESC
+                + ", " + ExamSubject.PAPER_START_NO + ", " + ExamSubject.PAPER_TOTAL_CDD
                 + ") VALUES ('";
 
         stmt.executeUpdate(SAVE_PAPER
@@ -288,18 +275,18 @@ public class LocalDbLoader {
         Statement stmt  = con.createStatement();
 
         ResultSet ptr = stmt.executeQuery("SELECT * FROM "  + ATTENDANCE_TABLE + " WHERE "
-                + TABLE_INFO_COLUMN_STATUS  + " = '" + status.toString() + "';" );
+                + Candidate.CDD_STATUS  + " = '" + status.toString() + "';" );
 
         if(ptr.first()){
             do{
                 Candidate cdd = new Candidate();
 
-                cdd.setExamIndex(ptr.getString(TABLE_INFO_COLUMN_INDEX));
-                cdd.setTableNumber(ptr.getInt(TABLE_INFO_COLUMN_TABLE));
-                cdd.setRegNum(ptr.getString(TABLE_INFO_COLUMN_REGNUM));
-                cdd.setPaperCode(ptr.getString(TABLE_INFO_COLUMN_CODE));
+                cdd.setExamIndex(ptr.getString(Candidate.CDD_EXAM_INDEX));
+                cdd.setTableNumber(ptr.getInt(Candidate.CDD_TABLE));
+                cdd.setRegNum(ptr.getString(Candidate.CDD_REG_NUM));
+                cdd.setPaperCode(ptr.getString(Candidate.CDD_PAPER));
                 cdd.setStatus(status);
-                cdd.setProgramme(ptr.getString(TABLE_INFO_COLUMN_PRG));
+                cdd.setProgramme(ptr.getString(Candidate.CDD_PROG));
                 candidates.add(cdd);
             }while (ptr.next());
         }
@@ -315,12 +302,12 @@ public class LocalDbLoader {
         Connection con = estaConnection();
         Statement stmt = con.createStatement();
 
-        ResultSet ptr   = stmt.executeQuery( "SELECT DISTINCT " + TABLE_INFO_COLUMN_CODE +
+        ResultSet ptr   = stmt.executeQuery( "SELECT DISTINCT " + Candidate.CDD_PAPER +
                 " FROM " + ATTENDANCE_TABLE + ";");
 
         if(ptr.first()){
             do{
-                paperCodeList.add(ptr.getString(TABLE_INFO_COLUMN_CODE));
+                paperCodeList.add(ptr.getString(Candidate.CDD_PAPER));
             }while (ptr.next());
         }
         ptr.close();
@@ -335,12 +322,12 @@ public class LocalDbLoader {
         Connection con = estaConnection();
         Statement stmt = con.createStatement();
 
-        ResultSet ptr   = stmt.executeQuery( "SELECT DISTINCT " + TABLE_INFO_COLUMN_PRG +
+        ResultSet ptr   = stmt.executeQuery( "SELECT DISTINCT " + Candidate.CDD_PROG +
                 " FROM " + ATTENDANCE_TABLE + ";");
 
         if(ptr.first()){
             do{
-                prgList.add(ptr.getString(TABLE_INFO_COLUMN_PRG));
+                prgList.add(ptr.getString(Candidate.CDD_PROG));
             } while (ptr.next());
         }
         ptr.close();
