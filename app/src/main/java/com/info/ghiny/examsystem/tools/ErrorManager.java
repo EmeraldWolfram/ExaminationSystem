@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 /**
  * Created by GhinY on 27/06/2016.
@@ -76,6 +77,5 @@ public class ErrorManager {
 
         AlertDialog alert = dialog.create();
         alert.show();
-
     }
 }

@@ -14,6 +14,7 @@ import java.net.Socket;
  * Created by GhinY on 08/07/2016.
  */
 public class TCPClient {
+    private String serverMessage;
     /**
      * Specify the Server Ip Address here. Whereas our Socket Server is started.
      * */
@@ -59,7 +60,6 @@ public class TCPClient {
         mRun = true;
 
         try {
-            String serverMessage;
             //here you must put your computer's IP address.
             InetAddress serverAddr = InetAddress.getByName(SERVERIP);
 

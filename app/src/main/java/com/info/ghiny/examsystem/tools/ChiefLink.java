@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import android.os.AsyncTask;
 
+import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
 /**
@@ -12,6 +13,7 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     private static boolean msgReadyFlag = false;
     private static String msgReceived   = null;
 
+    //= Setter & Getter ============================================================================
     public static String getMsgReceived() {
         return msgReceived;
     }
@@ -28,29 +30,22 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
         ChiefLink.msgReadyFlag = msgReadyFlag;
     }
 
+    //= Public Methods =============================================================================
+    public void publishMessage(String msg){
+        publishProgress(msg);
+    }
+
     @Override
     protected TCPClient doInBackground(String... params) {
-        TCPClient mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
-            @Override
-            //here the messageReceived method is implemented
-            public void messageReceived(String message) {
-                try {
-                    //this method calls the onProgressUpdate
-                    publishProgress(message);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        mTcpClient.run();
-        ExternalDbLoader.setTcpClient(mTcpClient);
+        if(ExternalDbLoader.getTcpClient() != null)
+            ExternalDbLoader.getTcpClient().run();
         return null;
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
+
         setMsgReadyFlag(true);
         setMsgReceived(values[0]);
     }

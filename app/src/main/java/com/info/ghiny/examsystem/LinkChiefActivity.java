@@ -68,6 +68,9 @@ public class LinkChiefActivity extends AppCompatActivity {
     public void checkForChief(String scanStr){
         try{
             LoginHelper.verifyChief(scanStr);
+
+            Intent login    = new Intent(this, MainLoginActivity.class);
+            startActivity(login);
         } catch (ProcessException err){
             errorManager.displayError(err);
         }

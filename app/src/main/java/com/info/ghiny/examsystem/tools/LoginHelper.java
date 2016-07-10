@@ -41,7 +41,7 @@ public class LoginHelper {
     public static void identifyStaff(String scanIdNum) throws ProcessException {
         setStaff(ExternalDbLoader.getStaffIdentity(scanIdNum));
         if(staff == null){
-            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
+            throw new ProcessException("Not a Staff Identity", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         } else {
             //Check staff status

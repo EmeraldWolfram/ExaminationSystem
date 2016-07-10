@@ -8,12 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.LoginHelper;
+import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -26,6 +29,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private static final int PASSWORD_REQ_CODE = 888;
     private Intent pwIntent;
     private ErrorManager errorManager;
+    private ChiefLink connect;
 
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -40,7 +44,6 @@ public class MainLoginActivity extends AppCompatActivity {
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +55,21 @@ public class MainLoginActivity extends AppCompatActivity {
 
         errorManager   = new ErrorManager(this);
 
-        ChiefLink connect = new ChiefLink();
+        TCPClient mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
+            //here the messageReceived method is implemented
+            @Override
+            public void messageReceived(String message) {
+                try {
+                    //this method calls the onProgressUpdate
+                    connect.publishMessage(message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ExternalDbLoader.setTcpClient(mTcpClient);
+
+        connect = new ChiefLink();
         connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);

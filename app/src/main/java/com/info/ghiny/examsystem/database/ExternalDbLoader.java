@@ -15,15 +15,21 @@ public class ExternalDbLoader {
 
     private static TCPClient tcpClient  = null;
 
+    //= Setter & Getter ============================================================================
     public static void setTcpClient(TCPClient tcpClient) {
         ExternalDbLoader.tcpClient = tcpClient;
     }
 
+    public static TCPClient getTcpClient() {
+        return tcpClient;
+    }
+
+    //= Public Methods =============================================================================
     public static StaffIdentity getStaffIdentity(String scanIdNumber){
         StaffIdentity id = null;
         String str = JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, scanIdNumber);
 
-        if(str != null){
+        if(str != null && tcpClient != null){
             tcpClient.sendMessage(str);
             while(!ChiefLink.isMsgReadyFlag())
                 id = null;
@@ -41,7 +47,7 @@ public class ExternalDbLoader {
 
         String str = JsonHelper.formatPassword(staffId, staffPw);
 
-        if(str != null){
+        if(str != null && tcpClient != null){
             tcpClient.sendMessage(str);
             while(!ChiefLink.isMsgReadyFlag())
                 isCorrect = false;
@@ -54,78 +60,88 @@ public class ExternalDbLoader {
     }
 
     public static AttendanceList dlAttdList(){
-        AttendanceList attdList;
+        AttendanceList attdList = null;
         String str = JsonHelper.formatString(JsonHelper.TYPE_Q_ATTD_VENUE,
                 LoginHelper.getStaff().getVenueHandling());
 
-        tcpClient.sendMessage(str);
-        while(!ChiefLink.isMsgReadyFlag())
-            attdList = null;
+        if (tcpClient != null) {
+            tcpClient.sendMessage(str);
+            while(!ChiefLink.isMsgReadyFlag()) {
+                attdList = null;
+            }
 
-        attdList = JsonHelper.parseAttdList(ChiefLink.getMsgReceived());
-        ChiefLink.setMsgReceived(null);
-        ChiefLink.setMsgReadyFlag(false);
+            attdList = JsonHelper.parseAttdList(ChiefLink.getMsgReceived());
+            ChiefLink.setMsgReceived(null);
+            ChiefLink.setMsgReadyFlag(false);
+        }
 
         return attdList;
     }
 
-    public static HashMap<String, ExamSubject> dlPaperList(){
-        HashMap<String, ExamSubject> map;
+    public static HashMap<String, ExamSubject> dlPaperList() {
+        HashMap<String, ExamSubject> map = null;
 
         String str = JsonHelper.formatString(JsonHelper.TYPE_Q_PAPERS_VENUE,
                 LoginHelper.getStaff().getVenueHandling());
-
-        tcpClient.sendMessage(str);
-        while(!ChiefLink.isMsgReadyFlag())
-            map = null;
-
-        map = JsonHelper.parsePaperMap(ChiefLink.getMsgReceived());
-        ChiefLink.setMsgReceived(null);
-        ChiefLink.setMsgReadyFlag(false);
+        if (tcpClient != null){
+            tcpClient.sendMessage(str);
+            while(!ChiefLink.isMsgReadyFlag()) {
+                map = null;
+            }
+            map = JsonHelper.parsePaperMap(ChiefLink.getMsgReceived());
+            ChiefLink.setMsgReceived(null);
+            ChiefLink.setMsgReadyFlag(false);
+        }
 
         return map;
     }
 
     public static List<ExamSubject> getPapersExamineByCdd(String scanRegNum){
-        List<ExamSubject> subjects;
-
+        List<ExamSubject> subjects = null;
         String str = JsonHelper.formatString(JsonHelper.TYPE_Q_PAPERS_CDD, scanRegNum);
 
-        tcpClient.sendMessage(str);    //suppose to send JSON
-        while(!ChiefLink.isMsgReadyFlag())
-            subjects = null;
+        if(tcpClient != null){
+            tcpClient.sendMessage(str);    //suppose to send JSON
+            while(!ChiefLink.isMsgReadyFlag()) {
+                subjects = null;
+            }
 
-        subjects        = JsonHelper.parsePaperList(ChiefLink.getMsgReceived());
-        ChiefLink.setMsgReceived(null);
-        ChiefLink.setMsgReadyFlag(false);
+            subjects        = JsonHelper.parsePaperList(ChiefLink.getMsgReceived());
+            ChiefLink.setMsgReceived(null);
+            ChiefLink.setMsgReadyFlag(false);
+        }
         //return null if wasn't a candidate
         return subjects;
     }
 
     public static boolean updateAttdList(AttendanceList attdList){
         String str = JsonHelper.formatAttdList(attdList);
-
-        tcpClient.sendMessage(str);    //suppose to send JSON
         boolean received = false;
-        while(!ChiefLink.isMsgReadyFlag())
-            received = false;
-        ChiefLink.setMsgReceived(null);
-        ChiefLink.setMsgReadyFlag(false);
-        received    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+
+        if(tcpClient != null){
+            tcpClient.sendMessage(str);    //suppose to send JSON
+            while(!ChiefLink.isMsgReadyFlag())
+                received = false;
+            ChiefLink.setMsgReceived(null);
+            ChiefLink.setMsgReadyFlag(false);
+            received    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+        }
 
         return received;
     }
 
     public static boolean acknowledgeCollection(String scanBundleCode){
         String str = JsonHelper.formatCollection(scanBundleCode);
-
-        tcpClient.sendMessage(str);
         boolean updated = false;
-        while(!ChiefLink.isMsgReadyFlag())
-            updated = false;
-        ChiefLink.setMsgReceived(null);
-        ChiefLink.setMsgReadyFlag(false);
-        updated    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+
+        if(tcpClient != null){
+            tcpClient.sendMessage(str);
+            while(!ChiefLink.isMsgReadyFlag())
+                updated = false;
+            ChiefLink.setMsgReceived(null);
+            ChiefLink.setMsgReadyFlag(false);
+            updated    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+        }
 
         return updated;
     }
