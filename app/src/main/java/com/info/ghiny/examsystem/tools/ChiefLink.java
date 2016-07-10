@@ -9,7 +9,24 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
  */
 public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
-    private String strReceived;
+    private static boolean msgReadyFlag = false;
+    private static String msgReceived   = null;
+
+    public static String getMsgReceived() {
+        return msgReceived;
+    }
+
+    public static boolean isMsgReadyFlag() {
+        return msgReadyFlag;
+    }
+
+    public static void setMsgReceived(String msgReceived) {
+        ChiefLink.msgReceived = msgReceived;
+    }
+
+    public static void setMsgReadyFlag(boolean msgReadyFlag) {
+        ChiefLink.msgReadyFlag = msgReadyFlag;
+    }
 
     @Override
     protected TCPClient doInBackground(String... params) {
@@ -34,7 +51,7 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        ExternalDbLoader.setMsgReadyFlag(true);
-        ExternalDbLoader.setMsgReceived(values[0]);
+        setMsgReadyFlag(true);
+        setMsgReceived(values[0]);
     }
 }

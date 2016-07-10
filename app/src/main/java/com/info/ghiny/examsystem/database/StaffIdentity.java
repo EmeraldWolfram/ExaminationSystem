@@ -11,7 +11,7 @@ public class StaffIdentity {
     public static final String STAFF_VENUE  = "Venue";
 
     private String idNo;
-    private String password;
+    //private String password;
     private boolean eligible;
     private String name;
     private String venueHandling;
@@ -19,26 +19,18 @@ public class StaffIdentity {
 
     public StaffIdentity(){
         this.idNo = null;
-        this.password = null;
+        //this.password = null;
         this.eligible = false;
         this.name     = null;
         this.venueHandling  = null;
     }
 
-    public StaffIdentity(String idNo, String password, boolean elg, String name, String venue){
-        this.idNo = idNo;
-        this.password       = password;
+    public StaffIdentity(String idNo, boolean elg, String name, String venue){
+        this.idNo           = idNo;
         this.eligible       = elg;
         this.name           = name;
         this.venueHandling  = venue;
     }
-
-    public boolean matchPassword(String password){
-        if(password == null)
-            return false;
-        return (this.password.equals(password));
-    }
-
     //Setter and getter, TO DO: Remove setIdentity as this is for testing purpose
 
 
@@ -61,8 +53,8 @@ public class StaffIdentity {
     public void setEligible(boolean eligible){      this.eligible = eligible;}
     public boolean getEligible(){   return this.eligible;}
 
-    public void setPassword(String newPassword){    this.password = newPassword;}
-    protected String getPassword(){ return this.password;}
+    //public void setPassword(String newPassword){    this.password = newPassword;}
+    //protected String getPassword(){ return this.password;}
 
     public void setIdNo(String newRegNum){    this.idNo = newRegNum;}
     public String getIdNo(){    return this.idNo;}

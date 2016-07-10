@@ -45,6 +45,9 @@ public class LoginHelper {
                     IconManager.WARNING);
         } else {
             //Check staff status
+            //If in-charge -> send back own ip and port
+            //If collector -> start different activity
+            //If normal -> setIP and setPort to in-charge
             if(!staff.getEligible())
                 throw new ProcessException("Unauthorized Invigilator",
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
@@ -60,37 +63,9 @@ public class LoginHelper {
             throw new ProcessException("Please enter a password to proceed",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }else {
-            if (!staff.matchPassword(inputPw))
+            if (!ExternalDbLoader.matchPassword(staff.getIdNo(), inputPw))
                 throw new ProcessException("Input password is incorrect",
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
     }
-    //= Removable Methods ==========================================================================
-    //This method check whether the input password was the password of the invglt
-    public static void checkInputPassword(StaffIdentity invglt, String pw) throws ProcessException {
-        if(invglt == null)
-            throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
-                    IconManager.WARNING);
-
-        if(pw == null || pw.isEmpty()) {
-            throw new ProcessException("Please enter a password to proceed",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-        } else {
-            if (!invglt.matchPassword(pw))
-                throw new ProcessException("Input password is incorrect",
-                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        }
-    }
-
-    public static void checkInvigilator(StaffIdentity invglt) throws ProcessException {
-        if(invglt == null){
-            throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
-        } else {
-            if(!invglt.getEligible())
-                throw new ProcessException("Unauthorized Invigilator",
-                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        }
-    }
-
 }

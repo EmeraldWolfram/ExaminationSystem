@@ -20,11 +20,15 @@ public class JsonHelper {
     private static final String KEY_TYPE     = "Type";
     private static final String KEY_VALUE    = "Value";
 
-    public static final String TYPE_IDENTITY = "Identity";
-    public static final String TYPE_VENUE    = "Venue";
-    public static final String TYPE_STUDENT  = "Student";
-    public static final String TYPE_LIST     = "AttdList";
-    public static final String TYPE_COLLECT  = "Collection";
+    public static final String TYPE_A_PASSWORD      = "ackPassword";
+    public static final String TYPE_Q_IDENTITY      = "qIdentity";
+    public static final String TYPE_Q_ATTD_VENUE    = "qAttdList";
+    public static final String TYPE_Q_PAPERS_VENUE  = "qPapers";
+    public static final String TYPE_Q_PAPERS_CDD    = "qCddPapers";
+    public static final String TYPE_A_ATTD_LIST     = "ackAttdList";
+    public static final String TYPE_A_COLLECT       = "ackCollection";
+
+    public static final String KEY_RETURN    = "Result";
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
@@ -47,6 +51,20 @@ public class JsonHelper {
         return null;
     }
 
+    public static String formatPassword(String id, String password){
+        JSONObject object = new JSONObject();
+        try{
+            object.put(KEY_TYPE, TYPE_A_PASSWORD);
+            object.put(StaffIdentity.STAFF_ID_NO, id);
+            object.put(StaffIdentity.STAFF_PASS, password);
+
+            return object.toString();
+        } catch (Exception err){
+            err.printStackTrace();
+        }
+        return null;
+    }
+
     public static String formatAttdList(AttendanceList attdList){
         JSONObject list = new JSONObject();
         JSONArray cddList = new JSONArray();
@@ -54,7 +72,7 @@ public class JsonHelper {
         List<String> regNumList = attdList.getAllCandidateRegNumList();
 
         try{
-            list.put(KEY_TYPE, TYPE_LIST);
+            list.put(KEY_TYPE, TYPE_A_ATTD_LIST);
             list.put(LIST_SIZE, regNumList.size());
             list.put(LIST_INVI, LoginHelper.getStaff().getIdNo());
             list.put(LIST_VENUE, LoginHelper.getStaff().getVenueHandling());
@@ -67,7 +85,6 @@ public class JsonHelper {
                 cddObj.put(LocalDbLoader.TABLE_INFO_COLUMN_STATUS, cdd.getStatus().toString());
                 cddList.put(cddObj);
             }
-
             list.put(LIST_LIST, cddList);
             return list.toString();
         } catch(Exception err){
@@ -79,7 +96,7 @@ public class JsonHelper {
     public static String formatCollection(String bundleStr){
         JSONObject object   = new JSONObject();
         try{
-            object.put(KEY_TYPE, TYPE_COLLECT);
+            object.put(KEY_TYPE, TYPE_A_COLLECT);
             object.put(COLLECTOR, LoginHelper.getStaff().getIdNo());
             object.put(COLLECTED, bundleStr);
 
@@ -97,13 +114,11 @@ public class JsonHelper {
             String name     = staff.getString(StaffIdentity.STAFF_NAME);
             String idNo     = staff.getString(StaffIdentity.STAFF_ID_NO);
             String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
-            String password = staff.getString(StaffIdentity.STAFF_PASS);
             Boolean legit   = staff.getBoolean(StaffIdentity.STAFF_LEGIT);
 
             invglt.setName(name);
             invglt.setIdNo(idNo);
             invglt.setVenueHandling(venue);
-            invglt.setPassword(password);
             invglt.setEligible(legit);
 
         } catch(Exception err){
@@ -111,6 +126,18 @@ public class JsonHelper {
             return null;
         }
         return invglt;
+    }
+
+    public static boolean parseBoolean(String inStr) {
+        boolean isTrue;
+        try {
+            JSONObject obj = new JSONObject(inStr);
+            isTrue = obj.getBoolean(KEY_RETURN);
+
+        } catch (Exception err) {
+            return false;
+        }
+        return isTrue;
     }
 
     public static AttendanceList parseAttdList(String inStr){

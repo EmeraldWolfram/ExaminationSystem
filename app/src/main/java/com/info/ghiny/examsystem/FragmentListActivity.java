@@ -36,7 +36,10 @@ public class FragmentListActivity extends AppCompatActivity {
     }
 
     public void onUpload(View view){
-        //ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
+        //if(ExternalDbLoader.updateAttdList(AssignHelper.getAttdList()))
+        // clearDatabase;
+        // else
+        // throw retry
     }
 
 }

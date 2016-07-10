@@ -42,12 +42,12 @@ public class JsonHelperTest {
      */
     @Test
     public void testFormatString() throws Exception {
-        String str = JsonHelper.formatString(JsonHelper.TYPE_IDENTITY, "246800");
+        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800");
 
-        assertEquals("{\"Type\":\"Identity\",\"Value\":\"246800\"}", str);
+        assertEquals("{\"Type\":\"qIdentity\",\"Value\":\"246800\"}", str);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("Identity", obj.getString("Type"));
+        assertEquals("qIdentity", obj.getString("Type"));
         assertEquals("246800", obj.getString("Value"));
     }
 
@@ -76,12 +76,12 @@ public class JsonHelperTest {
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
         attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
-        LoginHelper.setStaff(new StaffIdentity("246260", "0123", true, "Dr. Smart", "H1"));
+        LoginHelper.setStaff(new StaffIdentity("246260", true, "Dr. Smart", "H1"));
 
         String str = JsonHelper.formatAttdList(attdList);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("AttdList", obj.getString("Type"));
+        assertEquals("ackAttdList", obj.getString("Type"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
         assertEquals(6, obj.getInt("Size"));
@@ -98,10 +98,11 @@ public class JsonHelperTest {
      */
     @Test
     public void testFormatCollection() throws Exception {
-        LoginHelper.setStaff(new StaffIdentity("246260", "0123", true, "Dr. Smart", null));
+        LoginHelper.setStaff(new StaffIdentity("246260", true, "Dr. Smart", null));
         String str = JsonHelper.formatCollection("BAME 0001 SUBJECT 1");
 
-        assertEquals("{\"Type\":\"Collection\",\"Collector\":\"246260\"," +
+        assertEquals("{\"Type\":\"ackCollection\"," +
+                 "\"Collector\":\"246260\","        +
                 "\"BundleCode\":\"BAME 0001 SUBJECT 1\"}", str);
     }
 
@@ -118,14 +119,12 @@ public class JsonHelperTest {
                 "{\"Venue\":\"M5\"," +
                 "\"Eligible\":true," +
                 "\"IdNo\":\"246800\"," +
-                "\"Name\":\"TESTER 1\"," +
-                "\"Password\":\"0123\"}");
+                "\"Name\":\"TESTER 1\"}");
 
         assertNotNull(staff);
         assertEquals("TESTER 1", staff.getName());
         assertEquals("M5", staff.getVenueHandling());
         assertEquals("246800", staff.getIdNo());
-        assertTrue(staff.matchPassword("0123"));
     }
 
     /**
@@ -310,5 +309,46 @@ public class JsonHelperTest {
         assertEquals(2, subjects.size());
         assertEquals("BAME 0001", subjects.get(0).getPaperCode());
         assertEquals("BAME 0002", subjects.get(1).getPaperCode());
+    }
+
+    //= FormatPassword() ===========================================================================
+    /**
+     *  formatPassword(String id, String password)
+     *
+     *  this method create a JSON Object of id and password
+     *  then return the JSON Object in the format of String
+     *
+     *  @param id         The idNo of the staff scanned
+     *  @param password   The password entered
+     */
+    @Test
+    public void testFormatPassword() throws Exception {
+        String str = JsonHelper.formatPassword("246800", "0123");
+
+        assertEquals("{\"Type\":\"ackPassword\",\"IdNo\":\"246800\",\"Password\":\"0123\"}", str);
+
+        JSONObject obj = new JSONObject(str);
+        assertNotNull(obj);
+        assertEquals("ackPassword", obj.getString("Type"));
+        assertEquals("246800", obj.getString("IdNo"));
+        assertEquals("0123", obj.getString("Password"));
+    }
+
+    //= ParseBoolean() =============================================================================
+    /**
+     *  parseBoolean(String str)
+     *
+     *  parse str to get a boolean of true or false
+     *  default to false
+     *
+     *  @param str  The input message received from sockets
+     */
+    @Test
+    public void testParseBoolean() throws Exception {
+        boolean isCorrect = JsonHelper.parseBoolean(
+                "{\"Result\":true}");
+
+        assertNotNull(isCorrect);
+        assertTrue(isCorrect);
     }
 }
