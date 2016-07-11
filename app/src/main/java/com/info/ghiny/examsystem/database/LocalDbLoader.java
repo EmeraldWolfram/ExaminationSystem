@@ -4,7 +4,6 @@ import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -12,18 +11,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.sql.DriverManager.*;
+
 /**
  * Created by GhinY on 18/06/2016.
  */
 public class LocalDbLoader {
 
-    public static final String DB_NAME = "CheckList.db";
+    public static final String DB_NAME = "FragList.sqlite";
     private static final String PACKAGE = "com.info.ghiny.examsystem";
     public static final String DRIVER  = "org.sqldroid.SQLDroidDriver";
     public static final String ADDRESS = "jdbc:sqldroid:/data/data/" + PACKAGE
                                             + "/databases/" + DB_NAME;
 
     private static final String ATTENDANCE_TABLE    = "AttdTable";
+
     private static final String PAPERS_TABLE        = "PaperTable";
 
     private String curDriver;
@@ -39,22 +41,22 @@ public class LocalDbLoader {
             + Candidate.CDD_TABLE       + " INT     NOT NULL)";
 
     private String CREATE_PAPERS_TABLE = "CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
-            + ExamSubject.PAPER_DB_ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + ExamSubject.PAPER_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + ExamSubject.PAPER_CODE        + " TEXT    NOT NULL, "
             + ExamSubject.PAPER_DESC        + " TEXT    NOT NULL, "
             + ExamSubject.PAPER_START_NO    + " INTEGER NOT NULL, "
             + ExamSubject.PAPER_TOTAL_CDD   + " INTEGER NOT NULL)";
 
     public LocalDbLoader(String driver, String url){
-        curAddress  = url;
         curDriver   = driver;
+        curAddress  = url;
     }
 
     public Connection estaConnection() throws ProcessException{
-        Connection con = null;
+        Connection con;
         try{
             Class.forName(curDriver);
-            con = DriverManager.getConnection(curAddress);
+            con = getConnection(curAddress);
         } catch(Exception err){
             throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -247,7 +249,7 @@ public class LocalDbLoader {
                 + ") VALUES ('";
 
         stmt.executeUpdate(SAVE_ATTENDANCE
-                + cdd.getExamIndex()  + "', '"
+                + cdd.getExamIndex()    + "', '"
                 + cdd.getRegNum()       + "', "
                 + cdd.getTableNumber()  + ", '"
                 + cdd.getStatus()       + "', '"

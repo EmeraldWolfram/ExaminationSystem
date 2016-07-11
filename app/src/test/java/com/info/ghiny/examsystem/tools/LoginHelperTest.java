@@ -92,7 +92,7 @@ public class LoginHelperTest {
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Not an StaffIdentity", err.getErrorMsg());
+            assertEquals("Not a Staff Identity", err.getErrorMsg());
         }
     }
 
