@@ -24,9 +24,9 @@ public class ServerComm {
     
     private CurrentTime time;
     
-//    public ServerComm(){
-//        
-//    }
+    public ServerComm(){
+        
+    }
     
     /**
      * @brief to set the CurrentTime value
@@ -42,14 +42,27 @@ public class ServerComm {
         // TODO code application logic here
     }
     
+    public Staff staffSignIn(String id, String password) throws SQLException,Exception{
+        Staff staff = new Staff();
+       
+        
+        if(staffVerify(id,password)){
+            staff = staffGetInfo(id);
+        }
+        else
+            throw new Exception("Wrong id or password.");
+
+        return staff;
+    }
+    
     /**
-     * @brief To check the id and the password of the staff from database
-     * @param id            id of the staff
-     * @param password      password of the staff
+     * @brief   To check the id and the password of the staff from database
+     * @param   id            id of the staff
+     * @param   password      password of the staff
      * @return match        The result of the checking ,true is correct while false is incorrect
      * @throws SQLException 
      */
-    public boolean staffLogin(String id, String password) throws SQLException{
+    public boolean staffVerify(String id, String password) throws SQLException{
         boolean match;
         Connection conn = new ConnectDB("UserDatabase.db").connect();
         String sql = "SELECT Username, Password FROM User where Username=? and Password=?";
@@ -70,35 +83,40 @@ public class ServerComm {
     }
     
     /**
-     * @brief To get the staff info depends on the current time
-     * @param id            id of the staff
-     * @return  staff       contains info og the staff
+     * @brief   To get the staff info depends on the current time
+     * @param   id            id of the staff
+     * @return  staff       contains info of the staff
      * @throws SQLException 
      */
-    public Staff staffGetInfo(String id) throws SQLException{
+    public Staff staffGetInfo(String id) throws SQLException, Exception{
+        
         Staff staff = new Staff();
         Connection conn = new ConnectDB("FEB_MAR_2016.db").connect();
-        String sql = "SELECT Venue.Name AS VenueName,* FROM InvigilatorAndAssistant "
+        String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS StaffIndex"
+                + ",* FROM InvigilatorAndAssistant "
                 + "LEFT OUTER JOIN Paper ON Paper.PaperIndex = InvigilatorAndAssistant.PaperIndex "
                 + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PIIndex = Paper.PIIndex "
                 + "LEFT OUTER JOIN Venue ON Venue.VenueIndex = Paper.VenueIndex "
-                + "WHERE StaffID = ? AND Date = ? AND Session = ? ";
+                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = StaffIndex "
+                + "WHERE StaffIndex = ? AND Date = ? AND Session = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1,id);
+        ps.setString(1, id);
         ps.setString(2, time.getDate());
         ps.setString(3, getSessionType(Integer.parseInt(time.getTime())));
    
         ResultSet result = ps.executeQuery();
-        while ( result.next() ) {
-            staff.setID(result.getString("StaffID"));
+        if(result.next()){
+         do{
+            staff.setID(result.getString("StaffIndex"));
             staff.setStatus(result.getString("Status"));
             staff.setAttendance(result.getString("Attendance"));
             staff.setVenue(result.getString("VenueName"));
             staff.setSession(result.getString("Session"));
             staff.setDate(result.getString("Date"));
-            
-            
+        }while ( result.next() );
         }
+        else
+            throw new Exception("Invalid data in current session.");
         
         result.close();
         ps.close();
@@ -108,8 +126,8 @@ public class ServerComm {
     }
     
     /**
-     * @brief Get the session according to current time
-     * @param time  contain current time in integer type
+     * @brief   Get the session according to current time
+     * @param   time  contain current time in integer type
      * @return  AM      From time 7:00AM to 11:00AM
      * @return  PM      From time 1:00PM to 4:00PM
      * @return  NULL    Other time

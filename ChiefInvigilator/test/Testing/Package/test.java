@@ -20,6 +20,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import chiefinvigilator.CurrentTime;
 import chiefinvigilator.ServerComm;
 import chiefinvigilator.Staff;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 /**
  *
  * @author Krissy
@@ -28,10 +30,10 @@ import chiefinvigilator.Staff;
 public class test {
   
     @Test
-    public void testUserLogin1() {
+    public void testUserVerify1() {
         boolean match = false;
         try {
-            match = new ServerComm().staffLogin("staff1","123456");
+            match = new ServerComm().staffVerify("staff1","123456");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         }
@@ -40,10 +42,10 @@ public class test {
     }
     
     @Test
-    public void testUserLogin2() {
+    public void testUserVerify2() {
         boolean match = false;
         try {
-            match = new ServerComm().staffLogin("staff2","1234");
+            match = new ServerComm().staffVerify("staff2","1234");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         }
@@ -52,10 +54,10 @@ public class test {
     }
     
     @Test
-    public void testInvalidUserLogin1() {
+    public void testInvalidUserVerify1() {
         boolean match = false;
         try {
-            match = new ServerComm().staffLogin("staff1","1234");
+            match = new ServerComm().staffVerify("staff1","1234");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         }
@@ -64,10 +66,10 @@ public class test {
     }
     
     @Test
-    public void testInvalidUserLogin2() {
+    public void testInvalidUserVerify2() {
         boolean match = false;
         try {
-            match = new ServerComm().staffLogin("wasqdf","boy");
+            match = new ServerComm().staffVerify("wasqdf","boy");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         }
@@ -91,6 +93,8 @@ public class test {
             staff = servercomm.staffGetInfo("staff1");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
         }
         assertEquals("M4",staff.getVenue());
         assertEquals("chief",staff.getStatus());
@@ -106,6 +110,8 @@ public class test {
             staff = servercomm.staffGetInfo("staff2");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
         }
         
         assertEquals("M4",staff.getVenue());
@@ -122,6 +128,8 @@ public class test {
             staff = servercomm.staffGetInfo("staff2");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
         }
 
         assertEquals(null,staff.getVenue());
@@ -138,9 +146,12 @@ public class test {
             staff = servercomm.staffGetInfo("staff2");
         } catch (SQLException ex) {
             System.out.print("Lost connection");
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
         }
 
         assertEquals(null,staff.getVenue());
         assertEquals(null,staff.getStatus());
     }
+    
 }

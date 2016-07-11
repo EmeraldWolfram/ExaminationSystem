@@ -12,12 +12,14 @@ package chiefinvigilator;
 public class Staff {
     
     String id;
+    String name;
     String status;
     String attendance;
     String block;
     String venue;
     String session;
     String date;
+    String password;
     
     public Staff(){
     }
@@ -77,4 +79,22 @@ public class Staff {
     public String getDate(){
         return this.date;
     }
+    
+    public void setPassword(String password){
+        this.password = password;
+    }
+    
+    public String getPassword(){
+        return password;
+    }
+    
+    public void setName(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return name;
+    }
+
+
 }

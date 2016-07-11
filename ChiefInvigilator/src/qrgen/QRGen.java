@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.net.ServerSocket;
 import javax.swing.JFrame;
 
 /**
@@ -26,21 +27,22 @@ import javax.swing.JFrame;
  */
 public class QRGen extends JFrame{
 //    Screen s;
+    ServerSocket socket;
     
-    public QRGen(){
+    public QRGen(ServerSocket socket){
         setTitle("Scan to Login in");
         setSize(450,350);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.socket = socket;
         init();
-
+        setVisible(true);
+        
     }
     public void init(){
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1,1,0,0));
-        Screen s = new Screen();
-        add(new Screen());
-        setVisible(true);
-        
+        Screen s = new Screen(socket);
+        add(s);
+
     }
 
     

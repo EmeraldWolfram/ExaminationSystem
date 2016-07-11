@@ -5,6 +5,8 @@
  */
 package qrgen;
 
+import chiefinvigilator.ChiefServer;
+import chiefinvigilator.MainServer;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -21,12 +23,15 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Krissy
  */
 class Screen extends JPanel {
+        
+    ServerSocket socket;
     
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         String myWeb = "";
@@ -35,46 +40,64 @@ class Screen extends JPanel {
          
         BufferedImage bufferedImage = null;
     
-    public String localIp() throws Exception {
+    public String localIp(int port) throws Exception {
       InetAddress addr = InetAddress.getLocalHost();
       System.out.println("Local HostAddress:"+addr.getHostAddress());
       String hostname = addr.getHostName();
       System.out.println("Local host name: "+hostname);
-      ServerSocket s = new ServerSocket(0);
-      System.out.println("listening on port: " + s.getLocalPort());
-      return addr.getHostAddress()+":"+s.getLocalPort();
+
+      System.out.println("listening on port: " + port);
+      return addr.getHostAddress()+":"+port;
    }
          
-    public Screen(){
-        repaint();
+    public Screen(ServerSocket socket){
+//        repaint();
+    this.socket = socket;
             try {
-                this.myWeb = "$CHIEF:"+localIp()+":$";
+                this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
             } catch (Exception ex) {
                 Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
             }
+        
     }
+    
+        
     
     public void paint (Graphics graphics){
         Hashtable hints = new Hashtable();
         hints.put(EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.M);
         hints.put(EncodeHintType.AZTEC_LAYERS, 10);
-        hints.put("Version", "10");
+        hints.put("Version", "10");  
+        
             try {
 
                 BitMatrix byteMatrix = qrCodeWriter.encode(myWeb, BarcodeFormat.QR_CODE, width, height,hints);
-
                 for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     if (byteMatrix.get(i, j)) {
                         graphics.fillRect(i, j, 1, 1);
                     }
                 }
+                
             }
             } catch (WriterException ex) {
                 Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-//        g.drawRect(100,100,50,50);
-//        g.fillRect(1100,100,50,50);
+            SwingUtilities.invokeLater(new Runnable(){
+            @Override
+            public void run(){
+                MainServer mainServer = new MainServer();
+                try {
+                    System.out.print(socket.getLocalPort());
+                    mainServer.boardCast(socket);
+                } catch (Exception ex) {
+                    Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+    });
     }
+    
 }
+
+
