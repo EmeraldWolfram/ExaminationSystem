@@ -34,7 +34,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                displayResult(result.getText());
+                requestPapers(result.getText());
                 //get The info of the student here
             }
         }
@@ -53,6 +53,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;
+
+        ObtainInfoHelper.setAdapter(listAdapter);
         paperList.setAdapter(listAdapter);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
@@ -96,7 +98,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void displayResult(String scanStr){
+    private void requestPapers(String scanStr){
         try{
             List<ExamSubject> papers = ObtainInfoHelper.getCandidatePapers(scanStr);
             listAdapter.updatePapers(papers);

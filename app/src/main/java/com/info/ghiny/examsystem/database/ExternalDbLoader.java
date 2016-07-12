@@ -1,8 +1,13 @@
 package com.info.ghiny.examsystem.database;
 
+import android.os.Handler;
+
 import com.info.ghiny.examsystem.tools.ChiefLink;
+import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.JsonHelper;
 import com.info.ghiny.examsystem.tools.LoginHelper;
+import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 
 import java.util.HashMap;
@@ -24,8 +29,13 @@ public class ExternalDbLoader {
         return tcpClient;
     }
 
+    //= Extend Methods =============================================================================
+    public void checkForResult(){
+
+    }
+
     //= Public Methods =============================================================================
-    public static StaffIdentity getStaffIdentity(String scanIdNumber){
+    /*public static StaffIdentity getStaffIdentity(String scanIdNumber){
         StaffIdentity id = null;
         String str = JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, scanIdNumber);
 
@@ -40,28 +50,40 @@ public class ExternalDbLoader {
         }
 
         return id;
-    }
+    }*/
 
-    public static boolean matchPassword(String staffId, String staffPw){
+    public static boolean tryLogin(String staffId, String staffPw) throws ProcessException{
         boolean isCorrect = false;
 
         String str = JsonHelper.formatPassword(staffId, staffPw);
 
         if(str != null && tcpClient != null){
             tcpClient.sendMessage(str);
+            /*final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do something after 5s = 5000ms
+                    if(LoginHelper.getStaff().getName() == null){
+
+                    }
+                }
+            }, 5000);*/
             while(!ChiefLink.isMsgReadyFlag())
                 isCorrect = false;
-            isCorrect = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+            isCorrect = JsonHelper.parseStaffIdentity(ChiefLink.getMsgReceived());
             ChiefLink.setMsgReadyFlag(false);
             ChiefLink.setMsgReceived(null);
+        } else {
+            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
         return isCorrect;
     }
 
     public static AttendanceList dlAttdList(){
         AttendanceList attdList = null;
-        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_ATTD_VENUE,
+        String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
                 LoginHelper.getStaff().getVenueHandling());
 
         if (tcpClient != null) {
@@ -81,7 +103,7 @@ public class ExternalDbLoader {
     public static HashMap<String, ExamSubject> dlPaperList() {
         HashMap<String, ExamSubject> map = null;
 
-        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_PAPERS_VENUE,
+        String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
                 LoginHelper.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
@@ -98,7 +120,7 @@ public class ExternalDbLoader {
 
     public static List<ExamSubject> getPapersExamineByCdd(String scanRegNum){
         List<ExamSubject> subjects = null;
-        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_PAPERS_CDD, scanRegNum);
+        String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
 
         if(tcpClient != null){
             tcpClient.sendMessage(str);    //suppose to send JSON

@@ -42,13 +42,14 @@ public class JsonHelperTest {
      */
     @Test
     public void testFormatString() throws Exception {
-        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800");
+        String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, "H4");
 
-        assertEquals("{\"Type\":\"qIdentity\",\"Value\":\"246800\"}", str);
+        assertEquals("{\"Query\":\"AttdList\",\"Value\":\"H4\"}", str);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("qIdentity", obj.getString("Type"));
-        assertEquals("246800", obj.getString("Value"));
+        assertTrue(obj.has("Query"));
+        assertEquals("AttdList", obj.getString("Query"));
+        assertEquals("H4", obj.getString("Value"));
     }
 
     //= FormatAttdList() ===========================================================================
@@ -81,7 +82,7 @@ public class JsonHelperTest {
         String str = JsonHelper.formatAttdList(attdList);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("ackAttdList", obj.getString("Type"));
+        assertEquals("AttdList", obj.getString("CheckIn"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
         assertEquals(6, obj.getInt("Size"));
@@ -101,9 +102,8 @@ public class JsonHelperTest {
         LoginHelper.setStaff(new StaffIdentity("246260", true, "Dr. Smart", null));
         String str = JsonHelper.formatCollection("BAME 0001 SUBJECT 1");
 
-        assertEquals("{\"Type\":\"ackCollection\"," +
-                 "\"Collector\":\"246260\","        +
-                "\"BundleCode\":\"BAME 0001 SUBJECT 1\"}", str);
+        assertEquals("{\"Bundle\":\"BAME 0001 SUBJECT 1\",\"Collector\":\"246260\"," +
+                "\"CheckIn\":\"Collection\"}", str);
     }
 
     //= ParseStaffIdentity() =======================================================================
@@ -115,16 +115,17 @@ public class JsonHelperTest {
      */
     @Test
     public void testParseStaffIdentity() throws Exception {
-        StaffIdentity staff = JsonHelper.parseStaffIdentity(
-                "{\"Venue\":\"M5\"," +
-                "\"Eligible\":true," +
-                "\"IdNo\":\"246800\"," +
-                "\"Name\":\"TESTER 1\"}");
+        LoginHelper.setStaff(new StaffIdentity());
+        assertTrue(JsonHelper.parseStaffIdentity(
+                 "{\"Role\":[\"Collector\",\"Chief\"]," +
+                         "\"Venue\":\"M5\",\"Result\":true," +
+                         "\"Name\":\"TESTER 1\"}"));
 
+
+        StaffIdentity staff = LoginHelper.getStaff();
         assertNotNull(staff);
         assertEquals("TESTER 1", staff.getName());
         assertEquals("M5", staff.getVenueHandling());
-        assertEquals("246800", staff.getIdNo());
     }
 
     /**
@@ -135,14 +136,16 @@ public class JsonHelperTest {
      */
     @Test
     public void testParseStaffIdentity_return_null_if_format_incorrect() throws Exception {
-        StaffIdentity staff = JsonHelper.parseStaffIdentity(
+        LoginHelper.setStaff(new StaffIdentity());
+        assertFalse(JsonHelper.parseStaffIdentity(
                 "{\"Venue\":\"M5\"," +
                         "\"Eligible\":true," +
                         "\"RegNum\":\"246800\"," +
                         "\"NAME\":\"TESTER 1\"," +  //Name not NAME
-                        "\"Password\":\"0123\"}");
+                        "\"Password\":\"0123\"}"));
 
-        assertNull(staff);
+        assertNull(LoginHelper.getStaff().getName());
+        assertNull(LoginHelper.getStaff().getVenueHandling());
     }
 
     //= ParseAttdList() ============================================================================
@@ -175,6 +178,7 @@ public class JsonHelperTest {
         jAttdList.put(jCdd1);
         jAttdList.put(jCdd2);
 
+        jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
         jObject.put(JsonHelper.LIST_LIST, jAttdList);
 
         AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
@@ -264,6 +268,7 @@ public class JsonHelperTest {
         array.put(subject1);
         array.put(subject2);
 
+        object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_MAP, array);
 
         HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
@@ -301,6 +306,7 @@ public class JsonHelperTest {
         array.put(subject1);
         array.put(subject2);
 
+        object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_LIST, array);
 
         List<ExamSubject> subjects = JsonHelper.parsePaperList(object.toString());
@@ -325,11 +331,11 @@ public class JsonHelperTest {
     public void testFormatPassword() throws Exception {
         String str = JsonHelper.formatPassword("246800", "0123");
 
-        assertEquals("{\"Type\":\"ackPassword\",\"IdNo\":\"246800\",\"Password\":\"0123\"}", str);
+        assertEquals("{\"CheckIn\":\"Identity\",\"IdNo\":\"246800\",\"Password\":\"0123\"}", str);
 
         JSONObject obj = new JSONObject(str);
         assertNotNull(obj);
-        assertEquals("ackPassword", obj.getString("Type"));
+        assertEquals("Identity", obj.getString("CheckIn"));
         assertEquals("246800", obj.getString("IdNo"));
         assertEquals("0123", obj.getString("Password"));
     }

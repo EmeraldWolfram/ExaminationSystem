@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,19 @@ import java.util.List;
  * Created by GhinY on 24/06/2016.
  */
 public class FragmentHelper {
+
+    private static boolean uploaded = false;
+
+    public static void uploadAttdList(){
+        ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
+    }
+
+    public static boolean isUploaded() {
+        return uploaded;
+    }
+    public static void setUploaded(boolean uploaded) {
+        FragmentHelper.uploaded = uploaded;
+    }
 
     public static List<String> getTitleList(AttendanceList.Status status){
         List<String> papers = new ArrayList<>();

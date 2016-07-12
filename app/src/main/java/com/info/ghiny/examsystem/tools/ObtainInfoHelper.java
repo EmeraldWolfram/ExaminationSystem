@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.tools;
 
+import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
@@ -10,6 +11,16 @@ import java.util.List;
  * Created by GhinY on 01/07/2016.
  */
 public class ObtainInfoHelper {
+
+    private static ExamSubjectAdapter adapter;
+
+    public static void setAdapter(ExamSubjectAdapter adapter) {
+        ObtainInfoHelper.adapter = adapter;
+    }
+
+    public static ExamSubjectAdapter getAdapter() {
+        return adapter;
+    }
 
     public static List<ExamSubject> getCandidatePapers(String scanValue) throws ProcessException{
 

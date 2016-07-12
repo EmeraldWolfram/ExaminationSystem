@@ -14,10 +14,12 @@ public class ProcessException extends Exception {
     public static final int UPDATE_PROMPT   = 1;
     public static final int MESSAGE_DIALOG  = 2;
     public static final int FATAL_MESSAGE   = 3;
+    public static final int RESEND_CANCEL   = 4;
 
     public static final String updateButton = "UPDATE";
     public static final String cancelButton = "CANCEL";
     public static final String okayButton   = "OKAY";
+    public static final String resendButton = "RESEND";
 
     private HashMap<String, DialogInterface.OnClickListener> buttonMap;
     private int errorType;

@@ -4,6 +4,7 @@ package com.info.ghiny.examsystem;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -12,8 +13,10 @@ import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.TCPClient;
@@ -28,7 +31,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     private static final int PASSWORD_REQ_CODE = 888;
     private Intent pwIntent;
-    private ErrorManager errorManager;
+    private static ErrorManager errorManager;
     private ChiefLink connect;
 
     private CompoundBarcodeView barcodeView;
@@ -54,6 +57,8 @@ public class MainLoginActivity extends AppCompatActivity {
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         errorManager   = new ErrorManager(this);
+
+        //ChiefLink.setErrorManager(errorManager);
 
         TCPClient mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
@@ -97,28 +102,23 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     public void checkEligibilityOfTheIdentity(String scanStr){
-        try{
-            LoginHelper.identifyStaff(scanStr);
+        barcodeView.setStatusText(scanStr);
+        barcodeView.pause();
 
-            barcodeView.setStatusText(LoginHelper.getStaff().getName() + "\n" +
-                    LoginHelper.getStaff().getIdNo());
-            barcodeView.pause();
+        StaffIdentity staff = new StaffIdentity();
+        staff.setIdNo(scanStr);
+        LoginHelper.setStaff(staff);
 
-            pwIntent = new Intent(this, PopUpLogin.class);
-            startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-        } catch (ProcessException err){
-            barcodeView.pause();
-            errorManager.displayError(err);
-            barcodeView.resume();
-        }
+        pwIntent = new Intent(this, PopUpLogin.class);
+        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
+                LoginHelper.getStaff().setPassword(password);
                 LoginHelper.matchStaffPw(password);
-
                 //Successful login, start AssignActivity
                 Intent assignIntent = new Intent(this, AssignInfoActivity.class);
                 startActivity(assignIntent);
@@ -131,6 +131,23 @@ public class MainLoginActivity extends AppCompatActivity {
             }
         }
     }
+/*
+    public static void resendVerification(){
+        try{
+            StaffIdentity id = LoginHelper.getStaff();
+            ExternalDbLoader.tryLogin(id.getIdNo(), id.getPassword());
+        } catch (ProcessException err){
+            errorManager.displayError(err);
+        }
+    }
+
+    public static void cancelResend(){
+        try{
+
+        } catch (ProcessException err){
+            errorManager.displayError(err);
+        }
+    }*/
 
 
 }

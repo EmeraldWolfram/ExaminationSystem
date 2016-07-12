@@ -26,12 +26,12 @@ public class AssignHelper {
 
     private static final DialogInterface.OnClickListener updateListener =
             new DialogInterface.OnClickListener(){
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            updateNewCandidate();
-            dialog.cancel();
-        }
-    };
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    updateNewCandidate();
+                    dialog.cancel();
+                }
+            };
 
     private static final DialogInterface.OnClickListener cancelListener =
             new DialogInterface.OnClickListener(){
@@ -101,21 +101,11 @@ public class AssignHelper {
             throw new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         }
-        //StaffIdentity id = exDBLoader.getIdentity(scanString);
-
-        //if(id == null)
-        //    throw new ProcessException("Not an StaffIdentity", ProcessException.MESSAGE_TOAST,
-        //            IconManager.WARNING);
-
-        //if(id.getIdNo() == null)
-        //    throw new ProcessException("FATAL: Unable to process ID",
-        //            ProcessException.FATAL_MESSAGE, IconManager.WARNING);
 
         if(attdList == null || attdList.getAttendanceList() == null)
             throw new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
                     IconManager.WARNING);
 
-        //Candidate candidate = attdList.getCandidate(id.getIdNo());
         Candidate candidate = attdList.getCandidate(scanString);
 
         if(candidate == null){

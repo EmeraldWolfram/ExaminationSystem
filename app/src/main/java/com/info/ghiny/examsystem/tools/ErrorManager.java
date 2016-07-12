@@ -8,6 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
+import com.info.ghiny.examsystem.database.ExamSubject;
+
 /**
  * Created by GhinY on 27/06/2016.
  */
@@ -33,6 +35,8 @@ public class ErrorManager {
             case ProcessException.FATAL_MESSAGE:
                 showFatalError(err);
                 break;
+            case ProcessException.RESEND_CANCEL:
+
         }
     }
 
@@ -40,6 +44,10 @@ public class ErrorManager {
         CustomToast message = new CustomToast(act);
         message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
     }
+
+    //public void showToast(String msg){
+    //    Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
+    //}
 
     public void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
@@ -74,6 +82,20 @@ public class ErrorManager {
                         dialog.cancel();
                     }
                 });
+
+        AlertDialog alert = dialog.create();
+        alert.show();
+    }
+
+    public void showResendCancelDialog(ProcessException err){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(act);
+        dialog.setMessage(err.getMessage());
+        dialog.setCancelable(true);
+
+        dialog.setPositiveButton(ProcessException.resendButton,
+                err.getListener(ProcessException.resendButton));
+        dialog.setNegativeButton(ProcessException.cancelButton,
+                err.getListener(ProcessException.cancelButton));
 
         AlertDialog alert = dialog.create();
         alert.show();

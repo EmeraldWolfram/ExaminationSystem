@@ -13,6 +13,12 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     private static boolean msgReadyFlag = false;
     private static String msgReceived   = null;
 
+    //private static ErrorManager errorManager;
+
+    //public static void setErrorManager(ErrorManager errorManager) {
+    //    ChiefLink.errorManager = errorManager;
+    //}
+
     //= Setter & Getter ============================================================================
     public static String getMsgReceived() {
         return msgReceived;
@@ -46,6 +52,7 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
 
+        //errorManager.showToast(values[0]);
         setMsgReadyFlag(true);
         setMsgReceived(values[0]);
     }

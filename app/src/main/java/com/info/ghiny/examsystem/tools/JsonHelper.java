@@ -3,10 +3,10 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -17,18 +17,16 @@ import java.util.List;
  * Created by GhinY on 06/06/2016.
  */
 public class JsonHelper {
-    private static final String KEY_TYPE     = "Type";
-    private static final String KEY_VALUE    = "Value";
+    public static final String KEY_TYPE_RETURN      = "Result";
+    public static final String KEY_TYPE_CHECKIN     = "CheckIn";
+    public static final String KEY_TYPE_QUERY       = "Query";
+    public static final String KEY_VALUE            = "Value";
 
-    public static final String TYPE_A_PASSWORD      = "ackPassword";
-    public static final String TYPE_Q_IDENTITY      = "qIdentity";
-    public static final String TYPE_Q_ATTD_VENUE    = "qAttdList";
-    public static final String TYPE_Q_PAPERS_VENUE  = "qPapers";
-    public static final String TYPE_Q_PAPERS_CDD    = "qCddPapers";
-    public static final String TYPE_A_ATTD_LIST     = "ackAttdList";
-    public static final String TYPE_A_COLLECT       = "ackCollection";
-
-    public static final String KEY_RETURN    = "Result";
+    public static final String TYPE_LOGIN           = "Identity";
+    public static final String TYPE_PAPERS_VENUE    = "Papers";
+    public static final String TYPE_PAPERS_CDD    = "CddPapers";
+    public static final String TYPE_ATTD_LIST     = "AttdList";
+    public static final String TYPE_COLLECT       = "Collection";
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
@@ -37,42 +35,40 @@ public class JsonHelper {
     public static final String PAPER_MAP    = "PaperMap";
     public static final String PAPER_LIST   = "PaperList";
     public static final String COLLECTOR    = "Collector";
-    public static final String COLLECTED    = "BundleCode";
+    public static final String COLLECTED    = "Bundle";
 
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE, type);
+            object.put(KEY_TYPE_QUERY, type);
             object.put(KEY_VALUE, valueStr);
             return object.toString();
         } catch(Exception err){
-            err.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String formatPassword(String id, String password){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE, TYPE_A_PASSWORD);
+            object.put(KEY_TYPE_CHECKIN, TYPE_LOGIN);
             object.put(StaffIdentity.STAFF_ID_NO, id);
             object.put(StaffIdentity.STAFF_PASS, password);
 
             return object.toString();
         } catch (Exception err){
-            err.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String formatAttdList(AttendanceList attdList){
-        JSONObject list = new JSONObject();
-        JSONArray cddList = new JSONArray();
+        JSONObject list     = new JSONObject();
+        JSONArray cddList   = new JSONArray();
         JSONObject cddObj;
         List<String> regNumList = attdList.getAllCandidateRegNumList();
 
         try{
-            list.put(KEY_TYPE, TYPE_A_ATTD_LIST);
+            list.put(KEY_TYPE_CHECKIN, TYPE_ATTD_LIST);
             list.put(LIST_SIZE, regNumList.size());
             list.put(LIST_INVI, LoginHelper.getStaff().getIdNo());
             list.put(LIST_VENUE, LoginHelper.getStaff().getVenueHandling());
@@ -88,131 +84,169 @@ public class JsonHelper {
             list.put(LIST_LIST, cddList);
             return list.toString();
         } catch(Exception err){
-            err.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String formatCollection(String bundleStr){
         JSONObject object   = new JSONObject();
         try{
-            object.put(KEY_TYPE, TYPE_A_COLLECT);
+            object.put(KEY_TYPE_CHECKIN, TYPE_COLLECT);
             object.put(COLLECTOR, LoginHelper.getStaff().getIdNo());
             object.put(COLLECTED, bundleStr);
 
             return object.toString();
         } catch(Exception err){
-            err.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    public static StaffIdentity parseStaffIdentity(String inStr){
-        StaffIdentity invglt = new StaffIdentity();
+    public static boolean parseStaffIdentity(String inStr){// throws ProcessException{
         try{
             JSONObject staff = new JSONObject(inStr);
-            String name     = staff.getString(StaffIdentity.STAFF_NAME);
-            String idNo     = staff.getString(StaffIdentity.STAFF_ID_NO);
-            String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
-            Boolean legit   = staff.getBoolean(StaffIdentity.STAFF_LEGIT);
+            if(staff.getBoolean(KEY_TYPE_RETURN)){
+                String name     = staff.getString(StaffIdentity.STAFF_NAME);
+                String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
 
-            invglt.setName(name);
-            invglt.setIdNo(idNo);
-            invglt.setVenueHandling(venue);
-            invglt.setEligible(legit);
+                LoginHelper.getStaff().setName(name);
+                LoginHelper.getStaff().setVenueHandling(venue);
 
-        } catch(Exception err){
-            //err.printStackTrace();
-            return null;
+                JSONArray roles = staff.getJSONArray(StaffIdentity.STAFF_ROLE);
+
+                for(int i = 0; i < roles.length(); i++){
+                    LoginHelper.getStaff().addRole(roles.getString(i));
+                }
+
+            } else {
+                return false;
+                //throw new ProcessException("Incorrect Login Id or Password",
+                //        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            }
+        } catch (JSONException err){
+            return false;
+            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease consult developer!",
+            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-        return invglt;
+        return true;
     }
 
-    public static boolean parseBoolean(String inStr) {
-        boolean isTrue;
+    public static boolean parseBoolean(String inStr){   // throws ProcessException {
         try {
             JSONObject obj = new JSONObject(inStr);
-            isTrue = obj.getBoolean(KEY_RETURN);
+            if(obj.getBoolean(KEY_TYPE_RETURN)){
+                //if(obj.getString(KEY_VALUE).equals(TYPE_ATTD_LIST))
+                //    FragmentHelper.setUploaded(obj.getBoolean(KEY_TYPE_RETURN));
 
+                return true;
+            } else {
+                return false;
+                //throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
+                //        IconManager.WARNING);
+            }
         } catch (Exception err) {
             return false;
+            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease consult developer!",
+            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-        return isTrue;
     }
 
-    public static AttendanceList parseAttdList(String inStr){
+    public static AttendanceList parseAttdList(String inStr){// throws ProcessException{
         AttendanceList attdList = new AttendanceList();
         try{
-            JSONObject obj      = new JSONObject(inStr);
-            JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
+            JSONObject obj          = new JSONObject(inStr);
 
-            for(int i = 0; i < cddArr.length(); i++){
-                JSONObject jsonCdd  = cddArr.getJSONObject(i);
-                Candidate cdd       = new Candidate();
+            if(obj.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
+                for(int i = 0; i < cddArr.length(); i++){
+                    JSONObject jsonCdd  = cddArr.getJSONObject(i);
+                    Candidate cdd       = new Candidate();
 
-                cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
-                cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
+                    cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
+                    cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
 
-                String status   = jsonCdd.getString(Candidate.CDD_STATUS);
-                cdd.setStatus(attdList.parseStatus(status));
-                cdd.setTableNumber(0);
-                cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
-                cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
+                    String status   = jsonCdd.getString(Candidate.CDD_STATUS);
+                    cdd.setStatus(attdList.parseStatus(status));
+                    cdd.setTableNumber(0);
+                    cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
+                    cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
 
-                attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+                    attdList.addCandidate(cdd, cdd.getPaperCode(),
+                            cdd.getStatus(), cdd.getProgramme());
+                }
+                AssignHelper.setAttdList(attdList);
+            } else {
+                return null;
+                //throw new ProcessException("FATAL: Unable to download Attendance List",
+                //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
-        } catch (Exception err){
+        } catch (JSONException err){
             return null;
+            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
         return attdList;
     }
 
-    public static HashMap<String, ExamSubject> parsePaperMap(String inStr){
+    public static HashMap<String, ExamSubject> parsePaperMap(String inStr) {//throws ProcessException{
         HashMap<String, ExamSubject> map = new HashMap<>();
         try{
             JSONObject object   = new JSONObject(inStr);
-            JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
+            if(object.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
+                for(int i = 0; i < subjectArr.length(); i++){
+                    JSONObject jSubject = subjectArr.getJSONObject(i);
+                    ExamSubject subject = new ExamSubject();
 
-            for(int i = 0; i < subjectArr.length(); i++){
-                JSONObject jSubject = subjectArr.getJSONObject(i);
-                ExamSubject subject = new ExamSubject();
+                    subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                    subject.setStartTableNum(jSubject.getInt(ExamSubject.PAPER_START_NO));
+                    subject.setNumOfCandidate(jSubject.getInt(ExamSubject.PAPER_TOTAL_CDD));
 
-                subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
-                subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
-                subject.setStartTableNum(jSubject.getInt(ExamSubject.PAPER_START_NO));
-                subject.setNumOfCandidate(jSubject.getInt(ExamSubject.PAPER_TOTAL_CDD));
-
-                map.put(subject.getPaperCode(), subject);
+                    map.put(subject.getPaperCode(), subject);
+                }
+                Candidate.setPaperList(map);
+            } else {
+                return null;
+                //throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
+                //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
-        }catch (Exception err){
+        }catch (JSONException err){
             return null;
+            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
         return map;
     }
 
-    public static List<ExamSubject> parsePaperList(String inStr){
+    public static List<ExamSubject> parsePaperList(String inStr) {// throws ProcessException{
         List<ExamSubject> subjects  = new ArrayList<>();
         try{
             JSONObject jObj         = new JSONObject(inStr);
-            JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
+            if(jObj.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
+                for(int i = 0; i < subjectArr.length(); i++){
+                    JSONObject jSubject = subjectArr.getJSONObject(i);
+                    ExamSubject subject = new ExamSubject();
 
-            for(int i = 0; i < subjectArr.length(); i++){
-                JSONObject jSubject = subjectArr.getJSONObject(i);
-                ExamSubject subject = new ExamSubject();
+                    subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
 
-                subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
-                subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                    String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
+                    subject.setPaperSession(subject.parseSession(session));
+                    subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
 
-                String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
-                subject.setPaperSession(subject.parseSession(session));
-                subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
-
-                subjects.add(subject);
+                    subjects.add(subject);
+                }
+                //ObtainInfoHelper.getAdapter().updatePapers(subjects);
+            } else {
+                return null;
+                //throw new ProcessException("Not a Candidate Identity",
+                //        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
             }
-        } catch (Exception err) {
+        } catch (JSONException err) {
             return null;
+            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
         return subjects;

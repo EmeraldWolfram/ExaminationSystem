@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomToast;
+import com.info.ghiny.examsystem.tools.FragmentHelper;
 
 /**
  * Created by GhinY on 12/06/2016.
@@ -36,10 +37,7 @@ public class FragmentListActivity extends AppCompatActivity {
     }
 
     public void onUpload(View view){
-        //if(ExternalDbLoader.updateAttdList(AssignHelper.getAttdList()))
-        // clearDatabase;
-        // else
-        // throw retry
+        FragmentHelper.uploadAttdList();
     }
 
 }
