@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,17 +15,13 @@ import java.util.List;
  */
 public class FragmentHelper {
 
-    private static boolean uploaded = false;
+    public static void uploadAttdList() throws ProcessException{
+        if(ExternalDbLoader.updateAttdList(AssignHelper.getAttdList()))
+            AssignHelper.getJdbcLoader().clearDatabase();
+        else
+            throw new ProcessException("Failed to upload Attendance List.\nPlease try again later.",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
 
-    public static void uploadAttdList(){
-        ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
-    }
-
-    public static boolean isUploaded() {
-        return uploaded;
-    }
-    public static void setUploaded(boolean uploaded) {
-        FragmentHelper.uploaded = uploaded;
     }
 
     public static List<String> getTitleList(AttendanceList.Status status){

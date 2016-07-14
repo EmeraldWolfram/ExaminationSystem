@@ -63,6 +63,10 @@ public class AssignHelper {
         Candidate.setPaperList(dBLoader.queryPapers());
     }
 
+    public static LocalDbLoader getJdbcLoader() {
+        return JdbcLoader;
+    }
+
     public static void setAttdList(AttendanceList attdList) {
         AssignHelper.attdList = attdList;
     }

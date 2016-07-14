@@ -18,15 +18,17 @@ import java.util.List;
  */
 public class JsonHelper {
     public static final String KEY_TYPE_RETURN      = "Result";
+    public static final String KEY_TYPE_TYPE        = "Type";
     public static final String KEY_TYPE_CHECKIN     = "CheckIn";
     public static final String KEY_TYPE_QUERY       = "Query";
     public static final String KEY_VALUE            = "Value";
 
     public static final String TYPE_LOGIN           = "Identity";
     public static final String TYPE_PAPERS_VENUE    = "Papers";
-    public static final String TYPE_PAPERS_CDD    = "CddPapers";
-    public static final String TYPE_ATTD_LIST     = "AttdList";
-    public static final String TYPE_COLLECT       = "Collection";
+    public static final String TYPE_PAPERS_CDD      = "CddPapers";
+    public static final String TYPE_ATTD_LIST       = "AttdList";
+    public static final String TYPE_COLLECT         = "Collection";
+    public static final String TYPE_ACKNOWLEDGE     = "Ack";
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
@@ -103,6 +105,9 @@ public class JsonHelper {
 
     public static boolean parseStaffIdentity(String inStr){// throws ProcessException{
         try{
+            //ChiefLink.setMsgReceived(null);
+            //ChiefLink.setMsgReadyFlag(false);
+
             JSONObject staff = new JSONObject(inStr);
             if(staff.getBoolean(KEY_TYPE_RETURN)){
                 String name     = staff.getString(StaffIdentity.STAFF_NAME);
@@ -132,9 +137,12 @@ public class JsonHelper {
 
     public static boolean parseBoolean(String inStr){   // throws ProcessException {
         try {
+            //ChiefLink.setMsgReceived(null);
+            //ChiefLink.setMsgReadyFlag(false);
             JSONObject obj = new JSONObject(inStr);
             if(obj.getBoolean(KEY_TYPE_RETURN)){
-                //if(obj.getString(KEY_VALUE).equals(TYPE_ATTD_LIST))
+
+                //if(obj.getString(KEY_TYPE).equals(TYPE_ATTD_LIST))
                 //    FragmentHelper.setUploaded(obj.getBoolean(KEY_TYPE_RETURN));
 
                 return true;
@@ -153,8 +161,9 @@ public class JsonHelper {
     public static AttendanceList parseAttdList(String inStr){// throws ProcessException{
         AttendanceList attdList = new AttendanceList();
         try{
+            //ChiefLink.setMsgReceived(null);
+            //ChiefLink.setMsgReadyFlag(false);
             JSONObject obj          = new JSONObject(inStr);
-
             if(obj.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
                 for(int i = 0; i < cddArr.length(); i++){
@@ -190,6 +199,8 @@ public class JsonHelper {
     public static HashMap<String, ExamSubject> parsePaperMap(String inStr) {//throws ProcessException{
         HashMap<String, ExamSubject> map = new HashMap<>();
         try{
+            //ChiefLink.setMsgReceived(null);
+            //ChiefLink.setMsgReadyFlag(false);
             JSONObject object   = new JSONObject(inStr);
             if(object.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
@@ -221,7 +232,9 @@ public class JsonHelper {
     public static List<ExamSubject> parsePaperList(String inStr) {// throws ProcessException{
         List<ExamSubject> subjects  = new ArrayList<>();
         try{
+            //ChiefLink.setMsgReadyFlag(false);
             JSONObject jObj         = new JSONObject(inStr);
+            //ChiefLink.setMsgReceived(null);
             if(jObj.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
                 for(int i = 0; i < subjectArr.length(); i++){

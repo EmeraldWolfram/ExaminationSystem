@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -58,7 +59,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
         errorManager   = new ErrorManager(this);
 
-        //ChiefLink.setErrorManager(errorManager);
+        ChiefLink.setErrorManager(errorManager);
 
         TCPClient mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
@@ -116,38 +117,51 @@ public class MainLoginActivity extends AppCompatActivity {
     public void onActivityResult(int reqCode, int resCode, Intent data){
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
-            try{
-                LoginHelper.getStaff().setPassword(password);
-                LoginHelper.matchStaffPw(password);
-                //Successful login, start AssignActivity
-                Intent assignIntent = new Intent(this, AssignInfoActivity.class);
-                startActivity(assignIntent);
-            } catch(ProcessException err){
-                //Error were caught during checkInputPassword
-                //Ready to start the PopUp Login prompt window
-                pwIntent = new Intent(this, PopUpLogin.class);
-                errorManager.displayError(err);
-                startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
-            }
-        }
-    }
-/*
-    public static void resendVerification(){
-        try{
-            StaffIdentity id = LoginHelper.getStaff();
-            ExternalDbLoader.tryLogin(id.getIdNo(), id.getPassword());
-        } catch (ProcessException err){
-            errorManager.displayError(err);
+            onIdentityVerification(password);
         }
     }
 
-    public static void cancelResend(){
+    public void onIdentityVerification(final String password){
         try{
+            LoginHelper.getStaff().setPassword(password);
+            LoginHelper.matchStaffPw(password);
+            /*while(LoginHelper.getStaff().getName() == null){
+                if(ChiefLink.isTimesOutFlag()){
+                    ProcessException err = new ProcessException(
+                            "Identity verification has times out.\nDo you want to resend?",
+                            ProcessException.RESEND_CANCEL, IconManager.WARNING);
+                    err.setListener(ProcessException.resendButton,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            onIdentityVerification(password);
+                        }
+                    });
+                    err.setListener(ProcessException.cancelButton,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            barcodeView.resume();
+                            // Do Nothing
+                        }
+                    });
+                    throw err;
+                }
 
-        } catch (ProcessException err){
+            }*/
+
+            //Successful login, start AssignActivity
+            Intent assignIntent = new Intent(this, AssignInfoActivity.class);
+            startActivity(assignIntent);
+        } catch(ProcessException err){
+            //Error were caught during checkInputPassword
+            //Ready to start the PopUp Login prompt window
+            pwIntent = new Intent(this, PopUpLogin.class);
             errorManager.displayError(err);
+            startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         }
-    }*/
+
+    }
 
 
 }

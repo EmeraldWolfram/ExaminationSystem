@@ -1,8 +1,5 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.content.DialogInterface;
-
-import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
@@ -69,6 +66,7 @@ public class LoginHelper {
             if(!ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw))
                 throw new ProcessException("Incorrect Login Id or Password",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            //ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
         }
     }
 /*

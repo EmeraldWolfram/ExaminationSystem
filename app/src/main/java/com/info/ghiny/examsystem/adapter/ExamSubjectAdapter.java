@@ -29,6 +29,10 @@ public class ExamSubjectAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public static boolean papersIsEmpty(){
+        return (papers.size() == 0);
+    }
+
     @Override
     public int getCount() {
         return papers.size();

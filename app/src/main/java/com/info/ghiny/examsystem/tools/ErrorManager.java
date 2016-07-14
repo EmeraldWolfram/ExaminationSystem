@@ -17,7 +17,7 @@ public class ErrorManager {
 
     private Activity act;
 
-    public ErrorManager(Activity act){
+    public ErrorManager(Activity act) {
         this.act = act;
     }
 
@@ -36,7 +36,8 @@ public class ErrorManager {
                 showFatalError(err);
                 break;
             case ProcessException.RESEND_CANCEL:
-
+                showResendCancelDialog(err);
+                break;
         }
     }
 
@@ -45,9 +46,9 @@ public class ErrorManager {
         message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
     }
 
-    //public void showToast(String msg){
-    //    Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
-    //}
+    public void showToast(String msg){
+        Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
+    }
 
     public void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);

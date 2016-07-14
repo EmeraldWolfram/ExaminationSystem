@@ -81,7 +81,6 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         barcodeView.resume();
     }
 

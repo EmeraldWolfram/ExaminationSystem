@@ -84,7 +84,7 @@ public class LoginHelperTest {
      *
      *  Error should be thrown
      */
-    @Test
+    /*@Test
     public void testIdentifyStaff_Null_Input_Should_Throw_MESSAGE_TOAST()throws Exception{
         try{
             when(ExternalDbLoader.getStaffIdentity("ABCD")).thenReturn(null);
@@ -94,7 +94,7 @@ public class LoginHelperTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a Staff Identity", err.getErrorMsg());
         }
-    }
+    }*/
 
     /**
      *  identifyStaff()
@@ -102,7 +102,7 @@ public class LoginHelperTest {
      *  when the staff is a valid staff
      *  assign to the static staff
      */
-    @Test
+    /*@Test
     public void testIdentifyStaff()throws Exception{
         try{
             when(ExternalDbLoader.getStaffIdentity("12WW"))
@@ -113,7 +113,7 @@ public class LoginHelperTest {
         } catch (ProcessException err){
             fail("Expect no error but obtained ErrMsg - " + err.getErrorMsg());
         }
-    }
+    }*/
 
     //= MatchStaffPw() =============================================================================
     /**
@@ -189,7 +189,7 @@ public class LoginHelperTest {
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Input password is incorrect", err.getErrorMsg());
+            assertEquals("Incorrect Login Id or Password", err.getErrorMsg());
         }
     }
 
