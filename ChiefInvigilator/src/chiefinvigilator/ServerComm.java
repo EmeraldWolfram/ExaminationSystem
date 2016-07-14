@@ -92,22 +92,25 @@ public class ServerComm {
         
         Staff staff = new Staff();
         Connection conn = new ConnectDB("FEB_MAR_2016.db").connect();
-        String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS StaffIndex"
+        String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS StaffIndex, "
+                + "StaffInfo.Name AS StaffName "
                 + ",* FROM InvigilatorAndAssistant "
                 + "LEFT OUTER JOIN Paper ON Paper.PaperIndex = InvigilatorAndAssistant.PaperIndex "
                 + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PIIndex = Paper.PIIndex "
                 + "LEFT OUTER JOIN Venue ON Venue.VenueIndex = Paper.VenueIndex "
                 + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = StaffIndex "
-                + "WHERE StaffIndex = ? AND Date = ? AND Session = ? ";
+                + "WHERE StaffIndex = ? ";
+//                + "AND Date = ? AND Session = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, id);
-        ps.setString(2, time.getDate());
-        ps.setString(3, getSessionType(Integer.parseInt(time.getTime())));
+//        ps.setString(2, time.getDate());
+//        ps.setString(3, getSessionType(Integer.parseInt(time.getTime())));
    
         ResultSet result = ps.executeQuery();
         if(result.next()){
          do{
             staff.setID(result.getString("StaffIndex"));
+            staff.setName(result.getString("StaffName"));
             staff.setStatus(result.getString("Status"));
             staff.setAttendance(result.getString("Attendance"));
             staff.setVenue(result.getString("VenueName"));

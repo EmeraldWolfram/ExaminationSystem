@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jsonconvert.JsonConvert;
 
 /**
  *
@@ -26,26 +27,48 @@ public class MainServer {
     @Override
     public void run()
     {
+        JsonConvert jsonParser = new JsonConvert();
+        Staff staff = new Staff();
+        
         try {
             Socket mainSocket = sSocket.accept();
             System.out.println("\nJust connected to "+ mainSocket.getRemoteSocketAddress());
             InputStreamReader ir = new InputStreamReader(mainSocket.getInputStream());
             BufferedReader br = new BufferedReader(ir);
             
-            String message  = br.readLine();
-            System.out.print(message);
+            String reteriveMsg  = br.readLine();
             
-            if(message != null){
-                
+            //retrive json parser to get the id and password
+            
+            staff = jsonParser.jsonToSignIn(reteriveMsg);
+            System.out.println(reteriveMsg);
+            boolean verify = new ServerComm().staffVerify(staff.getID(),staff.getPassword());
+            System.out.println(verify);
+            if(verify){
+                System.out.println("LOL");
+                staff = new ServerComm().staffGetInfo(staff.id);
+            }
+            String jsonStaff = jsonParser.staffInfoToJson(verify, staff);
+            
+            
+            
+            if(reteriveMsg != null){
+                System.out.println(jsonStaff);
                 PrintStream out = new PrintStream(mainSocket.getOutputStream());
-                out.println("Hello Client");
+                out.println(jsonStaff);
                 out.flush();
+                DataOutputStream asd =
+                 new DataOutputStream(mainSocket.getOutputStream());
+            asd.writeUTF(jsonStaff);
+            mainSocket.close();
+
                 
                 System.out.println("end!!");
-                System.out.println(sSocket.getLocalPort());
             }
         } catch (IOException ex) {
-            Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
         }
          }
         }).start();

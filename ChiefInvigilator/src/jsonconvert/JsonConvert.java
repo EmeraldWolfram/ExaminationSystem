@@ -8,6 +8,7 @@ import chiefinvigilator.ServerComm;
 import chiefinvigilator.Staff;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,14 +26,19 @@ public class JsonConvert {
         
     }
     
-    public String staffInfoToJson(String name, String venue, String staffId) throws JSONException{
-        JSONObject staff = new JSONObject();
+    public String staffInfoToJson(boolean valid, Staff staff) throws JSONException{
+        JSONObject jsonStaff = new JSONObject();
+        JSONArray arr = new JSONArray();
+        arr.put(staff.getStatus());
         
-        staff.put("Name", name);
-        staff.put("Venue", venue);
-        staff.put("IdNo", staffId);
+        jsonStaff.put("Type", "Identity");
+        jsonStaff.put("Result", valid);
+        jsonStaff.put("Name", staff.getName());
+        jsonStaff.put("Venue", staff.getVenue());
+        jsonStaff.put("IdNo", staff.getID());
+        jsonStaff.put("Status", arr);
         
-        return staff.toString();
+        return jsonStaff.toString();
     }
     
     public String booleanToJson(boolean b) throws JSONException{

@@ -8,6 +8,7 @@ package chiefinvigilator;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 import qrgen.QRGen;
 
 /**
@@ -15,7 +16,7 @@ import qrgen.QRGen;
  * @author Krissy
  */
 public class ChiefGui extends javax.swing.JFrame {
-
+    DefaultTableModel staffInfoTableModel = new DefaultTableModel();
     /**
      * Creates new form ChiefGui
      */
@@ -38,7 +39,7 @@ public class ChiefGui extends javax.swing.JFrame {
         signInButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        staffInfoTable = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         qrGenButton = new javax.swing.JButton();
@@ -54,7 +55,7 @@ public class ChiefGui extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        staffInfoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -65,7 +66,7 @@ public class ChiefGui extends javax.swing.JFrame {
                 "Staff ID", "Staff Name", "Venue", "Status"
             }
         ));
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(staffInfoTable);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -183,6 +184,9 @@ public class ChiefGui extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    public void addStaffInfoToRow(Staff staff){
+        
+    }
     /**
      * @param args the command line arguments
      */
@@ -226,10 +230,10 @@ public class ChiefGui extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JButton qrGenButton;
     private javax.swing.JButton signInButton;
+    private javax.swing.JTable staffInfoTable;
     // End of variables declaration//GEN-END:variables
 }
