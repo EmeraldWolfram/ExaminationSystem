@@ -44,8 +44,7 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    public static void initLoader(LocalDbLoader dBLoader)
-            throws ProcessException{
+    public static void initLoader(LocalDbLoader dBLoader) throws ProcessException{
         assert dBLoader != null;
 
         if(dBLoader.emptyAttdInDB()){

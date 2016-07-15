@@ -5,7 +5,6 @@ import com.info.ghiny.examsystem.tools.ProcessException;
 import org.junit.Test;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 

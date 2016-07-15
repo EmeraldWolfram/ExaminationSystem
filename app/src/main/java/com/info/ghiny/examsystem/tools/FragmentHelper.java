@@ -16,11 +16,11 @@ import java.util.List;
 public class FragmentHelper {
 
     public static void uploadAttdList() throws ProcessException{
-        if(ExternalDbLoader.updateAttdList(AssignHelper.getAttdList()))
+        /*if(ExternalDbLoader.updateAttdList(AssignHelper.getAttdList()))
             AssignHelper.getJdbcLoader().clearDatabase();
         else
             throw new ProcessException("Failed to upload Attendance List.\nPlease try again later.",
-                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);*/
 
     }
 

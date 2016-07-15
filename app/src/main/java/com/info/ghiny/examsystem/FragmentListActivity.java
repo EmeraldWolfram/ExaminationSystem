@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -14,6 +15,7 @@ import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
+import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
 
 /**
@@ -45,6 +47,7 @@ public class FragmentListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        ErrorManager.setAct(this);
     }
 
     public void onUpload(View view){
@@ -54,5 +57,13 @@ public class FragmentListActivity extends AppCompatActivity {
             errorManager.displayError(err);
         }
     }
+
+    public static final DialogInterface.OnClickListener timesOutListener =
+            new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            };
 
 }

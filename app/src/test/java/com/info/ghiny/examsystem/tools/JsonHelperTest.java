@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.tools;
 
+import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
@@ -44,11 +45,9 @@ public class JsonHelperTest {
     public void testFormatString() throws Exception {
         String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, "H4");
 
-        assertEquals("{\"Query\":\"AttdList\",\"Value\":\"H4\"}", str);
-
         JSONObject obj = new JSONObject(str);
-        assertTrue(obj.has("Query"));
-        assertEquals("AttdList", obj.getString("Query"));
+        assertTrue(obj.has("CheckIn"));
+        assertEquals("AttdList", obj.getString("CheckIn"));
         assertEquals("H4", obj.getString("Value"));
     }
 
@@ -116,10 +115,12 @@ public class JsonHelperTest {
     @Test
     public void testParseStaffIdentity() throws Exception {
         LoginHelper.setStaff(new StaffIdentity());
-        assertTrue(JsonHelper.parseStaffIdentity(
-                 "{\"Role\":[\"Collector\",\"Chief\"]," +
+
+        JsonHelper.parseStaffIdentity(
+                 "{\"Status\":[\"Collector\",\"Chief\"]," +
                          "\"Venue\":\"M5\",\"Result\":true," +
-                         "\"Name\":\"TESTER 1\"}"));
+                         "\"Name\":\"TESTER 1\"," +
+                         "\"CddList\":[],\"PaperMap\":[]}");
 
 
         StaffIdentity staff = LoginHelper.getStaff();
@@ -135,17 +136,22 @@ public class JsonHelperTest {
      *  @param str  The input message received from sockets
      */
     @Test
-    public void testParseStaffIdentity_return_null_if_format_incorrect() throws Exception {
-        LoginHelper.setStaff(new StaffIdentity());
-        assertFalse(JsonHelper.parseStaffIdentity(
-                "{\"Venue\":\"M5\"," +
-                        "\"Eligible\":true," +
-                        "\"RegNum\":\"246800\"," +
-                        "\"NAME\":\"TESTER 1\"," +  //Name not NAME
-                        "\"Password\":\"0123\"}"));
+    public void testParseStaffIdentity_IncorrectFormat_Should_throw_FATAL() throws Exception {
+        try{
+            LoginHelper.setStaff(new StaffIdentity());
+            JsonHelper.parseStaffIdentity(
+                    "{\"Venue\":\"M5\"," +
+                            "\"Eligible\":true," +
+                            "\"RegNum\":\"246800\"," +
+                            "\"NAME\":\"TESTER 1\"," +  //Name not NAME
+                            "\"Password\":\"0123\"}");
 
-        assertNull(LoginHelper.getStaff().getName());
-        assertNull(LoginHelper.getStaff().getVenueHandling());
+            fail("Expected FATAL_MESSAGE but none thrown");
+        } catch (ProcessException err){
+            assertEquals("Failed to query data from Chief\nPlease consult developer!", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+        }
+
     }
 
     //= ParseAttdList() ============================================================================
@@ -181,7 +187,8 @@ public class JsonHelperTest {
         jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
         jObject.put(JsonHelper.LIST_LIST, jAttdList);
 
-        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+        JsonHelper.parseAttdList(jObject.toString());
+        AttendanceList attdList = AssignHelper.getAttdList();
 
         assertNotNull(attdList);
         assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
@@ -198,32 +205,39 @@ public class JsonHelperTest {
      * @param inStr     JSON formatted AttendanceList in a String
      */
     @Test
-    public void testParseAttdList_returnNullUponWrongFormat() throws Exception {
-        JSONObject jObject  = new JSONObject();
-        JSONArray jAttdList = new JSONArray();
-        JSONObject jCdd1    = new JSONObject();
-        JSONObject jCdd2    = new JSONObject();
+    public void testParseAttdList_Incorrect_Format_should_throw_FATAL_Exception() throws Exception {
+        try{
+            JSONObject jObject  = new JSONObject();
 
-        jCdd1.put(Candidate.CDD_EXAM_INDEX, "W010AUMB");
-        jCdd1.put(Candidate.CDD_REG_NUM, "15WAU00001");
-        jCdd1.put(Candidate.CDD_STATUS, "BARRED");
-        jCdd1.put(Candidate.CDD_PAPER, "BAME 0001");
-        jCdd1.put("X", "RMB3");
+            JSONArray jAttdList = new JSONArray();
+            JSONObject jCdd1    = new JSONObject();
+            JSONObject jCdd2    = new JSONObject();
 
-        jCdd2.put(Candidate.CDD_EXAM_INDEX, "W020AUMB");
-        jCdd2.put(Candidate.CDD_REG_NUM, "15WAR00002");
-        jCdd2.put(Candidate.CDD_STATUS, "ABSENT");
-        jCdd2.put(Candidate.CDD_PAPER, "BAME 0001");
-        jCdd2.put(Candidate.CDD_PROG, "RMB3");
+            jCdd1.put(Candidate.CDD_EXAM_INDEX, "W010AUMB");
+            jCdd1.put(Candidate.CDD_REG_NUM, "15WAU00001");
+            jCdd1.put(Candidate.CDD_STATUS, "BARRED");
+            jCdd1.put(Candidate.CDD_PAPER, "BAME 0001");
+            jCdd1.put("X", "RMB3");     //Set the format wrongly
+            jCdd2.put(Candidate.CDD_EXAM_INDEX, "W020AUMB");
+            jCdd2.put(Candidate.CDD_REG_NUM, "15WAR00002");
+            jCdd2.put(Candidate.CDD_STATUS, "ABSENT");
+            jCdd2.put(Candidate.CDD_PAPER, "BAME 0001");
+            jCdd2.put(Candidate.CDD_PROG, "RMB3");
 
-        jAttdList.put(jCdd1);
-        jAttdList.put(jCdd2);
+            jAttdList.put(jCdd1);
+            jAttdList.put(jCdd2);
 
-        jObject.put(JsonHelper.LIST_LIST, jAttdList);
+            jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
+            jObject.put(JsonHelper.LIST_LIST, jAttdList);
 
-        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+            JsonHelper.parseAttdList(jObject.toString());
 
-        assertNull(attdList);
+            fail("Expected FATAL_MESSAGE but none thrown!");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL: JSONObject[\"Programme\"] not found.\nPlease Consult Developer!",
+                    err.getErrorMsg());
+        }
     }
 
     /**
@@ -233,12 +247,19 @@ public class JsonHelperTest {
      * @param inStr     JSON formatted AttendanceList in a String
      */
     @Test
-    public void testParseAttdList_returnNullEmptyJSONObject() throws Exception {
-        JSONObject jObject  = new JSONObject();
+    public void testParseAttdList_Receiving_Empty_JSONObject_thrown_FATAL() throws Exception {
+        try{
+            JSONObject jObject  = new JSONObject();
+            JsonHelper.parseAttdList(jObject.toString());
 
-        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+            fail("Expected FATAL_MESSAGE but none were thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL: JSONObject[\"Result\"] not found.\nPlease Consult Developer!",
+                    err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
 
-        assertNull(attdList);
+
     }
     //= ParsePaperMap() ============================================================================
 
@@ -271,7 +292,8 @@ public class JsonHelperTest {
         object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_MAP, array);
 
-        HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
+        JsonHelper.parsePaperMap(object.toString());
+        HashMap<String, ExamSubject> paperMap = Candidate.getPaperList();
 
         assertNotNull(paperMap);
         assertEquals(2, paperMap.size());
@@ -288,6 +310,7 @@ public class JsonHelperTest {
      */
     @Test
     public void testParsePaperList() throws Exception {
+        ObtainInfoHelper.setAdapter(new ExamSubjectAdapter());
         JSONObject object   = new JSONObject();
         JSONArray array     = new JSONArray();
         JSONObject subject1 = new JSONObject();
@@ -308,13 +331,9 @@ public class JsonHelperTest {
 
         object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_LIST, array);
+        JsonHelper.parsePaperList(object.toString());
 
-        List<ExamSubject> subjects = JsonHelper.parsePaperList(object.toString());
-
-        assertNotNull(subjects);
-        assertEquals(2, subjects.size());
-        assertEquals("BAME 0001", subjects.get(0).getPaperCode());
-        assertEquals("BAME 0002", subjects.get(1).getPaperCode());
+        assertFalse(ExamSubjectAdapter.papersIsEmpty());
     }
 
     //= FormatPassword() ===========================================================================
@@ -351,10 +370,9 @@ public class JsonHelperTest {
      */
     @Test
     public void testParseBoolean() throws Exception {
-        boolean isCorrect = JsonHelper.parseBoolean(
-                "{\"Result\":true}");
+        JsonHelper.parseBoolean("{\"Result\":true}");
 
-        assertNotNull(isCorrect);
-        assertTrue(isCorrect);
+        assertNotNull(ChiefLink.isComplete());
+        assertTrue(ChiefLink.isMsgValid());
     }
 }

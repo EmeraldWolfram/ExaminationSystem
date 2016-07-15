@@ -1,5 +1,8 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.content.DialogInterface;
+
+import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
@@ -38,22 +41,6 @@ public class LoginHelper {
         }
     }
 
-    /*public static void identifyStaff(String scanIdNum) throws ProcessException {
-        setStaff(ExternalDbLoader.getStaffIdentity(scanIdNum));
-        if(staff == null){
-            throw new ProcessException("Not a Staff Identity", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
-        } else {
-            //Check staff status
-            //If in-charge -> send back own ip and port
-            //If collector -> start different activity
-            //If normal -> setIP and setPort to in-charge
-            if(!staff.getEligible())
-                throw new ProcessException("Unauthorized Invigilator",
-                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        }
-    }*/
-
     public static void matchStaffPw(String inputPw) throws ProcessException{
         if(staff == null)
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
@@ -63,21 +50,10 @@ public class LoginHelper {
             throw new ProcessException("Please enter a password to proceed",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         } else {
-            if(!ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw))
-                throw new ProcessException("Incorrect Login Id or Password",
-                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-            //ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
+            ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
         }
     }
-/*
-    public static final DialogInterface.OnClickListener resendListener =
-            new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    MainLoginActivity.resendVerification();
-                    dialog.cancel();
-                }
-            };
-*/
+
+
 
 }

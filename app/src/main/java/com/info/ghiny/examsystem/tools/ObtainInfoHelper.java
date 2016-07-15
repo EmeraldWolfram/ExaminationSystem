@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -22,15 +23,20 @@ public class ObtainInfoHelper {
         return adapter;
     }
 
-    public static List<ExamSubject> getCandidatePapers(String scanValue) throws ProcessException{
+    public static void reqCandidatePapers(String scanValue) throws ProcessException{
 
-        List<ExamSubject> subjects = ExternalDbLoader.getPapersExamineByCdd(scanValue);
+        if(scanValue.length() != 10)
+            throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
+                    IconManager.MESSAGE);
+
+        ExternalDbLoader.getPapersExamineByCdd(scanValue);
+        /*List<ExamSubject> subjects = ExternalDbLoader.getPapersExamineByCdd(scanValue);
         if(subjects == null){
             throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
                     IconManager.MESSAGE);
         }
 
-        return subjects;
+        return subjects;*/
     }
 
     public static Integer getDaysLeft(Calendar paperDate) {

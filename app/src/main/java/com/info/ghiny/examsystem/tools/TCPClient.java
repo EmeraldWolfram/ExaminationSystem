@@ -1,6 +1,8 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.util.Log;
+
+
+import android.app.ActivityManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,7 +15,7 @@ import java.net.Socket;
 /**
  * Created by GhinY on 08/07/2016.
  */
-public class TCPClient {
+public class TCPClient implements Runnable{
     private String serverMessage;
     /**
      * Specify the Server Ip Address here. Whereas our Socket Server is started.

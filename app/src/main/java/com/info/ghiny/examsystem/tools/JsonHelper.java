@@ -3,6 +3,8 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.json.JSONArray;
@@ -18,9 +20,8 @@ import java.util.List;
  */
 public class JsonHelper {
     public static final String KEY_TYPE_RETURN      = "Result";
-    public static final String KEY_TYPE_TYPE        = "Type";
     public static final String KEY_TYPE_CHECKIN     = "CheckIn";
-    public static final String KEY_TYPE_QUERY       = "Query";
+    public static final String KEY_TYPE_TYPE        = "Type";
     public static final String KEY_VALUE            = "Value";
 
     public static final String TYPE_LOGIN           = "Identity";
@@ -28,7 +29,6 @@ public class JsonHelper {
     public static final String TYPE_PAPERS_CDD      = "CddPapers";
     public static final String TYPE_ATTD_LIST       = "AttdList";
     public static final String TYPE_COLLECT         = "Collection";
-    public static final String TYPE_ACKNOWLEDGE     = "Ack";
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
@@ -42,7 +42,7 @@ public class JsonHelper {
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_QUERY, type);
+            object.put(KEY_TYPE_CHECKIN, type);
             object.put(KEY_VALUE, valueStr);
             return object.toString();
         } catch(Exception err){
@@ -103,13 +103,16 @@ public class JsonHelper {
         }
     }
 
-    public static boolean parseStaffIdentity(String inStr){// throws ProcessException{
+    public static void parseStaffIdentity(String inStr) throws ProcessException{
+        HashMap<String, ExamSubject> map = new HashMap<>();
+        AttendanceList attdList = new AttendanceList();
+
         try{
-            //ChiefLink.setMsgReceived(null);
-            //ChiefLink.setMsgReadyFlag(false);
+            LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
 
             JSONObject staff = new JSONObject(inStr);
             if(staff.getBoolean(KEY_TYPE_RETURN)){
+                //set staff
                 String name     = staff.getString(StaffIdentity.STAFF_NAME);
                 String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
 
@@ -122,47 +125,86 @@ public class JsonHelper {
                     LoginHelper.getStaff().addRole(roles.getString(i));
                 }
 
+                LoginHelper.getStaff().setIsSet(true);
+
+                //Set papers
+                JSONArray subjectArr  = staff.getJSONArray(PAPER_MAP);
+                for(int i = 0; i < subjectArr.length(); i++){
+                    JSONObject jSubject = subjectArr.getJSONObject(i);
+                    ExamSubject subject = new ExamSubject();
+
+                    subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                    subject.setStartTableNum(jSubject.getInt(ExamSubject.PAPER_START_NO));
+                    subject.setNumOfCandidate(jSubject.getInt(ExamSubject.PAPER_TOTAL_CDD));
+
+                    map.put(subject.getPaperCode(), subject);
+                }
+                if(map.size() != 0){
+                    jdbcLoader.savePaperList(map);
+                    Candidate.setPaperList(map);
+                }
+
+                //Set attendance list
+                JSONArray cddArr    = staff.getJSONArray(LIST_LIST);
+                for(int i = 0; i < cddArr.length(); i++){
+                    JSONObject jsonCdd  = cddArr.getJSONObject(i);
+                    Candidate cdd       = new Candidate();
+
+                    cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
+                    cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
+
+                    String status   = jsonCdd.getString(Candidate.CDD_STATUS);
+                    cdd.setStatus(attdList.parseStatus(status));
+                    cdd.setTableNumber(0);
+                    cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
+                    cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
+
+                    attdList.addCandidate(cdd, cdd.getPaperCode(),
+                            cdd.getStatus(), cdd.getProgramme());
+                }
+                if(attdList.getTotalNumberOfCandidates() != 0){
+                    jdbcLoader.saveAttendanceList(attdList);
+                    AssignHelper.setAttdList(attdList);
+                }
+
+                ChiefLink.setMsgValidFlag(true);
+                ChiefLink.setCompleteFlag(true);
             } else {
-                return false;
-                //throw new ProcessException("Incorrect Login Id or Password",
-                //        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+                ChiefLink.setCompleteFlag(true);
+                throw new ProcessException("Incorrect Login Id or Password",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             }
         } catch (JSONException err){
-            return false;
-            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease consult developer!",
-            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            ChiefLink.setCompleteFlag(true);
+            throw new ProcessException("Failed to query data from Chief\nPlease consult developer!",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
-        return true;
     }
 
-    public static boolean parseBoolean(String inStr){   // throws ProcessException {
+    public static void parseBoolean(String inStr) throws ProcessException {
         try {
-            //ChiefLink.setMsgReceived(null);
-            //ChiefLink.setMsgReadyFlag(false);
             JSONObject obj = new JSONObject(inStr);
             if(obj.getBoolean(KEY_TYPE_RETURN)){
 
-                //if(obj.getString(KEY_TYPE).equals(TYPE_ATTD_LIST))
-                //    FragmentHelper.setUploaded(obj.getBoolean(KEY_TYPE_RETURN));
-
-                return true;
+                ChiefLink.setMsgValidFlag(true);
+                ChiefLink.setCompleteFlag(true);
             } else {
-                return false;
-                //throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
-                //        IconManager.WARNING);
+                ChiefLink.setCompleteFlag(true);
+                throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
+                        IconManager.WARNING);
             }
         } catch (Exception err) {
-            return false;
-            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease consult developer!",
-            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            ChiefLink.setCompleteFlag(true);
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease consult developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 
-    public static AttendanceList parseAttdList(String inStr){// throws ProcessException{
+    public static void parseAttdList(String inStr) throws ProcessException{
         AttendanceList attdList = new AttendanceList();
         try{
-            //ChiefLink.setMsgReceived(null);
-            //ChiefLink.setMsgReadyFlag(false);
+
             JSONObject obj          = new JSONObject(inStr);
             if(obj.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
@@ -183,24 +225,24 @@ public class JsonHelper {
                             cdd.getStatus(), cdd.getProgramme());
                 }
                 AssignHelper.setAttdList(attdList);
+
+                ChiefLink.setMsgValidFlag(true);
+                ChiefLink.setCompleteFlag(true);
             } else {
-                return null;
-                //throw new ProcessException("FATAL: Unable to download Attendance List",
-                //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+                ChiefLink.setCompleteFlag(true);
+                throw new ProcessException("FATAL: Unable to download Attendance List",
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
         } catch (JSONException err){
-            return null;
-            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
-            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            ChiefLink.setCompleteFlag(true);
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-        return attdList;
     }
 
-    public static HashMap<String, ExamSubject> parsePaperMap(String inStr) {//throws ProcessException{
+    public static void parsePaperMap(String inStr) throws ProcessException{
         HashMap<String, ExamSubject> map = new HashMap<>();
         try{
-            //ChiefLink.setMsgReceived(null);
-            //ChiefLink.setMsgReadyFlag(false);
             JSONObject object   = new JSONObject(inStr);
             if(object.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
@@ -216,25 +258,25 @@ public class JsonHelper {
                     map.put(subject.getPaperCode(), subject);
                 }
                 Candidate.setPaperList(map);
+                ChiefLink.setMsgValidFlag(true);
+                ChiefLink.setCompleteFlag(true);
             } else {
-                return null;
-                //throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
-                //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+                ChiefLink.setCompleteFlag(true);
+                throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
         }catch (JSONException err){
-            return null;
-            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
-            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            ChiefLink.setCompleteFlag(true);
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-        return map;
     }
 
-    public static List<ExamSubject> parsePaperList(String inStr) {// throws ProcessException{
+    public static void parsePaperList(String inStr) throws ProcessException{
         List<ExamSubject> subjects  = new ArrayList<>();
         try{
-            //ChiefLink.setMsgReadyFlag(false);
+
             JSONObject jObj         = new JSONObject(inStr);
-            //ChiefLink.setMsgReceived(null);
             if(jObj.getBoolean(KEY_TYPE_RETURN)){
                 JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
                 for(int i = 0; i < subjectArr.length(); i++){
@@ -250,18 +292,18 @@ public class JsonHelper {
 
                     subjects.add(subject);
                 }
-                //ObtainInfoHelper.getAdapter().updatePapers(subjects);
+                ObtainInfoHelper.getAdapter().updatePapers(subjects);
+                ChiefLink.setCompleteFlag(true);
+                ChiefLink.setMsgValidFlag(true);
             } else {
-                return null;
-                //throw new ProcessException("Not a Candidate Identity",
-                //        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+                ChiefLink.setCompleteFlag(true);
+                throw new ProcessException("Not a Candidate Identity",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
             }
         } catch (JSONException err) {
-            return null;
-            //throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
-            //        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            ChiefLink.setCompleteFlag(true);
+            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
-        return subjects;
     }
 }

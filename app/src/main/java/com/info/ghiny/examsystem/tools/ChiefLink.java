@@ -10,30 +10,22 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
  */
 public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
-    private static boolean msgReadyFlag = false;
-    private static String msgReceived   = null;
+    private static boolean msgValid     = false;
+    private static boolean completeFlag = false;
     private static boolean timesOutFlag = false;
-    private static boolean uploadedFlag = false;
 
     private static ErrorManager errorManager;
 
+    //= Setter & Getter ============================================================================
     public static void setErrorManager(ErrorManager errorManager) {
         ChiefLink.errorManager = errorManager;
     }
 
-    //= Setter & Getter ============================================================================
-    public static String getMsgReceived() {
-        return msgReceived;
+    public static boolean isMsgValid() {
+        return msgValid;
     }
-    public static void setMsgReceived(String msgReceived) {
-        ChiefLink.msgReceived = msgReceived;
-    }
-
-    public static boolean isMsgReadyFlag() {
-        return msgReadyFlag;
-    }
-    public static void setMsgReadyFlag(boolean msgReadyFlag) {
-        ChiefLink.msgReadyFlag = msgReadyFlag;
+    public static void setMsgValidFlag(boolean msgValidFlag) {
+        ChiefLink.msgValid = msgValidFlag;
     }
 
     public static boolean isTimesOutFlag() {
@@ -43,11 +35,11 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
         ChiefLink.timesOutFlag = timesOutFlag;
     }
 
-    public static boolean isUploadedFlag() {
-        return uploadedFlag;
+    public static boolean isComplete() {
+        return completeFlag;
     }
-    public static void setUploadedFlag(boolean uploadedFlag) {
-        ChiefLink.uploadedFlag = uploadedFlag;
+    public static void setCompleteFlag(boolean completeFlag) {
+        ChiefLink.completeFlag = completeFlag;
     }
 
     //= Public Methods =============================================================================
@@ -57,21 +49,22 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
     @Override
     protected TCPClient doInBackground(String... params) {
-        if(ExternalDbLoader.getTcpClient() != null)
+        if(ExternalDbLoader.getTcpClient() != null){
             ExternalDbLoader.getTcpClient().run();
+        }
         return null;
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
+    protected void onProgressUpdate(String... values){
         super.onProgressUpdate(values);
 
+        setMsgValidFlag(false);
+        setCompleteFlag(false);
+        errorManager.showToast(values[0]);
         if(values[0].contains("Result")){
-            setMsgReadyFlag(true);
-            setMsgReceived(values[0]);
         }
 
-        errorManager.showToast(values[0]);
         //ExternalDbLoader.checkForResult();
     }
 }

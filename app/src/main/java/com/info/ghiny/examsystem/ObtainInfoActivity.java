@@ -10,10 +10,12 @@ import android.widget.RelativeLayout;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
+import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -29,6 +31,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
     private ExamSubjectAdapter listAdapter;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
+    private TCPClient obtainInfo;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
@@ -50,6 +53,18 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
         errManager  = new ErrorManager(this);
         listAdapter = new ExamSubjectAdapter();
+
+        obtainInfo = new TCPClient(new TCPClient.OnMessageReceived() {
+            @Override
+            public void messageReceived(String message) {
+                try{
+                    ExternalDbLoader.checkForResult(message);
+                } catch (ProcessException err) {
+                    errManager.displayError(err);
+                }
+            }
+        });
+        ExternalDbLoader.setTcpClient(obtainInfo);
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;
@@ -81,6 +96,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        ErrorManager.setAct(this);
+        ExternalDbLoader.setTcpClient(obtainInfo);
         barcodeView.resume();
     }
 
@@ -99,8 +116,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     private void requestPapers(String scanStr){
         try{
-            List<ExamSubject> papers = ObtainInfoHelper.getCandidatePapers(scanStr);
-            listAdapter.updatePapers(papers);
+            ObtainInfoHelper.reqCandidatePapers(scanStr);
         } catch (ProcessException err){
             errManager.displayError(err);
         }

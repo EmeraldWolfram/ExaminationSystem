@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.database;
 
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
@@ -35,210 +36,178 @@ public class ExternalDbLoader {
     }
 
     //= Extend Methods =============================================================================
-    public static void checkForResult(){
-        try{
-            JSONObject msg  = new JSONObject(ChiefLink.getMsgReceived());
-            String type =   msg.getString(JsonHelper.KEY_TYPE_TYPE);
-            switch (type){
+    public static void checkForResult(String message) throws ProcessException{
+        try {
+            JSONObject msg = new JSONObject(message);
+            String type = msg.getString(JsonHelper.KEY_TYPE_TYPE);
+            switch (type) {
                 case JsonHelper.TYPE_LOGIN:
-                    JsonHelper.parseStaffIdentity(ChiefLink.getMsgReceived());
+                    JsonHelper.parseStaffIdentity(message);
                     break;
                 case JsonHelper.TYPE_ATTD_LIST:
-                    JsonHelper.parseAttdList(ChiefLink.getMsgReceived());
-                    break;
-                case JsonHelper.TYPE_PAPERS_VENUE:
-                    JsonHelper.parsePaperMap(ChiefLink.getMsgReceived());
+                    JsonHelper.parseBoolean(message);
                     break;
                 case JsonHelper.TYPE_PAPERS_CDD:
-                    JsonHelper.parsePaperList(ChiefLink.getMsgReceived());
+                    JsonHelper.parsePaperList(message);
                     break;
-                case JsonHelper.TYPE_ACKNOWLEDGE:
-                    JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+                case JsonHelper.TYPE_COLLECT:
+                    JsonHelper.parseBoolean(message);
                     break;
+                //case JsonHelper.TYPE_PAPERS_VENUE:
+                //    JsonHelper.parsePaperMap(message);
+                //    break;
             }
-        } catch (JSONException err){
-            err.printStackTrace();
+        } catch (JSONException err) {
+            throw new ProcessException("Resynchronizing with Chief",
+                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
         }
     }
 
     //= Public Methods =============================================================================
-    /*public static StaffIdentity getStaffIdentity(String scanIdNumber){
-        StaffIdentity id = null;
-        String str = JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, scanIdNumber);
 
-        if(str != null && tcpClient != null){
-            tcpClient.sendMessage(str);
-            while(!ChiefLink.isMsgReadyFlag())
-                id = null;
-            id = JsonHelper.parseStaffIdentity(ChiefLink.getMsgReceived());
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
-            LoginHelper.setStaff(id);
-        }
-
-        return id;
-    }*/
-
-    public static boolean tryLogin(String staffId, String staffPw) throws ProcessException{
-        boolean isCorrect = false;
+    public static void tryLogin(String staffId, String staffPw) throws ProcessException{
+        //boolean isCorrect = false;
         String str = JsonHelper.formatPassword(staffId, staffPw);
 
         if(str != null && tcpClient != null){
             tcpClient.sendMessage(str);
-            /*final Handler handler = new Handler();
+
+            final Handler handler = new Handler();
+            ChiefLink.setTimesOutFlag(false);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    // Do something after 5s = 5000ms
-                    if(LoginHelper.getStaff().getName() == null)
-                        ChiefLink.setTimesOutFlag(true);
+                    if(!ChiefLink.isComplete()){
+                        ProcessException err = new ProcessException(
+                                "Identity verification times out.",
+                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                        err.setListener(ProcessException.okayButton,
+                                MainLoginActivity.timesOutListener);
+                        ErrorManager errorManager = new ErrorManager();
+                        errorManager.displayError(err);
+                    }
                 }
-            }, 10000);*/
-            while(!ChiefLink.isMsgReadyFlag())
-                isCorrect = false;
-            isCorrect = JsonHelper.parseStaffIdentity(ChiefLink.getMsgReceived());
-            ChiefLink.setMsgReadyFlag(false);
-            ChiefLink.setMsgReceived(null);
+            }, 10000);
         } else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
-        return isCorrect;
     }
 
-    public static AttendanceList dlAttdList(){
-        AttendanceList attdList = null;
+    public static void dlAttdList(){
+
         String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
                 LoginHelper.getStaff().getVenueHandling());
 
         if (tcpClient != null) {
             tcpClient.sendMessage(str);
-            /*final Handler handler = new Handler();
+            ChiefLink.setTimesOutFlag(false);
+            final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     // Do something after 5s = 5000ms
-                    if(AssignHelper.getAttdList() == null)
+                    if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
                 }
-            }, 10000);*/
-            while(!ChiefLink.isMsgReadyFlag()) {
-                attdList = null;
-            }
-
-            attdList = JsonHelper.parseAttdList(ChiefLink.getMsgReceived());
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
+            }, 10000);
         }
-
-        return attdList;
     }
 
-    public static HashMap<String, ExamSubject> dlPaperList() {
-        HashMap<String, ExamSubject> map = null;
-
+    public static void dlPaperList() {
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
                 LoginHelper.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
-            /*final Handler handler = new Handler();
+            ChiefLink.setTimesOutFlag(false);
+            final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    // Do something after 5s = 5000ms
-                    if(Candidate.getPaperList() == null)
+                    if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
                 }
-            }, 10000);*/
+            }, 10000);
+            /*
             while(!ChiefLink.isMsgReadyFlag()) {
                 map = null;
             }
             map = JsonHelper.parsePaperMap(ChiefLink.getMsgReceived());
             ChiefLink.setMsgReceived(null);
             ChiefLink.setMsgReadyFlag(false);
+            */
         }
-
-        return map;
     }
 
-    public static List<ExamSubject> getPapersExamineByCdd(String scanRegNum){
-        List<ExamSubject> subjects = null;
+    public static void getPapersExamineByCdd(String scanRegNum) throws ProcessException{
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
 
         if(tcpClient != null){
             tcpClient.sendMessage(str);    //suppose to send JSON
-            /*final Handler handler = new Handler();
+            ChiefLink.setTimesOutFlag(false);
+            final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    // Do something after 5s = 5000ms
-                    if(ExamSubjectAdapter.papersIsEmpty())
+                    if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
                 }
-            }, 10000);*/
-            while(!ChiefLink.isMsgReadyFlag()) {
-                subjects = null;
-            }
-
-            subjects        = JsonHelper.parsePaperList(ChiefLink.getMsgReceived());
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
+            }, 10000);
+        } else {
+            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-        //return null if wasn't a candidate
-        return subjects;
     }
 
-    public static boolean updateAttdList(AttendanceList attdList){
+    public static void updateAttdList(AttendanceList attdList) throws ProcessException{
         String str = JsonHelper.formatAttdList(attdList);
         boolean received = false;
 
         if(tcpClient != null){
-            tcpClient.sendMessage(str);    //suppose to send JSON
-            /*final Handler handler = new Handler();
+            tcpClient.sendMessage(str);
+            ChiefLink.setTimesOutFlag(false);
+            final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(!ChiefLink.isUploadedFlag())
+                    if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
-                    else
-                        ChiefLink.setTimesOutFlag(false);
                 }
-            }, 10000);*/
-            while(!ChiefLink.isMsgReadyFlag())
+            }, 10000);
+            /*while(!ChiefLink.isMsgReadyFlag())
                 received = false;
             ChiefLink.setMsgReceived(null);
             ChiefLink.setMsgReadyFlag(false);
-            received    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+            received    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());*/
+        }else {
+            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
-        return received;
     }
 
-    public static boolean acknowledgeCollection(String scanBundleCode){
+    public static void acknowledgeCollection(String scanBundleCode) throws ProcessException{
         String str = JsonHelper.formatCollection(scanBundleCode);
-        boolean updated = false;
-
         if(tcpClient != null){
             tcpClient.sendMessage(str);
-            /*final Handler handler = new Handler();
+            ChiefLink.setTimesOutFlag(false);
+            final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(!ChiefLink.isUploadedFlag())
+                    if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
-                    else
-                        ChiefLink.setTimesOutFlag(false);
                 }
-            }, 10000);*/
+            }, 10000);
+            /*
             while(!ChiefLink.isMsgReadyFlag())
                 updated = false;
             ChiefLink.setMsgReceived(null);
             ChiefLink.setMsgReadyFlag(false);
-            updated    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());
+            updated    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());*/
+        }else {
+            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
-        return updated;
     }
 
 
