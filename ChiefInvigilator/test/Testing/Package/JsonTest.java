@@ -24,26 +24,54 @@ public class JsonTest {
     @Test
     public void testStaffInfoToJson(){
         String result = null;
+        Staff staff = new Staff();
+        staff.setName("Liu");
+        staff.setVenue("M8");
+        staff.setID("staff5");
+        staff.setStatus("Collector");
         
         try {
-            result = new JsonConvert().staffInfoToJson("Liu","M8","staff5");
+            result = new JsonConvert().staffInfoToJson(true,staff);
         } catch (JSONException ex) {
             System.out.print("Convert error");
         }
-        assertEquals("{\"Venue\":\"M8\",\"IdNo\":\"staff5\",\"Name\":\"Liu\"}", result);
+        
+        assertEquals("{\"Status\":\"Collector\",\"Venue\":\"M8\",\"IdNo\":\"staff5\",\"Result\":true,\"Name\":\"Liu\"}", result);
     }
     
     @Test
     public void testStaffInfoToJson2(){
         String result = null;
+        Staff staff = new Staff();
+        staff.setName("Dummy");
+        staff.setVenue("PA2");
+        staff.setID("staff3");
+        staff.setStatus("Chief");
         try {
-            result = new JsonConvert().staffInfoToJson("Dummy","PA2","staff3");
+            result = new JsonConvert().staffInfoToJson(true,staff);
         } catch (JSONException ex) {
             System.out.print("Convert error");
         }
-        assertEquals("{\"Venue\":\"PA2\",\"IdNo\":\"staff3\",\"Name\":\"Dummy\"}", result);
+        
+        assertEquals("{\"Status\":\"Chief\",\"Venue\":\"PA2\",\"IdNo\":\"staff3\",\"Result\":true,\"Name\":\"Dummy\"}", result);
     }
     
+    @Test
+    public void testStaffInfoToJson3(){
+        String result = null;
+        Staff staff = new Staff();
+        staff.setName("no");
+        staff.setVenue("PA2");
+        staff.setID("staff3");
+        staff.setStatus("invalid");
+        try {
+            result = new JsonConvert().staffInfoToJson(false,staff);
+        } catch (JSONException ex) {
+            System.out.print("Convert error");
+        }
+        
+        assertEquals("{\"Status\":\"invalid\",\"Venue\":\"PA2\",\"IdNo\":\"staff3\",\"Result\":false,\"Name\":\"no\"}", result);
+    }
     @Test
     public void testBooleanToJson(){
         String result = null;
