@@ -10,7 +10,6 @@ import com.info.ghiny.examsystem.tools.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -20,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Handler;
-import java.util.regex.Matcher;
 
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
@@ -31,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Created by GhinY on 10/07/2016.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({JsonHelper.class, ChiefLink.class, TCPClient.class, Handler.class})
+@PrepareForTest({JsonHelper.class, ChiefLink.class, TCPClient.class})
 public class ExternalDbLoaderTest {
     StaffIdentity staff;
     TCPClient tcpClient;
@@ -40,8 +37,6 @@ public class ExternalDbLoaderTest {
     public void setUp() throws Exception {
         PowerMockito.mockStatic(JsonHelper.class);
         PowerMockito.mockStatic(ChiefLink.class);
-        PowerMockito.mock(Handler.class);
-
         tcpClient = PowerMockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
         staff   = new StaffIdentity("246800", true, "Dr. TDD", "H3");
@@ -100,7 +95,7 @@ public class ExternalDbLoaderTest {
      * @param id    The id number of the staff
      * @param pw    The password entered by the staff
      */
-    /*@Test
+    @Test
     public void testTryLogin() throws Exception {
         try{
             when(JsonHelper.formatPassword("246800", "0123")).thenReturn("Json Id & Password");
@@ -109,7 +104,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
-    }*/
+    }
 
     @Test
     public void testTryLogin_NullTCPShouldThrowFatalMessage() throws Exception {
@@ -137,30 +132,29 @@ public class ExternalDbLoaderTest {
      *
      * @param venue     Venue of the staff handling in String. Eg. "H3"
      */
-    /*@Test
+    @Test
     public void testDlAttdList() throws Exception {
-            LoginHelper.setStaff(staff);    //To set the venue to H3
-            AttendanceList attdList = new AttendanceList();
+        LoginHelper.setStaff(staff);    //To set the venue to H3
+        AttendanceList attdList = new AttendanceList();
 
-            Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-            Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-            Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-            Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
-            Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
-            Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", AttendanceList.Status.QUARANTIZED);
+        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
+        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
+        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
+        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", AttendanceList.Status.QUARANTIZED);
 
-            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-            attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
-            attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
-            attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
-            attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
-            attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+        attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
+        attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+        attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
-            when(JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, "H3")).thenReturn("Json H3");
-            doNothing().when(tcpClient).sendMessage("Json H3");
+        when(JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, "H3")).thenReturn("Json H3");
+        doNothing().when(tcpClient).sendMessage("Json H3");
 
-            ExternalDbLoader.dlAttdList();
-
+        ExternalDbLoader.dlAttdList();
 
     }
     //= DlPaperList() ===============================================================================
@@ -176,7 +170,7 @@ public class ExternalDbLoaderTest {
      *
      * @param venue     Venue of the staff handling in String. Eg. "H3"
      */
-    /*@Test
+    @Test
     public void testDlPaperList() throws Exception {
         LoginHelper.setStaff(staff);    //Set the venue to H3
 
@@ -193,13 +187,8 @@ public class ExternalDbLoaderTest {
 
         when(JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE, "H3")).thenReturn("Json H3");
         doNothing().when(tcpClient).sendMessage("Json H3");
-        when(ChiefLink.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
-        when(ChiefLink.getMsgReceived()).thenReturn("Json PaperMap");
-        when(JsonHelper.parsePaperMap("Json PaperMap")).thenReturn(paperList);
 
-        HashMap<String, ExamSubject> paperMap = ExternalDbLoader.dlPaperList();
-
-        assertEquals(paperList, paperMap);
+        ExternalDbLoader.dlPaperList();
     }
 
     //= GetPapersExamineByCdd() ====================================================================
@@ -211,7 +200,7 @@ public class ExternalDbLoaderTest {
      *
      *  @param regNum   Register Number of the Candidate
      */
-    /*@Test
+    @Test
     public void testGetPapersExamineByCdd() throws Exception {
         try{
             when(JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, "15WAU00001")).thenReturn("Json Cdd");
@@ -221,7 +210,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
-    }*/
+    }
 
     @Test
     public void testGetPapersExamineByCdd_NullTCPShouldThrowFatalError() throws Exception {
@@ -251,7 +240,7 @@ public class ExternalDbLoaderTest {
      *
      * @param attdList  the updated AttendanceList to be send out
      */
-    /*@Test
+    @Test
     public void testUpdateAttdList() throws Exception {
         try{
             AttendanceList attdList = new AttendanceList();
@@ -263,7 +252,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
-    }*/
+    }
 
     @Test
     public void testUpdateAttdList_Null_TCP_Should_throw_FATAL_Exception() throws Exception {
@@ -294,7 +283,8 @@ public class ExternalDbLoaderTest {
      *
      *  @param bundle   The QR code on the bundle
      */
-    /*@Test
+
+    @Test
     public void testAcknowledgeCollection() throws Exception {
         try{
             String bundle = "BAME 0001 Subject 1 -----";
@@ -302,14 +292,15 @@ public class ExternalDbLoaderTest {
             when(JsonHelper.formatCollection(bundle)).thenReturn("Json Bundle");
             doNothing().when(tcpClient).sendMessage("Json Bundle");
             ExternalDbLoader.acknowledgeCollection(bundle);
-        } catch (ProcessException err) {
+        } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
-    }*/
+    }
 
-   /* @Test
-    public void testAcknowledgeCollection_Null_TCP_throw_FATAL_Exception() throws Exception {
+    @Test
+    public void testAcknowledgeCollection_Null_TCP_Should_throw_FATAL_Exception() throws Exception {
         try{
+            ExternalDbLoader.setTcpClient(null);
             String bundle = "BAME 0001 Subject 1 -----";
 
             when(JsonHelper.formatCollection(bundle)).thenReturn("Json Bundle");
@@ -317,6 +308,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.acknowledgeCollection(bundle);
         } catch (ProcessException err) {
             assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());        }
-    }*/
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
 }

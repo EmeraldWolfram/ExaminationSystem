@@ -15,16 +15,12 @@ import com.info.ghiny.examsystem.database.ExamSubject;
  */
 public class ErrorManager {
 
-    private static Activity act;
+    private Activity act;
 
     public ErrorManager(){}
 
     public ErrorManager(Activity act) {
-        ErrorManager.act = act;
-    }
-
-    public static void setAct(Activity act){
-        ErrorManager.act    = act;
+        this.act = act;
     }
 
     public void displayError(ProcessException err){

@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 
@@ -43,7 +44,7 @@ public class ObtainInfoHelperTest {
 
         PowerMockito.mockStatic(ExternalDbLoader.class);
     }
-    //= GetCandidatePapers =========================================================================
+    //= ReqCandidatePapers =========================================================================
     /**
      *  reqCandidatePapers()
      *
@@ -51,9 +52,8 @@ public class ObtainInfoHelperTest {
      *  MESSAGE_TOAST will be thrown
      */
     @Test
-    public void testGetCandidatePapers_Throw_Error_if_candidate_not_found() throws Exception {
+    public void testReqCandidatePapers_Throw_Error_input_string_size_not_10() throws Exception {
         try{
-            //doNothing().when(ExternalDbLoader).getPapersExamineByCdd("15WAU09184");
             ObtainInfoHelper.reqCandidatePapers("15");
             fail("Expected MESSAGE_TOAST but nothing was thrown");
         } catch (ProcessException err){
@@ -68,50 +68,15 @@ public class ObtainInfoHelperTest {
      *  When the candidate does not have any paper
      *  should return empty List<> but not null
      */
-    /*@Test
-    public void testGetCandidatePapers_CandidateWithoutPapers() throws Exception {
+    @Test
+    public void testReqCandidatePapers_CandidateWithoutPapers() throws Exception {
         try{
-            //when(ExternalDbLoader.getPapersExamineByCdd("15WAU00001"))
-            //        .thenReturn(new ArrayList<ExamSubject>());
-
-            papers = ObtainInfoHelper.reqCandidatePapers("15WAU00001");
-
-            assertNotNull(papers);
-            assertEquals(0, papers.size());
-        } catch (ProcessException err){
-            fail("No Exception expected but " +  err.getErrorMsg() + " was thrown");
-        }
-    }
-*/
-    /**
-     *  reqCandidatePapers()
-     *
-     *  When the candidate have 3 paper codes
-     *  should return a List<ExamSubject>
-     */
-    /*@Test
-    public void testGetCandidatePapers_CandidateWithPapers() throws Exception {
-        try{
-            List<ExamSubject> paperCodeList = new ArrayList<>();
-            paperCodeList.add(subject1);
-            paperCodeList.add(subject2);
-            paperCodeList.add(subject3);
-
-            //when(ExternalDbLoader.getPapersExamineByCdd("15WAU00001")).thenReturn(paperCodeList);
-
-
             ObtainInfoHelper.reqCandidatePapers("15WAU00001");
-
-            assertNotNull(papers);
-            assertEquals(3, papers.size());
-            assertEquals(subject1, papers.get(0));
-            assertEquals(subject2, papers.get(1));
-            assertEquals(subject3, papers.get(2));
         } catch (ProcessException err){
             fail("No Exception expected but " +  err.getErrorMsg() + " was thrown");
         }
     }
-*/
+
     //= GetDaysLeft ================================================================================
     /**
      * getDaysLeft()

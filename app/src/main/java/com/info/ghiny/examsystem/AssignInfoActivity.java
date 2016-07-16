@@ -49,6 +49,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         }
     };
 
+    //==============================================================================================
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +97,6 @@ public class AssignInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ErrorManager.setAct(this);
         barcodeView.resume();
     }
 
@@ -117,6 +117,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
+    //==============================================================================================
     public void lockScanValue(String scanString){
         TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         TextView cddView    = (TextView)findViewById(R.id.canddAssignText);

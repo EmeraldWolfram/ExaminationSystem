@@ -33,7 +33,7 @@ public class LinkChiefActivity extends AppCompatActivity {
         }
     };
 
-
+    //==============================================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,6 @@ public class LinkChiefActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ErrorManager.setAct(this);
         barcodeView.resume();
     }
 
@@ -66,6 +65,7 @@ public class LinkChiefActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
+    //==============================================================================================
     public void checkForChief(String scanStr){
         try{
             barcodeView.pause();

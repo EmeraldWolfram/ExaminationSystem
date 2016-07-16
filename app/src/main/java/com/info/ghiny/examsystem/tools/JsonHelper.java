@@ -103,6 +103,155 @@ public class JsonHelper {
         }
     }
 
+    public static StaffIdentity parseStaffIdentity(String inStr) throws ProcessException{
+        StaffIdentity staffId   = new StaffIdentity();
+
+        try{
+            JSONObject staff = new JSONObject(inStr);
+            if(staff.getBoolean(KEY_TYPE_RETURN)){
+                //set staff
+                String name     = staff.getString(StaffIdentity.STAFF_NAME);
+                String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
+                String idNo     = staff.getString(StaffIdentity.STAFF_ID_NO);
+
+                staffId.setName(name);
+                staffId.setIdNo(idNo);
+                staffId.setVenueHandling(venue);
+
+                JSONArray roles = staff.getJSONArray(StaffIdentity.STAFF_ROLE);
+
+                for(int i = 0; i < roles.length(); i++){
+                    staffId.addRole(roles.getString(i));
+                }
+                return staffId;
+            } else {
+                throw new ProcessException("Incorrect Login Id or Password",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            }
+        } catch (JSONException err){
+            throw new ProcessException("Failed to read data from Chief\nPlease consult developer!",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        } finally {
+            ChiefLink.setCompleteFlag(true);
+        }
+    }
+
+    public static boolean parseBoolean(String inStr) throws ProcessException {
+        try {
+            JSONObject obj = new JSONObject(inStr);
+            if(obj.getBoolean(KEY_TYPE_RETURN)){
+                return true;
+            } else {
+                throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
+                        IconManager.WARNING);
+            }
+        } catch (JSONException err) {
+            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        } finally {
+            ChiefLink.setCompleteFlag(true);
+        }
+    }
+
+    public static AttendanceList parseAttdList(String inStr) throws ProcessException{
+        AttendanceList attdList = new AttendanceList();
+        try{
+            JSONObject obj  = new JSONObject(inStr);
+            if(obj.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
+                for(int i = 0; i < cddArr.length(); i++){
+                    JSONObject jsonCdd  = cddArr.getJSONObject(i);
+                    Candidate cdd       = new Candidate();
+
+                    cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
+                    cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
+
+                    String status   = jsonCdd.getString(Candidate.CDD_STATUS);
+                    cdd.setStatus(attdList.parseStatus(status));
+                    cdd.setTableNumber(0);
+                    cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
+                    cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
+
+                    attdList.addCandidate(cdd, cdd.getPaperCode(),
+                            cdd.getStatus(), cdd.getProgramme());
+                }
+                return attdList;
+            } else {
+                throw new ProcessException("FATAL: Unable to download Attendance List",
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            }
+        } catch (JSONException err){
+            throw new ProcessException("FATAL: Packet from Chief corrupted\n" +
+                    "Please Consult Developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        } finally {
+            ChiefLink.setCompleteFlag(true);
+        }
+    }
+
+    public static HashMap<String, ExamSubject> parsePaperMap(String inStr) throws ProcessException{
+        HashMap<String, ExamSubject> map = new HashMap<>();
+        try{
+            JSONObject object   = new JSONObject(inStr);
+            if(object.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
+                for(int i = 0; i < subjectArr.length(); i++){
+                    JSONObject jSubject = subjectArr.getJSONObject(i);
+                    ExamSubject subject = new ExamSubject();
+
+                    subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                    subject.setStartTableNum(jSubject.getInt(ExamSubject.PAPER_START_NO));
+                    subject.setNumOfCandidate(jSubject.getInt(ExamSubject.PAPER_TOTAL_CDD));
+
+                    map.put(subject.getPaperCode(), subject);
+                }
+                return map;
+            } else {
+                throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            }
+        }catch (JSONException err){
+            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        } finally {
+            ChiefLink.setCompleteFlag(true);
+        }
+    }
+
+    public static List<ExamSubject> parsePaperList(String inStr) throws ProcessException{
+        List<ExamSubject> subjects  = new ArrayList<>();
+        try{
+
+            JSONObject jObj         = new JSONObject(inStr);
+            if(jObj.getBoolean(KEY_TYPE_RETURN)){
+                JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
+                for(int i = 0; i < subjectArr.length(); i++){
+                    JSONObject jSubject = subjectArr.getJSONObject(i);
+                    ExamSubject subject = new ExamSubject();
+
+                    subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
+                    subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+
+                    String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
+                    subject.setPaperSession(subject.parseSession(session));
+                    subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
+
+                    subjects.add(subject);
+                }
+                return subjects;
+            } else {
+                throw new ProcessException("Not a Candidate Identity",
+                        ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+            }
+        } catch (JSONException err) {
+            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        } finally {
+            ChiefLink.setCompleteFlag(true);
+        }
+    }
+  /*
     public static void parseStaffIdentity(String inStr) throws ProcessException{
         HashMap<String, ExamSubject> map = new HashMap<>();
         AttendanceList attdList = new AttendanceList();
@@ -181,7 +330,8 @@ public class JsonHelper {
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
     }
-
+*/
+    /*
     public static void parseBoolean(String inStr) throws ProcessException {
         try {
             JSONObject obj = new JSONObject(inStr);
@@ -200,7 +350,9 @@ public class JsonHelper {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
+*/
 
+    /*
     public static void parseAttdList(String inStr) throws ProcessException{
         AttendanceList attdList = new AttendanceList();
         try{
@@ -271,7 +423,8 @@ public class JsonHelper {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
-
+*/
+    /*
     public static void parsePaperList(String inStr) throws ProcessException{
         List<ExamSubject> subjects  = new ArrayList<>();
         try{
@@ -305,5 +458,5 @@ public class JsonHelper {
             throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer!",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-    }
+    }*/
 }

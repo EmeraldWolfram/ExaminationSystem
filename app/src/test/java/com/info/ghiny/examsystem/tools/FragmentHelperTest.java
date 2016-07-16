@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,6 @@ public class FragmentHelperTest {
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList3;
 
-    HashMap<String, HashMap<String, Candidate>> prgList1;
     HashMap<String, HashMap<String, Candidate>> prgList2;
     HashMap<String, HashMap<String, Candidate>> prgList3;
 

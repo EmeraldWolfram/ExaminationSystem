@@ -30,64 +30,17 @@ public class ExternalDbLoader {
     public static void setTcpClient(TCPClient tcpClient) {
         ExternalDbLoader.tcpClient = tcpClient;
     }
-
     public static TCPClient getTcpClient() {
         return tcpClient;
-    }
-
-    //= Extend Methods =============================================================================
-    public static void checkForResult(String message) throws ProcessException{
-        try {
-            JSONObject msg = new JSONObject(message);
-            String type = msg.getString(JsonHelper.KEY_TYPE_TYPE);
-            switch (type) {
-                case JsonHelper.TYPE_LOGIN:
-                    JsonHelper.parseStaffIdentity(message);
-                    break;
-                case JsonHelper.TYPE_ATTD_LIST:
-                    JsonHelper.parseBoolean(message);
-                    break;
-                case JsonHelper.TYPE_PAPERS_CDD:
-                    JsonHelper.parsePaperList(message);
-                    break;
-                case JsonHelper.TYPE_COLLECT:
-                    JsonHelper.parseBoolean(message);
-                    break;
-                //case JsonHelper.TYPE_PAPERS_VENUE:
-                //    JsonHelper.parsePaperMap(message);
-                //    break;
-            }
-        } catch (JSONException err) {
-            throw new ProcessException("Resynchronizing with Chief",
-                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-        }
     }
 
     //= Public Methods =============================================================================
 
     public static void tryLogin(String staffId, String staffPw) throws ProcessException{
-        //boolean isCorrect = false;
         String str = JsonHelper.formatPassword(staffId, staffPw);
 
         if(str != null && tcpClient != null){
             tcpClient.sendMessage(str);
-
-            final Handler handler = new Handler();
-            ChiefLink.setTimesOutFlag(false);
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()){
-                        ProcessException err = new ProcessException(
-                                "Identity verification times out.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton,
-                                MainLoginActivity.timesOutListener);
-                        ErrorManager errorManager = new ErrorManager();
-                        errorManager.displayError(err);
-                    }
-                }
-            }, 10000);
         } else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -99,18 +52,23 @@ public class ExternalDbLoader {
         String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
                 LoginHelper.getStaff().getVenueHandling());
 
-        if (tcpClient != null) {
+        if (str != null && tcpClient != null) {
             tcpClient.sendMessage(str);
-            ChiefLink.setTimesOutFlag(false);
-            final Handler handler = new Handler();
+            /*final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    // Do something after 5s = 5000ms
-                    if(!ChiefLink.isComplete())
-                        ChiefLink.setTimesOutFlag(true);
+                    if(!ChiefLink.isComplete()) {
+                        ProcessException err = new ProcessException(
+                                "Attendance List request times out.",
+                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                        err.setListener(ProcessException.okayButton,
+                                MainLoginActivity.timesOutListener);
+                        if (errMng != null)
+                            errMng.displayError(err);
+                    }
                 }
-            }, 10000);
+            }, 10000);*/
         }
     }
 
@@ -119,7 +77,7 @@ public class ExternalDbLoader {
                 LoginHelper.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
-            ChiefLink.setTimesOutFlag(false);
+            /*ChiefLink.setTimesOutFlag(false);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -127,7 +85,7 @@ public class ExternalDbLoader {
                     if(!ChiefLink.isComplete())
                         ChiefLink.setTimesOutFlag(true);
                 }
-            }, 10000);
+            }, 10000);*/
             /*
             while(!ChiefLink.isMsgReadyFlag()) {
                 map = null;
@@ -143,16 +101,7 @@ public class ExternalDbLoader {
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
 
         if(tcpClient != null){
-            tcpClient.sendMessage(str);    //suppose to send JSON
-            ChiefLink.setTimesOutFlag(false);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete())
-                        ChiefLink.setTimesOutFlag(true);
-                }
-            }, 10000);
+            tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -161,24 +110,8 @@ public class ExternalDbLoader {
 
     public static void updateAttdList(AttendanceList attdList) throws ProcessException{
         String str = JsonHelper.formatAttdList(attdList);
-        boolean received = false;
-
         if(tcpClient != null){
             tcpClient.sendMessage(str);
-            ChiefLink.setTimesOutFlag(false);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete())
-                        ChiefLink.setTimesOutFlag(true);
-                }
-            }, 10000);
-            /*while(!ChiefLink.isMsgReadyFlag())
-                received = false;
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
-            received    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());*/
         }else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -189,21 +122,6 @@ public class ExternalDbLoader {
         String str = JsonHelper.formatCollection(scanBundleCode);
         if(tcpClient != null){
             tcpClient.sendMessage(str);
-            ChiefLink.setTimesOutFlag(false);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete())
-                        ChiefLink.setTimesOutFlag(true);
-                }
-            }, 10000);
-            /*
-            while(!ChiefLink.isMsgReadyFlag())
-                updated = false;
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
-            updated    = JsonHelper.parseBoolean(ChiefLink.getMsgReceived());*/
         }else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);

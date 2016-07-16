@@ -29,7 +29,7 @@ public class JsonHelperTest {
 
     @Before
     public void setUp() throws Exception {
-
+        ChiefLink.setCompleteFlag(false);
     }
 
     //= FormatString() =============================================================================
@@ -106,60 +106,72 @@ public class JsonHelperTest {
     }
 
     //= ParseStaffIdentity() =======================================================================
-    /**
-     *  parseStaffIdentity()
-     *
-     *  parse str to get the object of StaffIdentity
-     *  @param str  The input message received from sockets
-     */
-    @Test
-    public void testParseStaffIdentity() throws Exception {
-        LoginHelper.setStaff(new StaffIdentity());
-
-        JsonHelper.parseStaffIdentity(
-                 "{\"Status\":[\"Collector\",\"Chief\"]," +
-                         "\"Venue\":\"M5\",\"Result\":true," +
-                         "\"Name\":\"TESTER 1\"," +
-                         "\"CddList\":[],\"PaperMap\":[]}");
-
-
-        StaffIdentity staff = LoginHelper.getStaff();
-        assertNotNull(staff);
-        assertEquals("TESTER 1", staff.getName());
-        assertEquals("M5", staff.getVenueHandling());
-    }
 
     /**
      *  parseStaffIdentity()
      *
-     *  parse str to get the object of StaffIdentity
+     *  1. If JSON have wrong format, throw MESSAGE_DIALOG
+     *  2. If Result is true, return a Staff Identity Object
+     *  3. If Result is false, throw MESSAGE_DIALOG
+     *
      *  @param str  The input message received from sockets
      */
+
     @Test
-    public void testParseStaffIdentity_IncorrectFormat_Should_throw_FATAL() throws Exception {
+    public void testParseStaffIdentity_IncorrectFormat_Should_throw_DIALOG() throws Exception {
         try{
-            LoginHelper.setStaff(new StaffIdentity());
-            JsonHelper.parseStaffIdentity(
-                    "{\"Venue\":\"M5\"," +
-                            "\"Eligible\":true," +
-                            "\"RegNum\":\"246800\"," +
-                            "\"NAME\":\"TESTER 1\"," +  //Name not NAME
-                            "\"Password\":\"0123\"}");
+            assertFalse(ChiefLink.isComplete());
+            StaffIdentity staff = JsonHelper.parseStaffIdentity(
+                    "{\"Status\":[\"Collector\",\"Chief\"]," +
+                            "\"Venue\":\"M5\",\"Result\":true," +
+                            "\"NAME\":\"TESTER 1\",\"IdNo\":\"246810\"}");
 
             fail("Expected FATAL_MESSAGE but none thrown");
         } catch (ProcessException err){
-            assertEquals("Failed to query data from Chief\nPlease consult developer!", err.getErrorMsg());
+            assertTrue(ChiefLink.isComplete());
+            assertEquals("Failed to read data from Chief\nPlease consult developer!", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
 
     }
 
+    @Test
+    public void testParseStaffIdentity_True_Result_return_StaffIdentity() throws Exception {
+        assertFalse(ChiefLink.isComplete());
+        StaffIdentity staff = JsonHelper.parseStaffIdentity(
+                "{\"Status\":[\"Collector\",\"Chief\"]," +
+                        "\"Venue\":\"M5\",\"Result\":true," +
+                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");
+        assertNotNull(staff);
+        assertEquals("TESTER 1", staff.getName());
+        assertEquals("M5", staff.getVenueHandling());
+        assertEquals("246810", staff.getIdNo());
+        assertTrue(ChiefLink.isComplete());
+    }
+
+    @Test
+    public void testParseStaffIdentity_False_Result_throw_MESSAGE_TOAST() throws Exception {
+        try{
+            assertFalse(ChiefLink.isComplete());
+            StaffIdentity staff = JsonHelper.parseStaffIdentity(
+                    "{\"Result\":false}");
+
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch (ProcessException err){
+            assertTrue(ChiefLink.isComplete());
+            assertEquals("Incorrect Login Id or Password", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+        }
+
+    }
     //= ParseAttdList() ============================================================================
 
     /**
      * parseAttdList(String inStr)
      *
-     * Test on transforming a the String back into an AttendanceList;
+     * 1. If result true, transform JSON into an AttendanceList and return it
+     * 2. If result false, throw FATAL
+     * 3. If JSON format wrong, throw FATAL
      * @param inStr     JSON formatted AttendanceList in a String
      */
     @Test
@@ -187,8 +199,8 @@ public class JsonHelperTest {
         jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
         jObject.put(JsonHelper.LIST_LIST, jAttdList);
 
-        JsonHelper.parseAttdList(jObject.toString());
-        AttendanceList attdList = AssignHelper.getAttdList();
+        AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
+        assertTrue(ChiefLink.isComplete());
 
         assertNotNull(attdList);
         assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
@@ -198,12 +210,6 @@ public class JsonHelperTest {
         assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
     }
 
-    /**
-     * parseAttdList(String inStr)
-     *
-     * Return null if any of the parameter was wrong
-     * @param inStr     JSON formatted AttendanceList in a String
-     */
     @Test
     public void testParseAttdList_Incorrect_Format_should_throw_FATAL_Exception() throws Exception {
         try{
@@ -230,32 +236,28 @@ public class JsonHelperTest {
             jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
             jObject.put(JsonHelper.LIST_LIST, jAttdList);
 
-            JsonHelper.parseAttdList(jObject.toString());
+            AttendanceList attd = JsonHelper.parseAttdList(jObject.toString());
 
             fail("Expected FATAL_MESSAGE but none thrown!");
         } catch (ProcessException err) {
+            assertTrue(ChiefLink.isComplete());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL: JSONObject[\"Programme\"] not found.\nPlease Consult Developer!",
+            assertEquals("FATAL: Packet from Chief corrupted\nPlease Consult Developer!",
                     err.getErrorMsg());
         }
     }
 
-    /**
-     * parseAttdList(String inStr)
-     *
-     * Return null if str pass in is empty
-     * @param inStr     JSON formatted AttendanceList in a String
-     */
     @Test
-    public void testParseAttdList_Receiving_Empty_JSONObject_thrown_FATAL() throws Exception {
+    public void testParseAttdList_Receiving_False_Result_throw_FATAL() throws Exception {
         try{
             JSONObject jObject  = new JSONObject();
+            jObject.put("Result", false);
             JsonHelper.parseAttdList(jObject.toString());
 
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL: JSONObject[\"Result\"] not found.\nPlease Consult Developer!",
-                    err.getErrorMsg());
+            assertTrue(ChiefLink.isComplete());
+            assertEquals("FATAL: Unable to download Attendance List", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
 
@@ -266,11 +268,38 @@ public class JsonHelperTest {
     /**
      * parsePaperMap()
      *
-     * This method return a HashMap<String, ExamSubject> which will be examined
-     * in that particular venue for that particular session
+     * 1. If JSON format wrong, throw FATAL_MESSAGE
+     * 2. If Result is true, return HashMap<String, ExamSubject> which will be examined
+     * 3. If Result is false, throw MESSAGE_DIALOG
      */
     @Test
-    public void testParsePaperMap() throws Exception {
+    public void testParsePaperMap_Wrong_Format_throw_FATAL_MESSAGE() throws Exception {
+        try {
+            JSONObject object   = new JSONObject();
+
+            JSONArray array     = new JSONArray();
+            JSONObject subject1 = new JSONObject();
+
+            subject1.put(ExamSubject.PAPER_CODE, "BAME 0001");
+            subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
+            subject1.put(ExamSubject.PAPER_START_NO, 1);
+            subject1.put(ExamSubject.PAPER_TOTAL_CDD, 10);
+
+            array.put(subject1);
+
+            object.put(JsonHelper.PAPER_MAP, array);    //Missing Result line
+
+            HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
+        } catch (ProcessException err) {
+            assertTrue(ChiefLink.isComplete());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+                    err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testParsePaperMap_TrueResult_return_HashMap() throws Exception {
         JSONObject object   = new JSONObject();
         JSONArray array     = new JSONArray();
         JSONObject subject1 = new JSONObject();
@@ -292,25 +321,70 @@ public class JsonHelperTest {
         object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_MAP, array);
 
-        JsonHelper.parsePaperMap(object.toString());
-        HashMap<String, ExamSubject> paperMap = Candidate.getPaperList();
+        HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
 
+        assertTrue(ChiefLink.isComplete());
         assertNotNull(paperMap);
         assertEquals(2, paperMap.size());
         assertTrue(paperMap.containsKey("BAME 0001"));
         assertTrue(paperMap.containsKey("BAME 0002"));
     }
 
+    @Test
+    public void testParsePaperMap_False_Result_throw_FATAL_MESSAGE() throws Exception {
+        try {
+            JSONObject object   = new JSONObject();
+
+            object.put("Result", false);
+            object.put(JsonHelper.PAPER_MAP, null);    //Missing Result line
+
+            HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
+        } catch (ProcessException err) {
+            assertTrue(ChiefLink.isComplete());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL: Unable to download Exam Paper from Chief", err.getErrorMsg());
+        }
+    }
     //= ParsePaperList =============================================================================
 
     /**
      *  parsePaperList()
      *
-     *  This method return the papers examine by the candidate for that session of examination
+     *  1. If JSON format wrong, throw MESSAGE_DIALOG
+     *  2. If Result is true, return List<ExamSubject> which will be examined
+     *  3. If Result is false, throw MESSAGE_TOAST
+     *
+     *  @param regNum   Register Number of the candidate that want to check for subjects examine
      */
     @Test
-    public void testParsePaperList() throws Exception {
-        ObtainInfoHelper.setAdapter(new ExamSubjectAdapter());
+    public void testParsePaperList_Wrong_Format_throw_MESSAGE_DIALOG() throws Exception {
+        try {
+            JSONObject object   = new JSONObject();
+
+            JSONArray array     = new JSONArray();
+            JSONObject subject1 = new JSONObject();
+
+            subject1.put(ExamSubject.PAPER_CODE, "BAME 0001");
+            subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
+            subject1.put(ExamSubject.PAPER_START_NO, 1);
+            subject1.put(ExamSubject.PAPER_TOTAL_CDD, 10);
+
+            array.put(subject1);
+
+            object.put("Result", true);
+            object.put(JsonHelper.PAPER_MAP, array);
+
+            List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
+        } catch (ProcessException err) {
+            assertTrue(ChiefLink.isComplete());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+                    err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testParsePaperList_True_Result_return_List() throws Exception {
         JSONObject object   = new JSONObject();
         JSONArray array     = new JSONArray();
         JSONObject subject1 = new JSONObject();
@@ -331,9 +405,28 @@ public class JsonHelperTest {
 
         object.put(JsonHelper.KEY_TYPE_RETURN, true);
         object.put(JsonHelper.PAPER_LIST, array);
-        JsonHelper.parsePaperList(object.toString());
+        List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
 
-        assertFalse(ExamSubjectAdapter.papersIsEmpty());
+        assertTrue(ChiefLink.isComplete());
+        assertEquals(2, paperList.size());
+        assertEquals("BAME 0001", paperList.get(0).getPaperCode());
+        assertEquals("BAME 0002", paperList.get(1).getPaperCode());
+    }
+
+    @Test
+    public void testParsePaperList_False_Result_throw_MESSAGE_TOAST() throws Exception {
+        try {
+            JSONObject object   = new JSONObject();
+
+            object.put("Result", false);
+            object.put(JsonHelper.PAPER_LIST, null);
+
+            List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
+        } catch (ProcessException err) {
+            assertTrue(ChiefLink.isComplete());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Not a Candidate Identity", err.getErrorMsg());
+        }
     }
 
     //= FormatPassword() ===========================================================================
@@ -364,15 +457,41 @@ public class JsonHelperTest {
      *  parseBoolean(String str)
      *
      *  parse str to get a boolean of true or false
-     *  default to false
+     *  1. If the result is true, return true
+     *  2. If the result is false, throw MESSAGE_DIALOG
+     *  3. If the result have wrong format, throw FATAL
      *
      *  @param str  The input message received from sockets
      */
     @Test
-    public void testParseBoolean() throws Exception {
-        JsonHelper.parseBoolean("{\"Result\":true}");
+    public void testParseBoolean_withTrueAcknowledgement() throws Exception {
+        assertFalse(ChiefLink.isComplete());
+        assertTrue(JsonHelper.parseBoolean("{\"Result\":true}"));
+        assertTrue(ChiefLink.isComplete());
+    }
 
-        assertNotNull(ChiefLink.isComplete());
-        assertTrue(ChiefLink.isMsgValid());
+    @Test
+    public void testParseBoolean_FalseAcknowledgement_should_throw_FATAL() throws Exception {
+        try{
+            assertFalse(ChiefLink.isComplete());
+            assertFalse(JsonHelper.parseBoolean("{\"Result\":false}"));
+        } catch (ProcessException err){
+            assertTrue(ChiefLink.isComplete());
+            assertEquals("Upload Failed", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testParseBoolean_ReceivingWrongFormat_should_throw_FATAL() throws Exception {
+        try{
+            assertFalse(ChiefLink.isComplete());
+            assertFalse(JsonHelper.parseBoolean("{}"));
+        } catch (ProcessException err){
+            assertTrue(ChiefLink.isComplete());
+            assertEquals("FATAL: Data from Chief corrupted\n" +
+                    "Please consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
     }
 }

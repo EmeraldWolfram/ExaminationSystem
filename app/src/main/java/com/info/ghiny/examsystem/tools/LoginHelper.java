@@ -1,8 +1,5 @@
 package com.info.ghiny.examsystem.tools;
 
-import android.content.DialogInterface;
-
-import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
@@ -53,7 +50,4 @@ public class LoginHelper {
             ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
         }
     }
-
-
-
 }

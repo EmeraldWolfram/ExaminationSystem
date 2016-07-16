@@ -13,16 +13,6 @@ import java.util.List;
  */
 public class ObtainInfoHelper {
 
-    private static ExamSubjectAdapter adapter;
-
-    public static void setAdapter(ExamSubjectAdapter adapter) {
-        ObtainInfoHelper.adapter = adapter;
-    }
-
-    public static ExamSubjectAdapter getAdapter() {
-        return adapter;
-    }
-
     public static void reqCandidatePapers(String scanValue) throws ProcessException{
 
         if(scanValue.length() != 10)
@@ -30,13 +20,6 @@ public class ObtainInfoHelper {
                     IconManager.MESSAGE);
 
         ExternalDbLoader.getPapersExamineByCdd(scanValue);
-        /*List<ExamSubject> subjects = ExternalDbLoader.getPapersExamineByCdd(scanValue);
-        if(subjects == null){
-            throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
-                    IconManager.MESSAGE);
-        }
-
-        return subjects;*/
     }
 
     public static Integer getDaysLeft(Calendar paperDate) {

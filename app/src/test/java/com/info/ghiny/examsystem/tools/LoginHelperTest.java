@@ -74,47 +74,6 @@ public class LoginHelperTest {
         }
     }
 
-
-    //= IdentifyStaff() ============================================================================
-    /**
-     *  identifyStaff()
-     *
-     *  when the server return a null
-     *  means that the scanned QR was not a Staff ID
-     *
-     *  Error should be thrown
-     */
-    /*@Test
-    public void testIdentifyStaff_Null_Input_Should_Throw_MESSAGE_TOAST()throws Exception{
-        try{
-            when(ExternalDbLoader.getStaffIdentity("ABCD")).thenReturn(null);
-            LoginHelper.identifyStaff(null);
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (ProcessException err){
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Not a Staff Identity", err.getErrorMsg());
-        }
-    }*/
-
-    /**
-     *  identifyStaff()
-     *
-     *  when the staff is a valid staff
-     *  assign to the static staff
-     */
-    /*@Test
-    public void testIdentifyStaff()throws Exception{
-        try{
-            when(ExternalDbLoader.getStaffIdentity("12WW"))
-                    .thenReturn(staffId);
-            LoginHelper.identifyStaff("12WW");
-
-            assertEquals(staffId, LoginHelper.getStaff());
-        } catch (ProcessException err){
-            fail("Expect no error but obtained ErrMsg - " + err.getErrorMsg());
-        }
-    }*/
-
     //= MatchStaffPw() =============================================================================
     /**
      * matchStaffPw(String inputPw)
@@ -173,24 +132,4 @@ public class LoginHelperTest {
         }
     }
 
-    /**
-     * matchStaffPw()
-     *
-     * When the inputPw was not the same as the Staff password
-     * MESSAGE_TOAST will be thrown
-     */
-    //ERR_EMPTY_PASSWORD should be thrown if input pw is nothing
-    /*@Test
-    public void testMatchStaffPw_WRONG_PW_should_throw_MESSAGE_TOAST() throws Exception{
-        try{
-            LoginHelper.setStaff(staffId);
-            LoginHelper.matchStaffPw("0124");
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch (ProcessException err){
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Incorrect Login Id or Password", err.getErrorMsg());
-        }
-    }
-*/
 }

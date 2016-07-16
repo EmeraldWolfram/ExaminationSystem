@@ -1,6 +1,8 @@
 package com.info.ghiny.examsystem;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -11,7 +13,10 @@ import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.IconManager;
+import com.info.ghiny.examsystem.tools.JsonHelper;
 import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
@@ -30,8 +35,18 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     private ExamSubjectAdapter listAdapter;
     private ErrorManager errManager;
-    private CompoundBarcodeView barcodeView;
     private TCPClient obtainInfo;
+
+    private DialogInterface.OnClickListener timesOutListener =
+            new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    barcodeView.resume();
+                    dialog.cancel();
+                }
+            };
+
+    private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
@@ -46,6 +61,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
         }
     };
+
+    //==============================================================================================
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,9 +75,11 @@ public class ObtainInfoActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
                 try{
-                    ExternalDbLoader.checkForResult(message);
+                    List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
+                    listAdapter.updatePapers(subjects);
                 } catch (ProcessException err) {
                     errManager.displayError(err);
+                    barcodeView.resume();
                 }
             }
         });
@@ -69,7 +88,6 @@ public class ObtainInfoActivity extends AppCompatActivity {
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;
 
-        ObtainInfoHelper.setAdapter(listAdapter);
         paperList.setAdapter(listAdapter);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
@@ -96,7 +114,6 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ErrorManager.setAct(this);
         ExternalDbLoader.setTcpClient(obtainInfo);
         barcodeView.resume();
     }
@@ -104,7 +121,6 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         barcodeView.pause();
     }
 
@@ -114,11 +130,28 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
+    //==============================================================================================
     private void requestPapers(String scanStr){
         try{
+            barcodeView.pause();
             ObtainInfoHelper.reqCandidatePapers(scanStr);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(!ChiefLink.isComplete()){
+                        ProcessException err = new ProcessException(
+                                "Server busy. Request times out. \n Please try again later.",
+                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                        err.setListener(ProcessException.okayButton, timesOutListener);
+                        barcodeView.pause();
+                        errManager.displayError(err);
+                    }
+                }
+            }, 10000);
         } catch (ProcessException err){
             errManager.displayError(err);
+            barcodeView.resume();
         }
 
     }

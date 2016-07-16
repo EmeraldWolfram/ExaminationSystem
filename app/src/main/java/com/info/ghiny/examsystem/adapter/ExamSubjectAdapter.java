@@ -28,16 +28,10 @@ public class ExamSubjectAdapter extends BaseAdapter {
         setPapers(papers);
         notifyDataSetChanged();
     }
-    public static List<ExamSubject> getPapers() {
-        return papers;
-    }
     public static void setPapers(List<ExamSubject> papers) {
         ExamSubjectAdapter.papers = papers;
     }
 
-    public static boolean papersIsEmpty(){
-        return (papers.size() == 0);
-    }
 
     @Override
     public int getCount() {
