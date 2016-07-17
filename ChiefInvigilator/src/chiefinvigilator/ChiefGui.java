@@ -16,7 +16,7 @@ import qrgen.QRGen;
  * @author Krissy
  */
 public class ChiefGui extends javax.swing.JFrame {
-    DefaultTableModel staffInfoTableModel = new DefaultTableModel();
+    static DefaultTableModel staffInfoTableModel = new DefaultTableModel();
     /**
      * Creates new form ChiefGui
      */
@@ -45,6 +45,8 @@ public class ChiefGui extends javax.swing.JFrame {
         qrGenButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        qrSignInPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -140,6 +142,21 @@ public class ChiefGui extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("tab1", jScrollPane1);
 
+        javax.swing.GroupLayout qrSignInPanelLayout = new javax.swing.GroupLayout(qrSignInPanel);
+        qrSignInPanel.setLayout(qrSignInPanelLayout);
+        qrSignInPanelLayout.setHorizontalGroup(
+            qrSignInPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 714, Short.MAX_VALUE)
+        );
+        qrSignInPanelLayout.setVerticalGroup(
+            qrSignInPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 371, Short.MAX_VALUE)
+        );
+
+        jScrollPane3.setViewportView(qrSignInPanel);
+
+        jTabbedPane1.addTab("tab2", jScrollPane3);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -184,9 +201,14 @@ public class ChiefGui extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    public void addStaffInfoToRow(Staff staff){
-        
+    public static void addStaffInfoToRow(Staff staff){
+        staffInfoTableModel = (DefaultTableModel) staffInfoTable.getModel();
+        staffInfoTableModel.addRow(new Object[]{staff.getID(),staff.getName(),
+                                                staff.getVenue(),staff.getStatus()});
+                
+
     }
+    
     /**
      * @param args the command line arguments
      */
@@ -229,11 +251,13 @@ public class ChiefGui extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JButton qrGenButton;
+    private javax.swing.JPanel qrSignInPanel;
     private javax.swing.JButton signInButton;
-    private javax.swing.JTable staffInfoTable;
+    private static javax.swing.JTable staffInfoTable;
     // End of variables declaration//GEN-END:variables
 }

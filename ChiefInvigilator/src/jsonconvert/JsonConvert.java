@@ -6,11 +6,13 @@
 package jsonconvert;
 import chiefinvigilator.ServerComm;
 import chiefinvigilator.Staff;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import querylist.AttdList;
 
 /**
  *
@@ -58,5 +60,21 @@ public class JsonConvert {
         staff.setPassword(signID.getString("Password"));
         
         return staff;
+    }
+    
+    public String attdListToJson(ArrayList<AttdList> attdList) throws JSONException{
+        JSONArray jArr = new JSONArray();
+        JSONObject attd;
+        for(int i = 0; i < attdList.size(); i++){
+            attd = new JSONObject();
+            attd.put("Index", attdList.get(i).getExamId());
+            attd.put("RegNum", attdList.get(i).getRegNum());
+            attd.put("Status", attdList.get(i).getStatus());
+            attd.put("Code", attdList.get(i).getPaperCode());
+            attd.put("Programme", attdList.get(i).getProgramme());
+            jArr.put(attd);
+        }
+        
+        return jArr.toString();
     }
 }
