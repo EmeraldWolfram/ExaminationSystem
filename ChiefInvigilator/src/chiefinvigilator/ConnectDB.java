@@ -28,7 +28,7 @@ public class ConnectDB {
      *
      * @return the Connection object
      */
-    public static Connection connect() {
+    public Connection connect() {
         // SQLite connection string
         
         String url = "jdbc:sqlite:"+name;

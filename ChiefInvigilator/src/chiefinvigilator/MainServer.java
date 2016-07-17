@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jsonconvert.JsonConvert;
 
+
 /**
  *
  * @author Krissy
@@ -45,7 +46,6 @@ public class MainServer {
             boolean verify = new ServerComm().staffVerify(staff.getID(),staff.getPassword());
             System.out.println(verify);
             if(verify){
-                System.out.println("LOL");
                 staff = new ServerComm().staffGetInfo(staff.id);
             }
             String jsonStaff = jsonParser.staffInfoToJson(verify, staff);
@@ -57,10 +57,8 @@ public class MainServer {
                 PrintStream out = new PrintStream(mainSocket.getOutputStream());
                 out.println(jsonStaff);
                 out.flush();
-                DataOutputStream asd =
-                 new DataOutputStream(mainSocket.getOutputStream());
-            asd.writeUTF(jsonStaff);
-            mainSocket.close();
+                
+                mainSocket.close();
 
                 
                 System.out.println("end!!");

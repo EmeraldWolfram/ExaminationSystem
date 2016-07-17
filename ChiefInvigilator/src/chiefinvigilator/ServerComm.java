@@ -5,6 +5,7 @@
  */
 package chiefinvigilator;
 
+import querylist.AttdList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,9 +13,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -91,25 +94,25 @@ public class ServerComm {
     public Staff staffGetInfo(String id) throws SQLException, Exception{
         
         Staff staff = new Staff();
-        Connection conn = new ConnectDB("FEB_MAR_2016.db").connect();
-        String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS StaffIndex, "
+        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS Staff_id, "
                 + "StaffInfo.Name AS StaffName "
                 + ",* FROM InvigilatorAndAssistant "
-                + "LEFT OUTER JOIN Paper ON Paper.PaperIndex = InvigilatorAndAssistant.PaperIndex "
-                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PIIndex = Paper.PIIndex "
-                + "LEFT OUTER JOIN Venue ON Venue.VenueIndex = Paper.VenueIndex "
-                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = StaffIndex "
-                + "WHERE StaffIndex = ? ";
-//                + "AND Date = ? AND Session = ? ";
+                + "LEFT OUTER JOIN Paper ON Paper.Paper_id = InvigilatorAndAssistant.Paper_id "
+                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
+                + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
+                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = Staff_id "
+                + "WHERE Staff_id = ? "
+                + "AND Date = ? AND Session = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, id);
-//        ps.setString(2, time.getDate());
-//        ps.setString(3, getSessionType(Integer.parseInt(time.getTime())));
+        ps.setString(2, time.getDate());
+        ps.setString(3, time.getSession());
    
         ResultSet result = ps.executeQuery();
         if(result.next()){
          do{
-            staff.setID(result.getString("StaffIndex"));
+            staff.setID(result.getString("Staff_id"));
             staff.setName(result.getString("StaffName"));
             staff.setStatus(result.getString("Status"));
             staff.setAttendance(result.getString("Attendance"));
@@ -128,20 +131,46 @@ public class ServerComm {
         return staff;
     }
     
+
+    
     /**
-     * @brief   Get the session according to current time
-     * @param   time  contain current time in integer type
-     * @return  AM      From time 7:00AM to 11:00AM
-     * @return  PM      From time 1:00PM to 4:00PM
-     * @return  NULL    Other time
+     * 
+     * @param venue     contains the name of venue
+     * @return attendance list of the venue 
      */
-    public String getSessionType(int time){
-        if ((time >= 80000)&&(time <= 110000))
-            return "AM";
-        else if ((time >= 130000)&&(time <= 160000))
-            return "PM";
-        else 
-            return "NULL";
-            
+    public ArrayList<AttdList> getAttdList(String venue) throws SQLException{
+        ArrayList<AttdList> attdList = new ArrayList<>();
+        AttdList attd;
+        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        String sql = "SELECT CandidateInfo.Name AS CandidateName, CandidateAttendance.Status AS CandidateStatus, "
+                + "Venue.Name AS VenueName, CandidateAttendance.Attendance AS CandAttd ,"
+                + "Programme.Name AS ProgrammeName"
+                + ",* FROM Venue "
+                + "LEFT OUTER JOIN Paper ON Paper.Venue_id = Venue.Venue_id "
+                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
+                + "LEFT OUTER JOIN CandidateAttendance ON CandidateAttendance.Paper_id = Paper.Paper_id "
+                + "LEFT OUTER JOIN CandidateInfo ON CandidateInfo.IC = CandidateAttendance.CandidateInfoIC "
+                + "LEFT OUTER JOIN Programme ON Programme.Programme_id = CandidateInfo.Programme_id "
+                + "WHERE VenueName = ? "
+                + "AND Date = ? AND Session = ? ";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        
+        ps.setString(1, venue);
+        ps.setString(2, time.getDate());
+        ps.setString(3, time.getSession());
+   
+        ResultSet result = ps.executeQuery();
+        
+        while ( result.next() ){
+            attdList.add(new AttdList(result.getString("ExamID"), result.getString("RegNum"),
+                                       result.getString("CandidateStatus"), result.getString("PaperCode"),
+                                       result.getString("ProgrammeName"), result.getString("CandAttd")));
+        }
+        
+        result.close();
+        ps.close();
+        conn.close();
+        
+        return attdList;
     }
 }

@@ -5,13 +5,15 @@
         <group>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/jsonconvert/JsonConvert.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/ServerComm.java</file>
+            <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/ConnectDB.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/ChiefGui.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/qrgen/QRGen.java</file>
-            <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/test/Testing/Package/JsonTest.java</file>
+            <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/querylist/AttdList.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/ChiefServer.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/MainServer.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/test/Testing/Package/test.java</file>
             <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/qrgen/Screen.java</file>
+            <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ChiefInvigilator/src/chiefinvigilator/CurrentTime.java</file>
         </group>
     </open-files>
 </project-private>
