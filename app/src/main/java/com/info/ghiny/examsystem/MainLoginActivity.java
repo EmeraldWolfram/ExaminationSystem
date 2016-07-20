@@ -16,7 +16,6 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
@@ -28,7 +27,7 @@ import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,12 +49,12 @@ public class MainLoginActivity extends AppCompatActivity {
                 }
             };
 
-    private static CompoundBarcodeView barcodeView;
+    private static BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                checkEligibilityOfTheIdentity(result.getText());
+                onScanIdentity(result.getText());
             }
         }
         @Override
@@ -101,10 +100,10 @@ public class MainLoginActivity extends AppCompatActivity {
         connect = new ChiefLink();
         connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.loginScanner);
+        barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
+        //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
     }
 
     @Override
@@ -127,8 +126,8 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     //==============================================================================================
-    public void checkEligibilityOfTheIdentity(String scanStr){
-        barcodeView.setStatusText(scanStr);
+    private void onScanIdentity(String scanStr){
+        //barcodeView.setStatusText(scanStr);
         barcodeView.pause();
 
         StaffIdentity staff = new StaffIdentity();
@@ -157,6 +156,7 @@ public class MainLoginActivity extends AppCompatActivity {
                             err.setListener(ProcessException.okayButton, timesOutListener);
                             barcodeView.pause();
                             errorManager.displayError(err);
+                            barcodeView.resume();
                         }
                     }
                 }, 10000);

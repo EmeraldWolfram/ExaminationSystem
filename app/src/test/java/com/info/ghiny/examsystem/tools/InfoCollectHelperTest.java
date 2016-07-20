@@ -10,12 +10,10 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 
@@ -24,7 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ExternalDbLoader.class)
-public class ObtainInfoHelperTest {
+public class InfoCollectHelperTest {
     List<ExamSubject> papers;
     ExamSubject subject1;
     ExamSubject subject2;
@@ -54,7 +52,7 @@ public class ObtainInfoHelperTest {
     @Test
     public void testReqCandidatePapers_Throw_Error_input_string_size_not_10() throws Exception {
         try{
-            ObtainInfoHelper.reqCandidatePapers("15");
+            InfoCollectHelper.reqCandidatePapers("15");
             fail("Expected MESSAGE_TOAST but nothing was thrown");
         } catch (ProcessException err){
             assertEquals("Not a candidate ID", err.getErrorMsg());
@@ -71,7 +69,7 @@ public class ObtainInfoHelperTest {
     @Test
     public void testReqCandidatePapers_CandidateWithoutPapers() throws Exception {
         try{
-            ObtainInfoHelper.reqCandidatePapers("15WAU00001");
+            InfoCollectHelper.reqCandidatePapers("15WAU00001");
         } catch (ProcessException err){
             fail("No Exception expected but " +  err.getErrorMsg() + " was thrown");
         }
@@ -90,7 +88,7 @@ public class ObtainInfoHelperTest {
         Calendar paperDate = Calendar.getInstance();
         paperDate.set(2016, 6, 1);
 
-        Integer dayLeft = ObtainInfoHelper.getDaysLeft(paperDate);
+        Integer dayLeft = InfoCollectHelper.getDaysLeft(paperDate);
 
         assertEquals(-1, dayLeft.intValue());
     }
@@ -109,7 +107,7 @@ public class ObtainInfoHelperTest {
         Calendar paperDate = Calendar.getInstance();
         paperDate.set(2016, 5, 29);
 
-        Integer dayLeft = ObtainInfoHelper.getDaysLeft(paperDate);
+        Integer dayLeft = InfoCollectHelper.getDaysLeft(paperDate);
 
         assertEquals(-1, dayLeft.intValue());
     }
@@ -123,7 +121,7 @@ public class ObtainInfoHelperTest {
     public void testGetDaysLeft_PresentExam() throws Exception {
         Calendar paperDate = Calendar.getInstance();
 
-        Integer dayLeft = ObtainInfoHelper.getDaysLeft(paperDate);
+        Integer dayLeft = InfoCollectHelper.getDaysLeft(paperDate);
 
         assertEquals(0, dayLeft.intValue());
     }
@@ -138,7 +136,7 @@ public class ObtainInfoHelperTest {
         Calendar paperDate = Calendar.getInstance();
         paperDate.add(Calendar.DAY_OF_MONTH, 4);
 
-        Integer dayLeft = ObtainInfoHelper.getDaysLeft(paperDate);
+        Integer dayLeft = InfoCollectHelper.getDaysLeft(paperDate);
 
         assertEquals(4, dayLeft.intValue());
     }
@@ -154,7 +152,7 @@ public class ObtainInfoHelperTest {
         Calendar paperDate = Calendar.getInstance();
         paperDate.add(Calendar.DAY_OF_MONTH, 800);
 
-        Integer dayLeft = ObtainInfoHelper.getDaysLeft(paperDate);
+        Integer dayLeft = InfoCollectHelper.getDaysLeft(paperDate);
 
         assertEquals(799, dayLeft.intValue());
     }

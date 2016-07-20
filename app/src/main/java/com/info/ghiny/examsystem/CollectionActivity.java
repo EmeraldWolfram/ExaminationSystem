@@ -1,41 +1,42 @@
 package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
-import android.os.Bundle;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.KeyEvent;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
+import com.info.ghiny.examsystem.database.AttendanceList;
+import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.InfoCollectHelper;
 import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.OnSwipeListener;
+import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
+import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by GhinY on 07/05/2016.
- */
-public class ObtainInfoActivity extends AppCompatActivity {
-    private static final String TAG = ObtainInfoActivity.class.getSimpleName();
+public class CollectionActivity extends AppCompatActivity {
+    private static final String TAG = CollectionActivity.class.getSimpleName();
 
-    private ExamSubjectAdapter listAdapter;
-    private ErrorManager errManager;
-    private TCPClient obtainInfo;
+    private ErrorManager errorManager;
+    private TCPClient mTcpClient;
 
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
@@ -46,17 +47,15 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 }
             };
 
-    private CompoundBarcodeView barcodeView;
+    private static CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                requestPapers(result.getText());
-                //get The info of the student here
+                onScanBundle(result.getText());
             }
         }
-
         @Override
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
         }
@@ -64,57 +63,39 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     //==============================================================================================
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_obtain_info);
+        setContentView(R.layout.activity_collection);
 
-        errManager  = new ErrorManager(this);
-        listAdapter = new ExamSubjectAdapter();
+        TextView bundleView = (TextView)findViewById(R.id.bundleText);
+        assert bundleView  != null;
+        bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
-        obtainInfo = new TCPClient(new TCPClient.OnMessageReceived() {
+        errorManager    = new ErrorManager(this);
+        mTcpClient      = new TCPClient(new TCPClient.OnMessageReceived() {
+            //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
                 try{
-                    List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
-                    listAdapter.updatePapers(subjects);
+                    boolean ack = JsonHelper.parseBoolean(message);
                 } catch (ProcessException err) {
-                    errManager.displayError(err);
+                    errorManager.displayError(err);
                     barcodeView.resume();
                 }
             }
         });
-        ExternalDbLoader.setTcpClient(obtainInfo);
+        ExternalDbLoader.setTcpClient(mTcpClient);
 
-        ListView paperList = (ListView)findViewById(R.id.paperInfoList);
-        assert paperList != null;
-
-        paperList.setAdapter(listAdapter);
-
-        RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
-        assert thisLayout != null;
-        thisLayout.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeTop() {
-                finish();
-            }
-        });
-        paperList.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeTop() {
-                finish();
-            }
-        });
-
-
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
+        barcodeView = (CompoundBarcodeView) findViewById(R.id.bundleScanner);
+        assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Scan candidate ID to get his/her exam details");
+        barcodeView.setStatusText("Searching for collection bundle");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.setTcpClient(obtainInfo);
+        ExternalDbLoader.setTcpClient(mTcpClient);
         barcodeView.resume();
     }
 
@@ -131,28 +112,29 @@ public class ObtainInfoActivity extends AppCompatActivity {
     }
 
     //==============================================================================================
-    private void requestPapers(String scanStr){
+    private void onScanBundle(String scanStr){
         try{
             barcodeView.pause();
-            InfoCollectHelper.reqCandidatePapers(scanStr);
+            InfoCollectHelper.bundleCollection(scanStr);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if(!ChiefLink.isComplete()){
                         ProcessException err = new ProcessException(
-                                "Server busy. Request times out. \n Please try again later.",
+                                "Bundle collection times out.",
                                 ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                         err.setListener(ProcessException.okayButton, timesOutListener);
                         barcodeView.pause();
-                        errManager.displayError(err);
+                        errorManager.displayError(err);
+                        barcodeView.resume();
                     }
                 }
             }, 10000);
-        } catch (ProcessException err){
-            errManager.displayError(err);
+
+        } catch (ProcessException err) {
+            errorManager.displayError(err);
             barcodeView.resume();
         }
-
     }
 }

@@ -17,8 +17,6 @@ public class ErrorManager {
 
     private Activity act;
 
-    public ErrorManager(){}
-
     public ErrorManager(Activity act) {
         this.act = act;
     }

@@ -1,30 +1,32 @@
 package com.info.ghiny.examsystem;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.tools.ChiefLink;
+import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
 public class LinkChiefActivity extends AppCompatActivity {
     private static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
-    private CompoundBarcodeView barcodeView;
+
+    private BeepManager beepManager;
+    private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
+                beepManager.playBeepSoundAndVibrate();
                 checkForChief(result.getText());
             }
         }
@@ -40,16 +42,19 @@ public class LinkChiefActivity extends AppCompatActivity {
         setContentView(R.layout.activity_link_chief);
 
         errorManager = new ErrorManager(this);
+        beepManager  = new BeepManager(this);
+        beepManager.setBeepEnabled(true);
+        beepManager.setVibrateEnabled(true);
 
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.ipScanner);
+        barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
         assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Searching for Chief");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        beepManager.close();
         barcodeView.pause();
     }
 
@@ -58,6 +63,7 @@ public class LinkChiefActivity extends AppCompatActivity {
         super.onResume();
         barcodeView.resume();
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

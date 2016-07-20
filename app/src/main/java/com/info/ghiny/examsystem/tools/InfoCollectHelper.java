@@ -11,7 +11,11 @@ import java.util.List;
 /**
  * Created by GhinY on 01/07/2016.
  */
-public class ObtainInfoHelper {
+public class InfoCollectHelper {
+
+    public static void bundleCollection(String scanValue) throws ProcessException{
+        ExternalDbLoader.acknowledgeCollection(scanValue);
+    }
 
     public static void reqCandidatePapers(String scanValue) throws ProcessException{
 

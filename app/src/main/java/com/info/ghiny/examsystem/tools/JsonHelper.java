@@ -445,7 +445,7 @@ public class JsonHelper {
 
                     subjects.add(subject);
                 }
-                ObtainInfoHelper.getAdapter().updatePapers(subjects);
+                InfoCollectHelper.getAdapter().updatePapers(subjects);
                 ChiefLink.setCompleteFlag(true);
                 ChiefLink.setMsgValidFlag(true);
             } else {

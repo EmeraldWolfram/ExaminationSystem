@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.tools.ObtainInfoHelper;
+import com.info.ghiny.examsystem.tools.InfoCollectHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class ExamSubjectAdapter extends BaseAdapter {
         TextView examVenue  = (TextView)convertView.findViewById(R.id.paperVenueText);
         TextView examSes    = (TextView)convertView.findViewById(R.id.paperSessionText);
 
-        Integer days = ObtainInfoHelper.getDaysLeft(subject.getDate());
+        Integer days = InfoCollectHelper.getDaysLeft(subject.getDate());
         String dayLeft;
 
         if(days == -1)
