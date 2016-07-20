@@ -31,6 +31,16 @@ public class CurrentTime {
         return timeFormat.format(time);
     }
     
+    public String getSession(){
+        int time = Integer.parseInt(getTime());
+        if ((time >= 80000)&&(time <= 110000))
+            return "AM";
+        else if ((time >= 130000)&&(time <= 160000))
+            return "PM";
+        else 
+            return "NULL";
+    }
+    
 //    public String getDate();
 //    public String getTime();
 }

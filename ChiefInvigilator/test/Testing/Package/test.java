@@ -22,6 +22,8 @@ import chiefinvigilator.ServerComm;
 import chiefinvigilator.Staff;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import querylist.AttdList;
 /**
  *
  * @author Krissy
@@ -82,12 +84,12 @@ public class test {
     
     @Mock
     CurrentTime time;
-            
+    
     @Test
     public void testGetStaffInfo() {
         Staff staff = new Staff();
         when(time.getDate()).thenReturn("11/02/2015");
-        when(time.getTime()).thenReturn("080000");
+        when(time.getSession()).thenReturn("AM");
         
         try {
             staff = servercomm.staffGetInfo("staff1");
@@ -104,7 +106,7 @@ public class test {
     public void testGetStaffInfo2() {
         Staff staff = new Staff();
         when(time.getDate()).thenReturn("11/02/2015");
-        when(time.getTime()).thenReturn("091234");
+        when(time.getSession()).thenReturn("AM");
         
         try {
             staff = servercomm.staffGetInfo("staff2");
@@ -122,7 +124,7 @@ public class test {
     public void testGetStaffInfo2overTime() {
         Staff staff = new Staff();
         when(time.getDate()).thenReturn("11/02/2015");
-        when(time.getTime()).thenReturn("110957");
+        when(time.getSession()).thenReturn("PM");
         
         try {
             staff = servercomm.staffGetInfo("staff2");
@@ -140,7 +142,7 @@ public class test {
     public void testGetStaffInfo2overTime2() {
         Staff staff = new Staff();
         when(time.getDate()).thenReturn("11/03/2015");
-        when(time.getTime()).thenReturn("090000");
+        when(time.getSession()).thenReturn("AM");
         
         try {
             staff = servercomm.staffGetInfo("staff2");
@@ -153,5 +155,66 @@ public class test {
         assertEquals(null,staff.getVenue());
         assertEquals(null,staff.getStatus());
     }
+    
+    @Test
+    public void testGetAttdList(){
+        ArrayList<AttdList> attdList= new ArrayList<>();
+        when(time.getDate()).thenReturn("11/02/2015");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            attdList = servercomm.getAttdList("M4");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
+        }
+        
+        assertEquals(1,attdList.size());
+        assertEquals("W1004ADAC",attdList.get(0).getExamId());
+        assertEquals("16WAR25342",attdList.get(0).getRegNum());
+        assertEquals("Legal",attdList.get(0).getStatus());
+        assertEquals("Present",attdList.get(0).getAttendance());
+        assertEquals("MPU3123",attdList.get(0).getPaperCode());
+        assertEquals("OGC2",attdList.get(0).getProgramme());
+    }
+    
+    @Test
+    public void testGetAttdList2(){
+        ArrayList<AttdList> attdList= new ArrayList<>();
+        when(time.getDate()).thenReturn("10/02/2016");
+        when(time.getSession()).thenReturn("PM");
+        
+        try {
+            attdList = servercomm.getAttdList("Q5");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
+        }
+        
+        assertEquals(3,attdList.size());
+        
+    }
+    
+    @Test
+    public void testGetAttdListIsEmpty(){
+        ArrayList<AttdList> attdList= new ArrayList<>();
+        when(time.getDate()).thenReturn("10/02/2015");
+        when(time.getSession()).thenReturn("PM");
+        
+        try {
+            attdList = servercomm.getAttdList("Q5");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
+        }
+        
+        assertEquals(0,attdList.size());
+        
+    }
+    
+    
     
 }
