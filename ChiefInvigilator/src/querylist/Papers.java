@@ -23,6 +23,28 @@ public class Papers {
                     String paperDesc,
                     String paperStartNo,
                     String totalCandidate){
-        
+        this.paperCode = paperCode;
+        this.paperDesc = paperDesc;
+        this.paperStartNo = paperStartNo;
+        this.totalCandidate = totalCandidate;
     }
+    
+    public String getPaperCode(){
+        return paperCode;
+    }
+    
+    public String getPaperDesc(){
+        return paperDesc;
+    }
+    
+    public String getPaperStartNo(){
+        return paperStartNo;
+    }
+    
+    
+    public String getTotalCandidate(){
+        return totalCandidate;
+    }
+    
+    
 }

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import querylist.Papers;
 
 
 /**
@@ -102,12 +103,12 @@ public class ServerComm {
                 + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
                 + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
                 + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = Staff_id "
-                + "WHERE Staff_id = ? "
-                + "AND Date = ? AND Session = ? ";
+                + "WHERE Staff_id = ? ";
+//                + "AND Date = ? AND Session = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, id);
-        ps.setString(2, time.getDate());
-        ps.setString(3, time.getSession());
+//        ps.setString(2, time.getDate());
+//        ps.setString(3, time.getSession());
    
         ResultSet result = ps.executeQuery();
         if(result.next()){
@@ -119,6 +120,7 @@ public class ServerComm {
             staff.setVenue(result.getString("VenueName"));
             staff.setSession(result.getString("Session"));
             staff.setDate(result.getString("Date"));
+ 
         }while ( result.next() );
         }
         else
@@ -151,13 +153,13 @@ public class ServerComm {
                 + "LEFT OUTER JOIN CandidateAttendance ON CandidateAttendance.Paper_id = Paper.Paper_id "
                 + "LEFT OUTER JOIN CandidateInfo ON CandidateInfo.IC = CandidateAttendance.CandidateInfoIC "
                 + "LEFT OUTER JOIN Programme ON Programme.Programme_id = CandidateInfo.Programme_id "
-                + "WHERE VenueName = ? "
-                + "AND Date = ? AND Session = ? ";
+                + "WHERE VenueName = ? ";
+//                + "AND Date = ? AND Session = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
         
         ps.setString(1, venue);
-        ps.setString(2, time.getDate());
-        ps.setString(3, time.getSession());
+//        ps.setString(2, time.getDate());
+//        ps.setString(3, time.getSession());
    
         ResultSet result = ps.executeQuery();
         
@@ -172,5 +174,43 @@ public class ServerComm {
         conn.close();
         
         return attdList;
+    }
+    
+    /**
+     * 
+     * @param venue     contains the name of venue
+     * @return paper list that are being examined at the venue 
+     */
+    public ArrayList<Papers> getPapers(String venue) throws SQLException{
+        ArrayList<Papers> papers = new ArrayList<>();
+        AttdList attd;
+        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        String sql = "SELECT Venue.Name AS VenueName "
+                + ",* FROM Venue "
+                + "LEFT OUTER JOIN Paper ON Paper.Venue_id = Venue.Venue_id "
+                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
+                + "WHERE VenueName = ? ";
+//                + "AND Date = ? AND Session = ? ";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, venue);
+//        ps.setString(2, time.getDate());
+//        ps.setString(3, time.getSession());
+   
+        ResultSet result = ps.executeQuery();
+        
+        while ( result.next() ){
+            papers.add(new Papers(result.getString("PaperCode"), result.getString("PaperDescription"),
+                                result.getString("PaperStartNo"), result.getString("TotalCandidate")));
+            
+        }
+        
+        
+        
+        result.close();
+        ps.close();
+        conn.close();
+        
+        
+        return papers;
     }
 }
