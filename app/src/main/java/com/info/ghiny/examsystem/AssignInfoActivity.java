@@ -41,7 +41,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                lockScanValue(result.getText());
+                onScanTableOrCandidate(result.getText());
             }
         }
         @Override
@@ -109,7 +109,11 @@ public class AssignInfoActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //checkListDB.saveAttendanceList(attdList);
+        try {
+            AssignHelper.getJdbcLoader().saveAttendanceList(AssignHelper.getAttdList());
+        } catch (ProcessException err) {
+            errManager.displayError(err);
+        }
     }
 
     @Override
@@ -118,7 +122,7 @@ public class AssignInfoActivity extends AppCompatActivity {
     }
 
     //==============================================================================================
-    public void lockScanValue(String scanString){
+    public void onScanTableOrCandidate(String scanString){
         TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
         TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);

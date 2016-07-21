@@ -3,8 +3,6 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.json.JSONArray;
@@ -21,7 +19,6 @@ import java.util.List;
 public class JsonHelper {
     public static final String KEY_TYPE_RETURN      = "Result";
     public static final String KEY_TYPE_CHECKIN     = "CheckIn";
-    public static final String KEY_TYPE_TYPE        = "Type";
     public static final String KEY_VALUE            = "Value";
 
     public static final String TYPE_LOGIN           = "Identity";
@@ -71,19 +68,22 @@ public class JsonHelper {
 
         try{
             list.put(KEY_TYPE_CHECKIN, TYPE_ATTD_LIST);
-            list.put(LIST_SIZE, regNumList.size());
             list.put(LIST_INVI, LoginHelper.getStaff().getIdNo());
             list.put(LIST_VENUE, LoginHelper.getStaff().getVenueHandling());
 
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
-                cddObj = new JSONObject();
-                cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
-                cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
-                cddObj.put(Candidate.CDD_STATUS, cdd.getStatus().toString());
-                cddList.put(cddObj);
+                if(cdd.getStatus() != AttendanceList.Status.EXEMPTED
+                        && cdd.getStatus() != AttendanceList.Status.BARRED){
+                    cddObj = new JSONObject();
+                    cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
+                    cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
+                    cddObj.put(Candidate.CDD_STATUS, cdd.getStatus().toString());
+                    cddList.put(cddObj);
+                }
             }
             list.put(LIST_LIST, cddList);
+            list.put(LIST_SIZE, cddList.length());
             return list.toString();
         } catch(Exception err){
             return null;

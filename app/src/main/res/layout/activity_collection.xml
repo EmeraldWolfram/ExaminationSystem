@@ -28,12 +28,18 @@
         android:layout_below="@id/bundleText">
     </View>
 
-    <com.journeyapps.barcodescanner.CompoundBarcodeView
+    <com.journeyapps.barcodescanner.BarcodeView
         android:id="@+id/bundleScanner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:layout_alignTop="@+id/bundleDummy">
-    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+    </com.journeyapps.barcodescanner.BarcodeView>
+
+    <ImageView
+        android:src="@drawable/scan_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

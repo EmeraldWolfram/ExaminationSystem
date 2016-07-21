@@ -84,7 +84,7 @@ public class JsonHelperTest {
         assertEquals("AttdList", obj.getString("CheckIn"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
-        assertEquals(6, obj.getInt("Size"));
+        assertEquals(4, obj.getInt("Size"));
 
         JSONArray jArr = obj.getJSONArray("CddList");
     }

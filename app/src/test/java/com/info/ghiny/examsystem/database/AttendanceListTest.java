@@ -397,22 +397,28 @@ public class AttendanceListTest {
                 AttendanceList.Status.EXEMPTED, "BAME 0003", "RMB3"));
     }
 
+    //= Parse Status ===============================================================================
+
+    /**
+     * parseStatus()
+     * Convert a String type of status into Status type
+     *
+     * @throws Exception
+     */
     @Test
     public void testParseStatus() throws Exception{
         AttendanceList attdList = new AttendanceList();
 
-        AttendanceList.Status present   = attdList.parseStatus("PRESENT");
-        AttendanceList.Status absent    = attdList.parseStatus("ABSENT");
-        AttendanceList.Status absent2   = attdList.parseStatus("BLA BLA");
+        AttendanceList.Status absent    = attdList.parseStatus("ELIGIBLE");
+        AttendanceList.Status absent2   = attdList.parseStatus("ELIGIBLE");
         AttendanceList.Status barred    = attdList.parseStatus("BARRED");
         AttendanceList.Status exempted  = attdList.parseStatus("EXEMPTED");
         AttendanceList.Status quarantized = attdList.parseStatus("QUARANTIZED");
 
-        assertEquals(AttendanceList.Status.PRESENT, present);
         assertEquals(AttendanceList.Status.ABSENT, absent);
+        assertEquals(AttendanceList.Status.ABSENT, absent2);
         assertEquals(AttendanceList.Status.BARRED, barred);
         assertEquals(AttendanceList.Status.EXEMPTED, exempted);
         assertEquals(AttendanceList.Status.QUARANTIZED, quarantized);
-        assertEquals(AttendanceList.Status.ABSENT, absent2);
     }
 }

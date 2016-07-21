@@ -11,10 +11,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Calendar;
-import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 
 /**
@@ -23,7 +21,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ExternalDbLoader.class)
 public class InfoCollectHelperTest {
-    List<ExamSubject> papers;
     ExamSubject subject1;
     ExamSubject subject2;
     ExamSubject subject3;

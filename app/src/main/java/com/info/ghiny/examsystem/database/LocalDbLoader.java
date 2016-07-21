@@ -95,10 +95,11 @@ public class LocalDbLoader {
             ptr.close();
             stmt.close();
             con.close();
-        } catch(Exception err){
+        } catch(Exception err) {
             throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
+
         return status;
     }
 

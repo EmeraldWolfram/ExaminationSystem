@@ -48,13 +48,22 @@
 
     </LinearLayout>
 
-    <com.journeyapps.barcodescanner.CompoundBarcodeView
-        android:id="@+id/assignScanner"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="match_parent"
         android:layout_below="@id/tableInfoLayout">
+        <com.journeyapps.barcodescanner.CompoundBarcodeView
+            android:id="@+id/assignScanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.journeyapps.barcodescanner.CompoundBarcodeView>
 
-    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+        <ImageView
+            android:src="@drawable/scan_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>

@@ -199,8 +199,6 @@ public class AttendanceList {
 
     public Status parseStatus(String statusString){
         switch (statusString){
-            case "PRESENT":
-                return Status.PRESENT;
             case "BARRED":
                 return Status.BARRED;
             case "EXEMPTED":

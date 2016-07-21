@@ -84,16 +84,11 @@ public class FragmentListActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    try{
-                        ProcessException err;
-                        if(!ChiefLink.isComplete()){
-                            err = new ProcessException(
-                                    "Server busy. Upload times out.\nPlease try again later.",
-                                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                            err.setListener(ProcessException.okayButton, timesOutListener);
-                            throw err;
-                        }
-                    } catch (ProcessException err){
+                    if(!ChiefLink.isComplete()){
+                        ProcessException err = new ProcessException(
+                                "Server busy. Upload times out.\nPlease try again later.",
+                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                        err.setListener(ProcessException.okayButton, timesOutListener);
                         errorManager.displayError(err);
                     }
                 }

@@ -16,7 +16,6 @@ public class StaffIdentity {
 
     private String idNo;
     private String password;
-    private boolean isSet;
     private String name;
     private String venueHandling;
     private ArrayList<String> role;
@@ -24,7 +23,6 @@ public class StaffIdentity {
 
     public StaffIdentity(){
         this.idNo           = null;
-        this.isSet          = false;
         this.name           = null;
         this.password       = null;
         this.venueHandling  = null;
@@ -33,7 +31,6 @@ public class StaffIdentity {
 
     public StaffIdentity(String idNo, boolean elg, String name, String venue){
         this.idNo           = idNo;
-        this.isSet          = elg;
         this.name           = name;
         this.password       = null;
         this.venueHandling  = venue;
@@ -57,9 +54,6 @@ public class StaffIdentity {
     public String getName() {
         return name;
     }
-
-    public void setIsSet(boolean set){      this.isSet = set;}
-    public boolean isSet(){   return this.isSet;}
 
     public void addRole(String role) {
         this.role.add(role);

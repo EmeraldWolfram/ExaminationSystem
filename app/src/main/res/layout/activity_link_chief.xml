@@ -37,7 +37,7 @@
     </com.journeyapps.barcodescanner.BarcodeView>
 
     <ImageView
-        android:src="@drawable/ic_crop_free_black_250dp"
+        android:src="@drawable/scan_frame"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_centerInParent="true"/>

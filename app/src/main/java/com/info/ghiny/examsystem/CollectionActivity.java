@@ -27,6 +27,7 @@ import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.HashMap;
@@ -47,12 +48,11 @@ public class CollectionActivity extends AppCompatActivity {
                 }
             };
 
-    private static CompoundBarcodeView barcodeView;
+    private static BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.setStatusText(result.getText());
                 onScanBundle(result.getText());
             }
         }
@@ -86,10 +86,9 @@ public class CollectionActivity extends AppCompatActivity {
         });
         ExternalDbLoader.setTcpClient(mTcpClient);
 
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.bundleScanner);
+        barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
         assert barcodeView != null;
         barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Searching for collection bundle");
     }
 
     @Override
