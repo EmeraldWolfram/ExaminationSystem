@@ -41,6 +41,4 @@ public class CurrentTime {
             return "NULL";
     }
     
-//    public String getDate();
-//    public String getTime();
 }

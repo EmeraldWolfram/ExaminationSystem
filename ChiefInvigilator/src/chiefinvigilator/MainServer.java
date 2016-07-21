@@ -10,6 +10,8 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jsonconvert.JsonConvert;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 /**
@@ -44,18 +46,31 @@ public class MainServer {
             staff = jsonParser.jsonToSignIn(reteriveMsg);
             System.out.println(reteriveMsg);
             boolean verify = new ServerComm().staffVerify(staff.getID(),staff.getPassword());
-            System.out.println(verify);
+            
+            JSONObject jsonMsg = new JSONObject();
+            jsonParser.staffInfoToJson(verify, staff);
             if(verify){
                 staff = new ServerComm().staffGetInfo(staff.id);
+                JSONObject staffInfo = jsonParser.staffInfoToJson(verify, staff);
+                System.out.println(staff.getVenue());
+                System.out.println(staffInfo);
+                JSONArray papers = jsonParser.papersToJson(new ServerComm().getPapers(staff.getVenue()));
+                System.out.println(papers);
+                JSONArray attdList = jsonParser.attdListToJson(new ServerComm().getAttdList(staff.getVenue()));
+                System.out.println(attdList);
+                jsonMsg = jsonParser.jsonStringConcatenate(staffInfo, papers, attdList);
+                
             }
-            String jsonStaff = jsonParser.staffInfoToJson(verify, staff);
+            else
+                jsonMsg = new JsonConvert().booleanToJson(false);
+            
             
             
             
             if(reteriveMsg != null){
-                System.out.println(jsonStaff);
+                System.out.println(jsonMsg.toString());
                 PrintStream out = new PrintStream(mainSocket.getOutputStream());
-                out.println(jsonStaff);
+                out.println(jsonMsg);
                 out.flush();
                 
                 mainSocket.close();

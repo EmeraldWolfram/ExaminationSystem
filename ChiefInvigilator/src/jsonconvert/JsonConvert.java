@@ -6,6 +6,7 @@
 package jsonconvert;
 import chiefinvigilator.ServerComm;
 import chiefinvigilator.Staff;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import querylist.AttdList;
+import querylist.Papers;
 
 /**
  *
@@ -28,27 +30,34 @@ public class JsonConvert {
         
     }
     
-    public String staffInfoToJson(boolean valid, Staff staff) throws JSONException{
+    /**
+     * @brief To convert staff info to Json object
+     * @param valid
+     * @param staff
+     * @return
+     * @throws JSONException 
+     */
+    public JSONObject staffInfoToJson(boolean valid, Staff staff) throws JSONException, SQLException{
         JSONObject jsonStaff = new JSONObject();
         JSONArray arr = new JSONArray();
         arr.put(staff.getStatus());
         
-        jsonStaff.put("Type", "Identity");
         jsonStaff.put("Result", valid);
         jsonStaff.put("Name", staff.getName());
         jsonStaff.put("Venue", staff.getVenue());
         jsonStaff.put("IdNo", staff.getID());
-        jsonStaff.put("Status", arr);
-        
-        return jsonStaff.toString();
+        jsonStaff.put("Status", staff.getStatus());
+        jsonStaff.put("CddList", attdListToJson(new ServerComm().getAttdList(staff.getVenue())));
+        jsonStaff.put("PaperMap", attdListToJson(new ServerComm().getAttdList(staff.getVenue())));
+        return jsonStaff;
     }
     
-    public String booleanToJson(boolean b) throws JSONException{
+    public JSONObject booleanToJson(boolean b) throws JSONException{
         JSONObject bool = new JSONObject();
         
         bool.put("Result", b);
         
-        return bool.toString();
+        return bool;
     }
     
     public Staff jsonToSignIn(String jsonString) throws JSONException, Exception{
@@ -62,7 +71,7 @@ public class JsonConvert {
         return staff;
     }
     
-    public String attdListToJson(ArrayList<AttdList> attdList) throws JSONException{
+    public JSONArray attdListToJson(ArrayList<AttdList> attdList) throws JSONException{
         JSONArray jArr = new JSONArray();
         JSONObject attd;
         for(int i = 0; i < attdList.size(); i++){
@@ -75,6 +84,34 @@ public class JsonConvert {
             jArr.put(attd);
         }
         
-        return jArr.toString();
+        return jArr;
     }
+    
+    public JSONArray papersToJson(ArrayList<Papers> papers) throws JSONException{
+        JSONArray jArr = new JSONArray();
+        JSONObject attd;
+        System.out.println(papers.size());
+        for(int i = 0; i < papers.size(); i++){
+            attd = new JSONObject();
+            
+            attd.put("PaperCode", papers.get(i).getPaperCode());
+            attd.put("PaperDesc", papers.get(i).getPaperDesc());
+            attd.put("PaperStartNo", papers.get(i).getPaperStartNo());
+            attd.put("PaperTotalCdd", papers.get(i).getTotalCandidate());
+            jArr.put(attd);
+        }
+        
+        return jArr;
+    }
+    
+    public JSONObject jsonStringConcatenate(JSONObject jsonStaff, JSONArray papers, JSONArray attdList) throws JSONException{
+        
+        jsonStaff.put("CddList", attdList);
+        jsonStaff.put("PaperMap", papers);
+        
+        return jsonStaff;
+    }
+    
+    
+    
 }
