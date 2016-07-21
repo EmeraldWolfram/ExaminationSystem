@@ -52,12 +52,8 @@ public class MainServer {
             if(verify){
                 staff = new ServerComm().staffGetInfo(staff.id);
                 JSONObject staffInfo = jsonParser.staffInfoToJson(verify, staff);
-                System.out.println(staff.getVenue());
-                System.out.println(staffInfo);
                 JSONArray papers = jsonParser.papersToJson(new ServerComm().getPapers(staff.getVenue()));
-                System.out.println(papers);
                 JSONArray attdList = jsonParser.attdListToJson(new ServerComm().getAttdList(staff.getVenue()));
-                System.out.println(attdList);
                 jsonMsg = jsonParser.jsonStringConcatenate(staffInfo, papers, attdList);
                 
             }

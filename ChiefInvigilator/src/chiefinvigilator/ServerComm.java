@@ -213,4 +213,11 @@ public class ServerComm {
         
         return papers;
     }
+    
+    public void updateCandidateAttendence(ArrayList<AttdList> attdList){
+        String sql = "UPDATE CandidateAttendence "
+                + "SET Coursework = ?, Practical = ? "
+                + "WHERE RegNum = ";
+    }
 }
+

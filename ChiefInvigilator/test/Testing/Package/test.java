@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import querylist.AttdList;
+import querylist.Papers;
 /**
  *
  * @author Krissy
@@ -212,6 +213,24 @@ public class test {
         }
         
         assertEquals(0,attdList.size());
+        
+    }
+    
+    @Test
+    public void testGetPapers(){
+        ArrayList<Papers> papers = new ArrayList<>();
+        when(time.getDate()).thenReturn("12/02/2016");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            papers = servercomm.getPapers("M1");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            assertEquals("Invalid data in current session.",ex.getMessage());
+        }
+        
+        assertEquals(1,papers.size());
         
     }
     

@@ -29,7 +29,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Krissy
  */
-class Screen extends JPanel {
+public class Screen extends JPanel {
         
     ServerSocket socket;
     
@@ -50,20 +50,37 @@ class Screen extends JPanel {
       return addr.getHostAddress()+":"+port;
    }
          
+    public Screen(){
+    };
+    
     public Screen(ServerSocket socket){
-//        repaint();
+        
     this.socket = socket;
             try {
                 this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
             } catch (Exception ex) {
                 Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
             }
+            repaint();
         
+    }
+    
+    public void regenerateQR(ServerSocket socket){
+        removeAll();
+        this.socket = socket;
+        try {
+                this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
+            } catch (Exception ex) {
+                Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        updateUI();
+//        repaint();
     }
     
         
     
-    public void paint (Graphics graphics){
+    public void paintComponent (Graphics graphics){
+        super.paintComponent(graphics);
         Hashtable hints = new Hashtable();
         hints.put(EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.M);
         hints.put(EncodeHintType.AZTEC_LAYERS, 10);
