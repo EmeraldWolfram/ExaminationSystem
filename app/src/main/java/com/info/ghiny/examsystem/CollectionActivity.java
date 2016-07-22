@@ -79,8 +79,9 @@ public class CollectionActivity extends AppCompatActivity {
                 try{
                     boolean ack = JsonHelper.parseBoolean(message);
                 } catch (ProcessException err) {
-                    errorManager.displayError(err);
-                    barcodeView.resume();
+                    Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
                 }
             }
         });

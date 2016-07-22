@@ -145,15 +145,20 @@ public class MainLoginActivity extends AppCompatActivity {
 
     //==============================================================================================
     private void onScanIdentity(String scanStr){
-        //barcodeView.setStatusText(scanStr);
-        barcodeView.pause();
+        try{
+            barcodeView.pause();
+            LoginHelper.checkQrId(scanStr);
 
-        StaffIdentity staff = new StaffIdentity();
-        staff.setIdNo(scanStr);
-        LoginHelper.setStaff(staff);
+            StaffIdentity staff = new StaffIdentity();
+            staff.setIdNo(scanStr);
+            LoginHelper.setStaff(staff);
 
-        Intent pwIntent = new Intent(this, PopUpLogin.class);
-        startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+            Intent pwIntent = new Intent(this, PopUpLogin.class);
+            startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+        } catch (ProcessException err) {
+            errorManager.displayError(err);
+        }
+
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){

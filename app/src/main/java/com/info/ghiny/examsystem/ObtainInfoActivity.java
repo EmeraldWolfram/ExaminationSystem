@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -78,8 +79,9 @@ public class ObtainInfoActivity extends AppCompatActivity {
                     List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
                     listAdapter.updatePapers(subjects);
                 } catch (ProcessException err) {
-                    errManager.displayError(err);
-                    barcodeView.resume();
+                    Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
                 }
             }
         });

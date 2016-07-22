@@ -208,12 +208,7 @@ public class AssignHelper {
     public static void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
-            Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
-            attdList.removeCandidate(cdd.getRegNum());
-            cdd.setTableNumber(0);
-            cdd.setStatus(AttendanceList.Status.ABSENT);
-            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-            assgnList.remove(tempTable);
+            resetNewAssign();
         } else {
             //Candidate reassign, remove the previously assignment
             assgnList.remove(tempCdd.getTableNumber());
@@ -235,6 +230,16 @@ public class AssignHelper {
     public static void cancelNewAssign(){
         tempCdd     = null;
         tempTable   = null;
+    }
+
+    //Remove away the new assigned Candidate
+    public static void resetNewAssign(){
+        Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
+        attdList.removeCandidate(cdd.getRegNum());
+        cdd.setTableNumber(0);
+        cdd.setStatus(AttendanceList.Status.ABSENT);
+        attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+        assgnList.remove(tempTable);
     }
 
     //= FAKE Function for demo purposes ============================================================

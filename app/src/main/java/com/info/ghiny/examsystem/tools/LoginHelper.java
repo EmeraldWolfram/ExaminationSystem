@@ -35,6 +35,13 @@ public class LoginHelper {
         }
     }
 
+    public static void checkQrId(String scanStr) throws ProcessException{
+        if(scanStr.length() != 6){
+            throw new ProcessException("Invalid staff ID Number", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
+        }
+    }
+
     public static void matchStaffPw(String inputPw) throws ProcessException{
         if(staff == null)
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,

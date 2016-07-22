@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -58,7 +59,9 @@ public class FragmentListActivity extends AppCompatActivity {
                     boolean uploaded = JsonHelper.parseBoolean(message);
                     AssignHelper.getJdbcLoader().clearDatabase();
                 } catch (ProcessException err){
-                    errorManager.displayError(err);
+                    Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
                 }
             }
         });

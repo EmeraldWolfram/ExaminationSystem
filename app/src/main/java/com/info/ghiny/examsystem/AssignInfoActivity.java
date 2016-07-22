@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -68,9 +69,28 @@ public class AssignInfoActivity extends AppCompatActivity {
             errManager.displayError(err);
         }
 
+        LinearLayout assignResult = (LinearLayout)findViewById(R.id.assignInfoLinearLayout);
+        assert assignResult != null;
+        assignResult.setOnTouchListener(new OnSwipeListener(this){
+            @Override
+            public void onSwipeRight() {
+                AssignHelper.resetNewAssign();
+
+                TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
+                TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
+                TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
+                TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
+
+                assert tableView    != null;    assert cddView     != null;
+                assert regNumView   != null;    assert paperView   != null;
+
+                tableView.setText("");      cddView.setText("");
+                regNumView.setText("");     paperView.setText("");
+            }
+        });
 
         //Set swiping gesture
-        RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoActivityLayout);
+        RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
@@ -83,12 +103,9 @@ public class AssignInfoActivity extends AppCompatActivity {
                 Intent listIntent = new Intent(AssignInfoActivity.this, FragmentListActivity.class);
                 startActivity(listIntent);
             }
-            @Override
-            public void onSwipeRight(){
-                finish();
-            }
-
         });
+
+
 
         //Barcode Viewer
         barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
