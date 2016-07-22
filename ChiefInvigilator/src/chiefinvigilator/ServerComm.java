@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import querylist.Papers;
+import querylist.CddPapers;
 
 
 /**
@@ -26,7 +27,7 @@ import querylist.Papers;
  */
 public class ServerComm {
     
-    private CurrentTime time;
+    static private CurrentTime time;
     
     public ServerComm(){
         
@@ -46,7 +47,7 @@ public class ServerComm {
         // TODO code application logic here
     }
     
-    public Staff staffSignIn(String id, String password) throws SQLException,Exception{
+    public static Staff staffSignIn(String id, String password) throws SQLException,Exception{
         Staff staff = new Staff();
        
         
@@ -66,7 +67,7 @@ public class ServerComm {
      * @return match        The result of the checking ,true is correct while false is incorrect
      * @throws SQLException 
      */
-    public boolean staffVerify(String id, String password) throws SQLException{
+    public static boolean staffVerify(String id, String password) throws SQLException{
         boolean match;
         Connection conn = new ConnectDB("UserDatabase.db").connect();
         String sql = "SELECT Username, Password FROM User where Username=? and Password=?";
@@ -92,7 +93,7 @@ public class ServerComm {
      * @return  staff       contains info of the staff
      * @throws SQLException 
      */
-    public Staff staffGetInfo(String id) throws SQLException, Exception{
+    public static Staff staffGetInfo(String id) throws SQLException, Exception{
         
         Staff staff = new Staff();
         Connection conn = new ConnectDB("ChiefDataBase.db").connect();
@@ -111,8 +112,7 @@ public class ServerComm {
 //        ps.setString(3, time.getSession());
    
         ResultSet result = ps.executeQuery();
-        if(result.next()){
-         do{
+        while(result.next()){
             staff.setID(result.getString("Staff_id"));
             staff.setName(result.getString("StaffName"));
             staff.setStatus(result.getString("Status"));
@@ -121,10 +121,7 @@ public class ServerComm {
             staff.setSession(result.getString("Session"));
             staff.setDate(result.getString("Date"));
  
-        }while ( result.next() );
         }
-        else
-            throw new Exception("Invalid data in current session.");
         
         result.close();
         ps.close();
@@ -140,7 +137,7 @@ public class ServerComm {
      * @param venue     contains the name of venue
      * @return attendance list of the venue 
      */
-    public ArrayList<AttdList> getAttdList(String venue) throws SQLException{
+    public static ArrayList<AttdList> getAttdList(String venue) throws SQLException{
         ArrayList<AttdList> attdList = new ArrayList<>();
         AttdList attd;
         Connection conn = new ConnectDB("ChiefDataBase.db").connect();
@@ -181,7 +178,7 @@ public class ServerComm {
      * @param venue     contains the name of venue
      * @return paper list that are being examined at the venue 
      */
-    public ArrayList<Papers> getPapers(String venue) throws SQLException{
+    public static ArrayList<Papers> getPapers(String venue) throws SQLException{
         ArrayList<Papers> papers = new ArrayList<>();
         AttdList attd;
         Connection conn = new ConnectDB("ChiefDataBase.db").connect();
@@ -203,14 +200,54 @@ public class ServerComm {
                                 result.getString("PaperStartNo"), result.getString("TotalCandidate")));
             
         }
+
+        result.close();
+        ps.close();
+        conn.close();
+
+        return papers;
+    }
+    
+    public static void checkCollector(){}
+    
+    public static ArrayList<CddPapers> getCddPapers(String candidateID) throws SQLException{
+        ArrayList<CddPapers> cddPapers = new ArrayList<>();
+        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        String sql = "SELECT Venue.Name AS VenueName "
+                + ",* FROM CandidateInfo "
+                + "LEFT OUTER JOIN CandidateAttendance ON CandidateAttendance.CandidateInfoIC = CandidateInfo.IC "
+                + "LEFT OUTER JOIN Paper ON Paper.Paper_id = CandidateAttendance.Paper_id "
+                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
+                + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
+                + "WHERE RegNum = ? "
+                + "AND Date = ? AND Session = ? ";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, candidateID);
+        ps.setString(2, time.getDate());
+        ps.setString(3, time.getSession());
+
+        ResultSet result = ps.executeQuery();
         
-        
+        while ( result.next() ){
+            cddPapers.add(new CddPapers(result.getString("PaperCode"),
+                                        result.getString("PaperDescription"),
+                                        result.getString("Date"),
+                                        result.getString("Session"),
+                                        result.getString("VenueName")
+                                        ));
+        }
         
         result.close();
         ps.close();
         conn.close();
         
-        
-        return papers;
+        return cddPapers;
+    }
+    
+    public static void updateCandidateAttendence(ArrayList<AttdList> attdList){
+        String sql = "UPDATE CandidateAttendence "
+                + "SET Coursework = ?, Practical = ? "
+                + "WHERE RegNum = ";
     }
 }
+

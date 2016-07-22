@@ -29,16 +29,44 @@ import javax.swing.SwingUtilities;
  *
  * @author Krissy
  */
-class Screen extends JPanel {
+public class Screen extends JPanel {
         
     ServerSocket socket;
     
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        String myWeb = "";
-        int width = 300;
-        int height = 300;
+    QRCodeWriter qrCodeWriter = new QRCodeWriter();
+    String myWeb = "";
+    int width = 300;
+    int height = 300;
          
-        BufferedImage bufferedImage = null;
+    BufferedImage bufferedImage = null;
+
+         
+    public Screen(){
+    };
+    
+    public Screen(ServerSocket socket){
+        
+    this.socket = socket;
+            try {
+                this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
+            } catch (Exception ex) {
+                Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            repaint();
+        
+    }
+    
+    public void regenerateQR(ServerSocket socket){
+        removeAll();
+        this.socket = socket;
+        try {
+                this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
+            } catch (Exception ex) {
+                Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        updateUI();
+//        repaint();
+    }
     
     public String localIp(int port) throws Exception {
       InetAddress addr = InetAddress.getLocalHost();
@@ -48,22 +76,10 @@ class Screen extends JPanel {
 
       System.out.println("listening on port: " + port);
       return addr.getHostAddress()+":"+port;
-   }
-         
-    public Screen(ServerSocket socket){
-//        repaint();
-    this.socket = socket;
-            try {
-                this.myWeb = "$CHIEF:"+localIp(socket.getLocalPort())+":$";
-            } catch (Exception ex) {
-                Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        
-    }
+   }   
     
-        
-    
-    public void paint (Graphics graphics){
+    public void paintComponent (Graphics graphics){
+        super.paintComponent(graphics);
         Hashtable hints = new Hashtable();
         hints.put(EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.M);
         hints.put(EncodeHintType.AZTEC_LAYERS, 10);

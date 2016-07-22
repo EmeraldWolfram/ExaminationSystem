@@ -24,6 +24,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import querylist.AttdList;
+import querylist.CddPapers;
+import querylist.Papers;
 /**
  *
  * @author Krissy
@@ -96,7 +98,7 @@ public class test {
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         } catch (Exception ex) {
-            assertEquals("Invalid data in current session.",ex.getMessage());
+            System.out.print(ex.getMessage());
         }
         assertEquals("M4",staff.getVenue());
         assertEquals("chief",staff.getStatus());
@@ -113,7 +115,7 @@ public class test {
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         } catch (Exception ex) {
-            assertEquals("Invalid data in current session.",ex.getMessage());
+            System.out.print(ex.getMessage());
         }
         
         assertEquals("M4",staff.getVenue());
@@ -131,7 +133,7 @@ public class test {
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         } catch (Exception ex) {
-            assertEquals("Invalid data in current session.",ex.getMessage());
+            System.out.print(ex.getMessage());
         }
 
         assertEquals(null,staff.getVenue());
@@ -149,7 +151,7 @@ public class test {
         } catch (SQLException ex) {
             System.out.print("Lost connection");
         } catch (Exception ex) {
-            assertEquals("Invalid data in current session.",ex.getMessage());
+            System.out.print(ex.getMessage());
         }
 
         assertEquals(null,staff.getVenue());
@@ -167,7 +169,7 @@ public class test {
         } catch (SQLException ex) {
             System.out.print(ex.getMessage());
         } catch (Exception ex) {
-            assertEquals("Invalid data in current session.",ex.getMessage());
+            System.out.print(ex.getMessage());
         }
         
         assertEquals(1,attdList.size());
@@ -215,6 +217,80 @@ public class test {
         
     }
     
+    @Test
+    public void testGetPapers(){
+        ArrayList<Papers> papers = new ArrayList<>();
+        when(time.getDate()).thenReturn("12/02/2016");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            papers = servercomm.getPapers("M1");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
+        
+        assertEquals(1,papers.size());
+        assertEquals("BAME1212", papers.get(0).getPaperCode());
+        assertEquals("no descrip", papers.get(0).getPaperDesc());
+        assertEquals("0", papers.get(0).getPaperStartNo());
+        assertEquals("42", papers.get(0).getTotalCandidate());
+    }
     
+    @Test
+    public void testGetPapers2(){
+        ArrayList<Papers> papers = new ArrayList<>();
+        when(time.getDate()).thenReturn("11/02/2015");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            papers = servercomm.getPapers("M4");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
+        
+        assertEquals(1,papers.size());
+        assertEquals("MPU3123", papers.get(0).getPaperCode());
+        assertEquals("no description", papers.get(0).getPaperDesc());
+        assertEquals("32", papers.get(0).getPaperStartNo());
+        assertEquals("9", papers.get(0).getTotalCandidate());
+    }
     
+    @Test
+    public void testGetPapersWrongTime(){
+        ArrayList<Papers> papers = new ArrayList<>();
+        when(time.getDate()).thenReturn("11/06/2015");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            papers = servercomm.getPapers("M4");
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
+        
+        assertEquals(0,papers.size());
+    }
+    
+    @Test
+    public void testGetCddPapers(){
+        ArrayList<CddPapers> cddPapers = new ArrayList<>();
+        when(time.getDate()).thenReturn("11/02/2015");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            cddPapers = servercomm.getCddPapers("16WAR25342");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals(1, cddPapers.size());
+        
+    }
+    
+
 }
