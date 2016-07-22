@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +25,8 @@ import qrgen.Screen;
  */
 public class ChiefGui extends javax.swing.JFrame {
     static DefaultTableModel staffInfoTableModel = new DefaultTableModel();
-    Screen s = new Screen();
+    static Screen s = new Screen();
+    static ChiefServer chief = new ChiefServer();
     /**
      * Creates new form ChiefGui
      */
@@ -51,11 +53,16 @@ public class ChiefGui extends javax.swing.JFrame {
         staffInfoTable = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        qrGenButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         qrGenPanel = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,10 +86,7 @@ public class ChiefGui extends javax.swing.JFrame {
 
         staffInfoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Staff ID", "Staff Name", "Venue", "Status"
@@ -98,19 +102,12 @@ public class ChiefGui extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
         );
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
-            }
-        });
-
-        qrGenButton.setText("QR Sign In");
-        qrGenButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                qrGenButtonActionPerformed(evt);
             }
         });
 
@@ -129,14 +126,12 @@ public class ChiefGui extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32)
                 .addComponent(signInButton)
-                .addGap(41, 41, 41)
-                .addComponent(qrGenButton)
-                .addGap(114, 114, 114))
+                .addGap(238, 238, 238))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jTextField1, jTextField2});
@@ -148,7 +143,6 @@ public class ChiefGui extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(qrGenButton)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(signInButton))
@@ -170,12 +164,55 @@ public class ChiefGui extends javax.swing.JFrame {
         );
         qrGenPanelLayout.setVerticalGroup(
             qrGenPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 371, Short.MAX_VALUE)
+            .addGap(0, 419, Short.MAX_VALUE)
         );
 
         jScrollPane3.setViewportView(qrGenPanel);
 
         jTabbedPane1.addTab("tab2", jScrollPane3);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane6.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(102, 102, 102)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
+        );
+
+        jScrollPane5.setViewportView(jPanel4);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+
+        jScrollPane4.setViewportView(jPanel3);
+
+        jTabbedPane1.addTab("tab3", jScrollPane4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -195,24 +232,6 @@ public class ChiefGui extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_signInButtonActionPerformed
 
-    private void qrGenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrGenButtonActionPerformed
-        // TODO add your handling code here:
-        ChiefServer chief = new ChiefServer();
-        try {
-            chief.setPort();
-        } catch (IOException ex) {
-            Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        new QRGen(chief.getServerSocket());
-        try {
-            MainServer mainServer = new MainServer();
-            
-        } catch (Exception ex) {
-            Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }//GEN-LAST:event_qrGenButtonActionPerformed
-
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
@@ -225,26 +244,41 @@ public class ChiefGui extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(jTabbedPane1.getSelectedIndex()== 1){
             
-            ChiefServer chief = new ChiefServer();
             try {
                 chief.setPort();
             } catch (IOException ex) {
                 Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
             }
-            setTab2(chief.getServerSocket());
-//            timer.setInitialDelay(0);
+            generateQRInterface(chief.getServerSocket());
+
             timer.start();
         }
+        else
+            timer.stop();
         
     }//GEN-LAST:event_jTabbedPane1StateChanged
 
-    public void setTab2(ServerSocket socket){
+    public void generateQRInterface(ServerSocket socket){
+        qrGenPanel.removeAll();
+        
         s = new Screen(socket);
         
         qrGenPanel.add(s);
+        qrGenPanel.add(new JLabel("Scan the QR Code to sign in."));
         qrGenPanel.revalidate(); 
         qrGenPanel.repaint();
+        
     }
+    
+    public static void regenerateQRInterface(){
+        try {
+                chief.setPort();
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        s.regenerateQR(chief.getServerSocket());
+    }
+    
     
     public static void addStaffInfoToRow(Staff staff){
         staffInfoTableModel = (DefaultTableModel) staffInfoTable.getModel();
@@ -291,35 +325,30 @@ public class ChiefGui extends javax.swing.JFrame {
     
     class TimerActionListener implements ActionListener{
       public void actionPerformed(ActionEvent e) {
-          System.out.print("lol");
-//          qrGenPanel.removeAll();
-//          qrGenPanel.revalidate();
-//          qrGenPanel.repaint();
-          
-          ChiefServer chief = new ChiefServer();
-            try {
-                chief.setPort();
-            } catch (IOException ex) {
-                Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            s.regenerateQR(chief.getServerSocket());
+          regenerateQRInterface();
+            
       }
     }
 
-    Timer timer = new Timer(3000, new TimerActionListener());
+    Timer timer = new Timer(5000, new TimerActionListener());
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
-    private javax.swing.JButton qrGenButton;
     private javax.swing.JPanel qrGenPanel;
     private javax.swing.JButton signInButton;
     private static javax.swing.JTable staffInfoTable;

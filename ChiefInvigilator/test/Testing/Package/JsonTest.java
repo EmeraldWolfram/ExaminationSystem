@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import querylist.AttdList;
+import querylist.CddPapers;
 /**
  *
  * @author Krissy
@@ -44,7 +45,7 @@ public class JsonTest {
             System.out.print("Convert error");
         }
         
-        assertEquals("{\"Status\":\"Relief\",\"Venue\":\"M8\",\"IdNo\":\"staff5\",\"Result\":true,\"Name\":\"Liu\"}"
+        assertEquals("{\"Status\":\"Relief\",\"Venue\":\"M8\",\"CddList\":[],\"PaperMap\":[],\"IdNo\":\"staff5\",\"Result\":true,\"Name\":\"Liu\"}"
                 , result.toString());
     }
     
@@ -64,8 +65,8 @@ public class JsonTest {
             Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        assertEquals("{\"Status\":\"Chief\",\"Venue\":\"PA2\",\"IdNo\":\"staff3\",\"Result\":true,\"Name\":\"Dummy\"}",
-                result.toString());
+        assertEquals("{\"Status\":\"Chief\",\"Venue\":\"PA2\",\"CddList\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"PaperMap\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"IdNo\":\"staff3\",\"Result\":true,\"Name\":\"Dummy\"}"
+                ,result.toString());
     }
     
     @Test
@@ -83,9 +84,8 @@ public class JsonTest {
         } catch (SQLException ex) {
             Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        assertEquals("{\"Status\":\"invalid\",\"Venue\":\"PA2\",\"IdNo\":\"staff3\",\"Result\":false,\"Name\":\"no\"}"
-                    , result.toString());
+        assertEquals("{\"Status\":\"invalid\",\"Venue\":\"PA2\",\"CddList\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"PaperMap\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"IdNo\":\"staff3\",\"Result\":false,\"Name\":\"no\"}"
+                , result.toString());
     }
     @Test
     public void testBooleanToJson(){
@@ -137,6 +137,31 @@ public class JsonTest {
     @Test
     public void testAttdListToJson(){
         JSONArray json = null;
+        String jsonContent1 = null;
+                
+        ArrayList<AttdList> attdList = new ArrayList<>();
+        
+        attdList.add(new AttdList("W7718CDA", "10WAC9909", "Legal", "BAME2204",
+                    "RMB2","Absent"));  
+        
+        try {
+            json = new JsonConvert().attdListToJson(attdList);
+            jsonContent1 = json.getJSONObject(0).toString();
+        } catch (JSONException ex) {
+            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        assertEquals("{\"ExamIndex\":\"W7718CDA\",\"Status\":\"Legal\",\"Code\":\"BAME2204\",\"RegNum\":\"10WAC9909\",\"Programme\":\"RMB2\"}" 
+                    ,jsonContent1);
+        
+    }
+    
+    @Test
+    public void testAttdListToJson2(){
+        JSONArray json = null;
+        String jsonContent1 = null;
+        String jsonContent2 = null;
+                
         ArrayList<AttdList> attdList = new ArrayList<>();
         
         attdList.add(new AttdList("W123ABCD", "15WAR09183", "Legal", "BAME2004",
@@ -146,11 +171,91 @@ public class JsonTest {
         
         try {
             json = new JsonConvert().attdListToJson(attdList);
+            jsonContent1 = json.getJSONObject(0).toString();
+            jsonContent2 = json.getJSONObject(1).toString();
         } catch (JSONException ex) {
             Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        System.out.print(json.toString());
+        assertEquals("{\"ExamIndex\":\"W123ABCD\",\"Status\":\"Legal\",\"Code\":\"BAME2004\",\"RegNum\":\"15WAR09183\",\"Programme\":\"RMB3\"}",
+                jsonContent1);
+        assertEquals("{\"ExamIndex\":\"W123ZXCV\",\"Status\":\"Legal\",\"Code\":\"BAME2004\",\"RegNum\":\"15WAR01234\",\"Programme\":\"RMB3\"}",
+                jsonContent2);
+        
+    }
+    
+    @Test
+    public void testAttdListToJsonWithEmptyContent(){
+        JSONArray json = null;
+        String jsonContent1 = null;
+        String jsonContent2 = null;
+                
+        ArrayList<AttdList> attdList = new ArrayList<>();
+        
+        attdList.add(new AttdList("W123ABCD", "15WAR09183", null, "BAME2004",
+                    "RMB3","Absent"));  
+
+        
+        try {
+            json = new JsonConvert().attdListToJson(attdList);
+            jsonContent1 = json.getJSONObject(0).toString();
+        } catch (JSONException ex) {
+            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        assertEquals("{\"ExamIndex\":\"W123ABCD\",\"Code\":\"BAME2004\",\"RegNum\":\"15WAR09183\",\"Programme\":\"RMB3\"}",
+                jsonContent1);
+        
+    }
+    
+    @Test
+    public void testAttdListToJsonWithEmptyObject(){
+        JSONArray json = null;
+        
+        String jsonContent1 = null;
+                
+        ArrayList<AttdList> attdList = new ArrayList<>();
+        
+        attdList.add(new AttdList());  
+
+        try {
+            json = new JsonConvert().attdListToJson(attdList);
+            jsonContent1 = json.getJSONObject(0).toString();
+        } catch (JSONException ex) {
+            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        assertEquals("{}",jsonContent1);
+        
+    }
+    
+    @Test
+    public void testCddPapers(){
+        JSONArray json = null;
+        String jsonContent1 = null;
+        String jsonContent2 = null;
+        
+        ArrayList<CddPapers> cddPapers = new ArrayList<>();
+        
+        cddPapers.add(new CddPapers("BAME1200", "Intro to Science",
+                                    "19/8/1229", "AM", "M4"));
+        cddPapers.add(new CddPapers("MPU1889", "Hubungan Etnik",
+                                    "19/8/1999", "PM", "Q2"));
+        
+        try {
+            json = new JsonConvert().cddPapersToJson(cddPapers);
+            jsonContent1 = json.getJSONObject(0).toString();
+            jsonContent2 = json.getJSONObject(1).toString();
+        } catch (JSONException ex) {
+            System.out.println(ex.getMessage());
+        }
+        assertEquals("{\"PaperDesc\":\"Intro to Science\",\"Venue\":\"M4\",\"PaperCode\":\"BAME1200\",\"Date\":\"19/8/1229\",\"Session\":\"AM\"}"
+                    , jsonContent1);
+        assertEquals("{\"PaperDesc\":\"Hubungan Etnik\",\"Venue\":\"Q2\",\"PaperCode\":\"MPU1889\",\"Date\":\"19/8/1999\",\"Session\":\"PM\"}"
+                    , jsonContent2);
+        
+        
+        
     }
     
 }

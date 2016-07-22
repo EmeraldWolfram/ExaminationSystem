@@ -23,12 +23,12 @@ public class ChiefServer {
     int localPort;
     
     public ChiefServer(){
-        
     }
     
     public void setPort() throws IOException{
         
         this.s = new ServerSocket(0);
+        this.s.setSoTimeout(5000);
         this.localPort = s.getLocalPort();
     }
     

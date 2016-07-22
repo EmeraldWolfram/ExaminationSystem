@@ -9,25 +9,27 @@ package querylist;
  *
  * @author Krissy
  */
-public class Papers {
+public class CddPapers {
+    
     String paperCode;
     String paperDesc;
-    String paperStartNo;
-    String totalCandidate;
+    String date;
+    String session;
+    String venue;
     
-    public Papers(){
-        
+    public CddPapers(){
+    
     }
     
-    public Papers(  String paperCode,
-                    String paperDesc,
-                    String paperStartNo,
-                    String totalCandidate){
+    public CddPapers(String paperCode, String paperDesc,
+                        String date, String session,
+                        String venue){
         
         this.paperCode = paperCode;
         this.paperDesc = paperDesc;
-        this.paperStartNo = paperStartNo;
-        this.totalCandidate = totalCandidate;
+        this.date = date;
+        this.session = session;
+        this.venue = venue;
     }
     
     public String getPaperCode(){
@@ -38,14 +40,16 @@ public class Papers {
         return paperDesc;
     }
     
-    public String getPaperStartNo(){
-        return paperStartNo;
+    public String getDate(){
+        return date;
     }
     
-    
-    public String getTotalCandidate(){
-        return totalCandidate;
+    public String getSession(){
+        return session;
     }
     
-    
+    public String getVenue(){
+        return venue;
+    }
+
 }

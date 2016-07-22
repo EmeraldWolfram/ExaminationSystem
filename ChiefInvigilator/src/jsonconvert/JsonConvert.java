@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import querylist.AttdList;
+import querylist.CddPapers;
 import querylist.Papers;
 
 /**
@@ -37,7 +38,7 @@ public class JsonConvert {
      * @return
      * @throws JSONException 
      */
-    public JSONObject staffInfoToJson(boolean valid, Staff staff) throws JSONException, SQLException{
+    public static JSONObject staffInfoToJson(boolean valid, Staff staff) throws JSONException, SQLException{
         JSONObject jsonStaff = new JSONObject();
         JSONArray arr = new JSONArray();
         arr.put(staff.getStatus());
@@ -52,7 +53,7 @@ public class JsonConvert {
         return jsonStaff;
     }
     
-    public JSONObject booleanToJson(boolean b) throws JSONException{
+    public static JSONObject booleanToJson(boolean b) throws JSONException{
         JSONObject bool = new JSONObject();
         
         bool.put("Result", b);
@@ -60,7 +61,7 @@ public class JsonConvert {
         return bool;
     }
     
-    public Staff jsonToSignIn(String jsonString) throws JSONException, Exception{
+    public static Staff jsonToSignIn(String jsonString) throws JSONException, Exception{
         JSONObject signID = new JSONObject(jsonString);
         Staff staff = new Staff();
         ServerComm comm = new ServerComm();
@@ -71,12 +72,12 @@ public class JsonConvert {
         return staff;
     }
     
-    public JSONArray attdListToJson(ArrayList<AttdList> attdList) throws JSONException{
+    public static JSONArray attdListToJson(ArrayList<AttdList> attdList) throws JSONException{
         JSONArray jArr = new JSONArray();
         JSONObject attd;
         for(int i = 0; i < attdList.size(); i++){
             attd = new JSONObject();
-            attd.put("Index", attdList.get(i).getExamId());
+            attd.put("ExamIndex", attdList.get(i).getExamId());
             attd.put("RegNum", attdList.get(i).getRegNum());
             attd.put("Status", attdList.get(i).getStatus());
             attd.put("Code", attdList.get(i).getPaperCode());
@@ -87,24 +88,41 @@ public class JsonConvert {
         return jArr;
     }
     
-    public JSONArray papersToJson(ArrayList<Papers> papers) throws JSONException{
+    public static JSONArray papersToJson(ArrayList<Papers> papers) throws JSONException{
         JSONArray jArr = new JSONArray();
         JSONObject attd;
-        System.out.println(papers.size());
+        
         for(int i = 0; i < papers.size(); i++){
             attd = new JSONObject();
             
             attd.put("PaperCode", papers.get(i).getPaperCode());
             attd.put("PaperDesc", papers.get(i).getPaperDesc());
-            attd.put("PaperStartNo", papers.get(i).getPaperStartNo());
-            attd.put("PaperTotalCdd", papers.get(i).getTotalCandidate());
+            attd.put("PaperStartNo", Integer.parseInt(papers.get(i).getPaperStartNo()));
+            attd.put("PaperTotalCdd", Integer.parseInt(papers.get(i).getTotalCandidate()));
             jArr.put(attd);
         }
         
         return jArr;
     }
     
-    public JSONObject jsonStringConcatenate(JSONObject jsonStaff, JSONArray papers, JSONArray attdList) throws JSONException{
+    public static JSONArray cddPapersToJson(ArrayList<CddPapers> cddPapers) throws JSONException{
+        JSONArray jArr = new JSONArray();
+        JSONObject papers;
+        for(int i = 0; i < cddPapers.size(); i++){
+            papers = new JSONObject();
+            
+            papers.put("PaperCode", cddPapers.get(i).getPaperCode());
+            papers.put("PaperDesc", cddPapers.get(i).getPaperDesc());
+            papers.put("Date", cddPapers.get(i).getDate());
+            papers.put("Session", cddPapers.get(i).getSession());
+            papers.put("Venue", cddPapers.get(i).getVenue());
+            jArr.put(papers);
+        }
+        
+        return jArr;
+    }
+    
+    public static JSONObject jsonStringConcatenate(JSONObject jsonStaff, JSONArray papers, JSONArray attdList) throws JSONException{
         
         jsonStaff.put("CddList", attdList);
         jsonStaff.put("PaperMap", papers);
@@ -112,6 +130,11 @@ public class JsonConvert {
         return jsonStaff;
     }
     
+    public static String jsonToCddPapers(String candidateID) throws JSONException{
+        JSONObject jsonObject = new JSONObject(candidateID);
+        
+        return jsonObject.getString("Value");
+    }
     
     
 }

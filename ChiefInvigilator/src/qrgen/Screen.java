@@ -33,22 +33,13 @@ public class Screen extends JPanel {
         
     ServerSocket socket;
     
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        String myWeb = "";
-        int width = 300;
-        int height = 300;
+    QRCodeWriter qrCodeWriter = new QRCodeWriter();
+    String myWeb = "";
+    int width = 300;
+    int height = 300;
          
-        BufferedImage bufferedImage = null;
-    
-    public String localIp(int port) throws Exception {
-      InetAddress addr = InetAddress.getLocalHost();
-      System.out.println("Local HostAddress:"+addr.getHostAddress());
-      String hostname = addr.getHostName();
-      System.out.println("Local host name: "+hostname);
+    BufferedImage bufferedImage = null;
 
-      System.out.println("listening on port: " + port);
-      return addr.getHostAddress()+":"+port;
-   }
          
     public Screen(){
     };
@@ -77,7 +68,15 @@ public class Screen extends JPanel {
 //        repaint();
     }
     
-        
+    public String localIp(int port) throws Exception {
+      InetAddress addr = InetAddress.getLocalHost();
+      System.out.println("Local HostAddress:"+addr.getHostAddress());
+      String hostname = addr.getHostName();
+      System.out.println("Local host name: "+hostname);
+
+      System.out.println("listening on port: " + port);
+      return addr.getHostAddress()+":"+port;
+   }   
     
     public void paintComponent (Graphics graphics){
         super.paintComponent(graphics);
