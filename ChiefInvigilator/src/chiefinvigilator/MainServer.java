@@ -70,7 +70,7 @@ public class MainServer {
             if(reteriveMsg != null){
                 System.out.println(jsonMsg.toString());
                 PrintStream out = new PrintStream(mainSocket.getOutputStream());
-                out.println(jsonMsg);
+                out.println(jsonMsg.toString());
                 out.flush();
                 
                 mainSocket.close();

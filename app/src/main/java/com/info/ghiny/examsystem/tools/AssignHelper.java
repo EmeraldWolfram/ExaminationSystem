@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 
@@ -22,6 +23,7 @@ public class AssignHelper {
     public static final int MAYBE_CANDIDATE = 1;
 
     private static LocalDbLoader JdbcLoader;
+    private static CheckListLoader clLoader;
     private static AttendanceList attdList;
 
     private static final DialogInterface.OnClickListener updateListener =
@@ -44,22 +46,39 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    public static void initLoader(LocalDbLoader dBLoader) throws ProcessException{
+    /*public static void initLoader(LocalDbLoader dBLoader) throws ProcessException{
         assert dBLoader != null;
 
         if(dBLoader.emptyAttdInDB()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
 
             /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
-        }
-        if(dBLoader.emptyPapersInDB()) {
-            dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
+      //  }
+      //  if(dBLoader.emptyPapersInDB()) {
+      //      dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
             /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
-        }
+      /*  }
 
         AssignHelper.JdbcLoader = dBLoader;
         attdList    = JdbcLoader.queryAttendanceList();
         Candidate.setPaperList(dBLoader.queryPapers());
+    }*/
+    public static void initLoader(CheckListLoader dBLoader) throws ProcessException{
+        assert dBLoader != null;
+
+        //if(dBLoader.emptyAttdInDB()){
+        //    dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
+
+            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
+        //}
+        //if(dBLoader.emptyPapersInDB()) {
+        //    dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
+            /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
+        //}
+
+        AssignHelper.clLoader = dBLoader;
+        //attdList    = clLoader.queryAttendanceList();
+        //Candidate.setPaperList(clLoader.queryPapers());
     }
 
     public static LocalDbLoader getJdbcLoader() {

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.AttendanceList;
@@ -73,11 +74,14 @@ public class MainLoginActivity extends AppCompatActivity {
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
         errorManager    = new ErrorManager(this);
+        //ChiefLink.setErrorManager(errorManager);
         mTcpClient      = new TCPClient(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
                 try{
+                    connect.publishMsg(message);
+
                     StaffIdentity id    = JsonHelper.parseStaffIdentity(message);
                     LoginHelper.setStaff(id);
 
@@ -90,8 +94,9 @@ public class MainLoginActivity extends AppCompatActivity {
                     Intent assignIntent = new Intent(MainLoginActivity.this, AssignInfoActivity.class);
                     startActivity(assignIntent);
                 } catch (ProcessException err) {
-                    errorManager.displayError(err);
-                    barcodeView.resume();
+                    Intent errIn = new Intent(MainLoginActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
                 }
             }
         });
@@ -110,6 +115,7 @@ public class MainLoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         ExternalDbLoader.setTcpClient(mTcpClient);
+        ExternalDbLoader.getTcpClient().run();
         barcodeView.resume();
     }
 
@@ -117,6 +123,18 @@ public class MainLoginActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         barcodeView.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            mTcpClient.stopClient();
+            connect.cancel(true);
+            connect = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -142,6 +160,8 @@ public class MainLoginActivity extends AppCompatActivity {
         if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
+                barcodeView.pause();
+
                 LoginHelper.getStaff().setPassword(password);
                 LoginHelper.matchStaffPw(password);
 
@@ -167,5 +187,4 @@ public class MainLoginActivity extends AppCompatActivity {
 
         }
     }
-
 }

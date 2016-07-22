@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ErrorManager;
@@ -59,8 +60,10 @@ public class AssignInfoActivity extends AppCompatActivity {
         message     = new CustomToast(this);
 
         try{
-            LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            AssignHelper.initLoader(jdbcLoader);
+            //LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
+            CheckListLoader clLoader = new CheckListLoader(this);
+            //AssignHelper.initLoader(jdbcLoader);
+            AssignHelper.initLoader(clLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
         }
@@ -109,11 +112,6 @@ public class AssignInfoActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        try {
-            AssignHelper.getJdbcLoader().saveAttendanceList(AssignHelper.getAttdList());
-        } catch (ProcessException err) {
-            errManager.displayError(err);
-        }
     }
 
     @Override

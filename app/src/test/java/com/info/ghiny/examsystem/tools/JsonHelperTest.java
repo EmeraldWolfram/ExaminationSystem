@@ -153,8 +153,7 @@ public class JsonHelperTest {
     public void testParseStaffIdentity_False_Result_throw_MESSAGE_TOAST() throws Exception {
         try{
             assertFalse(ChiefLink.isComplete());
-            StaffIdentity staff = JsonHelper.parseStaffIdentity(
-                    "{\"Result\":false}");
+            StaffIdentity staff = JsonHelper.parseStaffIdentity("{\"Result\":false}");
 
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){

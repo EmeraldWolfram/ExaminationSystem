@@ -46,9 +46,9 @@ public class ErrorManager {
         message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
     }
 
-    public void showToast(String msg){
-        Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
-    }
+    //public void showToast(String msg){
+    //    Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
+    //}
 
     public void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
@@ -79,7 +79,6 @@ public class ErrorManager {
 
         dialog.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        act.finish();
                         dialog.cancel();
                     }
                 });

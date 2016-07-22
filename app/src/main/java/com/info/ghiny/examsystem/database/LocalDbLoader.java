@@ -18,7 +18,7 @@ import static java.sql.DriverManager.*;
  */
 public class LocalDbLoader {
 
-    public static final String DB_NAME = "FragList.sqlite";
+    public static final String DB_NAME = "FragList.db";
     private static final String PACKAGE = "com.info.ghiny.examsystem";
     public static final String DRIVER  = "org.sqldroid.SQLDroidDriver";
     public static final String ADDRESS = "jdbc:sqldroid:/data/data/" + PACKAGE
@@ -58,8 +58,8 @@ public class LocalDbLoader {
             Class.forName(curDriver);
             con = getConnection(curAddress);
         } catch(Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException(err.getMessage(), ProcessException.FATAL_MESSAGE,
+                    IconManager.WARNING);
         }
         return con;
     }

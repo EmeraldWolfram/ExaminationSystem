@@ -26,12 +26,9 @@ public class LoginHelper {
     //= Useable Methods ============================================================================
     public static void verifyChief(String scanStr) throws ProcessException{
         if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
-            String[] chiefArr = scanStr.split(":");
-            String ipAddr   = chiefArr[1];
-            int portNum     = Integer.parseInt(chiefArr[2]);
-
-            TCPClient.setServerIp(ipAddr);
-            TCPClient.setServerPort(portNum);
+            String[] chiefArr   = scanStr.split(":");
+            TCPClient.SERVERIP      = chiefArr[1];
+            TCPClient.SERVERPORT    = Integer.parseInt(chiefArr[2]);
         } else {
             throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
