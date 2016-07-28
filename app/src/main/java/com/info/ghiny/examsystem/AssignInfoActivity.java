@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -59,22 +60,22 @@ public class AssignInfoActivity extends AppCompatActivity {
 
         errManager  = new ErrorManager(this);
         message     = new CustomToast(this);
+        AssignHelper.setAssignAct(this);
 
         try{
-            //LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            CheckListLoader clLoader = new CheckListLoader(this);
-            //AssignHelper.initLoader(jdbcLoader);
-            AssignHelper.initLoader(clLoader);
+            LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
+            //CheckListLoader clLoader = new CheckListLoader(this);
+            AssignHelper.initLoader(jdbcLoader);
+            //AssignHelper.initLoader(clLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
         }
 
-        LinearLayout assignResult = (LinearLayout)findViewById(R.id.assignInfoLinearLayout);
+        /*LinearLayout assignResult = (LinearLayout)findViewById(R.id.assignInfoLinearLayout);
         assert assignResult != null;
         assignResult.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeRight() {
-                AssignHelper.resetNewAssign();
 
                 TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
                 TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
@@ -84,10 +85,11 @@ public class AssignInfoActivity extends AppCompatActivity {
                 assert tableView    != null;    assert cddView     != null;
                 assert regNumView   != null;    assert paperView   != null;
 
+                AssignHelper.resetCandidate(Integer.parseInt(tableView.getText().toString()));
                 tableView.setText("");      cddView.setText("");
                 regNumView.setText("");     paperView.setText("");
             }
-        });
+        });*/
 
         //Set swiping gesture
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
@@ -169,8 +171,7 @@ public class AssignInfoActivity extends AppCompatActivity {
 
             if(AssignHelper.tryAssignCandidate()){
                 //Candidate successfully assigned, clear display and acknowledge with message
-                tableView.setText("");  cddView.setText("");
-                regNumView.setText(""); paperView.setText("");
+                clearViews(this);
 
                 message.showCustomMessage(cdd.getExamIndex()+ " Assigned to "
                         + cdd.getTableNumber().toString(),
@@ -181,6 +182,19 @@ public class AssignInfoActivity extends AppCompatActivity {
             errManager.displayError(err);
             barcodeView.resume();
         }
+    }
+
+    public static void clearViews(Activity act){
+        TextView tableView  = (TextView)act.findViewById(R.id.tableNumberText);
+        TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
+        TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
+        TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
+
+        assert tableView    != null;    assert cddView     != null;
+        assert regNumView   != null;    assert paperView   != null;
+
+        tableView.setText("");  cddView.setText("");
+        regNumView.setText(""); paperView.setText("");
     }
 
 }

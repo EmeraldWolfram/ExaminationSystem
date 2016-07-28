@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.tools.AssignHelper;
+import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +76,15 @@ public class FragListAdapter extends BaseExpandableListAdapter {
             tableNumView.setText("");
         }
 
+        LinearLayout assignResult = (LinearLayout)convertView.findViewById(R.id.assignedCddLayout);
+        assert assignResult != null;
+        assignResult.setOnTouchListener(new OnSwipeListener(context){
+            @Override
+            public void onSwipeRight() {
+                //AssignHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+            }
+        });
+
         return convertView;
     }
 
@@ -110,9 +122,11 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         TextView statusHeader   = (TextView) convertView.findViewById(R.id.groupHeaderPaper);
         TextView sizeOfList     = (TextView) convertView.findViewById(R.id.sizeOfCandidate);
 
-        statusHeader.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf"));
+        statusHeader.setTypeface(Typeface.createFromAsset(context.getAssets(),
+                "fonts/Oswald-Bold.ttf"));
         statusHeader.setText(headerTitle);
-        sizeOfList.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        sizeOfList.setTypeface(Typeface.createFromAsset(context.getAssets(),
+                "fonts/DroidSerif-Regular.ttf"));
         sizeOfList.setText(size);
 
         return convertView;

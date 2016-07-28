@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
@@ -72,8 +73,8 @@ public class AssignHelperTest {
 
 
         AssignHelper.initLoader(dBLoader);
-        AssignHelper.tempCdd = null;
-        AssignHelper.tempTable = null;
+        AssignHelper.setTempCdd(null);
+        AssignHelper.setTempTable(null);
         AssignHelper.assgnList = new HashMap<>();
         Candidate.setPaperList(paperList);
     }
@@ -427,6 +428,35 @@ public class AssignHelperTest {
             assertEquals(err.getErrorType(), ProcessException.MESSAGE_TOAST);
             assertEquals(err.getErrorMsg(), "Not a valid QR");
         }
+    }
+
+    //= resetNewAssign() ===========================================================================
+    /**
+     * resetNewAssign()
+     *
+     * 1. do nothing when no table assign before
+     * 2. remove the last assigned table if exist
+     */
+    @Test
+    public void testResetNewAssign_doNothingWhenNoAssignBefore() throws Exception {
+        AssignHelper.resetCandidate(null);
+
+        assertEquals(0, AssignHelper.assgnList.size());
+        assertEquals(attdList, AssignHelper.getAttdList());
+    }
+
+    @Test
+    public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
+        AssignHelper.checkCandidate("15WAU00001");
+        AssignHelper.checkTable(12);
+        assertTrue(AssignHelper.tryAssignCandidate());
+        assertEquals(1, AssignHelper.assgnList.size());
+        assertEquals(AttendanceList.Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());
+
+        AssignHelper.resetCandidate(12);
+
+        assertEquals(0, AssignHelper.assgnList.size());
+        assertEquals(AttendanceList.Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
     }
 
 }

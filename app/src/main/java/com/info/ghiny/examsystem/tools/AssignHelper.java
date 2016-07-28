@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.tools;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 
+import com.info.ghiny.examsystem.AssignInfoActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -15,8 +17,8 @@ import java.util.HashMap;
  * Created by GhinY on 15/06/2016.
  */
 public class AssignHelper {
-    public static Candidate tempCdd = null;
-    public static Integer tempTable = null;
+    private static Candidate tempCdd    = null;
+    private static Integer tempTable    = null;
     public static HashMap<Integer, String> assgnList = new HashMap<>();
 
     public static final int MAYBE_TABLE     = 0;
@@ -25,11 +27,13 @@ public class AssignHelper {
     private static LocalDbLoader JdbcLoader;
     private static CheckListLoader clLoader;
     private static AttendanceList attdList;
+    private static Activity assignAct;
 
     private static final DialogInterface.OnClickListener updateListener =
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    AssignInfoActivity.clearViews(assignAct);
                     updateNewCandidate();
                     dialog.cancel();
                 }
@@ -39,6 +43,7 @@ public class AssignHelper {
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    AssignInfoActivity.clearViews(assignAct);
                     cancelNewAssign();
                     dialog.cancel();
                 }
@@ -46,25 +51,25 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    /*public static void initLoader(LocalDbLoader dBLoader) throws ProcessException{
+    public static void initLoader(LocalDbLoader dBLoader) throws ProcessException{
         assert dBLoader != null;
 
         if(dBLoader.emptyAttdInDB()){
             dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
 
             /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
-      //  }
-      //  if(dBLoader.emptyPapersInDB()) {
-      //      dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
+        }
+        if(dBLoader.emptyPapersInDB()) {
+            dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
             /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
-      /*  }
+        }
 
         AssignHelper.JdbcLoader = dBLoader;
         attdList    = JdbcLoader.queryAttendanceList();
         Candidate.setPaperList(dBLoader.queryPapers());
-    }*/
-    public static void initLoader(CheckListLoader dBLoader) throws ProcessException{
-        assert dBLoader != null;
+    }
+    //public static void initLoader(CheckListLoader dBLoader) throws ProcessException{
+    //    assert dBLoader != null;
 
         //if(dBLoader.emptyAttdInDB()){
         //    dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
@@ -76,10 +81,10 @@ public class AssignHelper {
             /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
         //}
 
-        AssignHelper.clLoader = dBLoader;
+    //    AssignHelper.clLoader = dBLoader;
         //attdList    = clLoader.queryAttendanceList();
         //Candidate.setPaperList(clLoader.queryPapers());
-    }
+    //}
 
     public static LocalDbLoader getJdbcLoader() {
         return JdbcLoader;
@@ -92,6 +97,19 @@ public class AssignHelper {
     //A getter to retrieve the list to display in Activity
     public static AttendanceList getAttdList() {
         return attdList;
+    }
+
+    public static void setAssignAct(Activity assignAct) {
+        AssignHelper.assignAct = assignAct;
+    }
+
+    //For test purposes=============================================================================
+    public static void setTempCdd(Candidate tempCdd) {
+        AssignHelper.tempCdd = tempCdd;
+    }
+
+    public static void setTempTable(Integer tempTable) {
+        AssignHelper.tempTable = tempTable;
     }
 
     //= Assign =====================================================================================
@@ -208,7 +226,7 @@ public class AssignHelper {
     public static void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
-            resetNewAssign();
+            resetCandidate(tempTable);
         } else {
             //Candidate reassign, remove the previously assignment
             assgnList.remove(tempCdd.getTableNumber());
@@ -233,13 +251,15 @@ public class AssignHelper {
     }
 
     //Remove away the new assigned Candidate
-    public static void resetNewAssign(){
-        Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
-        attdList.removeCandidate(cdd.getRegNum());
-        cdd.setTableNumber(0);
-        cdd.setStatus(AttendanceList.Status.ABSENT);
-        attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-        assgnList.remove(tempTable);
+    public static void resetCandidate(Integer table){
+        if(table != null){
+            Candidate cdd = attdList.getCandidate(assgnList.get(table));
+            attdList.removeCandidate(cdd.getRegNum());
+            cdd.setTableNumber(0);
+            cdd.setStatus(AttendanceList.Status.ABSENT);
+            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+            assgnList.remove(table);
+        }
     }
 
     //= FAKE Function for demo purposes ============================================================

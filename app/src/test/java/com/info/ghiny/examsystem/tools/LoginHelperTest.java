@@ -132,4 +132,34 @@ public class LoginHelperTest {
         }
     }
 
+    //= checkQrId() ================================================================================
+    /**
+     * checkQrId(scanStr)
+     *
+     * This method used to check an input string (scanned-in) whether it was possible to
+     * be an ID
+     *
+     * 1. throw MESSAGE_TOAST if the QR scanned is not possible to be an ID
+     * 2. do nothing if the scanned string could be an ID
+     */
+    @Test
+    public void testCheckQrId_throw_MESSAGE_TOAST() throws Exception{
+        try{
+            LoginHelper.checkQrId("My name");
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Invalid staff ID Number", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testCheckQrId_Nothing_Happen() throws Exception {
+        try{
+            LoginHelper.checkQrId("012345");
+        } catch (ProcessException err) {
+            fail("Expected nothing but thrown " + err.getErrorMsg());
+        }
+    }
+
 }
