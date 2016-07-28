@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.tools.AssignHelper;
+import com.info.ghiny.examsystem.tools.FragmentHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class FragListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.attendance_body, null);
         }
 
-        TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
+        final TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
         TextView candidateView  = (TextView) convertView.findViewById(R.id.assignedCddText);
         TextView cddPrgView     = (TextView) convertView.findViewById(R.id.assignedPrgText);
 
@@ -76,12 +77,14 @@ public class FragListAdapter extends BaseExpandableListAdapter {
             tableNumView.setText("");
         }
 
-        LinearLayout assignResult = (LinearLayout)convertView.findViewById(R.id.assignedCddLayout);
+        final LinearLayout assignResult = (LinearLayout)convertView.findViewById(R.id.assignedCddLayout);
         assert assignResult != null;
         assignResult.setOnTouchListener(new OnSwipeListener(context){
             @Override
             public void onSwipeRight() {
-                //AssignHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+                AssignHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+                assignResult.setVisibility(View.GONE);
+                notifyDataSetChanged();
             }
         });
 

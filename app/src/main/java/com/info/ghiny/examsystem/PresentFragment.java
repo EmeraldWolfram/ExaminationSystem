@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
+import com.info.ghiny.examsystem.tools.OnSwipeListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +23,10 @@ import java.util.List;
  */
 public class PresentFragment extends Fragment {
 
-
     public PresentFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_present, null);
 
@@ -36,6 +36,12 @@ public class PresentFragment extends Fragment {
 
         ExpandableListView presentList  = (ExpandableListView) view.findViewById(R.id.presentList);
         presentList.setAdapter(new FragListAdapter(getContext(), header, cddChild));
+        presentList.setOnTouchListener(new OnSwipeListener(getContext()){
+            @Override
+            public void onSwipeRight() {
+                FragmentHelper.endListActivity();
+            }
+        });
 
         return view;
     }

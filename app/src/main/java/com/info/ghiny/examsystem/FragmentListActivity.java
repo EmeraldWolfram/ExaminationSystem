@@ -51,6 +51,8 @@ public class FragmentListActivity extends AppCompatActivity {
         assert viewPager != null; assert tabLayout != null;
         // Initilization
 
+        FragmentHelper.setListAct(this);
+
         errorManager    = new ErrorManager(this);
         tcpClient       = new TCPClient(new TCPClient.OnMessageReceived() {
             @Override
@@ -77,6 +79,10 @@ public class FragmentListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         ExternalDbLoader.setTcpClient(tcpClient);
+    }
+
+    public static void callFinish(FragmentListActivity act){
+        act.finish();
     }
 
     //==============================================================================================

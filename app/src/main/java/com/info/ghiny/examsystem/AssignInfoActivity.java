@@ -34,10 +34,7 @@ public class AssignInfoActivity extends AppCompatActivity {
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
-    private CustomToast message;                //Toast message tool
     private ErrorManager errManager;
-    private Candidate cdd;
-
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -59,7 +56,6 @@ public class AssignInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_assign_info);
 
         errManager  = new ErrorManager(this);
-        message     = new CustomToast(this);
         AssignHelper.setAssignAct(this);
 
         try{
@@ -76,18 +72,10 @@ public class AssignInfoActivity extends AppCompatActivity {
         assignResult.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeRight() {
-
                 TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
-                TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-                TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-                TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
-
-                assert tableView    != null;    assert cddView     != null;
-                assert regNumView   != null;    assert paperView   != null;
-
+                assert tableView != null;
                 AssignHelper.resetCandidate(Integer.parseInt(tableView.getText().toString()));
-                tableView.setText("");      cddView.setText("");
-                regNumView.setText("");     paperView.setText("");
+                AssignInfoActivity.clearViews(AssignInfoActivity.this);
             }
         });*/
 
@@ -106,8 +94,6 @@ public class AssignInfoActivity extends AppCompatActivity {
                 startActivity(listIntent);
             }
         });
-
-
 
         //Barcode Viewer
         barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
@@ -140,6 +126,64 @@ public class AssignInfoActivity extends AppCompatActivity {
 
     //==============================================================================================
     public void onScanTableOrCandidate(String scanString){
+        try{
+            AssignHelper.tryAssignScanValue(scanString);
+        } catch(ProcessException err){
+            barcodeView.pause();
+            errManager.displayError(err);
+            barcodeView.resume();
+        }
+    }
+
+    //UI Setting method
+    public static void clearViews(AssignInfoActivity act){
+        TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
+        TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
+        TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
+
+        assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
+
+        setTableView(act, "");
+        cddView.setText("");
+        regNumView.setText("");
+        paperView.setText("");
+    }
+
+    public static void setTableView(AssignInfoActivity act, String tableNumber){
+        TextView tableView  = (TextView)act.findViewById(R.id.tableNumberText);
+        assert tableView != null;
+        tableView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/Chunkfive.otf"));
+
+        tableView.setText(tableNumber);
+    }
+
+    public static void setCandidateView(AssignInfoActivity act, Candidate cdd){
+        try{
+            TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
+            TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
+            TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
+
+            assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
+
+            cddView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/Oswald-Bold.ttf"));
+            regNumView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+            paperView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+
+            cddView.setText(cdd.getExamIndex());
+            regNumView.setText(cdd.getRegNum());
+            paperView.setText(cdd.getPaper().toString());
+        } catch (ProcessException err) {
+            act.barcodeView.pause();
+            act.errManager.displayError(err);
+            act.barcodeView.resume();
+        }
+
+    }
+
+}
+/*
+Removed Code in onScanValue
+
         TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
         TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
@@ -153,7 +197,9 @@ public class AssignInfoActivity extends AppCompatActivity {
         regNumView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
         paperView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
-        try{
+
+        ============================================================================================
+
             int scanPossibly    =   AssignHelper.checkScan(scanString);
 
             if(scanPossibly == AssignHelper.MAYBE_TABLE){
@@ -177,24 +223,19 @@ public class AssignInfoActivity extends AppCompatActivity {
                         + cdd.getTableNumber().toString(),
                         new IconManager().getIcon(IconManager.ASSIGNED));
             }
-        } catch(ProcessException err){
-            barcodeView.pause();
-            errManager.displayError(err);
-            barcodeView.resume();
-        }
-    }
 
-    public static void clearViews(Activity act){
-        TextView tableView  = (TextView)act.findViewById(R.id.tableNumberText);
-        TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
-        TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
-        TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
 
-        assert tableView    != null;    assert cddView     != null;
-        assert regNumView   != null;    assert paperView   != null;
+    REMOVED CODE IN onCreate() -> OnSwipeRight
 
-        tableView.setText("");  cddView.setText("");
-        regNumView.setText(""); paperView.setText("");
-    }
+    TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
+                TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
+                TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
+                TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
 
-}
+                assert tableView    != null;    assert cddView     != null;
+                assert regNumView   != null;    assert paperView   != null;
+
+                AssignHelper.resetCandidate(Integer.parseInt(tableView.getText().toString()));
+                tableView.setText("");      cddView.setText("");
+                regNumView.setText("");     paperView.setText("");
+ */

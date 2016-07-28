@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.tools;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.v7.app.AppCompatActivity;
 
 import com.info.ghiny.examsystem.AssignInfoActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 public class AssignHelper {
     private static Candidate tempCdd    = null;
     private static Integer tempTable    = null;
+    private static Integer lastTable    = null;
     public static HashMap<Integer, String> assgnList = new HashMap<>();
 
     public static final int MAYBE_TABLE     = 0;
@@ -27,14 +29,14 @@ public class AssignHelper {
     private static LocalDbLoader JdbcLoader;
     private static CheckListLoader clLoader;
     private static AttendanceList attdList;
-    private static Activity assignAct;
+    private static AssignInfoActivity assignAct;
 
     private static final DialogInterface.OnClickListener updateListener =
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    AssignInfoActivity.clearViews(assignAct);
                     updateNewCandidate();
+                    AssignInfoActivity.clearViews(assignAct);
                     dialog.cancel();
                 }
             };
@@ -99,8 +101,12 @@ public class AssignHelper {
         return attdList;
     }
 
-    public static void setAssignAct(Activity assignAct) {
+    public static void setAssignAct(AssignInfoActivity assignAct) {
         AssignHelper.assignAct = assignAct;
+    }
+
+    protected static AssignInfoActivity getAssignAct(){
+        return assignAct;
     }
 
     //For test purposes=============================================================================
@@ -126,6 +132,20 @@ public class AssignHelper {
         }
 
         return flag;
+    }
+
+    public static void tryAssignScanValue(String scanStr) throws ProcessException{
+        if(scanStr.length() < 4 && scanStr.length() > 0){
+            checkTable(Integer.parseInt(scanStr));
+            AssignInfoActivity.setTableView(assignAct, tempTable.toString());
+        } else if(scanStr.length() == 10){
+            checkCandidate(scanStr);
+            AssignInfoActivity.setCandidateView(assignAct, tempCdd);
+        } else {
+            throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
+                    IconManager.MESSAGE);
+        }
+
     }
 
     //check-in Table
@@ -213,6 +233,7 @@ public class AssignHelper {
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
                     tempCdd.getProgramme());
             assgnList.put(tempTable, tempCdd.getRegNum());
+            lastTable   = tempTable;
             tempCdd     = null;
             tempTable   = null;
             assigned    = true;
@@ -250,7 +271,14 @@ public class AssignHelper {
         tempTable   = null;
     }
 
-    //Remove away the new assigned Candidate
+    //Remove away the last assigned Candidate
+    /*public static void resetLastAssigned(Integer curDisplayTable){
+        if(assgnList.containsKey(curDisplayTable))
+            resetCandidate(lastTable);
+        AssignInfoActivity.clearViews(assignAct);
+    }*/
+
+    //Remove away the Candidate
     public static void resetCandidate(Integer table){
         if(table != null){
             Candidate cdd = attdList.getCandidate(assgnList.get(table));

@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.tools;
 
+import com.info.ghiny.examsystem.FragmentListActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -15,6 +16,23 @@ import java.util.List;
  */
 public class FragmentHelper {
 
+    private static FragmentListActivity listAct = null;
+
+    //= Setter and Getter ==========================================================================
+    public static void setListAct(FragmentListActivity listAct) {
+        FragmentHelper.listAct = listAct;
+    }
+
+    public static FragmentListActivity getListAct() {
+        return listAct;
+    }
+
+    public static void endListActivity(){
+        listAct.finish();
+        listAct = null;
+    }
+
+    //= public Methods =============================================================================
     public static void uploadAttdList() throws ProcessException{
         ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
     }
