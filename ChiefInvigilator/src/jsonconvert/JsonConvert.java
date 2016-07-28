@@ -136,5 +136,20 @@ public class JsonConvert {
         return jsonObject.getString("Value");
     }
     
+    public static ArrayList<AttdList> jsonToAttdList(String jsonString) throws JSONException{
+        JSONArray jsonArr = new JSONArray(jsonString);
+        ArrayList<AttdList> attdList = new ArrayList<>();
+        
+        for(int i = 0; i < jsonArr.length(); i++){
+            attdList.add(new AttdList(jsonArr.getJSONObject(i).getString("RegNum"),
+                                    jsonArr.getJSONObject(i).getInt("TableNo"),
+                                    jsonArr.getJSONObject(i).getString("Code"),
+                                    jsonArr.getJSONObject(i).getString("Attendance")
+                                    )
+                        );
+        }
+        
+        return attdList;
+    }
     
 }

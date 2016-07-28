@@ -5,6 +5,11 @@
  */
 package querylist;
 
+import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  *
  * @author Krissy
@@ -47,5 +52,17 @@ public class Papers {
         return totalCandidate;
     }
     
-    
+    public JSONObject papersToJson() throws JSONException{
+        JSONObject json = new JSONObject();
+        
+ 
+            json = new JSONObject();
+            
+            json.put("PaperCode", getPaperCode());
+            json.put("PaperDesc", getPaperDesc());
+            json.put("PaperStartNo", Integer.parseInt(getPaperStartNo()));
+            json.put("PaperTotalCdd", Integer.parseInt(getTotalCandidate()));
+ 
+        return json;
+    }
 }

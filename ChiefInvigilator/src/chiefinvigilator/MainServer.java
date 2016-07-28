@@ -9,12 +9,15 @@ import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jsonconvert.JsonConvert;
+import static jsonconvert.JsonConvert.jsonToAttdList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import querylist.AttdList;
 import querylist.CddPapers;
 
 
@@ -24,6 +27,7 @@ import querylist.CddPapers;
  */
 public class MainServer {
 
+    static ArrayList<Staff> staffList = new ArrayList<>();
     
     public void boardCast(ServerSocket sSocket) throws Exception{
         (new Thread() {
@@ -49,11 +53,7 @@ public class MainServer {
 
 
                     if(verify){
-                        staff = ServerComm.staffGetInfo(staff.id);
-                        JSONObject staffInfo = JsonConvert.staffInfoToJson(verify, staff);
-                        JSONArray papers = JsonConvert.papersToJson(ServerComm.getPapers(staff.getVenue()));
-                        JSONArray attdList = JsonConvert.attdListToJson(ServerComm.getAttdList(staff.getVenue()));
-                        jsonMsg = JsonConvert.jsonStringConcatenate(staffInfo, papers, attdList);
+                        jsonMsg = staffRequestSend(staff,verify);
                         ChiefGui.addStaffInfoToRow(staff);
                     }
                     else
@@ -88,7 +88,18 @@ public class MainServer {
         
     }
     
-//    private JSONObject
+    private JSONObject staffRequestSend(Staff staff, boolean verify) throws Exception{
+        staff = ServerComm.staffGetInfo(staff.id);
+//        if((staffList.isEmpty())&&(Objects.equals(staff.getStatus(),"chief")))
+//            throw new Exception("Chief should sign in first");
+//        else
+//            staffList.add(staff);
+
+        JSONObject staffInfo = JsonConvert.staffInfoToJson(verify, staff);
+        JSONArray papers = JsonConvert.papersToJson(ServerComm.getPapers(staff.getVenue()));
+        JSONArray attdList = JsonConvert.attdListToJson(ServerComm.getAttdList(staff.getVenue()));
+        return JsonConvert.jsonStringConcatenate(staffInfo, papers, attdList);
+    }
     
     private String getMessage(Socket socket) throws IOException{
         
@@ -98,10 +109,10 @@ public class MainServer {
         return br.readLine();
     }
     
-    public JSONObject checkIn(JSONObject json){ 
+    public JSONObject checkIn(JSONObject json) throws JSONException, SQLException{ 
         JSONObject jsonObject = new JSONObject();
         
-        try {
+   
             String checkIn = json.getString("CheckIn");
             
             switch(checkIn){
@@ -120,13 +131,12 @@ public class MainServer {
                     break;
                     
                 case "AttdList" : 
+                    ArrayList<AttdList> attdList = new ArrayList();
+                    attdList = jsonToAttdList(json.getJSONArray("CddList").toString());
+                    ServerComm.updateCandidateAttendence(attdList);
                     break;
             }
-        } catch (JSONException ex) {
-            System.out.print("CheckIn fail");
-        } catch (SQLException ex) {
-            System.out.print("");
-        }
+    
         
         return json;
     }

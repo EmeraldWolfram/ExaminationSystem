@@ -5,6 +5,12 @@
  */
 package chiefinvigilator;
 
+import java.sql.SQLException;
+import static jsonconvert.JsonConvert.attdListToJson;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  *
  * @author Krissy
@@ -97,4 +103,35 @@ public class Staff {
     }
 
 
+    /**
+     * @brief To convert staff info to Json object
+     * @param valid
+     * @param staff
+     * @return
+     * @throws JSONException 
+     */
+    public JSONObject staffInfoToJson(boolean valid) throws JSONException, SQLException{
+        JSONObject json = new JSONObject();
+        JSONArray arr = new JSONArray();
+        arr.put(getStatus());
+        
+        json.put("Result", valid);
+        json.put("Name", getName());
+        json.put("Venue", getVenue());
+        json.put("IdNo", getID());
+        json.put("Status", getStatus());
+        json.put("CddList", attdListToJson(new ServerComm().getAttdList(getVenue())));
+        json.put("PaperMap", attdListToJson(new ServerComm().getAttdList(getVenue())));
+        return json;
+    }
+    
+    public void jsonToSignIn(String jsonString) throws JSONException, Exception{
+        JSONObject signID = new JSONObject(jsonString);
+        Staff staff = new Staff();
+        ServerComm comm = new ServerComm();
+        
+        setID(signID.getString("IdNo"));
+        setPassword(signID.getString("Password"));
+        
+    }
 }
