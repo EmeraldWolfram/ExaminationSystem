@@ -173,10 +173,15 @@ public class AssignHelper {
                     IconManager.MESSAGE);
         }
 
-        if(tryAssignCandidate())
-            throw new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
+        if(tryAssignCandidate()){
+            ProcessException err = new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
                     + tempTable.toString(), ProcessException.MESSAGE_TOAST,
                     IconManager.ASSIGNED);
+            tempCdd = null;
+            tempTable = null;
+
+            throw err;
+        }
 
     }
 
@@ -290,8 +295,6 @@ public class AssignHelper {
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
                     tempCdd.getProgramme());
             assgnList.put(tempTable, tempCdd.getRegNum());
-            tempCdd     = null;
-            tempTable   = null;
             assigned    = true;
         }
 

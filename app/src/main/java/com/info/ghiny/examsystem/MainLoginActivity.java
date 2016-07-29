@@ -153,6 +153,7 @@ public class MainLoginActivity extends AppCompatActivity {
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         } catch (ProcessException err) {
             errorManager.displayError(err);
+            barcodeView.resume();
         }
 
     }
