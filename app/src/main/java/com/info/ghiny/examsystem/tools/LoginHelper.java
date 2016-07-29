@@ -40,9 +40,16 @@ public class LoginHelper {
             throw new ProcessException("Invalid staff ID Number", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         }
+
+        StaffIdentity staff = new StaffIdentity();
+        staff.setIdNo(scanStr);
+        LoginHelper.setStaff(staff);
+
     }
 
     public static void matchStaffPw(String inputPw) throws ProcessException{
+        staff.setPassword(inputPw);
+
         if(staff == null)
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);

@@ -84,7 +84,8 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_Null_input_should_throw_MESSAGE_TOAST() throws Exception {
         try{
-            testDummy = AssignHelper.checkCandidate(null);
+            AssignHelper.checkCandidate(null);
+            testDummy = AssignHelper.getTempCdd();
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -96,7 +97,8 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_ID_Not_in_AttdList_should_throw_MESSAGE_TOAST() throws Exception{
         try{
-            testDummy = AssignHelper.checkCandidate("15WAU22222");
+            AssignHelper.checkCandidate("15WAU22222");
+            testDummy = AssignHelper.getTempCdd();
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -108,7 +110,8 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_detect_EXEMPTED_Candidate_throw_MESSAGE_TOAST() throws Exception{
         try{
-            testDummy = AssignHelper.checkCandidate("15WAU00005");
+            AssignHelper.checkCandidate("15WAU00005");
+            testDummy = AssignHelper.getTempCdd();
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -120,7 +123,8 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_detect_BARRED_Candidate_throw_MESSAGE_TOAST() throws Exception {
         try{
-            testDummy = AssignHelper.checkCandidate("15WAU00004");
+            AssignHelper.checkCandidate("15WAU00004");
+            testDummy = AssignHelper.getTempCdd();
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -132,7 +136,8 @@ public class AssignHelperTest {
     @Test
     public void testCheckCandidate_detect_QUARANTINZED_Candidate_throw_MESSAGE_TOAST() throws Exception{
         try{
-            testDummy = AssignHelper.checkCandidate("15WAR00006");
+            AssignHelper.checkCandidate("15WAR00006");
+            testDummy = AssignHelper.getTempCdd();
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -146,7 +151,8 @@ public class AssignHelperTest {
         try{
             //when(exLoader.getIdentity("15WAU00001"))
              //       .thenReturn(new StaffIdentity("15WAU00001", "0", false, "FGY"));
-            testDummy = AssignHelper.checkCandidate("15WAU00001");
+            AssignHelper.checkCandidate("15WAU00001");
+            testDummy = AssignHelper.getTempCdd();
             assertNotNull(testDummy);
             assertEquals(testDummy, cdd1);
         } catch(ProcessException err){
@@ -159,7 +165,7 @@ public class AssignHelperTest {
     public void testCheckCandidate_should_throw_MESSAGE_DIALOG() throws Exception{
         try{
             AssignHelper.initLoader(dBLoader);
-            testDummy = AssignHelper.checkCandidate("15WAU00001");
+            AssignHelper.checkCandidate("15WAU00001");
             fail("Expected MESSAGE_DIALOG but none thrown");
         } catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
@@ -182,7 +188,7 @@ public class AssignHelperTest {
     @Test
     public void testTryAssignCandidate_Table_not_assign_should_return_false() throws Exception{
         try{
-            AssignHelper.checkTable(12);
+            AssignHelper.checkTable("12");
             assertFalse(AssignHelper.tryAssignCandidate());
         }catch(ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -205,7 +211,7 @@ public class AssignHelperTest {
     public void testTryAssignCandidate_When_successful_assigned_should_return_true() throws Exception{
         try{
             AssignHelper.checkCandidate("15WAU00001");
-            AssignHelper.checkTable(12);
+            AssignHelper.checkTable("12");
             assertTrue(AssignHelper.tryAssignCandidate());
         }catch(ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -218,11 +224,11 @@ public class AssignHelperTest {
         HashMap<Integer, String> assgnList = new HashMap<>();
 
         try{
-            AssignHelper.checkTable(12);
+            AssignHelper.checkTable("12");
             AssignHelper.checkCandidate("15WAU00002");
             boolean test = AssignHelper.tryAssignCandidate();
             //Second assign 12
-            AssignHelper.checkTable(12);
+            AssignHelper.checkTable("12");
             AssignHelper.checkCandidate("15WAU00001");
             test = AssignHelper.tryAssignCandidate();
             fail("Expected UPDATE_PROMPT but none thrown");
@@ -241,7 +247,7 @@ public class AssignHelperTest {
 
         try{
             AssignHelper.assgnList = assgnList;
-            AssignHelper.checkTable(12);
+            AssignHelper.checkTable("12");
             AssignHelper.checkCandidate("15WAU00001");
             boolean test = AssignHelper.tryAssignCandidate();
             fail("Expected UPDATE_PROMPT but none thrown");
@@ -261,7 +267,7 @@ public class AssignHelperTest {
 
         try{
             AssignHelper.assgnList = assgnList;
-            AssignHelper.checkTable(55);
+            AssignHelper.checkTable("55");
             AssignHelper.checkCandidate("15WAU00001");
             boolean test = AssignHelper.tryAssignCandidate();
             fail("Expected MESSAGE_TOAST but none thrown");
@@ -284,11 +290,11 @@ public class AssignHelperTest {
     public void testUpdateNewCandidate_reaasign_table() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00001");
         AssignHelper.tryAssignCandidate();
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00002");
 
         AssignHelper.updateNewCandidate();
@@ -311,11 +317,11 @@ public class AssignHelperTest {
     public void testUpdateNewCandidate_reassign_candidate() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
 
-        AssignHelper.checkTable(12);
+        AssignHelper.checkTable("12");
         AssignHelper.checkCandidate("15WAU00001");
         AssignHelper.tryAssignCandidate();
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00001");
 
         AssignHelper.updateNewCandidate();
@@ -339,11 +345,11 @@ public class AssignHelperTest {
     public void testCancelNewCandidate_reassign_candidate() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
 
-        AssignHelper.checkTable(12);
+        AssignHelper.checkTable("12");
         AssignHelper.checkCandidate("15WAU00001");
         AssignHelper.tryAssignCandidate();
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00001");
 
         AssignHelper.cancelNewAssign();
@@ -366,11 +372,11 @@ public class AssignHelperTest {
     public void testCancelNewAssign_reaasign_table() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00001");
         AssignHelper.tryAssignCandidate();
 
-        AssignHelper.checkTable(14);
+        AssignHelper.checkTable("14");
         AssignHelper.checkCandidate("15WAU00002");
 
         AssignHelper.cancelNewAssign();
@@ -448,7 +454,7 @@ public class AssignHelperTest {
     @Test
     public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
         AssignHelper.checkCandidate("15WAU00001");
-        AssignHelper.checkTable(12);
+        AssignHelper.checkTable("12");
         assertTrue(AssignHelper.tryAssignCandidate());
         assertEquals(1, AssignHelper.assgnList.size());
         assertEquals(AttendanceList.Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());

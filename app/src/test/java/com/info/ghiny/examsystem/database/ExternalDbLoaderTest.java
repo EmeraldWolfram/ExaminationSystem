@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.JsonHelper;
 import com.info.ghiny.examsystem.tools.LoginHelper;
@@ -15,10 +14,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.doNothing;

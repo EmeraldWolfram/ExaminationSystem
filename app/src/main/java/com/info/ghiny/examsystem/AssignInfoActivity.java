@@ -1,25 +1,20 @@
 package com.info.ghiny.examsystem;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.CustomToast;
-import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -135,7 +130,7 @@ public class AssignInfoActivity extends AppCompatActivity {
         }
     }
 
-    //UI Setting method
+    //= UI Setting method ==========================================================================
     public static void clearViews(AssignInfoActivity act){
         TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
         TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);

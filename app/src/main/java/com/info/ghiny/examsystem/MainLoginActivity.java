@@ -149,10 +149,6 @@ public class MainLoginActivity extends AppCompatActivity {
             barcodeView.pause();
             LoginHelper.checkQrId(scanStr);
 
-            StaffIdentity staff = new StaffIdentity();
-            staff.setIdNo(scanStr);
-            LoginHelper.setStaff(staff);
-
             Intent pwIntent = new Intent(this, PopUpLogin.class);
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
         } catch (ProcessException err) {
@@ -166,8 +162,6 @@ public class MainLoginActivity extends AppCompatActivity {
             String password = data.getStringExtra("Password");
             try{
                 barcodeView.pause();
-
-                LoginHelper.getStaff().setPassword(password);
                 LoginHelper.matchStaffPw(password);
 
                 final Handler handler = new Handler();

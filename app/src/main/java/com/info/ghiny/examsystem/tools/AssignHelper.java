@@ -20,7 +20,6 @@ import java.util.HashMap;
 public class AssignHelper {
     private static Candidate tempCdd    = null;
     private static Integer tempTable    = null;
-    private static Integer lastTable    = null;
     public static HashMap<Integer, String> assgnList = new HashMap<>();
 
     public static final int MAYBE_TABLE     = 0;
@@ -57,12 +56,12 @@ public class AssignHelper {
         assert dBLoader != null;
 
         if(dBLoader.emptyAttdInDB()){
-            dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
+            dBLoader.saveAttendanceList(attdList); //Suppose to query external DB
 
             /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
         }
         if(dBLoader.emptyPapersInDB()) {
-            dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
+            dBLoader.savePaperList(Candidate.getPaperList()); //Suppose to query external DB
             /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
         }
 
@@ -95,8 +94,6 @@ public class AssignHelper {
     public static void setAttdList(AttendanceList attdList) {
         AssignHelper.attdList = attdList;
     }
-
-    //A getter to retrieve the list to display in Activity
     public static AttendanceList getAttdList() {
         return attdList;
     }
@@ -104,7 +101,6 @@ public class AssignHelper {
     public static void setAssignAct(AssignInfoActivity assignAct) {
         AssignHelper.assignAct = assignAct;
     }
-
     protected static AssignInfoActivity getAssignAct(){
         return assignAct;
     }
@@ -114,11 +110,25 @@ public class AssignHelper {
         AssignHelper.tempCdd = tempCdd;
     }
 
+    public static Candidate getTempCdd() {
+        return tempCdd;
+    }
+
     public static void setTempTable(Integer tempTable) {
         AssignHelper.tempTable = tempTable;
     }
 
-    //= Assign =====================================================================================
+    public static Integer getTempTable() {
+        return tempTable;
+    }
+
+    //= Method for Assign process ==================================================================
+
+    /**
+     * checkScan()
+     *
+     * @throws ProcessException
+     */
     public static int checkScan(String scanStr) throws ProcessException{
         int flag;
 
@@ -134,9 +144,26 @@ public class AssignHelper {
         return flag;
     }
 
+
+    /**
+     * tryAssignScanValue()
+     *
+     * This method check the scanStr length and call one of the following
+     * methods to assign the value if the length is possible table or candidate
+     * 1. checkCandidate
+     * 2. checkTable
+     *
+     * If the length is not possible to be any useful data for assign process
+     * this method throw MESSAGE_TOAST error
+     *
+     * After that, tryAssignCandidate was called to check if both table and candidate
+     * is registered in the buffer and is a valid set of data and take the attendance
+     *
+     * @param scanStr               The value scan from the QR scanner
+     */
     public static void tryAssignScanValue(String scanStr) throws ProcessException{
         if(scanStr.length() < 4 && scanStr.length() > 0){
-            checkTable(Integer.parseInt(scanStr));
+            checkTable(scanStr);
             AssignInfoActivity.setTableView(assignAct, tempTable.toString());
         } else if(scanStr.length() == 10){
             checkCandidate(scanStr);
@@ -146,17 +173,38 @@ public class AssignHelper {
                     IconManager.MESSAGE);
         }
 
+        if(tryAssignCandidate())
+            throw new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
+                    + tempTable.toString(), ProcessException.MESSAGE_TOAST,
+                    IconManager.ASSIGNED);
+
     }
 
-    //check-in Table
-    public static Integer checkTable(Integer table){
+    /**
+     * checkTable()
+     *
+     * This method register the table to the assignment
+     *
+     * @param scanString    Possible Table Number in the venue
+     */
+    public static void checkTable(String scanString){
         //Add checking mechanism when venue size is valid
-        tempTable = table;
-        return tempTable;
+        tempTable = Integer.parseInt(scanString);
     }
 
-    //check-in Candidate and also check if the candidate is eligible
-    public static Candidate checkCandidate(String scanString) throws ProcessException {
+    /**
+     * checkCandidate()
+     *
+     * This method check the input scanString
+     *
+     *  If scanString is a Candidate ID
+     *  It register the Candidate to the buffer tempCdd
+     *  else error will be thrown
+     *
+     * @param scanString            Possible Register Number of candidate
+     * @throws ProcessException
+     */
+    public static void checkCandidate(String scanString) throws ProcessException {
         if(scanString == null){
             throw new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
@@ -188,10 +236,19 @@ public class AssignHelper {
         }
 
         tempCdd = candidate;
-        return tempCdd;
     }
 
-    //assign the check-in Table Candidate Set in to the List
+    /**
+     * tryAssignCandidate()
+     *
+     * This method check if the the buffer for table and buffer for candidate
+     * were registered. If both are registered and capable to form a valid set,
+     * The attendance will be taken and return a true
+     *
+     * If it failed half way, this method return false and do nothing.
+     *
+     * @return  the flag of registered the set of table and candidate or failed
+     */
     public static boolean tryAssignCandidate() throws ProcessException {
         boolean assigned = false;
 
@@ -233,7 +290,6 @@ public class AssignHelper {
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
                     tempCdd.getProgramme());
             assgnList.put(tempTable, tempCdd.getRegNum());
-            lastTable   = tempTable;
             tempCdd     = null;
             tempTable   = null;
             assigned    = true;
@@ -242,8 +298,15 @@ public class AssignHelper {
         return assigned;
     }
 
-    //= On Dialog ==================================================================================
-    //Replace previously assigned Table Candidate set with New Table Candidate set
+    //= Methods for abnormal cases =================================================================
+    //  updateNewCandidae()
+    //  - Replace previously assigned Table Candidate set with New Table Candidate set
+    //
+    //  cancelNewAssign()
+    //  - Remain previously assigned Table Candidate set and discard New Table Candidate set
+    //
+    //  resetCandidate()
+    //  - Remove away the Candidate
     public static void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
@@ -265,20 +328,11 @@ public class AssignHelper {
         tempTable   = null;
     }
 
-    //Remain previously assigned Table Candidate set and discard New Table Candidate set
     public static void cancelNewAssign(){
         tempCdd     = null;
         tempTable   = null;
     }
 
-    //Remove away the last assigned Candidate
-    /*public static void resetLastAssigned(Integer curDisplayTable){
-        if(assgnList.containsKey(curDisplayTable))
-            resetCandidate(lastTable);
-        AssignInfoActivity.clearViews(assignAct);
-    }*/
-
-    //Remove away the Candidate
     public static void resetCandidate(Integer table){
         if(table != null){
             Candidate cdd = attdList.getCandidate(assgnList.get(table));
@@ -289,6 +343,13 @@ public class AssignHelper {
             assgnList.remove(table);
         }
     }
+
+    //Remove away the last assigned Candidate
+    /*public static void resetLastAssigned(Integer curDisplayTable){
+        if(assgnList.containsKey(curDisplayTable))
+            resetCandidate(lastTable);
+        AssignInfoActivity.clearViews(assignAct);
+    }*/
 
     //= FAKE Function for demo purposes ============================================================
     private static AttendanceList prepareList(){
