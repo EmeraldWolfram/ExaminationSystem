@@ -88,12 +88,15 @@ public class MainLoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        while(ExternalDbLoader.getTcpClient() == null){}
+
         ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
                 try{
-                    connect.publishMsg(message);
+                    //connect.publishMsg(message);
+                    ChiefLink.setCompleteFlag(false);
 
                     StaffIdentity id    = JsonHelper.parseStaffIdentity(message);
                     LoginHelper.setStaff(id);

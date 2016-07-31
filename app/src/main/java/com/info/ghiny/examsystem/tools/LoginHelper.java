@@ -52,14 +52,15 @@ public class LoginHelper {
         if(staff == null) {
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);
-        }
-        staff.setPassword(inputPw);
-
-        if(inputPw == null || inputPw.isEmpty()){
-            throw new ProcessException("Please enter a password to proceed",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         } else {
-            ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
+            staff.setPassword(inputPw);
+            if(inputPw == null || inputPw.isEmpty()){
+                throw new ProcessException("Please enter a password to proceed",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            } else {
+                ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
+            }
         }
+
     }
 }
