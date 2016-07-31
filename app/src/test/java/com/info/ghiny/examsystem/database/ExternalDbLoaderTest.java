@@ -134,12 +134,12 @@ public class ExternalDbLoaderTest {
         LoginHelper.setStaff(staff);    //To set the venue to H3
         AttendanceList attdList = new AttendanceList();
 
-        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
-        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", AttendanceList.Status.QUARANTIZED);
+        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTIZED);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -173,11 +173,11 @@ public class ExternalDbLoaderTest {
 
         HashMap<String, ExamSubject> paperList   = new HashMap<>();
         ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,
-                Calendar.getInstance(), 20, "H1", ExamSubject.Session.AM);
+                Calendar.getInstance(), 20, "H1", Session.AM);
         ExamSubject subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30,
-                Calendar.getInstance(), 20, "H2", ExamSubject.Session.PM);
+                Calendar.getInstance(), 20, "H2", Session.PM);
         ExamSubject subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50,
-                Calendar.getInstance(), 20, "H3", ExamSubject.Session.VM);
+                Calendar.getInstance(), 20, "H3", Session.VM);
         paperList.put(subject1.getPaperCode(), subject1);
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);

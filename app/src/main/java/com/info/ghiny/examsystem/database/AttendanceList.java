@@ -11,13 +11,6 @@ import java.util.Map;
  * Created by GhinY on 25/05/2016.
  */
 public class AttendanceList {
-    public enum Status {
-        PRESENT,
-        ABSENT,
-        EXEMPTED,
-        BARRED,
-        QUARANTIZED
-    }
     private HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
             attendanceList;
 

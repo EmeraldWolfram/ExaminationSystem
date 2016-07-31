@@ -25,10 +25,11 @@ import java.util.List;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class AssignInfoActivity extends AppCompatActivity {
+public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
+    private AssignHelper assignHelper;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -50,13 +51,14 @@ public class AssignInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
-        errManager  = new ErrorManager(this);
-        AssignHelper.setAssignAct(this);
+        errManager      = new ErrorManager(this);
+        assignHelper    = new AssignHelper();
+        assignHelper.setAssignAct(this);
 
         try{
             LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
             //CheckListLoader clLoader = new CheckListLoader(this);
-            AssignHelper.initLoader(jdbcLoader);
+            assignHelper.initLoader(jdbcLoader);
             //AssignHelper.initLoader(clLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
@@ -122,7 +124,7 @@ public class AssignInfoActivity extends AppCompatActivity {
     //==============================================================================================
     public void onScanTableOrCandidate(String scanString){
         try{
-            AssignHelper.tryAssignScanValue(scanString);
+            assignHelper.tryAssignScanValue(scanString);
         } catch(ProcessException err){
             barcodeView.pause();
             errManager.displayError(err);
@@ -130,107 +132,53 @@ public class AssignInfoActivity extends AppCompatActivity {
         }
     }
 
-    //= UI Setting method ==========================================================================
-    public static void clearViews(AssignInfoActivity act){
-        TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
-        TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
-        TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
+    //= Interface Method ==========================================================================
+    @Override
+    public void clearView() {
+        TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
+        TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
+        TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
 
         assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
 
-        setTableView(act, "");
+        setTableView(0);
         cddView.setText("");
         regNumView.setText("");
         paperView.setText("");
     }
 
-    public static void setTableView(AssignInfoActivity act, String tableNumber){
-        TextView tableView  = (TextView)act.findViewById(R.id.tableNumberText);
+    @Override
+    public void setTableView(Integer tableNum) {
+        TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         assert tableView != null;
-        tableView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/Chunkfive.otf"));
+        tableView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Chunkfive.otf"));
 
-        tableView.setText(tableNumber);
+        if(tableNum != 0)
+            tableView.setText(tableNum.toString());
+        else
+            tableView.setText("");
     }
 
-    public static void setCandidateView(AssignInfoActivity act, Candidate cdd){
+    @Override
+    public void setCandidateView(Candidate cdd) {
         try{
-            TextView cddView    = (TextView)act.findViewById(R.id.canddAssignText);
-            TextView regNumView = (TextView)act.findViewById(R.id.regNumAssignText);
-            TextView paperView  = (TextView)act.findViewById(R.id.paperAssignText);
+            TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
+            TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
+            TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
 
             assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
 
-            cddView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/Oswald-Bold.ttf"));
-            regNumView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/DroidSerif-Regular.ttf"));
-            paperView.setTypeface(Typeface.createFromAsset(act.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+            cddView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Oswald-Bold.ttf"));
+            regNumView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Regular.ttf"));
+            paperView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
             cddView.setText(cdd.getExamIndex());
             regNumView.setText(cdd.getRegNum());
             paperView.setText(cdd.getPaper().toString());
         } catch (ProcessException err) {
-            act.barcodeView.pause();
-            act.errManager.displayError(err);
-            act.barcodeView.resume();
+            barcodeView.pause();
+            errManager.displayError(err);
+            barcodeView.resume();
         }
-
     }
-
 }
-/*
-Removed Code in onScanValue
-
-        TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
-        TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-        TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-        TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
-
-        assert tableView    != null;    assert cddView     != null;
-        assert regNumView   != null;    assert paperView   != null;
-
-        tableView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Chunkfive.otf"));
-        cddView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
-        regNumView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
-        paperView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
-
-
-        ============================================================================================
-
-            int scanPossibly    =   AssignHelper.checkScan(scanString);
-
-            if(scanPossibly == AssignHelper.MAYBE_TABLE){
-                AssignHelper.checkTable(Integer.parseInt(scanString));
-                tableView.setText(scanString);
-            }
-
-            if(scanPossibly == AssignHelper.MAYBE_CANDIDATE){
-                cdd = AssignHelper.checkCandidate(scanString);
-                //Candidate is legal, display all the candidate value
-                cddView.setText(cdd.getExamIndex());
-                regNumView.setText(cdd.getRegNum());
-                paperView.setText(cdd.getPaper().toString());
-            }
-
-            if(AssignHelper.tryAssignCandidate()){
-                //Candidate successfully assigned, clear display and acknowledge with message
-                clearViews(this);
-
-                message.showCustomMessage(cdd.getExamIndex()+ " Assigned to "
-                        + cdd.getTableNumber().toString(),
-                        new IconManager().getIcon(IconManager.ASSIGNED));
-            }
-
-
-    REMOVED CODE IN onCreate() -> OnSwipeRight
-
-    TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
-                TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-                TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-                TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
-
-                assert tableView    != null;    assert cddView     != null;
-                assert regNumView   != null;    assert paperView   != null;
-
-                AssignHelper.resetCandidate(Integer.parseInt(tableView.getText().toString()));
-                tableView.setText("");      cddView.setText("");
-                regNumView.setText("");     paperView.setText("");
- */

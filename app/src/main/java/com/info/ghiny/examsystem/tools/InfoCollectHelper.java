@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class InfoCollectHelper {
 
-    public static void bundleCollection(String scanValue) throws ProcessException{
+    public void bundleCollection(String scanValue) throws ProcessException{
         ExternalDbLoader.acknowledgeCollection(scanValue);
     }
 
-    public static void reqCandidatePapers(String scanValue) throws ProcessException{
+    public void reqCandidatePapers(String scanValue) throws ProcessException{
 
         if(scanValue.length() != 10)
             throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
@@ -26,7 +26,7 @@ public class InfoCollectHelper {
         ExternalDbLoader.getPapersExamineByCdd(scanValue);
     }
 
-    public static Integer getDaysLeft(Calendar paperDate) {
+    public Integer getDaysLeft(Calendar paperDate) {
         Calendar today = Calendar.getInstance();
         Integer numberOfDay;
 

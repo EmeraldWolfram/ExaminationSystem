@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class ExternalDbLoader {
 
-    private static TCPClient tcpClient  = null;
+    private static TCPClient tcpClient;
 
     //= Setter & Getter ============================================================================
     public static void setTcpClient(TCPClient tcpClient) {
@@ -54,21 +54,6 @@ public class ExternalDbLoader {
 
         if (str != null && tcpClient != null) {
             tcpClient.sendMessage(str);
-            /*final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()) {
-                        ProcessException err = new ProcessException(
-                                "Attendance List request times out.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton,
-                                MainLoginActivity.timesOutListener);
-                        if (errMng != null)
-                            errMng.displayError(err);
-                    }
-                }
-            }, 10000);*/
         }
     }
 
@@ -77,23 +62,6 @@ public class ExternalDbLoader {
                 LoginHelper.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
-            /*ChiefLink.setTimesOutFlag(false);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete())
-                        ChiefLink.setTimesOutFlag(true);
-                }
-            }, 10000);*/
-            /*
-            while(!ChiefLink.isMsgReadyFlag()) {
-                map = null;
-            }
-            map = JsonHelper.parsePaperMap(ChiefLink.getMsgReceived());
-            ChiefLink.setMsgReceived(null);
-            ChiefLink.setMsgReadyFlag(false);
-            */
         }
     }
 
@@ -112,7 +80,7 @@ public class ExternalDbLoader {
         String str = JsonHelper.formatAttdList(attdList);
         if(tcpClient != null){
             tcpClient.sendMessage(str);
-        }else {
+        }   else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }

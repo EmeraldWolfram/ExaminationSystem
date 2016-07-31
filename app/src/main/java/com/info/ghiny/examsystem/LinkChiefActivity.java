@@ -75,7 +75,8 @@ public class LinkChiefActivity extends AppCompatActivity {
     public void checkForChief(String scanStr){
         try{
             barcodeView.pause();
-            LoginHelper.verifyChief(scanStr);
+            LoginHelper helper = new LoginHelper();
+            helper.verifyChief(scanStr);
 
             Intent login    = new Intent(this, MainLoginActivity.class);
             startActivity(login);

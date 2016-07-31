@@ -25,7 +25,7 @@ public class Candidate {
     private String paperCode;
     private String programme;
     private static HashMap<String, ExamSubject> paperList;
-    private AttendanceList.Status status;
+    private Status status;
 
     //CONSTRUCTOR `````````````````````````````````````````````````````````````````````
     public Candidate(){
@@ -34,11 +34,11 @@ public class Candidate {
         regNum      = null;
         paperCode   = null;
         programme   = null;
-        status      = AttendanceList.Status.ABSENT;
+        status      = Status.ABSENT;
     }
 
     public Candidate(int tableNumber, String programme, String sName, String regNum,
-                     String paperCode, AttendanceList.Status status){
+                     String paperCode, Status status){
         this.tableNumber    = tableNumber;
         this.programme      = programme;
         this.examIndex = sName;
@@ -78,10 +78,10 @@ public class Candidate {
         return subject;
     }
 
-    public AttendanceList.Status getStatus() {
+    public Status getStatus() {
         return status;
     }
-    public void setStatus(AttendanceList.Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

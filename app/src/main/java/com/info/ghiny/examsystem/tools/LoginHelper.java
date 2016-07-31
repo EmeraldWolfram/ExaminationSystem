@@ -24,7 +24,7 @@ public class LoginHelper {
     }
 
     //= Useable Methods ============================================================================
-    public static void verifyChief(String scanStr) throws ProcessException{
+    public void verifyChief(String scanStr) throws ProcessException{
         if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
             String[] chiefArr   = scanStr.split(":");
             TCPClient.SERVERIP      = chiefArr[1];
@@ -35,7 +35,7 @@ public class LoginHelper {
         }
     }
 
-    public static void checkQrId(String scanStr) throws ProcessException{
+    public void checkQrId(String scanStr) throws ProcessException{
         if(scanStr.length() != 6){
             throw new ProcessException("Invalid staff ID Number", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
@@ -47,12 +47,13 @@ public class LoginHelper {
 
     }
 
-    public static void matchStaffPw(String inputPw) throws ProcessException{
-        staff.setPassword(inputPw);
+    public void matchStaffPw(String inputPw) throws ProcessException{
 
-        if(staff == null)
+        if(staff == null) {
             throw new ProcessException("Input ID is null", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);
+        }
+        staff.setPassword(inputPw);
 
         if(inputPw == null || inputPw.isEmpty()){
             throw new ProcessException("Please enter a password to proceed",

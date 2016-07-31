@@ -24,7 +24,6 @@ public class ExamSubject {
     private Calendar date;
     private Integer startTableNum;
     private Integer numOfCandidate;
-    public enum Session {AM, PM, VM}
     private Session paperSession;
     private String examVenue;
 

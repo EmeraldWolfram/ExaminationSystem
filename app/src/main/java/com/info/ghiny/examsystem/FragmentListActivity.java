@@ -14,9 +14,7 @@ import android.view.View;
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
-import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
-import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 import com.info.ghiny.examsystem.tools.IconManager;
@@ -30,7 +28,7 @@ import com.info.ghiny.examsystem.tools.TCPClient;
 public class FragmentListActivity extends AppCompatActivity {
 
     private ErrorManager errorManager;
-    private TCPClient tcpClient;
+    private FragmentHelper helper;
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
                 @Override
@@ -49,25 +47,9 @@ public class FragmentListActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         assert viewPager != null; assert tabLayout != null;
-        // Initilization
-
-        FragmentHelper.setListAct(this);
 
         errorManager    = new ErrorManager(this);
-        tcpClient       = new TCPClient(new TCPClient.OnMessageReceived() {
-            @Override
-            public void messageReceived(String message) {
-                try{
-                    boolean uploaded = JsonHelper.parseBoolean(message);
-                    AssignHelper.getJdbcLoader().clearDatabase();
-                } catch (ProcessException err){
-                    Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
-                    startActivity(errIn);
-                }
-            }
-        });
-        ExternalDbLoader.setTcpClient(tcpClient);
+        helper          = new FragmentHelper();
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -78,17 +60,28 @@ public class FragmentListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.setTcpClient(tcpClient);
-    }
-
-    public static void callFinish(FragmentListActivity act){
-        act.finish();
+        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+            @Override
+            public void messageReceived(String message) {
+                try{
+                    ChiefLink.setCompleteFlag(false);
+                    boolean uploaded = JsonHelper.parseBoolean(message);
+                    LocalDbLoader dbLoader  =
+                            new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
+                    dbLoader.clearDatabase();
+                } catch (ProcessException err){
+                    Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
+                }
+            }
+        });
     }
 
     //==============================================================================================
     public void onUpload(View view){
         try{
-            FragmentHelper.uploadAttdList();
+            helper.uploadAttdList();
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -108,3 +101,5 @@ public class FragmentListActivity extends AppCompatActivity {
     }
 
 }
+
+

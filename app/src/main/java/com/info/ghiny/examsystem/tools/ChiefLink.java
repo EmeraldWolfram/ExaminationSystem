@@ -37,9 +37,14 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
     @Override
     protected TCPClient doInBackground(String... params) {
-        if(ExternalDbLoader.getTcpClient() != null){
-            ExternalDbLoader.getTcpClient().run();
-        }
+
+        TCPClient tcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
+            @Override
+            public void messageReceived(String message) {}
+        });
+        ExternalDbLoader.setTcpClient(tcpClient);
+        tcpClient.run();
+
         return null;
     }
 

@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 
 import java.util.HashMap;
@@ -31,9 +32,10 @@ public class BarredFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view   = inflater.inflate(R.layout.fragment_barred, null);
 
-        List<String> header = FragmentHelper.getTitleList(AttendanceList.Status.BARRED);
-        HashMap<String, List<Candidate>> child =
-                FragmentHelper.getChildList(AttendanceList.Status.BARRED);
+        FragmentHelper helper = new FragmentHelper();
+
+        List<String> header = helper.getTitleList(Status.BARRED);
+        HashMap<String, List<Candidate>> child = helper.getChildList(Status.BARRED);
 
         ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.barredList);
         barredList.setAdapter(new FragListAdapter(getContext(), header, child));

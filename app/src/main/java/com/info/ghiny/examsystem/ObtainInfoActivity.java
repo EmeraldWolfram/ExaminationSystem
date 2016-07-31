@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -34,8 +35,10 @@ import java.util.List;
 public class ObtainInfoActivity extends AppCompatActivity {
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
 
+    private InfoCollectHelper helper;
     private ExamSubjectAdapter listAdapter;
     private ErrorManager errManager;
+    private ChiefLink connect;
     private TCPClient obtainInfo;
 
     private DialogInterface.OnClickListener timesOutListener =
@@ -69,23 +72,9 @@ public class ObtainInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
+        helper      = new InfoCollectHelper();
         errManager  = new ErrorManager(this);
         listAdapter = new ExamSubjectAdapter();
-
-        obtainInfo = new TCPClient(new TCPClient.OnMessageReceived() {
-            @Override
-            public void messageReceived(String message) {
-                try{
-                    List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
-                    listAdapter.updatePapers(subjects);
-                } catch (ProcessException err) {
-                    Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
-                    startActivity(errIn);
-                }
-            }
-        });
-        ExternalDbLoader.setTcpClient(obtainInfo);
 
         ListView paperList = (ListView)findViewById(R.id.paperInfoList);
         assert paperList != null;
@@ -116,7 +105,20 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.setTcpClient(obtainInfo);
+        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+            @Override
+            public void messageReceived(String message) {
+                try{
+                    ChiefLink.setCompleteFlag(false);
+                    List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
+                    listAdapter.updatePapers(subjects);
+                } catch (ProcessException err) {
+                    Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
+                }
+            }
+        });
         barcodeView.resume();
     }
 
@@ -136,7 +138,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
     private void requestPapers(String scanStr){
         try{
             barcodeView.pause();
-            InfoCollectHelper.reqCandidatePapers(scanStr);
+            helper.reqCandidatePapers(scanStr);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override

@@ -52,7 +52,7 @@ public class CandidateTest {
         try{
             Candidate.setPaperList(paperMap);
             Candidate testCdd = new Candidate(1, "RMB3", "FGY", "15WAU09184",
-                    "BAME 2134", AttendanceList.Status.ABSENT);
+                    "BAME 2134", Status.ABSENT);
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(getSubject, testPaper1);
         }catch (ProcessException err){
@@ -68,7 +68,7 @@ public class CandidateTest {
         try{
             Candidate.setPaperList(paperMap);
             Candidate testCdd = new Candidate(1, "RMB3", "FGY", "15WAU09184",
-                    "BAME 2004", AttendanceList.Status.ABSENT);
+                    "BAME 2004", Status.ABSENT);
 
             ExamSubject getSubject = testCdd.getPaper();
             fail("Exception MESSAGE_DIALOG expected but none thrown");
@@ -100,7 +100,7 @@ public class CandidateTest {
     public void testGetPaper_TestEmptyPaperList() throws Exception {
         try{
             Candidate testCdd = new Candidate(1, "RMB3", "FGY", "15WAU09184",
-                    "BAME 2134", AttendanceList.Status.ABSENT);;
+                    "BAME 2134", Status.ABSENT);;
             ExamSubject getSubject = testCdd.getPaper();
             assertEquals(testPaper2, getSubject);
             fail("Expected MESSAGE_DIALOG but none thrown");
@@ -119,7 +119,7 @@ public class CandidateTest {
 
         Candidate.setPaperList(paperMap);
         Candidate testCdd = new Candidate(1, "RMB3", "FGY", "15WAU09184",
-                "BAME 2004", AttendanceList.Status.ABSENT);
+                "BAME 2004", Status.ABSENT);
 
         ExamSubject getSubject = testCdd.getPaper();
 

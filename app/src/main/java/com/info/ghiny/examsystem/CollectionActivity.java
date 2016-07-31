@@ -36,8 +36,8 @@ import java.util.List;
 public class CollectionActivity extends AppCompatActivity {
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
+    private InfoCollectHelper helper;
     private ErrorManager errorManager;
-    private TCPClient mTcpClient;
 
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
@@ -71,21 +71,8 @@ public class CollectionActivity extends AppCompatActivity {
         assert bundleView  != null;
         bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
+        helper          = new InfoCollectHelper();
         errorManager    = new ErrorManager(this);
-        mTcpClient      = new TCPClient(new TCPClient.OnMessageReceived() {
-            //here the messageReceived method is implemented
-            @Override
-            public void messageReceived(String message) {
-                try{
-                    boolean ack = JsonHelper.parseBoolean(message);
-                } catch (ProcessException err) {
-                    Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
-                    startActivity(errIn);
-                }
-            }
-        });
-        ExternalDbLoader.setTcpClient(mTcpClient);
 
         barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
         assert barcodeView != null;
@@ -95,7 +82,20 @@ public class CollectionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.setTcpClient(mTcpClient);
+        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+            //here the messageReceived method is implemented
+            @Override
+            public void messageReceived(String message) {
+                try{
+                    ChiefLink.setCompleteFlag(false);
+                    boolean ack = JsonHelper.parseBoolean(message);
+                } catch (ProcessException err) {
+                    Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
+                    errIn.putExtra("Error", err.getErrorMsg());
+                    startActivity(errIn);
+                }
+            }
+        });
         barcodeView.resume();
     }
 
@@ -115,7 +115,7 @@ public class CollectionActivity extends AppCompatActivity {
     private void onScanBundle(String scanStr){
         try{
             barcodeView.pause();
-            InfoCollectHelper.bundleCollection(scanStr);
+            helper.bundleCollection(scanStr);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override

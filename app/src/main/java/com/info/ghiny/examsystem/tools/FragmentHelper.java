@@ -5,6 +5,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
+import com.info.ghiny.examsystem.database.Status;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,28 +17,12 @@ import java.util.List;
  */
 public class FragmentHelper {
 
-    private static FragmentListActivity listAct = null;
-
-    //= Setter and Getter ==========================================================================
-    public static void setListAct(FragmentListActivity listAct) {
-        FragmentHelper.listAct = listAct;
-    }
-
-    public static FragmentListActivity getListAct() {
-        return listAct;
-    }
-
-    public static void endListActivity(){
-        listAct.finish();
-        listAct = null;
-    }
-
     //= public Methods =============================================================================
-    public static void uploadAttdList() throws ProcessException{
+    public void uploadAttdList() throws ProcessException{
         ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
     }
 
-    public static List<String> getTitleList(AttendanceList.Status status){
+    public List<String> getTitleList(Status status){
         List<String> papers = new ArrayList<>();
         AttendanceList attdList = AssignHelper.getAttdList();
 
@@ -54,7 +39,7 @@ public class FragmentHelper {
         return papers;
     }
 
-    public static HashMap<String, List<Candidate>> getChildList(AttendanceList.Status status){
+    public HashMap<String, List<Candidate>> getChildList(Status status){
         HashMap<String, HashMap<String, Candidate>> prgList;
         HashMap<String, Candidate> cddMap;
         HashMap<String, List<Candidate>> cddChild   = new HashMap<>();

@@ -6,6 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+
+import com.info.ghiny.examsystem.adapter.FragListAdapter;
+import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.tools.FragmentHelper;
+
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -23,7 +32,16 @@ public class QuarantinedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_quarantined, container, false);
+        View view = inflater.inflate(R.layout.fragment_quarantined, container, false);
+        FragmentHelper helper = new FragmentHelper();
+
+        List<String> header = helper.getTitleList(Status.QUARANTIZED);
+        HashMap<String, List<Candidate>> child = helper.getChildList(Status.QUARANTIZED);
+
+        ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.quarantizedList);
+        barredList.setAdapter(new FragListAdapter(getContext(), header, child));
+
+        return view;
     }
 
 }

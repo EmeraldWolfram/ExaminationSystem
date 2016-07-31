@@ -6,6 +6,7 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.Status;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -62,12 +63,12 @@ public class JsonHelperTest {
     @Test
     public void testFormatAttdList() throws Exception {
         AttendanceList attdList = new AttendanceList();
-        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
-        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", AttendanceList.Status.QUARANTIZED);
+        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTIZED);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -202,11 +203,11 @@ public class JsonHelperTest {
         assertTrue(ChiefLink.isComplete());
 
         assertNotNull(attdList);
-        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
-        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.BARRED));
-        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.PRESENT));
-        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
-        assertEquals(0, attdList.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
+        assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
+        assertEquals(1, attdList.getNumberOfCandidates(Status.BARRED));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.EXEMPTED));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.QUARANTIZED));
     }
 
     @Test
@@ -256,8 +257,8 @@ public class JsonHelperTest {
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
             assertTrue(ChiefLink.isComplete());
-            assertEquals("FATAL: Unable to download Attendance List", err.getErrorMsg());
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("Unable to download Attendance List", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
 
 

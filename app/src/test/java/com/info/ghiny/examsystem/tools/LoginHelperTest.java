@@ -19,13 +19,17 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ExternalDbLoader.class)
 public class LoginHelperTest {
+    LoginHelper helper;
     StaffIdentity staffId;
+
     @Before
     public void setUp() throws Exception{
         TCPClient.setServerIp(null);
         TCPClient.setServerPort(0);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
         PowerMockito.mockStatic(ExternalDbLoader.class);
+
+        helper  = new LoginHelper();
     }
     //= VerifyChief() ==============================================================================
     /**
@@ -41,7 +45,7 @@ public class LoginHelperTest {
             assertEquals(0, TCPClient.SERVERPORT);
 
             String str = "$CHIEF:192.168.0.1:5000:$";
-            LoginHelper.verifyChief(str);
+            helper.verifyChief(str);
 
             assertEquals("192.168.0.1", TCPClient.SERVERIP);
             assertEquals(5000, TCPClient.SERVERPORT);
@@ -63,7 +67,7 @@ public class LoginHelperTest {
             assertEquals(0, TCPClient.SERVERPORT);
 
             String str = "$CHIEF:192.168.0.1:5000:";
-            LoginHelper.verifyChief(str);
+            helper.verifyChief(str);
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
@@ -86,7 +90,7 @@ public class LoginHelperTest {
     public void testMatchStaffPw_Staff_is_null_should_throw_FATAL_MESSAGE() throws Exception{
         try{
             LoginHelper.setStaff(null);
-            LoginHelper.matchStaffPw(null);
+            helper.matchStaffPw(null);
             fail("Expected FATAL_MESSAGE but none thrown");
         } catch (ProcessException err){
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
@@ -104,7 +108,7 @@ public class LoginHelperTest {
     public void testMatchStaffPw_NULL_PW_should_throw_MESSAGE_TOAST() throws Exception{
         try{
             LoginHelper.setStaff(staffId);
-            LoginHelper.matchStaffPw(null);
+            helper.matchStaffPw(null);
 
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
@@ -123,7 +127,7 @@ public class LoginHelperTest {
     public void testMatchStaffPw_EMPTY_PW_should_throw_MESSAGE_TOAST() throws Exception{
         try{
             LoginHelper.setStaff(staffId);
-            LoginHelper.matchStaffPw("");
+            helper.matchStaffPw("");
 
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
@@ -145,7 +149,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckQrId_throw_MESSAGE_TOAST() throws Exception{
         try{
-            LoginHelper.checkQrId("My name");
+            helper.checkQrId("My name");
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err) {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
@@ -156,7 +160,7 @@ public class LoginHelperTest {
     @Test
     public void testCheckQrId_Nothing_Happen() throws Exception {
         try{
-            LoginHelper.checkQrId("012345");
+            helper.checkQrId("012345");
         } catch (ProcessException err) {
             fail("Expected nothing but thrown " + err.getErrorMsg());
         }

@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,8 @@ import static org.junit.Assert.*;
 public class FragmentHelperTest {
 
     AttendanceList attdList;
+
+    FragmentHelper helper;
 
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList1;
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
@@ -45,11 +48,13 @@ public class FragmentHelperTest {
         prgList2 = new HashMap<>();
         prgList3 = new HashMap<>();
 
-        cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd4 = new Candidate(1, "RMB3", "YZL", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
-        cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
+        cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+        cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+        cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+        cdd4 = new Candidate(1, "RMB3", "YZL", "15WAU00004", "BAME 0002", Status.BARRED);
+        cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+
+        helper = new FragmentHelper();
     }
 
     //= GET TITLE LIST =============================================================================
@@ -64,8 +69,8 @@ public class FragmentHelperTest {
      *****************************************************************************/
     @Test
     public void testGetTitleList() throws Exception{
-        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", AttendanceList.Status.ABSENT);
-        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", AttendanceList.Status.ABSENT);
+        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", Status.ABSENT);
+        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", Status.ABSENT);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -75,7 +80,7 @@ public class FragmentHelperTest {
 
         AssignHelper.setAttdList(attdList);
 
-        List<String> list = FragmentHelper.getTitleList(AttendanceList.Status.ABSENT);
+        List<String> list = helper.getTitleList(Status.ABSENT);
 
         assertEquals(2, list.size());
         assertEquals("BAME 0001", list.get(0));
@@ -90,7 +95,7 @@ public class FragmentHelperTest {
     @Test
     public void testGetTitleList_EmptyAttdListShouldNotReturnNull() throws Exception{
         AssignHelper.setAttdList(attdList);
-        List<String> list = FragmentHelper.getTitleList(AttendanceList.Status.ABSENT);
+        List<String> list = helper.getTitleList(Status.ABSENT);
 
         assertNotNull(list);
         assertEquals(0, list.size());
@@ -111,13 +116,13 @@ public class FragmentHelperTest {
      *****************************************************************************/
     @Test
     public void testGetTitle_EmptyCandidateListShouldBeIgnored() throws Exception{
-        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", AttendanceList.Status.ABSENT);
-        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", AttendanceList.Status.ABSENT);
+        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", Status.ABSENT);
+        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", Status.ABSENT);
 
         //Create Empty PaperList (paperList3) and place into AttendanceList-------------------------
         prgList2.put("RXX2", new HashMap<String, Candidate>());
         paperList3.put("BAME 0003", prgList2);
-        attdList.getAttendanceList().put(AttendanceList.Status.ABSENT, paperList3);
+        attdList.getAttendanceList().put(Status.ABSENT, paperList3);
         //------------------------------------------------------------------------------------------
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -126,7 +131,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
         AssignHelper.setAttdList(attdList);
-        List<String> list = FragmentHelper.getTitleList(AttendanceList.Status.ABSENT);
+        List<String> list = helper.getTitleList(Status.ABSENT);
 
         assertEquals(3, list.size());
         assertEquals("BAME 0001", list.get(0));
@@ -144,8 +149,8 @@ public class FragmentHelperTest {
 
     @Test
     public void testGetChildList() throws Exception {
-        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", AttendanceList.Status.ABSENT);
-        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", AttendanceList.Status.ABSENT);
+        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", Status.ABSENT);
+        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", Status.ABSENT);
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -155,8 +160,7 @@ public class FragmentHelperTest {
 
         AssignHelper.setAttdList(attdList);
 
-        HashMap<String, List<Candidate>> testMap =
-                FragmentHelper.getChildList(AttendanceList.Status.ABSENT);
+        HashMap<String, List<Candidate>> testMap = helper.getChildList(Status.ABSENT);
 
         List<Candidate> cddList;
         assertEquals(2, testMap.size());
@@ -183,7 +187,7 @@ public class FragmentHelperTest {
     @Test
     public void testGetChildList_EmptyAttdListShouldNotReturnNull() throws Exception{
         AssignHelper.setAttdList(attdList);
-        HashMap<String, List<Candidate>> map = FragmentHelper.getChildList(AttendanceList.Status.ABSENT);
+        HashMap<String, List<Candidate>> map = helper.getChildList(Status.ABSENT);
 
         assertNotNull(map);
         assertEquals(0, map.size());
@@ -204,13 +208,13 @@ public class FragmentHelperTest {
      *****************************************************************************/
     @Test
     public void testGetChildList_EmptyCandidateListShouldBeIgnored() throws Exception{
-        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", AttendanceList.Status.ABSENT);
-        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", AttendanceList.Status.ABSENT);
+        cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", Status.ABSENT);
+        cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", Status.ABSENT);
 
         //Create Empty PaperList (paperList3) and place into AttendanceList-------------------------
         prgList2.put("RXX2", new HashMap<String, Candidate>());
         paperList3.put("BAME 0003", prgList2);
-        attdList.getAttendanceList().put(AttendanceList.Status.ABSENT, paperList3);
+        attdList.getAttendanceList().put(Status.ABSENT, paperList3);
         //------------------------------------------------------------------------------------------
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -219,7 +223,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
         AssignHelper.setAttdList(attdList);
-        HashMap<String, List<Candidate>> map = FragmentHelper.getChildList(AttendanceList.Status.ABSENT);
+        HashMap<String, List<Candidate>> map = helper.getChildList(Status.ABSENT);
 
         assertEquals(3, map.size());
 

@@ -91,12 +91,12 @@ public class CheckListLoader {
     //Retrieve an attendanceList from the database
     public AttendanceList queryAttendanceList() {
         AttendanceList attdList = new AttendanceList();
-        List<AttendanceList.Status> statusList = new ArrayList<>();
-        statusList.add(AttendanceList.Status.PRESENT);
-        statusList.add(AttendanceList.Status.ABSENT);
-        statusList.add(AttendanceList.Status.BARRED);
-        statusList.add(AttendanceList.Status.EXEMPTED);
-        statusList.add(AttendanceList.Status.QUARANTIZED);
+        List<Status> statusList = new ArrayList<>();
+        statusList.add(Status.PRESENT);
+        statusList.add(Status.ABSENT);
+        statusList.add(Status.BARRED);
+        statusList.add(Status.EXEMPTED);
+        statusList.add(Status.QUARANTIZED);
 
         for(int j = 0; j < statusList.size(); j++){
             List<Candidate> cdds = getCandidatesWithStatus(statusList.get(j));
@@ -152,7 +152,7 @@ public class CheckListLoader {
                 + paper.getNumOfCandidate() + ")");
     }
 
-    private List<Candidate> getCandidatesWithStatus(AttendanceList.Status status){
+    private List<Candidate> getCandidatesWithStatus(Status status){
 
         List<Candidate> candidates= new ArrayList<>();
 

@@ -166,12 +166,12 @@ public class LocalDbLoader {
     public AttendanceList queryAttendanceList() throws ProcessException{
         createTableIfNotExist();
         AttendanceList attdList = new AttendanceList();
-        List<AttendanceList.Status> statusList = new ArrayList<>();
-        statusList.add(AttendanceList.Status.PRESENT);
-        statusList.add(AttendanceList.Status.ABSENT);
-        statusList.add(AttendanceList.Status.BARRED);
-        statusList.add(AttendanceList.Status.EXEMPTED);
-        statusList.add(AttendanceList.Status.QUARANTIZED);
+        List<Status> statusList = new ArrayList<>();
+        statusList.add(Status.PRESENT);
+        statusList.add(Status.ABSENT);
+        statusList.add(Status.BARRED);
+        statusList.add(Status.EXEMPTED);
+        statusList.add(Status.QUARANTIZED);
 
         try {
             for(int j = 0; j < statusList.size(); j++){
@@ -271,7 +271,7 @@ public class LocalDbLoader {
                 + paper.getNumOfCandidate() + ")");
     }
 
-    private List<Candidate> getCandidatesWithStatus(AttendanceList.Status status) throws Exception{
+    private List<Candidate> getCandidatesWithStatus(Status status) throws Exception{
 
         List<Candidate> candidates= new ArrayList<>();
         Connection con  = estaConnection();

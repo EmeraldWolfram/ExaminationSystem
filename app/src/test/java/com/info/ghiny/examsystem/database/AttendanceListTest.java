@@ -59,11 +59,11 @@ public class AttendanceListTest {
 
         prgList3 = new HashMap<>();
 
-        cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", AttendanceList.Status.ABSENT);
-        cdd4 = new Candidate(1, "RMB3", "YZL", "15WAU00004", "BAME 0002", AttendanceList.Status.BARRED);
-        cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", AttendanceList.Status.EXEMPTED);
+        cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+        cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+        cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+        cdd4 = new Candidate(1, "RMB3", "YZL", "15WAU00004", "BAME 0002", Status.BARRED);
+        cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", Status.EXEMPTED);
 
         cddList1 = new HashMap<>();
         cddList1.put("15WAU00001", cdd1);
@@ -87,7 +87,7 @@ public class AttendanceListTest {
     @Test
     public void testGetPaperList_EmptyAttdList() throws Exception {
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> testList =
-                attdList.getPaperList(AttendanceList.Status.PRESENT);
+                attdList.getPaperList(Status.PRESENT);
 
         assertNotNull(testList);
         assertTrue(testList.isEmpty());
@@ -95,12 +95,12 @@ public class AttendanceListTest {
 
     @Test
     public void testGetPaperList_BasicFunctionality() throws Exception {
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList2);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList3);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList2);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList3);
 
         HashMap<String, HashMap<String, HashMap<String, Candidate>>>
-                testMap = attdList.getPaperList(AttendanceList.Status.PRESENT);
+                testMap = attdList.getPaperList(Status.PRESENT);
         assertEquals(4, testMap.size());
     }
 
@@ -110,7 +110,7 @@ public class AttendanceListTest {
     @Test
     public void testGetProgrammeList_EmptyAttendanceList() throws Exception{
         HashMap<String, HashMap<String, Candidate>> prgList =
-                attdList.getProgrammeList(AttendanceList.Status.PRESENT, "BAME 0001");
+                attdList.getProgrammeList(Status.PRESENT, "BAME 0001");
 
         assertNotNull(prgList);
         assertTrue(prgList.isEmpty());
@@ -119,17 +119,17 @@ public class AttendanceListTest {
     @Test
     public void testtGetProgrammeList_BasicFunctionality() throws Exception{
         paperList1.put("BAME 0001", prgList1);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
 
         HashMap<String, HashMap<String, Candidate>> prgList =
-                attdList.getProgrammeList(AttendanceList.Status.PRESENT, "BAME 0001");
+                attdList.getProgrammeList(Status.PRESENT, "BAME 0001");
 
         assertNotNull(prgList);
         assertEquals(3, prgList.size());
         assertTrue(prgList.containsKey("RMB3"));
         assertTrue(prgList.containsKey("RFN3"));
         assertTrue(prgList.containsKey("RBS3"));
-        assertEquals(3, attdList.getNumberOfProgramme(AttendanceList.Status.PRESENT, "BAME 0001"));
+        assertEquals(3, attdList.getNumberOfProgramme(Status.PRESENT, "BAME 0001"));
     }
 
     //= GET CANDIDATE LIST =========================================================================
@@ -138,7 +138,7 @@ public class AttendanceListTest {
     @Test
     public void testGetCandidateList_EmptyAttendanceList() throws Exception {
         HashMap<String, Candidate> testList =
-                attdList.getCandidateList(AttendanceList.Status.PRESENT, "BAME 2104", "RMB3");
+                attdList.getCandidateList(Status.PRESENT, "BAME 2104", "RMB3");
 
         assertNotNull(testList);
         assertTrue(testList.isEmpty());
@@ -148,10 +148,10 @@ public class AttendanceListTest {
     public void testGetCandidateList_BasicFunctionality() throws Exception {
         prgList1.put("RMB3", cddList1);
         paperList1.put("BAME 0001", prgList1);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
 
         HashMap<String, Candidate> testList =
-                attdList.getCandidateList(AttendanceList.Status.PRESENT, "BAME 0001", "RMB3");
+                attdList.getCandidateList(Status.PRESENT, "BAME 0001", "RMB3");
 
         assertEquals(5, attdList.getTotalNumberOfCandidates());
         assertNotNull(testList);
@@ -164,10 +164,10 @@ public class AttendanceListTest {
     public void testGetCandidateList_GettingExistButEmptyCandidateList() throws Exception {
         prgList1.put("RMB3", cddList1);
         paperList1.put("BAME 0001", prgList1);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
 
         HashMap<String, Candidate> testList =
-                attdList.getCandidateList(AttendanceList.Status.PRESENT, "BAME 0002", "RMB3");
+                attdList.getCandidateList(Status.PRESENT, "BAME 0002", "RMB3");
 
         assertNotNull(testList);
         assertTrue(testList.isEmpty());
@@ -178,10 +178,10 @@ public class AttendanceListTest {
     public void testGetCandidateList_AttdListWithoutThePaper() throws Exception {
         prgList1.put("RMB3", cddList1);
         paperList1.put("BAME 0001", prgList1);
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
 
         HashMap<String, Candidate> testList =
-                    attdList.getCandidateList(AttendanceList.Status.PRESENT, "BAME 0008", "RMB3");
+                    attdList.getCandidateList(Status.PRESENT, "BAME 0008", "RMB3");
 
         assertTrue(testList.isEmpty());
     }
@@ -190,13 +190,13 @@ public class AttendanceListTest {
     @Test
     public void testAddCandidate_EmptyCandidateList() throws Exception {
         assertEquals(0, attdList.getTotalNumberOfCandidates());
-        assertEquals(0, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfPaper(Status.PRESENT));
         assertEquals(5, attdList.getNumberOfStatus());
 
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), Status.PRESENT, "RMB3");
 
         assertEquals(1, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
         assertEquals(5, attdList.getNumberOfStatus());
     }
 
@@ -205,43 +205,43 @@ public class AttendanceListTest {
     @Test
     public void testAddCandidate_SameCandidateOccured() throws Exception {
         assertEquals(0, attdList.getTotalNumberOfCandidates());
-        assertEquals(0, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfPaper(Status.PRESENT));
         assertEquals(5, attdList.getNumberOfStatus());
 
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), Status.PRESENT, "RMB3");
 
         assertEquals(1, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
         assertEquals(5, attdList.getNumberOfStatus());
     }
 
     //Adding different candidate with the same paper should append the candidate List
     @Test
     public void testAddCandidate_AddOnToExistingList() throws Exception {
-        attdList.getPaperList(AttendanceList.Status.PRESENT).putAll(paperList1);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
+        attdList.getPaperList(Status.PRESENT).putAll(paperList1);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), Status.PRESENT, "RMB3");
 
         assertEquals(1, attdList.getTotalNumberOfCandidates());
-        assertEquals(3, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(3, attdList.getNumberOfPaper(Status.PRESENT));
 
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
-        attdList.addCandidate(cdd4, cdd4.getPaperCode(), AttendanceList.Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), Status.PRESENT, "RMB3");
+        attdList.addCandidate(cdd4, cdd4.getPaperCode(), Status.PRESENT, "RMB3");
 
         HashMap<String, Candidate> testList
-                = attdList.getCandidateList(AttendanceList.Status.PRESENT,
+                = attdList.getCandidateList(Status.PRESENT,
                                             cdd1.getPaperCode(), cdd1.getProgramme());
 
         assertEquals(4, attdList.getTotalNumberOfCandidates());
-        assertEquals(3, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(3, attdList.getNumberOfPaper(Status.PRESENT));
         assertNotNull(testList);
         assertEquals(testList.get(cdd1.getRegNum()), cdd1);
         assertEquals(testList.get(cdd2.getRegNum()), cdd2);
         assertEquals(testList.get(cdd3.getRegNum()), cdd3);
         assertNull(testList.get(cdd4.getRegNum()));
 
-        testList = attdList.getCandidateList(AttendanceList.Status.PRESENT,
+        testList = attdList.getCandidateList(Status.PRESENT,
                                              cdd4.getPaperCode(), cdd4.getProgramme());
         assertEquals(testList.get(cdd4.getRegNum()), cdd4);
     }
@@ -252,35 +252,35 @@ public class AttendanceListTest {
     @Test
     public void testRemoveCandidate_TestFunctionality() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd1.getProgramme());
+                Status.PRESENT, cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd2.getProgramme());
+                Status.PRESENT, cdd2.getProgramme());
         attdList.addCandidate(cdd3, cdd3.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd3.getProgramme());
+                Status.PRESENT, cdd3.getProgramme());
 
         assertEquals(3, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
         attdList.removeCandidate("15WAU00001");
         assertEquals(2, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
     }
 
     //If the attendanceList does not have the requested candidate
     //Nothing will happen upon calling removeCandidate()
     @Test
     public void testRemoveCandidate_TestNotInListCandidate() throws Exception {
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), AttendanceList.Status.PRESENT,
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), Status.PRESENT,
                 cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), AttendanceList.Status.PRESENT,
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), Status.PRESENT,
                 cdd2.getProgramme());
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), AttendanceList.Status.PRESENT,
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), Status.PRESENT,
                 cdd3.getProgramme());
 
         assertEquals(3, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
         attdList.removeCandidate("15WAU99999");
         assertEquals(3, attdList.getTotalNumberOfCandidates());
-        assertEquals(1, attdList.getNumberOfPaper(AttendanceList.Status.PRESENT));
+        assertEquals(1, attdList.getNumberOfPaper(Status.PRESENT));
     }
 
     //= GET CANDIDATE ==============================================================================
@@ -288,11 +288,11 @@ public class AttendanceListTest {
     @Test
     public void testGetCandidate() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd1.getProgramme());
+                Status.PRESENT, cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd2.getProgramme());
+                Status.PRESENT, cdd2.getProgramme());
         attdList.addCandidate(cdd3, cdd3.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd3.getProgramme());
+                Status.PRESENT, cdd3.getProgramme());
 
         Candidate testCdd = attdList.getCandidate("15WAU00001");
 
@@ -303,11 +303,11 @@ public class AttendanceListTest {
     @Test
     public void testGetCandidate_ReturnNullIfDoesExist() throws Exception {
         attdList.addCandidate(cdd1, cdd1.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd1.getProgramme());
+                Status.PRESENT, cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd2.getProgramme());
+                Status.PRESENT, cdd2.getProgramme());
         attdList.addCandidate(cdd3, cdd3.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd3.getProgramme());
+                Status.PRESENT, cdd3.getProgramme());
 
         Candidate testCdd = attdList.getCandidate("15WAU99999");
 
@@ -330,18 +330,18 @@ public class AttendanceListTest {
     @Test
     public void testGetAllCandidateRegNumList_TestExistedList() throws Exception {
         attdList.addCandidate(new Candidate(1, "RMB3", "FGY", "15WAU09184",
-                "BAME 2134", AttendanceList.Status.ABSENT), "BAME 2134",
-                AttendanceList.Status.PRESENT, "RMB3");
+                "BAME 2134", Status.ABSENT), "BAME 2134",
+                Status.PRESENT, "RMB3");
         attdList.addCandidate(cdd1, cdd1.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd1.getProgramme());
+                Status.PRESENT, cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd2.getProgramme());
+                Status.PRESENT, cdd2.getProgramme());
         attdList.addCandidate(cdd3, cdd3.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd3.getProgramme());
+                Status.PRESENT, cdd3.getProgramme());
         attdList.addCandidate(cdd4, cdd4.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd4.getProgramme());
+                Status.PRESENT, cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(),
-                AttendanceList.Status.PRESENT, cdd5.getProgramme());
+                Status.PRESENT, cdd5.getProgramme());
         List<String> testList   = attdList.getAllCandidateRegNumList();
 
         assertNotNull(testList);
@@ -371,30 +371,30 @@ public class AttendanceListTest {
      */
     @Test
     public void testGetNumberOfCandidates() throws Exception{
-        attdList.getCandidateList(AttendanceList.Status.ABSENT, "BAME 0001", "RMB3")
+        attdList.getCandidateList(Status.ABSENT, "BAME 0001", "RMB3")
                 .putAll(cddList2);
-        attdList.getCandidateList(AttendanceList.Status.BARRED, "BAME 0002", "RMB3")
+        attdList.getCandidateList(Status.BARRED, "BAME 0002", "RMB3")
                 .putAll(cddList3);
-        attdList.getCandidateList(AttendanceList.Status.EXEMPTED, "BAME 0003", "RMB3")
+        attdList.getCandidateList(Status.EXEMPTED, "BAME 0003", "RMB3")
                 .putAll(cddList4);
 
         assertEquals(5, attdList.getTotalNumberOfCandidates());
 
-        assertEquals(3, attdList.getNumberOfCandidates(AttendanceList.Status.ABSENT));
+        assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(3, attdList.getNumberOfCandidates(
-                AttendanceList.Status.ABSENT, "BAME 0001", "RMB3"));
+                Status.ABSENT, "BAME 0001", "RMB3"));
         assertEquals(0, attdList.getNumberOfCandidates(
-                AttendanceList.Status.ABSENT, "BAME 0002", "RMB3"));
+                Status.ABSENT, "BAME 0002", "RMB3"));
         assertEquals(0, attdList.getNumberOfCandidates(
-                AttendanceList.Status.ABSENT, "BAME 0001", "RMB2"));
+                Status.ABSENT, "BAME 0001", "RMB2"));
 
-        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.BARRED));
+        assertEquals(1, attdList.getNumberOfCandidates(Status.BARRED));
         assertEquals(1, attdList.getNumberOfCandidates(
-                AttendanceList.Status.BARRED, "BAME 0002", "RMB3"));
+                Status.BARRED, "BAME 0002", "RMB3"));
 
-        assertEquals(1, attdList.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
+        assertEquals(1, attdList.getNumberOfCandidates(Status.EXEMPTED));
         assertEquals(1, attdList.getNumberOfCandidates(
-                AttendanceList.Status.EXEMPTED, "BAME 0003", "RMB3"));
+                Status.EXEMPTED, "BAME 0003", "RMB3"));
     }
 
     //= Parse Status ===============================================================================
@@ -409,16 +409,16 @@ public class AttendanceListTest {
     public void testParseStatus() throws Exception{
         AttendanceList attdList = new AttendanceList();
 
-        AttendanceList.Status absent    = attdList.parseStatus("ELIGIBLE");
-        AttendanceList.Status absent2   = attdList.parseStatus("ELIGIBLE");
-        AttendanceList.Status barred    = attdList.parseStatus("BARRED");
-        AttendanceList.Status exempted  = attdList.parseStatus("EXEMPTED");
-        AttendanceList.Status quarantized = attdList.parseStatus("QUARANTIZED");
+        Status absent    = attdList.parseStatus("ELIGIBLE");
+        Status absent2   = attdList.parseStatus("ELIGIBLE");
+        Status barred    = attdList.parseStatus("BARRED");
+        Status exempted  = attdList.parseStatus("EXEMPTED");
+        Status quarantized = attdList.parseStatus("QUARANTIZED");
 
-        assertEquals(AttendanceList.Status.ABSENT, absent);
-        assertEquals(AttendanceList.Status.ABSENT, absent2);
-        assertEquals(AttendanceList.Status.BARRED, barred);
-        assertEquals(AttendanceList.Status.EXEMPTED, exempted);
-        assertEquals(AttendanceList.Status.QUARANTIZED, quarantized);
+        assertEquals(Status.ABSENT, absent);
+        assertEquals(Status.ABSENT, absent2);
+        assertEquals(Status.BARRED, barred);
+        assertEquals(Status.EXEMPTED, exempted);
+        assertEquals(Status.QUARANTIZED, quarantized);
     }
 }

@@ -61,7 +61,8 @@ public class ExamSubjectAdapter extends BaseAdapter {
         TextView examVenue  = (TextView)convertView.findViewById(R.id.paperVenueText);
         TextView examSes    = (TextView)convertView.findViewById(R.id.paperSessionText);
 
-        Integer days = InfoCollectHelper.getDaysLeft(subject.getDate());
+        InfoCollectHelper helper = new InfoCollectHelper();
+        Integer days = helper.getDaysLeft(subject.getDate());
         String dayLeft;
 
         if(days == -1)

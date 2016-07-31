@@ -39,7 +39,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private static final int PASSWORD_REQ_CODE = 888;
     private ErrorManager errorManager;
     private ChiefLink connect;
-    private TCPClient mTcpClient;
+    private LoginHelper helper;
 
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
@@ -73,9 +73,22 @@ public class MainLoginActivity extends AppCompatActivity {
         assert idView  != null;
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
 
+        helper  = new LoginHelper();
         errorManager    = new ErrorManager(this);
         //ChiefLink.setErrorManager(errorManager);
-        mTcpClient      = new TCPClient(new TCPClient.OnMessageReceived() {
+        connect = new ChiefLink();
+        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
+        assert barcodeView != null;
+        barcodeView.decodeContinuous(callback);
+        //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
@@ -100,22 +113,6 @@ public class MainLoginActivity extends AppCompatActivity {
                 }
             }
         });
-        ExternalDbLoader.setTcpClient(mTcpClient);
-
-        connect = new ChiefLink();
-        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
-        assert barcodeView != null;
-        barcodeView.decodeContinuous(callback);
-        //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ExternalDbLoader.setTcpClient(mTcpClient);
-        ExternalDbLoader.getTcpClient().run();
         barcodeView.resume();
     }
 
@@ -128,7 +125,7 @@ public class MainLoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         try {
-            mTcpClient.stopClient();
+            ExternalDbLoader.getTcpClient().stopClient();
             connect.cancel(true);
             connect = null;
         } catch (Exception e) {
@@ -147,7 +144,7 @@ public class MainLoginActivity extends AppCompatActivity {
     private void onScanIdentity(String scanStr){
         try{
             barcodeView.pause();
-            LoginHelper.checkQrId(scanStr);
+            helper.checkQrId(scanStr);
 
             Intent pwIntent = new Intent(this, PopUpLogin.class);
             startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
@@ -163,7 +160,7 @@ public class MainLoginActivity extends AppCompatActivity {
             String password = data.getStringExtra("Password");
             try{
                 barcodeView.pause();
-                LoginHelper.matchStaffPw(password);
+                helper.matchStaffPw(password);
 
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {

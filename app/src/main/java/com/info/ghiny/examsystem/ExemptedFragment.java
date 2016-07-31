@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 
 import java.util.HashMap;
@@ -30,9 +31,10 @@ public class ExemptedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view   = inflater.inflate(R.layout.fragment_exempted, null);
 
-        List<String> header = FragmentHelper.getTitleList(AttendanceList.Status.EXEMPTED);
-        HashMap<String, List<Candidate>> child =
-                FragmentHelper.getChildList(AttendanceList.Status.EXEMPTED);
+        FragmentHelper helper   = new FragmentHelper();
+
+        List<String> header = helper.getTitleList(Status.EXEMPTED);
+        HashMap<String, List<Candidate>> child = helper.getChildList(Status.EXEMPTED);
 
         ExpandableListView exemList = (ExpandableListView)view.findViewById(R.id.exemptedList);
         exemList.setAdapter(new FragListAdapter(getContext(), header, child));

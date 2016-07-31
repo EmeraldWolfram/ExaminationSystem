@@ -38,9 +38,12 @@ public class TCPClient implements Runnable{
     public static void setServerIp(String ipAddress){
         TCPClient.SERVERIP = ipAddress;
     }
-
     public static void setServerPort(int portNumber){
         TCPClient.SERVERPORT = portNumber;
+    }
+
+    public void setmMessageListener(OnMessageReceived mMessageListener) {
+        this.mMessageListener = mMessageListener;
     }
 
     /**

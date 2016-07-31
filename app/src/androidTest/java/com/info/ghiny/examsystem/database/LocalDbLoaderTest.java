@@ -188,9 +188,9 @@ public class LocalDbLoaderTest {
     public void testSaveAttendanceList() throws Exception {
         try{
             Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001",
-                    AttendanceList.Status.ABSENT);
+                    Status.ABSENT);
             Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001",
-                    AttendanceList.Status.ABSENT);
+                    Status.ABSENT);
             AttendanceList attdList = new AttendanceList();
             attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
             attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -236,9 +236,9 @@ public class LocalDbLoaderTest {
     public void testSaveAttendanceList_TableDoesNotExist() throws Exception {
         try{
             Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001",
-                    AttendanceList.Status.ABSENT);
+                    Status.ABSENT);
             Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001",
-                    AttendanceList.Status.ABSENT);
+                    Status.ABSENT);
             AttendanceList attdList = new AttendanceList();
             attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
             attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -291,11 +291,11 @@ public class LocalDbLoaderTest {
 
             assertNotNull(map1);
             assertEquals(5, map1.getNumberOfStatus());
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.PRESENT));
+            assertEquals(0, map1.getNumberOfCandidates(Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -315,11 +315,11 @@ public class LocalDbLoaderTest {
 
             assertNotNull(map1);
             assertEquals(5, map1.getNumberOfStatus());
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.PRESENT));
+            assertEquals(0, map1.getNumberOfCandidates(Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -335,7 +335,7 @@ public class LocalDbLoaderTest {
         try{
             db.createTableIfNotExist();
             Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001",
-                    AttendanceList.Status.ABSENT);
+                    Status.ABSENT);
             AttendanceList attdList = new AttendanceList();
             attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
             db.saveAttendanceList(attdList);
@@ -344,11 +344,11 @@ public class LocalDbLoaderTest {
 
             assertNotNull(map1);
             assertEquals(5, map1.getNumberOfStatus());
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.PRESENT));
-            assertEquals(1, map1.getNumberOfCandidates(AttendanceList.Status.ABSENT));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.BARRED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(AttendanceList.Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.PRESENT));
+            assertEquals(1, map1.getNumberOfCandidates(Status.ABSENT));
+            assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
         } catch(Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -363,9 +363,9 @@ public class LocalDbLoaderTest {
     public void testSavePaperList() throws Exception {
         try{
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", Session.AM);
             ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
-                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", Session.AM);
 
             HashMap<String, ExamSubject> subjects = new HashMap<>();
             subjects.put(subject1.getPaperCode(), subject1);
@@ -407,9 +407,9 @@ public class LocalDbLoaderTest {
     public void testSavePaperList_TableNotExistYet() throws Exception {
         try{
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", Session.AM);
             ExamSubject subject2 = new ExamSubject("BAME 0002", "SUBJECT 2", 55,
-                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", Session.AM);
 
             HashMap<String, ExamSubject> subjects = new HashMap<>();
             subjects.put(subject1.getPaperCode(), subject1);
@@ -453,7 +453,7 @@ public class LocalDbLoaderTest {
 
             HashMap<String, ExamSubject> map = new HashMap<>();
             ExamSubject subject1 = new ExamSubject("BAME 0001", "SUBJECT 1", 25,
-                    Calendar.getInstance(), 10, "H2", ExamSubject.Session.AM);
+                    Calendar.getInstance(), 10, "H2", Session.AM);
             map.put(subject1.getPaperCode(), subject1);
             db.savePaperList(map);
 

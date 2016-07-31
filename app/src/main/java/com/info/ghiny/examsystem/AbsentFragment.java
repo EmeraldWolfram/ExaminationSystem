@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.adapter.FragListAdapter;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 
 import java.util.HashMap;
@@ -30,9 +31,10 @@ public class AbsentFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view   = inflater.inflate(R.layout.fragment_absent, null);
 
-        List<String> header = FragmentHelper.getTitleList(AttendanceList.Status.ABSENT);
-        HashMap<String, List<Candidate>> child =
-                FragmentHelper.getChildList(AttendanceList.Status.ABSENT);
+        FragmentHelper helper   = new FragmentHelper();
+
+        List<String> header = helper.getTitleList(Status.ABSENT);
+        HashMap<String, List<Candidate>> child = helper.getChildList(Status.ABSENT);
 
         ExpandableListView absentList = (ExpandableListView)view.findViewById(R.id.absentList);
         absentList.setAdapter(new FragListAdapter(getContext(), header, child));
