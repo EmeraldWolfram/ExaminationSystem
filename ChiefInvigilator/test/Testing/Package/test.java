@@ -35,11 +35,12 @@ public class test {
   
     @Test
     public void testUserVerify1() {
+        Staff staff = new Staff("staff1","123456");
         boolean match = false;
         try {
-            match = new ServerComm().staffVerify("staff1","123456");
+            match = staff.staffVerify();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
+            System.out.print(ex.getMessage());
         }
         
         assertEquals(true,match);
@@ -47,11 +48,12 @@ public class test {
     
     @Test
     public void testUserVerify2() {
+        Staff staff = new Staff("staff2","1234");
         boolean match = false;
         try {
-            match = new ServerComm().staffVerify("staff2","1234");
+            match = staff.staffVerify();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
+            System.out.print(ex.getMessage());
         }
         
         assertEquals(true,match);
@@ -59,11 +61,12 @@ public class test {
     
     @Test
     public void testInvalidUserVerify1() {
+        Staff staff = new Staff("staff2","123456");
         boolean match = false;
         try {
-            match = new ServerComm().staffVerify("staff1","1234");
+            match = staff.staffVerify();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
+            System.out.print(ex.getMessage());
         }
         
         assertEquals(false,match);
@@ -71,11 +74,12 @@ public class test {
     
     @Test
     public void testInvalidUserVerify2() {
+        Staff staff = new Staff("wasqdf","boy");
         boolean match = false;
         try {
-            match = new ServerComm().staffVerify("wasqdf","boy");
+            match = staff.staffVerify();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
+            System.out.print(ex.getMessage());
         }
         
         assertEquals(false,match);
@@ -88,40 +92,62 @@ public class test {
     CurrentTime time;
     
     @Test
-    public void testGetStaffInfo() {
+    public void testGetInvInfo() {
         Staff staff = new Staff();
-        when(time.getDate()).thenReturn("11/02/2015");
-        when(time.getSession()).thenReturn("AM");
+        staff.setID("staff1");
         
         try {
-            staff = servercomm.staffGetInfo("staff1");
+            staff.getInvInfo();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
-        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) { 
             System.out.print(ex.getMessage());
         }
         assertEquals("M4",staff.getVenue());
         assertEquals("chief",staff.getStatus());
+        assertEquals("AMStaff1",staff.getName());
+        assertEquals("AM",staff.getSession());
+        assertEquals("11/02/2015",staff.getDate());
     }
     
     @Test
-    public void testGetStaffInfo2() {
+    public void testGetInvInfo2() {
         Staff staff = new Staff();
-        when(time.getDate()).thenReturn("11/02/2015");
-        when(time.getSession()).thenReturn("AM");
+        staff.setID("staff2");
         
         try {
-            staff = servercomm.staffGetInfo("staff2");
+            staff.getInvInfo();
         } catch (SQLException ex) {
-            System.out.print("Lost connection");
+            System.out.print(ex.getMessage());
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
         }
         
         assertEquals("M4",staff.getVenue());
         assertEquals("invigilator",staff.getStatus());
+        assertEquals("AMStaff2",staff.getName());
+        assertEquals("AM",staff.getSession());
+        assertEquals("11/02/2015",staff.getDate());
     }
     
+    @Test
+    public void testGetInvInfo_Invalid_Staff_id() {
+        String message = null;
+        Staff staff = new Staff();
+        staff.setID("asdf");
+        
+        try {
+            staff.getInvInfo();
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            message = ex.getMessage();
+        }
+        
+        assertEquals("No invigilator info found.",message);
+    }
+    
+    /*
     @Test
     public void testGetStaffInfo2overTime() {
         Staff staff = new Staff();
@@ -292,5 +318,21 @@ public class test {
         
     }
     
-
+    @Test
+    public void testGetCddPapers2(){
+        ArrayList<CddPapers> cddPapers = new ArrayList<>();
+        when(time.getDate()).thenReturn("11/02/2015");
+        when(time.getSession()).thenReturn("AM");
+        
+        try {
+            cddPapers = servercomm.getCddPapers("15WAR04184");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals(1, cddPapers.size());
+        
+    }
+    
+*/
 }

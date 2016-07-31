@@ -8,6 +8,7 @@ package Testing.Package;
 import chiefinvigilator.Staff;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
@@ -20,7 +21,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import querylist.AttdList;
+import querylist.Candidate;
+import querylist.CddPaperList;
 import querylist.CddPapers;
+import querylist.Paper;
 /**
  *
  * @author Krissy
@@ -30,7 +34,7 @@ public class JsonTest {
     
     @Test
     public void testStaffInfoToJson(){
-        JSONObject result = null;
+        JSONObject json = new JSONObject();
         Staff staff = new Staff();
         staff.setName("Liu");
         staff.setVenue("M8");
@@ -38,56 +42,52 @@ public class JsonTest {
         staff.setStatus("Relief");
         
         try {
-            result = new JsonConvert().staffInfoToJson(true,staff);
-            
-        } catch (JSONException ex) {
-            System.out.print("Convert error");
-        } catch (SQLException ex) {
-            System.out.print("Convert error");
+            json = staff.toJson(true);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         
         assertEquals("{\"Status\":\"Relief\",\"Venue\":\"M8\",\"CddList\":[],\"PaperMap\":[],\"IdNo\":\"staff5\",\"Result\":true,\"Name\":\"Liu\"}"
-                , result.toString());
+                , json.toString());
     }
     
     @Test
     public void testStaffInfoToJson2(){
-        JSONObject result = null;
+        JSONObject json = new JSONObject();
         Staff staff = new Staff();
         staff.setName("Dummy");
         staff.setVenue("PA2");
         staff.setID("staff3");
         staff.setStatus("Chief");
+        
         try {
-            result = new JsonConvert().staffInfoToJson(true,staff);
-        } catch (JSONException ex) {
-            System.out.print("Convert error");
-        } catch (SQLException ex) {
-            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+            json = staff.toJson(true);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         
         assertEquals("{\"Status\":\"Chief\",\"Venue\":\"PA2\",\"CddList\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"PaperMap\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"IdNo\":\"staff3\",\"Result\":true,\"Name\":\"Dummy\"}"
-                ,result.toString());
+                ,json.toString());
     }
     
     @Test
     public void testStaffInfoToJson3(){
-        JSONObject result = null;
+        JSONObject json = new JSONObject();
         Staff staff = new Staff();
         staff.setName("no");
         staff.setVenue("PA2");
         staff.setID("staff3");
         staff.setStatus("invalid");
+        
         try {
-            result = new JsonConvert().staffInfoToJson(false,staff);
-        } catch (JSONException ex) {
-            System.out.print("Convert error");
-        } catch (SQLException ex) {
-            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+            json = staff.toJson(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-        assertEquals("{\"Status\":\"invalid\",\"Venue\":\"PA2\",\"CddList\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"PaperMap\":[{\"ExamIndex\":\"W1005ARMB\",\"Status\":\"Barred\",\"Code\":\"BABE2203\",\"RegNum\":\"15WAD23345\",\"Programme\":\"DOC1\"}],\"IdNo\":\"staff3\",\"Result\":false,\"Name\":\"no\"}"
-                , result.toString());
+        
+        assertEquals("{\"Result\":false}", json.toString());
     }
+    
     @Test
     public void testBooleanToJson(){
         JSONObject result = null;
@@ -96,7 +96,7 @@ public class JsonTest {
         } catch (JSONException ex) {
             System.out.print("Convert error");
         }
-        assertEquals("{\"Result\":true}", result.toString());
+        assertEquals("{\"Type\":\"Ack\",\"Result\":true}", result.toString());
     }
     
     @Test
@@ -105,19 +105,19 @@ public class JsonTest {
         try {
             result = new JsonConvert().booleanToJson(false);
         } catch (JSONException ex) {
-            System.out.print("Convert error");
+            System.out.print(ex.getMessage());
         }
-        assertEquals("{\"Result\":false}", result.toString());
+        assertEquals("{\"Type\":\"Ack\",\"Result\":false}", result.toString());
     }
     
     @Test
-    public void testJsonToSignIn(){
+    public void testSetIdPsFromJsonString(){
         Staff staff = new Staff();
         
         try {
-            staff = new JsonConvert().jsonToSignIn("{\"CheckIn\":\"Identity\",\"IdNo\":\"staff1\",\"Password\":\"123456\"}");
+            staff.setIdPsFromJsonString("{\"CheckIn\":\"Identity\",\"IdNo\":\"staff1\",\"Password\":\"123456\"}");
         } catch (Exception ex) {
-            Logger.getLogger(JsonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.print(ex.getMessage());
         }
         
         assertEquals("staff1", staff.getID());
@@ -125,15 +125,135 @@ public class JsonTest {
     }
     
     @Test
-    public void testJsonToSignIn2(){
+    public void testSetIdPsFromJsonString2(){
         Staff staff = new Staff();
+        try {
+            staff.setIdPsFromJsonString("{\"CheckIn\":\"Identity\",\"IdNo\":\"staff2\",\"Password\":\"abc123\"}");
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
+        assertEquals("staff2", staff.getID());
+        assertEquals("abc123", staff.getPassword());
+    }
+    
+    @Test
+    public void testCandidateToJson(){
+        Candidate cand = new Candidate("W00909","12WAR09183","legal","BAME9909","RND1","Absent");
+        JSONObject json = new JSONObject();
         
         try {
-            staff = new JsonConvert().jsonToSignIn("{\"CheckIn\":\"Identity\",\"INo\":\"staff1\",\"Password\":\"123456\"}");
+            json = cand.toJson();
         } catch (Exception ex) {
-            assertEquals("JSONObject[\"IdNo\"] not found.", ex.getMessage());
+            System.out.print(ex.getMessage());
         }
+        
+        assertEquals("{\"ExamIndex\":\"W00909\",\"Status\":\"legal\",\"Code\":\"BAME9909\","
+                        + "\"RegNum\":\"12WAR09183\",\"Programme\":\"RND1\"}"
+                    , json.toString());
     }
+    
+    @Test
+    public void testCandidateToJson2(){
+        Candidate cand = new Candidate("A2002A","13WAD98811","illegal","BAME1122","RSD2","Present");
+        JSONObject json = new JSONObject();
+        
+        try {
+            json = cand.toJson();
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+        }
+        assertEquals("{\"ExamIndex\":\"A2002A\",\"Status\":\"illegal\",\"Code\":\"BAME1122\","
+                    + "\"RegNum\":\"13WAD98811\",\"Programme\":\"RSD2\"}"
+                    , json.toString());
+    }
+    
+    @Test
+    public void testCandidateFromJson(){
+        Candidate cand = new Candidate();
+        
+        try {
+            cand.fromJson("{\"RegNum\":\"13WAD00999\",\"TableNo\":\"13\","
+                    + "\"Code\":\"BAME2332\",\"Attendance\":\"Present\"}");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals("13WAD00999", cand.getRegNum());
+        assertEquals(13, cand.getTableNo());
+        assertEquals("BAME2332", cand.getPaperCode());
+        assertEquals("Present", cand.getAttendance());
+        assertEquals(null, cand.getExamId());
+        assertEquals(null, cand.getStatus());
+        assertEquals(null, cand.getProgramme());
+
+    }
+    
+    @Test
+    public void testCandidateFromJson2(){
+        Candidate cand = new Candidate();
+        
+        try {
+            cand.fromJson("{\"RegNum\":\"12WED09882\",\"TableNo\":50,"
+                    + "\"Code\":\"BAME8899\",\"Attendance\":\"Present\"}");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals("12WED09882", cand.getRegNum());
+        assertEquals(50, cand.getTableNo());
+        assertEquals("BAME8899", cand.getPaperCode());
+        assertEquals("Present", cand.getAttendance());
+        assertEquals(null, cand.getExamId());
+        assertEquals(null, cand.getStatus());
+        assertEquals(null, cand.getProgramme());
+
+    }
+    
+    @Test
+    public void testPaperToJson(){
+        Paper paper = new Paper("BAME1202", "some description", "30", "100");
+        JSONObject json = new JSONObject();
+        
+        try{
+            json = paper.toJson();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals("{\"PaperStartNo\":30,\"PaperDesc\":\"some description\","
+                + "\"PaperCode\":\"BAME1202\",\"PaperTotalCdd\":100}",
+                json.toString());
+        
+    }
+    
+    
+    
+    @Test
+    public void testPaperToJson2(){
+        Paper paper = new Paper("BABE1002", "description", "11", "55");
+        JSONObject json = new JSONObject();
+        
+        try{
+            json = paper.toJson();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        
+        assertEquals("{\"PaperStartNo\":11,\"PaperDesc\":\"description\","
+                + "\"PaperCode\":\"BABE1002\",\"PaperTotalCdd\":55}",
+                json.toString());
+        
+    }
+            
+    @Test
+    public void testCddPaperList(){
+        CddPaperList cddPaperList = new CddPaperList();
+        
+    }
+    
+    
+    
+    
     
     @Test
     public void testAttdListToJson(){

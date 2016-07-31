@@ -102,10 +102,10 @@ public class Screen extends JPanel {
             SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
-                MainServer mainServer = new MainServer();
+                MainServer mainServer = new MainServer(socket);
                 try {
-                    System.out.print(socket.getLocalPort());
-                    mainServer.boardCast(socket);
+//                    System.out.print(socket.getLocalPort());
+                    mainServer.boardCast();
                 } catch (Exception ex) {
                     Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
                 }

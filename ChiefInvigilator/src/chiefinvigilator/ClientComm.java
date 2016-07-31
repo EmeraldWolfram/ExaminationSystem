@@ -5,8 +5,13 @@
  */
 package chiefinvigilator;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import jsonconvert.JsonConvert;
@@ -17,18 +22,16 @@ import org.json.JSONObject;
 import querylist.AttdList;
 import querylist.CddPapers;
 
-
 /**
  *
  * @author Krissy
  */
-public class MainServer {
-
+public class ClientComm {
     boolean signIn = false;
     static ArrayList<Staff> staffList = new ArrayList<>();
     ServerSocket sSocket;
     
-    public MainServer(ServerSocket sSocket){
+    public ClientComm(ServerSocket sSocket){
         this.sSocket= sSocket; 
     }
     
@@ -53,11 +56,10 @@ public class MainServer {
                     do{
 
                     retreiveMsg  = receiveMessage(mainSocket);
-
-                    staff = JsonConvert.jsonToSignIn(retreiveMsg);
+                    staff.setIdPsFromJsonString(retreiveMsg);
                     System.out.println(retreiveMsg);
-                    signIn = ServerComm.staffVerify(staff.getID(),staff.getPassword());
-
+                    
+                    signIn = staff.staffVerify();
 
                     if(signIn){
                         jsonMsg = staffRequestSend(staff);
@@ -80,7 +82,8 @@ public class MainServer {
                     while(signIn != false){
                         System.out.println("Ready for incoming message");
                         retreiveMsg  = receiveMessage(mainSocket);
-                        System.out.println("Message received： " + retreiveMsg);
+                        System.out.println("Message received");
+                        System.out.println(retreiveMsg);
                         sendMessage(mainSocket,checkIn(new JSONObject(retreiveMsg)));
                     }
                     System.out.println("Signed Out");
@@ -159,5 +162,7 @@ public class MainServer {
     
         
     }
+    
+    
     
 }

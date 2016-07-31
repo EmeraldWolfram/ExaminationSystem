@@ -57,6 +57,7 @@ public class JsonConvert {
         JSONObject bool = new JSONObject();
         
         bool.put("Result", b);
+        bool.put("Type", "Ack");
         
         return bool;
     }
