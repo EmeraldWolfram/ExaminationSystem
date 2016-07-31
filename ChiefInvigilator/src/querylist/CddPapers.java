@@ -5,6 +5,11 @@
  */
 package querylist;
 
+import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  *
  * @author Krissy
@@ -52,4 +57,15 @@ public class CddPapers {
         return venue;
     }
 
+    public JSONObject cddPapersToJson() throws JSONException{
+        JSONObject json = new JSONObject();
+            
+            json.put("PaperCode", getPaperCode());
+            json.put("PaperDesc", getPaperDesc());
+            json.put("Date", getDate());
+            json.put("Session", getSession());
+            json.put("Venue", getVenue());
+        
+        return json;
+    }
 }

@@ -244,10 +244,26 @@ public class ServerComm {
         return cddPapers;
     }
     
-    public static void updateCandidateAttendence(ArrayList<AttdList> attdList){
+    public static void updateCandidateAttendence(ArrayList<AttdList> attdList) throws SQLException{
         String sql = "UPDATE CandidateAttendence "
-                + "SET Coursework = ?, Practical = ? "
-                + "WHERE RegNum = ";
+                + "SET Attendance = ?, TableNumber = ? "
+                + "WHERE CandidateInfoIC = (SELECT IC FROM CandidateInfo WHERE RegNum = ? ) ";
+    
+        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         
+         for(int i = 0; i < attdList.size(); i++)  {
+             
+            pstmt.setString(1,attdList.get(i).getAttendance());
+            pstmt.setInt(2,attdList.get(i).getTableNo());
+            pstmt.setString(3,attdList.get(i).getRegNum());
+            
+            pstmt.executeUpdate();
+            
+         }
+          pstmt.close();
+          conn.close();
     }
 }
 

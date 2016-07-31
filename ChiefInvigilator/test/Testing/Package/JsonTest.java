@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import jsonconvert.JsonConvert;
+import static jsonconvert.JsonConvert.jsonToAttdList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -254,8 +255,52 @@ public class JsonTest {
         assertEquals("{\"PaperDesc\":\"Hubungan Etnik\",\"Venue\":\"Q2\",\"PaperCode\":\"MPU1889\",\"Date\":\"19/8/1999\",\"Session\":\"PM\"}"
                     , jsonContent2);
         
+    }
+    
+    @Test
+    public void testArrayList(){
+        String message = "[{\"RegNum\":\"13WAR19191\","
+                + "\"Attendance\":\"Present\",\"TableNo\":\"12\",\"Code\":\"BAME1233\"}]";
+        ArrayList<AttdList> attdList = new ArrayList();
         
+        try {
+            attdList = jsonToAttdList(message);
+        } catch (JSONException ex) {
+            System.out.println(ex);
+        }
         
+        assertEquals(1, attdList.size());
+        assertEquals("13WAR19191", attdList.get(0).getRegNum());
+        assertEquals("Present", attdList.get(0).getAttendance());
+        assertEquals("BAME1233", attdList.get(0).getPaperCode());
+        assertEquals(12, attdList.get(0).getTableNo());
+                
+    }
+    
+    @Test
+    public void testArrayList2(){
+        String message = "[{\"RegNum\":\"13WAR19191\","
+                + "\"Attendance\":\"Present\",\"TableNo\":12,\"Code\":\"BAME1233\"},"
+                + "{\"RegNum\":\"15WAR12121\",\"Attendance\":\"Present\",\"TableNo\":45,\"Code\":\"BAME1993\"}"
+                + "]";
+        ArrayList<AttdList> attdList = new ArrayList();
+        
+        try {
+            attdList = jsonToAttdList(message);
+        } catch (JSONException ex) {
+            System.out.println(ex);
+        }
+        
+        assertEquals(2, attdList.size());
+        assertEquals("13WAR19191", attdList.get(0).getRegNum());
+        assertEquals("Present", attdList.get(0).getAttendance());
+        assertEquals("BAME1233", attdList.get(0).getPaperCode());
+        assertEquals(12, attdList.get(0).getTableNo());
+        assertEquals("15WAR12121", attdList.get(1).getRegNum());
+        assertEquals("Present", attdList.get(1).getAttendance());
+        assertEquals("BAME1993", attdList.get(1).getPaperCode());
+        assertEquals(45, attdList.get(1).getTableNo());
+                
     }
     
 }

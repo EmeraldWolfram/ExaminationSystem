@@ -5,6 +5,8 @@
  */
 package chiefinvigilator;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,13 +28,14 @@ import qrgen.Screen;
 public class ChiefGui extends javax.swing.JFrame {
     static DefaultTableModel staffInfoTableModel = new DefaultTableModel();
     static Screen s = new Screen();
+    JLabel qrLabel = new JLabel("Scan the QR Code to sign in.");
     static ChiefServer chief = new ChiefServer();
     /**
      * Creates new form ChiefGui
      */
     public ChiefGui() {
         initComponents();
-        qrGenPanel.setLayout(new GridLayout(1,1,0,0));
+//        qrGenPanel.setLayout(new GridLayout(1,1,0,0));
     }
 
     /**
@@ -156,17 +159,7 @@ public class ChiefGui extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("tab1", jScrollPane1);
 
-        javax.swing.GroupLayout qrGenPanelLayout = new javax.swing.GroupLayout(qrGenPanel);
-        qrGenPanel.setLayout(qrGenPanelLayout);
-        qrGenPanelLayout.setHorizontalGroup(
-            qrGenPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 714, Short.MAX_VALUE)
-        );
-        qrGenPanelLayout.setVerticalGroup(
-            qrGenPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 419, Short.MAX_VALUE)
-        );
-
+        qrGenPanel.setLayout(new java.awt.GridLayout(1, 1));
         jScrollPane3.setViewportView(qrGenPanel);
 
         jTabbedPane1.addTab("tab2", jScrollPane3);
@@ -259,12 +252,12 @@ public class ChiefGui extends javax.swing.JFrame {
     }//GEN-LAST:event_jTabbedPane1StateChanged
 
     public void generateQRInterface(ServerSocket socket){
-        qrGenPanel.removeAll();
-        
+//        qrGenPanel.removeAll();
+        qrLabel.setFont(new Font("Serif", Font.PLAIN, 50));
         s = new Screen(socket);
-        
+        s.setPreferredSize(new Dimension(500,500));
         qrGenPanel.add(s);
-        qrGenPanel.add(new JLabel("Scan the QR Code to sign in."));
+        qrGenPanel.add(qrLabel);
         qrGenPanel.revalidate(); 
         qrGenPanel.repaint();
         
@@ -288,6 +281,15 @@ public class ChiefGui extends javax.swing.JFrame {
 
     }
     
+    public static void removeStaffInfoFromRow(Staff staff) {
+    for (int i = staffInfoTableModel.getRowCount() - 1; i >= 0; --i) {
+ 
+            if (staffInfoTableModel.getValueAt(i, 0).equals(staff.getID())) {
+                // what if value is not unique?
+                staffInfoTableModel.removeRow(i);
+            }
+    }
+ }
     /**
      * @param args the command line arguments
      */
