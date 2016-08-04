@@ -114,7 +114,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
                     listAdapter.updatePapers(subjects);
                 } catch (ProcessException err) {
                     Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
+                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
                     startActivity(errIn);
                 }
             }

@@ -31,12 +31,6 @@ public class PresentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_present, null);
-        view.setOnTouchListener(new OnSwipeListener(getContext()){
-            @Override
-            public void onSwipeRight() {
-                getActivity().finish();
-            }
-        });
 
         FragmentHelper helper   = new FragmentHelper();
         List<String> header    = helper.getTitleList(Status.PRESENT);

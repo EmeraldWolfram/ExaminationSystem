@@ -65,7 +65,7 @@ public class CheckListLoader {
     }
 
     //Simply clean the database
-    public static void clearDatabase(){
+    public void clearDatabase(){
         database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
         database.execSQL("DELETE FROM " + PAPERS_TABLE);
         database.execSQL("VACUUM");

@@ -12,6 +12,7 @@ import android.view.View;
 
 
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.ChiefLink;
@@ -19,6 +20,7 @@ import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.JsonHelper;
+import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 
@@ -46,7 +48,9 @@ public class FragmentListActivity extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        assert viewPager != null; assert tabLayout != null;
+
+        assert viewPager != null;
+        assert tabLayout != null;
 
         errorManager    = new ErrorManager(this);
         helper          = new FragmentHelper();
@@ -66,12 +70,14 @@ public class FragmentListActivity extends AppCompatActivity {
                 try{
                     ChiefLink.setCompleteFlag(true);
                     boolean uploaded = JsonHelper.parseBoolean(message);
-                    LocalDbLoader dbLoader  =
-                            new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
+                    CheckListLoader dbLoader = new CheckListLoader(FragmentListActivity.this);
+                    //LocalDbLoader dbLoader  =
+                    //        new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
                     dbLoader.clearDatabase();
                 } catch (ProcessException err){
                     Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
+                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
                     startActivity(errIn);
                 }
             }

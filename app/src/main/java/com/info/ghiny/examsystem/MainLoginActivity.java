@@ -86,7 +86,6 @@ public class MainLoginActivity extends AppCompatActivity {
 
         barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
-        barcodeView.decodeContinuous(callback);
         //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
     }
 
@@ -115,11 +114,14 @@ public class MainLoginActivity extends AppCompatActivity {
                     startActivity(assignIntent);
                 } catch (ProcessException err) {
                     Intent errIn = new Intent(MainLoginActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
+                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
                     startActivity(errIn);
+                    barcodeView.resume();
                 }
             }
         });
+        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 

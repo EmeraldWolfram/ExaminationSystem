@@ -3,9 +3,11 @@ package com.info.ghiny.examsystem;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -17,9 +19,13 @@ public class FancyErrorWindow extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pop_up_error);
 
+        Intent intent   = getIntent();
+
         TextView errorView = (TextView)findViewById(R.id.errorText);
-        errorView.setText(getIntent().getStringExtra("Error"));
+        ImageView errIcon  = (ImageView)findViewById(R.id.errorIcon);
+        errorView.setText(intent.getStringExtra("ErrorTxt"));
         errorView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
+        errIcon.setImageResource(intent.getIntExtra("ErrorIcon", R.drawable.warn_icon));
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

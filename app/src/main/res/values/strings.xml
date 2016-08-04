@@ -16,6 +16,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="enter_pw">Enter Your Password:</string>
+    <string name="error_icon">Error Icon</string>
 
 
 </resources>

@@ -6,14 +6,26 @@
     android:padding="16dp"
     android:background="@drawable/custom_border">
 
-    <TextView
-        android:id="@+id/errorText"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:paddingBottom="8sp"
-        android:gravity="center"
-        android:textColor="@color/black"/>
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/errorIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/warn_icon"
+            android:contentDescription="@string/error_icon"/>
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
