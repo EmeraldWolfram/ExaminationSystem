@@ -2,13 +2,16 @@ package com.info.ghiny.examsystem.tools;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -241,5 +244,51 @@ public class FragmentHelperTest {
 
         testList = map.get("BAME 0003");
         assertEquals(0, testList.size());
+    }
+
+    //= resetNewAssign() ===========================================================================
+    /**
+     * resetNewAssign()
+     *
+     * 1. do nothing when no table assign before
+     * 2. remove the last assigned table if exist
+     */
+    @Test
+    public void testResetNewAssign_doNothingWhenNoAssignBefore() throws Exception {
+        FragmentHelper.resetCandidate(null);
+        AssignHelper.setAttdList(attdList);
+
+        assertEquals(0, AssignHelper.getAssgnList().size());
+        assertEquals(attdList, AssignHelper.getAttdList());
+    }
+
+    @Test
+    public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
+        AssignHelper assgnHelper = new AssignHelper();
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        HashMap<String, ExamSubject> paperList   = new HashMap<>();
+        ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,
+                Calendar.getInstance(), 20, "H1", Session.AM);
+        ExamSubject subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30,
+                Calendar.getInstance(), 20, "H2", Session.PM);
+        ExamSubject subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50,
+                Calendar.getInstance(), 20, "H3", Session.VM);
+        paperList.put(subject1.getPaperCode(), subject1);
+        paperList.put(subject2.getPaperCode(), subject2);
+        paperList.put(subject3.getPaperCode(), subject3);
+
+        AssignHelper.setAttdList(attdList);
+        Candidate.setPaperList(paperList);
+
+        assgnHelper.checkCandidate("15WAU00001");
+        assgnHelper.checkTable("12");
+        assertTrue(assgnHelper.tryAssignCandidate());
+        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());
+
+        FragmentHelper.resetCandidate(12);
+
+        assertEquals(0, AssignHelper.getAssgnList().size());
+        assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
     }
 }

@@ -66,4 +66,18 @@ public class FragmentHelper {
         return cddChild;
     }
 
+    public static void resetCandidate(Integer table){
+        AttendanceList attdList = AssignHelper.getAttdList();
+        HashMap<Integer, String> assgnList  = AssignHelper.getAssgnList();
+
+        if(table != null){
+            Candidate cdd = attdList.getCandidate(assgnList.get(table));
+            attdList.removeCandidate(cdd.getRegNum());
+            cdd.setTableNumber(0);
+            cdd.setStatus(Status.ABSENT);
+            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+            assgnList.remove(table);
+        }
+    }
+
 }

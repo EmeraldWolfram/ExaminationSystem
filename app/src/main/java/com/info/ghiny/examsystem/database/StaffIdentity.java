@@ -58,7 +58,6 @@ public class StaffIdentity {
     public void addRole(String role) {
         this.role.add(role);
     }
-
     public List<String> getRole() {
         return role;
     }

@@ -6,5 +6,10 @@ package com.info.ghiny.examsystem.database;
 public enum Session {
     AM,
     PM,
-    VM
+    VM;
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

@@ -1,12 +1,11 @@
 package com.info.ghiny.examsystem.tools;
 
+
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Session;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
 import org.junit.Before;
@@ -78,7 +77,7 @@ public class AssignHelperTest {
         assgnHelper.initLoader(dBLoader);
         assgnHelper.setTempCdd(null);
         assgnHelper.setTempTable(null);
-        assgnHelper.assgnList = new HashMap<>();
+        AssignHelper.setAssgnList(new HashMap<Integer, String>());
         Candidate.setPaperList(paperList);
     }
 
@@ -249,7 +248,7 @@ public class AssignHelperTest {
         assgnList.put(14, "15WAU00001");
 
         try{
-            assgnHelper.assgnList = assgnList;
+            AssignHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
             boolean test = assgnHelper.tryAssignCandidate();
@@ -269,7 +268,7 @@ public class AssignHelperTest {
         assgnList.put(14, "15WAU00005");
 
         try{
-            assgnHelper.assgnList = assgnList;
+            AssignHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("55");
             assgnHelper.checkCandidate("15WAU00001");
             boolean test = assgnHelper.tryAssignCandidate();
@@ -302,8 +301,8 @@ public class AssignHelperTest {
 
         assgnHelper.updateNewCandidate();
 
-        assertEquals(1, assgnHelper.assgnList.size());
-        assertEquals("15WAU00002", assgnHelper.assgnList.get(14));
+        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertEquals("15WAU00002", AssignHelper.getAssgnList().get(14));
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.ABSENT, cdd1.getStatus());
@@ -329,9 +328,9 @@ public class AssignHelperTest {
 
         assgnHelper.updateNewCandidate();
 
-        assertEquals(1, assgnHelper.assgnList.size());
-        assertNull(assgnHelper.assgnList.get(12));
-        assertEquals("15WAU00001", assgnHelper.assgnList.get(14));
+        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertNull(AssignHelper.getAssgnList().get(12));
+        assertEquals("15WAU00001", AssignHelper.getAssgnList().get(14));
         assertEquals(14, (int)attdList.getCandidate("15WAU00001").getTableNumber());
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
     }
@@ -357,9 +356,9 @@ public class AssignHelperTest {
 
         assgnHelper.cancelNewAssign();
 
-        assertEquals(1, assgnHelper.assgnList.size());
-        assertNull(assgnHelper.assgnList.get(14));
-        assertEquals("15WAU00001", assgnHelper.assgnList.get(12));
+        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertNull(AssignHelper.getAssgnList().get(14));
+        assertEquals("15WAU00001", AssignHelper.getAssgnList().get(12));
         assertEquals(12, (int)attdList.getCandidate("15WAU00001").getTableNumber());
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
     }
@@ -384,41 +383,12 @@ public class AssignHelperTest {
 
         assgnHelper.cancelNewAssign();
 
-        assertEquals(1, assgnHelper.assgnList.size());
-        assertEquals("15WAU00001", assgnHelper.assgnList.get(14));
+        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertEquals("15WAU00001", AssignHelper.getAssgnList().get(14));
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.PRESENT, cdd1.getStatus());
         assertEquals(Status.ABSENT, cdd2.getStatus());
-    }
-
-    //= resetNewAssign() ===========================================================================
-    /**
-     * resetNewAssign()
-     *
-     * 1. do nothing when no table assign before
-     * 2. remove the last assigned table if exist
-     */
-    @Test
-    public void testResetNewAssign_doNothingWhenNoAssignBefore() throws Exception {
-        assgnHelper.resetCandidate(null);
-
-        assertEquals(0, assgnHelper.assgnList.size());
-        assertEquals(attdList, AssignHelper.getAttdList());
-    }
-
-    @Test
-    public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
-        assgnHelper.checkCandidate("15WAU00001");
-        assgnHelper.checkTable("12");
-        assertTrue(assgnHelper.tryAssignCandidate());
-        assertEquals(1, assgnHelper.assgnList.size());
-        assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());
-
-        assgnHelper.resetCandidate(12);
-
-        assertEquals(0, assgnHelper.assgnList.size());
-        assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
     }
 
     //= attempReassign() ===========================================================================
@@ -450,7 +420,7 @@ public class AssignHelperTest {
         assgnList.put(14, "15WAU00001");
 
         try{
-            assgnHelper.assgnList = assgnList;
+            AssignHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
             assgnHelper.attempReassign();
@@ -470,7 +440,7 @@ public class AssignHelperTest {
         assgnList.put(14, "15WAU00005");
 
         try{
-            assgnHelper.assgnList = assgnList;
+            AssignHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("55");
             assgnHelper.checkCandidate("15WAU00001");
             assgnHelper.attempInvalidSeat();

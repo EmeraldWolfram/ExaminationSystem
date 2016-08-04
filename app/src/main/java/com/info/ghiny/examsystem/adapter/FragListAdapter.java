@@ -82,7 +82,7 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         assignResult.setOnTouchListener(new OnSwipeListener(context){
             @Override
             public void onSwipeRight() {
-                AssignHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+                FragmentHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
                 assignResult.setVisibility(View.GONE);
                 notifyDataSetChanged();
             }

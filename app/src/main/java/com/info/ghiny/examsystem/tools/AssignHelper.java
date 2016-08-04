@@ -24,7 +24,7 @@ public class AssignHelper {
     private LocalDbLoader JdbcLoader;
 
     private CheckListLoader clLoader;
-    public static HashMap<Integer, String> assgnList = new HashMap<>();
+    private static HashMap<Integer, String> assgnList = new HashMap<>();
     private static AttendanceList attdList;
     private AssignInfoActivity assignAct;
 
@@ -94,6 +94,13 @@ public class AssignHelper {
     }
     public static AttendanceList getAttdList() {
         return attdList;
+    }
+
+    public static void setAssgnList(HashMap<Integer, String> assgnList) {
+        AssignHelper.assgnList = assgnList;
+    }
+    public static HashMap<Integer, String> getAssgnList() {
+        return assgnList;
     }
 
     public void setAssignAct(AssignInfoActivity assignAct) {
@@ -296,7 +303,12 @@ public class AssignHelper {
     public void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
-            resetCandidate(tempTable);
+            Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
+            attdList.removeCandidate(cdd.getRegNum());
+            cdd.setTableNumber(0);
+            cdd.setStatus(Status.ABSENT);
+            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+            assgnList.remove(tempTable);
         } else {
             //Candidate reassign, remove the previously assignment
             assgnList.remove(tempCdd.getTableNumber());
@@ -317,16 +329,5 @@ public class AssignHelper {
     public void cancelNewAssign(){
         tempCdd     = null;
         tempTable   = null;
-    }
-
-    public static void resetCandidate(Integer table){
-        if(table != null){
-            Candidate cdd = attdList.getCandidate(assgnList.get(table));
-            attdList.removeCandidate(cdd.getRegNum());
-            cdd.setTableNumber(0);
-            cdd.setStatus(Status.ABSENT);
-            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-            assgnList.remove(table);
-        }
     }
 }

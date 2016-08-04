@@ -8,5 +8,11 @@ public enum Status {
     ABSENT,
     EXEMPTED,
     BARRED,
-    QUARANTIZED
+    QUARANTIZED;
+
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

@@ -28,10 +28,9 @@ public class ExamSubjectAdapter extends BaseAdapter {
         setPapers(papers);
         notifyDataSetChanged();
     }
-    public static void setPapers(List<ExamSubject> papers) {
+    public void setPapers(List<ExamSubject> papers) {
         ExamSubjectAdapter.papers = papers;
     }
-
 
     @Override
     public int getCount() {
