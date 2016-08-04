@@ -50,7 +50,24 @@ public class AssignHelper {
 
     //= Setter & Getter ============================================================================
     //Static setter to initialize the value of Database and AttendanceList
-    public void initLoader(LocalDbLoader dBLoader) throws ProcessException{
+    //public void initLoader(LocalDbLoader dBLoader) throws ProcessException{
+    //    assert dBLoader != null;
+
+    //    if(dBLoader.emptyAttdInDB()){
+    //        dBLoader.saveAttendanceList(attdList); //Suppose to query external DB
+
+            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
+    //    }
+    //    if(dBLoader.emptyPapersInDB()) {
+    //        dBLoader.savePaperList(Candidate.getPaperList()); //Suppose to query external DB
+            /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
+    //    }
+
+    //    this.JdbcLoader = dBLoader;
+    //    attdList    = JdbcLoader.queryAttendanceList();
+    //    Candidate.setPaperList(dBLoader.queryPapers());
+    //}
+    public void initLoader(CheckListLoader dBLoader) throws ProcessException{
         assert dBLoader != null;
 
         if(dBLoader.emptyAttdInDB()){
@@ -63,27 +80,10 @@ public class AssignHelper {
             /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
         }
 
-        this.JdbcLoader = dBLoader;
-        attdList    = JdbcLoader.queryAttendanceList();
-        Candidate.setPaperList(dBLoader.queryPapers());
-    }
-    //public static void initLoader(CheckListLoader dBLoader) throws ProcessException{
-    //    assert dBLoader != null;
-
-        //if(dBLoader.emptyAttdInDB()){
-        //    dBLoader.saveAttendanceList(prepareList()); //Suppose to query external DB
-
-            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
-        //}
-        //if(dBLoader.emptyPapersInDB()) {
-        //    dBLoader.savePaperList(fakeTheExamPaper()); //Suppose to query external DB
-            /*dBLoader.savePaperList(ExternalDbLoader.dlPaperList());*/
-        //}
-
-    //    AssignHelper.clLoader = dBLoader;
+        this.clLoader = dBLoader;
         //attdList    = clLoader.queryAttendanceList();
-        //Candidate.setPaperList(clLoader.queryPapers());
-    //}
+        Candidate.setPaperList(clLoader.queryPapers());
+    }
 
     public LocalDbLoader getJdbcLoader() {
         return JdbcLoader;
@@ -289,6 +289,8 @@ public class AssignHelper {
         attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
                 tempCdd.getProgramme());
         assgnList.put(tempTable, tempCdd.getRegNum());
+
+        assignAct.clearView();
     }
 
     //= Methods for abnormal cases =================================================================

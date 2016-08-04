@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ErrorManager;
@@ -56,10 +57,10 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
         assignHelper.setAssignAct(this);
 
         try{
-            LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            //CheckListLoader clLoader = new CheckListLoader(this);
-            assignHelper.initLoader(jdbcLoader);
-            //AssignHelper.initLoader(clLoader);
+            //LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
+            CheckListLoader clLoader = new CheckListLoader(this);
+            //assignHelper.initLoader(jdbcLoader);
+            assignHelper.initLoader(clLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
         }

@@ -109,7 +109,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
                 try{
-                    ChiefLink.setCompleteFlag(false);
+                    ChiefLink.setCompleteFlag(true);
                     List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
                     listAdapter.updatePapers(subjects);
                 } catch (ProcessException err) {

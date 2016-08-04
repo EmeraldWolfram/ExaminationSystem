@@ -14,6 +14,7 @@ import java.util.List;
 public class InfoCollectHelper {
 
     public void bundleCollection(String scanValue) throws ProcessException{
+        ChiefLink.setCompleteFlag(false);
         ExternalDbLoader.acknowledgeCollection(scanValue);
     }
 
@@ -23,6 +24,7 @@ public class InfoCollectHelper {
             throw new ProcessException("Not a candidate ID", ProcessException.MESSAGE_TOAST,
                     IconManager.MESSAGE);
 
+        ChiefLink.setCompleteFlag(false);
         ExternalDbLoader.getPapersExamineByCdd(scanValue);
     }
 

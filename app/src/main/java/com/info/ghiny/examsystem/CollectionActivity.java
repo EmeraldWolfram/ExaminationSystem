@@ -87,7 +87,7 @@ public class CollectionActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
                 try{
-                    ChiefLink.setCompleteFlag(false);
+                    ChiefLink.setCompleteFlag(true);
                     boolean ack = JsonHelper.parseBoolean(message);
                 } catch (ProcessException err) {
                     Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);

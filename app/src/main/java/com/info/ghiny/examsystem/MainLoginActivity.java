@@ -1,14 +1,19 @@
 package com.info.ghiny.examsystem;
 
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,8 +100,7 @@ public class MainLoginActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
                 try{
-                    //connect.publishMsg(message);
-                    ChiefLink.setCompleteFlag(false);
+                    ChiefLink.setCompleteFlag(true);
 
                     StaffIdentity id    = JsonHelper.parseStaffIdentity(message);
                     LoginHelper.setStaff(id);

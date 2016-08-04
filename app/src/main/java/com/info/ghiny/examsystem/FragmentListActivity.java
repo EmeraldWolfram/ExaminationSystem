@@ -64,7 +64,7 @@ public class FragmentListActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
                 try{
-                    ChiefLink.setCompleteFlag(false);
+                    ChiefLink.setCompleteFlag(true);
                     boolean uploaded = JsonHelper.parseBoolean(message);
                     LocalDbLoader dbLoader  =
                             new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);

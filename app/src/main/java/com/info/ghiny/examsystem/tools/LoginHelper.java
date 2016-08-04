@@ -58,6 +58,7 @@ public class LoginHelper {
                 throw new ProcessException("Please enter a password to proceed",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             } else {
+                ChiefLink.setCompleteFlag(false);
                 ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
             }
         }

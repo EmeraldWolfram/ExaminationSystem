@@ -19,6 +19,7 @@ public class FragmentHelper {
 
     //= public Methods =============================================================================
     public void uploadAttdList() throws ProcessException{
+        ChiefLink.setCompleteFlag(false);
         ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
     }
 

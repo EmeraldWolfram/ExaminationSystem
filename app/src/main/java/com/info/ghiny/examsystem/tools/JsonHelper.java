@@ -126,7 +126,6 @@ public class JsonHelper {
                 //for(int i = 0; i < roles.length(); i++){
                 //    staffId.addRole(roles.getString(i));
                 //}
-                ChiefLink.setCompleteFlag(true);
 
                 return staffId;
             } else {
@@ -136,8 +135,6 @@ public class JsonHelper {
         } catch (JSONException err) {
             throw new ProcessException("Failed to read data from Chief\nPlease consult developer!",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
-        } finally {
-            ChiefLink.setCompleteFlag(true);
         }
     }
 
@@ -145,7 +142,6 @@ public class JsonHelper {
         try {
             JSONObject obj = new JSONObject(inStr);
             if(obj.getBoolean(KEY_TYPE_RETURN)){
-                ChiefLink.setCompleteFlag(true);
                 return true;
             } else {
                 throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
@@ -154,8 +150,6 @@ public class JsonHelper {
         } catch (JSONException err) {
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        } finally {
-            ChiefLink.setCompleteFlag(true);
         }
     }
 
@@ -181,7 +175,6 @@ public class JsonHelper {
                     attdList.addCandidate(cdd, cdd.getPaperCode(),
                             cdd.getStatus(), cdd.getProgramme());
                 }
-                ChiefLink.setCompleteFlag(true);
                 return attdList;
             } else {
                 throw new ProcessException("Unable to download Attendance List",
@@ -191,8 +184,6 @@ public class JsonHelper {
             throw new ProcessException("FATAL: Packet from Chief corrupted\n" +
                     "Please Consult Developer!",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        } finally {
-            ChiefLink.setCompleteFlag(true);
         }
     }
 
@@ -213,15 +204,12 @@ public class JsonHelper {
 
                     map.put(subject.getPaperCode(), subject);
                 }
-                ChiefLink.setCompleteFlag(true);
                 return map;
             } else {
-                ChiefLink.setCompleteFlag(true);
                 throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
                         ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
         }catch (JSONException err){
-            ChiefLink.setCompleteFlag(true);
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
@@ -247,7 +235,6 @@ public class JsonHelper {
 
                     subjects.add(subject);
                 }
-                ChiefLink.setCompleteFlag(true);
 
                 return subjects;
             } else {
@@ -257,8 +244,6 @@ public class JsonHelper {
         } catch (JSONException err) {
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
-        } finally {
-            ChiefLink.setCompleteFlag(true);
         }
     }
 }
