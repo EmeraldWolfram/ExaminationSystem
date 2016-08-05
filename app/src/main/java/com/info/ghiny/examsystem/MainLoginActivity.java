@@ -197,7 +197,7 @@ public class MainLoginActivity extends AppCompatActivity {
                             barcodeView.resume();
                         }
                     }
-                }, 10000);
+                }, 5000);
             } catch(ProcessException err){
                 errorManager.displayError(err);
                 barcodeView.resume();

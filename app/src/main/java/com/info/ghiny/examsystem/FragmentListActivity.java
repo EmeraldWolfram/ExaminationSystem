@@ -20,6 +20,7 @@ import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.JsonHelper;
+import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
@@ -86,26 +87,39 @@ public class FragmentListActivity extends AppCompatActivity {
 
     //==============================================================================================
     public void onUpload(View view){
-        try{
-            helper.uploadAttdList();
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()){
-                        ProcessException err = new ProcessException(
-                                "Server busy. Upload times out.\nPlease try again later.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton, timesOutListener);
-                        errorManager.displayError(err);
-                    }
-                }
-            }, 10000);
-        } catch (ProcessException err){
-            errorManager.displayError(err);
-        }
+        Intent authorSign = new Intent(this, PopUpLogin.class);
+        startActivityForResult(authorSign, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == RESULT_OK){
+            String password = data.getStringExtra("Password");
+            try{
+                if(!LoginHelper.getStaff().matchPassword(password))
+                    throw new ProcessException("Submission denied. Incorrect Password",
+                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+
+                helper.uploadAttdList();
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!ChiefLink.isComplete()){
+                            ProcessException err = new ProcessException(
+                                    "Server busy. Upload times out.\nPlease try again later.",
+                                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                            err.setListener(ProcessException.okayButton, timesOutListener);
+                            errorManager.displayError(err);
+                        }
+                    }
+                }, 5000);
+            } catch(ProcessException err){
+                errorManager.displayError(err);
+            }
+        }
+    }
 }
 
 

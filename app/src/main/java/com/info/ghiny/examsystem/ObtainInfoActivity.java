@@ -2,7 +2,6 @@ package com.info.ghiny.examsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -36,10 +35,8 @@ public class ObtainInfoActivity extends AppCompatActivity {
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
 
     private InfoCollectHelper helper;
-    private ExamSubjectAdapter listAdapter;
+    //private ExamSubjectAdapter listAdapter;
     private ErrorManager errManager;
-    private ChiefLink connect;
-    private TCPClient obtainInfo;
 
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
@@ -74,27 +71,27 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
         helper      = new InfoCollectHelper();
         errManager  = new ErrorManager(this);
-        listAdapter = new ExamSubjectAdapter();
+        //listAdapter = new ExamSubjectAdapter();
 
-        ListView paperList = (ListView)findViewById(R.id.paperInfoList);
-        assert paperList != null;
+        //ListView paperList = (ListView)findViewById(R.id.paperInfoList);
+        //assert paperList != null;
 
-        paperList.setAdapter(listAdapter);
+        //paperList.setAdapter(listAdapter);
 
-        RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
-        assert thisLayout != null;
-        thisLayout.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeTop() {
-                finish();
-            }
-        });
-        paperList.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeTop() {
-                finish();
-            }
-        });
+        //RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
+        //assert thisLayout != null;
+        //thisLayout.setOnTouchListener(new OnSwipeListener(this){
+        //    @Override
+        //    public void onSwipeTop() {
+        //        finish();
+        //    }
+        //});
+        //paperList.setOnTouchListener(new OnSwipeListener(this){
+        //   @Override
+        //    public void onSwipeTop() {
+        //        finish();
+        //   }
+        //});
 
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
@@ -110,8 +107,13 @@ public class ObtainInfoActivity extends AppCompatActivity {
             public void messageReceived(String message) {
                 try{
                     ChiefLink.setCompleteFlag(true);
-                    List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
-                    ExternalDbLoader.getChiefLink().publishMsg(listAdapter, subjects);
+                    boolean ack =   JsonHelper.parseBoolean(message);
+                    Intent displayList  = new Intent(ObtainInfoActivity.this, ExamListActivity.class);
+                    displayList.putExtra(JsonHelper.LIST_LIST, message);
+                    startActivity(displayList);
+                    //List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
+                    //ExternalDbLoader.getChiefLink().publishMsg(listAdapter, subjects);
+                    //barcodeView.resume();
                 } catch (ProcessException err) {
                     Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
                     errIn.putExtra("ErrorTxt", err.getErrorMsg());
@@ -153,7 +155,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
                         errManager.displayError(err);
                     }
                 }
-            }, 10000);
+            }, 5000);
         } catch (ProcessException err){
             errManager.displayError(err);
             barcodeView.resume();

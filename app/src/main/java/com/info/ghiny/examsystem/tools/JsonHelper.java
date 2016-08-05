@@ -145,7 +145,7 @@ public class JsonHelper {
             if(obj.getBoolean(KEY_TYPE_RETURN)){
                 return true;
             } else {
-                throw new ProcessException("Upload Failed", ProcessException.MESSAGE_DIALOG,
+                throw new ProcessException("Request Failed", ProcessException.MESSAGE_DIALOG,
                         IconManager.WARNING);
             }
         } catch (JSONException err) {
