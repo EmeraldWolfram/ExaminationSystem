@@ -18,18 +18,15 @@ import java.util.List;
  */
 public class ExamSubjectAdapter extends BaseAdapter {
 
-    private static List<ExamSubject> papers;
+    private List<ExamSubject> papers;
 
     public ExamSubjectAdapter(){
         papers  = new ArrayList<>();
     }
 
     public void updatePapers(List<ExamSubject> papers){
-        ExamSubjectAdapter.papers   = papers;
+        this.papers   = papers;
         notifyDataSetChanged();
-    }
-    public void setPapers(List<ExamSubject> papers) {
-        ExamSubjectAdapter.papers = papers;
     }
 
     @Override
