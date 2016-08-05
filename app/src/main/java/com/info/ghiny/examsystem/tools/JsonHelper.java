@@ -79,7 +79,7 @@ public class JsonHelper {
                     cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
                     cddObj.put(Candidate.CDD_PAPER, cdd.getPaperCode());
                     cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
-                    cddObj.put(Candidate.CDD_STATUS, cdd.getStatus().toString());
+                    cddObj.put(Candidate.CDD_ATTENDAND, cdd.getStatus().toString());
                     cddList.put(cddObj);
                 }
             }
