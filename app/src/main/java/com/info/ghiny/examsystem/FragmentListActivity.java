@@ -14,14 +14,12 @@ import android.view.View;
 import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.FragmentHelper;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.JsonHelper;
 import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 
@@ -65,7 +63,7 @@ public class FragmentListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {
                 try{
@@ -76,10 +74,12 @@ public class FragmentListActivity extends AppCompatActivity {
                     //        new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
                     dbLoader.clearDatabase();
                 } catch (ProcessException err){
-                    Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
-                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
-                    startActivity(errIn);
+                    //Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
+                    //errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    //errIn.putExtra("ErrorIcon", err.getErrorIcon());
+                    //startActivity(errIn);
+                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
+
                 }
             }
         });

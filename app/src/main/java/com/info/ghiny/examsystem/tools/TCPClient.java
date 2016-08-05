@@ -42,7 +42,7 @@ public class TCPClient implements Runnable{
         TCPClient.SERVERPORT = portNumber;
     }
 
-    public void setmMessageListener(OnMessageReceived mMessageListener) {
+    public void setMessageListener(OnMessageReceived mMessageListener) {
         this.mMessageListener = mMessageListener;
     }
 

@@ -31,7 +31,7 @@ public class CustomToast {
         toastView   = toastInflater.inflate(R.layout.toast_message_layout,
                 (ViewGroup) activity.findViewById(R.id.toastLayout));
         msgView     = (TextView) toastView.findViewById(R.id.toastTxt);
-        msgView.setTypeface(Typeface.createFromAsset(activity.getAssets(), "fonts/Oswald-Bold.ttf"));
+        msgView.setTypeface(Typeface.createFromAsset(activity.getAssets(), ConfigManager.DEFAULT_FONT));
         imgView     = (ImageView) toastView.findViewById(R.id.toastImg);
         msgView.setText("");
     }

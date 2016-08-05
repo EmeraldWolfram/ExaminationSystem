@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.AttendanceList;
@@ -20,6 +19,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
+import com.info.ghiny.examsystem.tools.ConfigManager;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.JsonHelper;
@@ -65,34 +65,28 @@ public class MainLoginActivity extends AppCompatActivity {
     //==============================================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
 
-        TextView idView = (TextView)findViewById(R.id.identityText);
-        assert idView  != null;
-        idView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        TextView idView = (TextView)findViewById(R.id.identityText);    assert idView  != null;
+        idView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
-        helper  = new LoginHelper();
+        helper          = new LoginHelper();
         errorManager    = new ErrorManager(this);
-        //ChiefLink.setErrorManager(errorManager);
-        connect = new ChiefLink();
+        connect         = new ChiefLink();
+        barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
+
         connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
         ExternalDbLoader.setChiefLink(connect);
-
-        barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
-        //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
     }
 
     @Override
     protected void onResume() {
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         super.onResume();
         while(ExternalDbLoader.getTcpClient() == null){}
 
-        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
@@ -112,10 +106,11 @@ public class MainLoginActivity extends AppCompatActivity {
                     Intent assignIntent = new Intent(MainLoginActivity.this, AssignInfoActivity.class);
                     startActivity(assignIntent);
                 } catch (ProcessException err) {
-                    Intent errIn = new Intent(MainLoginActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
-                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
-                    startActivity(errIn);
+                    //Intent errIn = new Intent(MainLoginActivity.this, FancyErrorWindow.class);
+                    //errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    //errIn.putExtra("ErrorIcon", err.getErrorIcon());
+                    //startActivity(errIn);
+                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
                     barcodeView.resume();
                 }
             }
@@ -125,20 +120,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show();
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
-        super.onRestart();
-    }
-
-    @Override
     protected void onPause() {
-        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
         super.onPause();
         barcodeView.pause();
     }

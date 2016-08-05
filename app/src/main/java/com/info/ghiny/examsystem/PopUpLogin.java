@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.info.ghiny.examsystem.tools.ConfigManager;
 import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 
@@ -28,10 +29,10 @@ public class PopUpLogin extends Activity {
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
         TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
         nameView.setText(LoginHelper.getStaff().getName());
-        nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
+        nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
         regNView.setText(LoginHelper.getStaff().getIdNo());
-        regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/Oswald-Bold.ttf"));
-        entView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+        entView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

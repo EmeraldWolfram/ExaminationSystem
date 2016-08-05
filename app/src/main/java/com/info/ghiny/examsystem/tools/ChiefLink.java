@@ -15,9 +15,10 @@ import java.util.List;
 public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
     private static boolean completeFlag = false;
-    private List<ExamSubject> subjects;
-    private ExamSubjectAdapter adapter;
-    //private static ErrorManager errorManager;
+    //private List<ExamSubject> subjects;
+    //private ExamSubjectAdapter adapter;
+    private ErrorManager errorManager;
+    private ProcessException err;
 
     //= Setter & Getter ============================================================================
     //public static void setErrorManager(ErrorManager errorManager) {
@@ -39,8 +40,14 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     //= Public Methods =============================================================================
     public void publishMsg(ExamSubjectAdapter adapter, List<ExamSubject> subjects){
         publishProgress("Message");
-        this.adapter    = adapter;
-        this.subjects   = subjects;
+        //this.adapter    = adapter;
+        //this.subjects   = subjects;
+    }
+
+    public void publishError(ErrorManager errManager, ProcessException err){
+        publishProgress("Error");
+        this.errorManager   = errManager;
+        this.err            = err;
     }
 
     @Override
@@ -59,6 +66,7 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     @Override
     protected void onProgressUpdate(String... values){
         super.onProgressUpdate(values);
-        adapter.updatePapers(subjects);
+        errorManager.displayError(err);
+        //adapter.updatePapers(subjects);
     }
 }

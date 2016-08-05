@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,26 +10,19 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.AttendanceList;
-import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ChiefLink;
+import com.info.ghiny.examsystem.tools.ConfigManager;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.InfoCollectHelper;
 import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class CollectionActivity extends AppCompatActivity {
@@ -69,7 +61,7 @@ public class CollectionActivity extends AppCompatActivity {
 
         TextView bundleView = (TextView)findViewById(R.id.bundleText);
         assert bundleView  != null;
-        bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         helper          = new InfoCollectHelper();
         errorManager    = new ErrorManager(this);
@@ -82,7 +74,7 @@ public class CollectionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
@@ -90,9 +82,10 @@ public class CollectionActivity extends AppCompatActivity {
                     ChiefLink.setCompleteFlag(true);
                     boolean ack = JsonHelper.parseBoolean(message);
                 } catch (ProcessException err) {
-                    Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("Error", err.getErrorMsg());
-                    startActivity(errIn);
+                    //Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
+                    //errIn.putExtra("Error", err.getErrorMsg());
+                    //startActivity(errIn);
+                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
                 }
             }
         });

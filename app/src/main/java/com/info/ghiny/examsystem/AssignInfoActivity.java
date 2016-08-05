@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
+import com.info.ghiny.examsystem.tools.ConfigManager;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.LoginHelper;
@@ -61,24 +61,12 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
 
         try{
             //LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            CheckListLoader clLoader = new CheckListLoader(this);
             //assignHelper.initLoader(jdbcLoader);
+            CheckListLoader clLoader = new CheckListLoader(this);
             assignHelper.initLoader(clLoader);
         } catch (ProcessException err){
             errManager.displayError(err);
         }
-
-        /*LinearLayout assignResult = (LinearLayout)findViewById(R.id.assignInfoLinearLayout);
-        assert assignResult != null;
-        assignResult.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeRight() {
-                TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
-                assert tableView != null;
-                AssignHelper.resetCandidate(Integer.parseInt(tableView.getText().toString()));
-                AssignInfoActivity.clearViews(AssignInfoActivity.this);
-            }
-        });*/
 
         //Set swiping gesture
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
@@ -191,7 +179,7 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
     public void setTableView(Integer tableNum) {
         TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         assert tableView != null;
-        tableView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Chunkfive.otf"));
+        tableView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.THICK_FONT));
 
         if(tableNum != 0)
             tableView.setText(tableNum.toString());
@@ -208,9 +196,9 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
 
             assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
 
-            cddView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Oswald-Bold.ttf"));
-            regNumView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Regular.ttf"));
-            paperView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Regular.ttf"));
+            cddView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.BOLD_FONT));
+            regNumView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
+            paperView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
 
             cddView.setText(cdd.getExamIndex());
             regNumView.setText(cdd.getRegNum());

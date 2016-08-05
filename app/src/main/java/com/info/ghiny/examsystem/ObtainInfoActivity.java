@@ -7,19 +7,14 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
-import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.tools.ChiefLink;
 import com.info.ghiny.examsystem.tools.ErrorManager;
 import com.info.ghiny.examsystem.tools.IconManager;
 import com.info.ghiny.examsystem.tools.InfoCollectHelper;
 import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -102,7 +97,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ExternalDbLoader.getTcpClient().setmMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {
                 try{
@@ -115,10 +110,11 @@ public class ObtainInfoActivity extends AppCompatActivity {
                     //ExternalDbLoader.getChiefLink().publishMsg(listAdapter, subjects);
                     //barcodeView.resume();
                 } catch (ProcessException err) {
-                    Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
-                    errIn.putExtra("ErrorTxt", err.getErrorMsg());
-                    errIn.putExtra("ErrorIcon", err.getErrorIcon());
-                    startActivity(errIn);
+                    //Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
+                    //errIn.putExtra("ErrorTxt", err.getErrorMsg());
+                    //errIn.putExtra("ErrorIcon", err.getErrorIcon());
+                    //startActivity(errIn);
+                    ExternalDbLoader.getChiefLink().publishError(errManager, err);
                 }
             }
         });

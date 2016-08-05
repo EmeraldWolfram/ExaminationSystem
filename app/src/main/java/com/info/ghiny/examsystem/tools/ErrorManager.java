@@ -90,6 +90,7 @@ public class ErrorManager {
     public void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
+
         dialog.setCancelable(true);
 
         dialog.setPositiveButton(ProcessException.yesButton,
