@@ -38,6 +38,19 @@ public class Paper {
         this.totalCandidate = totalCandidate;
     }
     
+    public Paper(  String paperCode,
+                    String paperDesc,
+                    String date,
+                    String session,
+                    String venue){
+        
+        this.paperCode = paperCode;
+        this.paperDesc = paperDesc;
+        this.date = date;
+        this.session = session;
+        this.venue = venue;
+    }
+    
     public String getPaperCode(){
         return paperCode;
     }
@@ -53,6 +66,18 @@ public class Paper {
     
     public String getTotalCandidate(){
         return totalCandidate;
+    }
+    
+    public String getDate(){
+        return date;
+    }
+    
+    public String getSession(){
+        return session;
+    }
+    
+    public String getVenue(){
+        return venue;
     }
     
     /**

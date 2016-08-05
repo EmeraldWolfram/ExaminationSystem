@@ -183,6 +183,8 @@ public class test {
         assertEquals(null,staff.getVenue());
         assertEquals(null,staff.getStatus());
     }
+    */
+    
     
     @Test
     public void testGetAttdList(){
@@ -206,7 +208,7 @@ public class test {
         assertEquals("MPU3123",attdList.get(0).getPaperCode());
         assertEquals("OGC2",attdList.get(0).getProgramme());
     }
-    
+    /*
     @Test
     public void testGetAttdList2(){
         ArrayList<AttdList> attdList= new ArrayList<>();

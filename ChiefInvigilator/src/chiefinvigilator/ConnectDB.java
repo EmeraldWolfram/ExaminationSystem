@@ -18,6 +18,11 @@ public class ConnectDB {
     static String month;
     static String year;
     static String name;
+    
+    public ConnectDB(){
+        this.name = "ChiefDataBase.db";
+    }
+    
     public ConnectDB(String name){
         this.name = name;
     }

@@ -212,7 +212,7 @@ public class ServerComm {
     
     public static ArrayList<CddPapers> getCddPapers(String candidateID) throws SQLException{
         ArrayList<CddPapers> cddPapers = new ArrayList<>();
-        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        Connection conn = new ConnectDB().connect();
         String sql = "SELECT Venue.Name AS VenueName "
                 + ",* FROM CandidateInfo "
                 + "LEFT OUTER JOIN CandidateAttendance ON CandidateAttendance.CandidateInfoIC = CandidateInfo.IC "

@@ -136,13 +136,13 @@ public class Staff {
                 json.put("Venue", getVenue());
                 json.put("IdNo", getID());
                 json.put("Status", getStatus());
-                json.put("CddList", attdListToJson(ServerComm.getAttdList(getVenue())));
-                json.put("PaperMap", attdListToJson(ServerComm.getAttdList(getVenue())));
+//                json.put("CddList", attdListToJson(ServerComm.getAttdList(getVenue())));
+//                json.put("PaperMap", attdListToJson(ServerComm.getAttdList(getVenue())));
             }
             
         } catch (JSONException ex) {
             throw new Exception("Error: Staff.toJson fail !!" + ex.getMessage());
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             throw new Exception("Error: Database error !!" + ex.getMessage());
         }
         

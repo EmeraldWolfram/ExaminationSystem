@@ -126,7 +126,7 @@ public class Candidate {
         try{
         JSONObject json = new JSONObject(jsonString);
        
-        this.regNum = json.getString("RegNum");
+        this.examId = json.getString("ExamIndex");
         this.tableNo = json.getInt("TableNo");
         this.paperCode = json.getString("Code");
         this.attendance = json.getString("Attendance");
