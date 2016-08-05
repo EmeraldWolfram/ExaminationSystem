@@ -8,12 +8,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.info.ghiny.examsystem.tools.CustomToast;
 import com.info.ghiny.examsystem.tools.LoginHelper;
 
 /**
  * Created by GhinY on 21/05/2016.
  */
 public class PopUpLogin extends Activity {
+
+    public static final int PASSWORD_REQ_CODE = 888;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,5 +47,11 @@ public class PopUpLogin extends Activity {
 
         this.setResult(RESULT_OK, getIntent());
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        CustomToast toast   = new CustomToast(this);
+        toast.showCustomMessage("Please enter a password to proceed", R.drawable.warn_icon);
     }
 }

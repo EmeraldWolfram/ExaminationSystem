@@ -15,4 +15,17 @@ public enum Status {
     public String toString() {
         return super.toString();
     }
+
+    public static Status parseStatus(String statusString){
+        switch (statusString){
+            case "BARRED":
+                return Status.BARRED;
+            case "EXEMPTED":
+                return Status.EXEMPTED;
+            case "QUARANTIZED":
+                return Status.QUARANTIZED;
+            default:
+                return Status.ABSENT;
+        }
+    }
 }

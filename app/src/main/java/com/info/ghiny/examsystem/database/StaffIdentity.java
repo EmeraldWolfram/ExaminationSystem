@@ -1,5 +1,8 @@
 package com.info.ghiny.examsystem.database;
 
+import com.info.ghiny.examsystem.tools.IconManager;
+import com.info.ghiny.examsystem.tools.ProcessException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,4 +70,12 @@ public class StaffIdentity {
 
     public void setIdNo(String newRegNum){    this.idNo = newRegNum;}
     public String getIdNo(){    return this.idNo;}
+
+    public boolean matchPassword(String password) throws ProcessException{
+        if(this.password == null)
+            throw new ProcessException("FATAL: Unknown error", ProcessException.FATAL_MESSAGE,
+                    IconManager.WARNING);
+        return this.password.equals(password);
+    }
+
 }

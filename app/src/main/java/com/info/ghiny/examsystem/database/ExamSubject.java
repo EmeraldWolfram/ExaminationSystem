@@ -18,6 +18,7 @@ public class ExamSubject {
     public static final String PAPER_TOTAL_CDD  = "PaperTotalCdd";
     public static final String PAPER_SESSION    = "Session";
     public static final String PAPER_VENUE      = "Venue";
+    public static final String PAPER_DATE       = "Date";
 
     private String paperCode;
     private String paperDesc;
@@ -127,16 +128,5 @@ public class ExamSubject {
             throw new NullPointerException("Paper Description was not filled yet");
 
         return str;
-    }
-
-    public Session parseSession(String session){
-        switch (session){
-            case "PM":
-                return Session.PM;
-            case "VM":
-                return Session.VM;
-            default:
-                return Session.AM;
-        }
     }
 }

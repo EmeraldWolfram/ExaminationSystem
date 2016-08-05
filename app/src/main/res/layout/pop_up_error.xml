@@ -16,6 +16,7 @@
             android:id="@+id/errorIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:src="@drawable/warn_icon"
             android:contentDescription="@string/error_icon"/>
 

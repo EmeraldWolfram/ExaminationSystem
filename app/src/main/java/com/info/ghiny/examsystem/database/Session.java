@@ -12,4 +12,15 @@ public enum Session {
     public String toString() {
         return super.toString();
     }
+
+    public static Session parseSession(String session){
+        switch (session){
+            case "PM":
+                return Session.PM;
+            case "VM":
+                return Session.VM;
+            default:
+                return Session.AM;
+        }
+    }
 }

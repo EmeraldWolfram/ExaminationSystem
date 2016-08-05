@@ -28,6 +28,7 @@ public class LinkChiefActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
+                barcodeView.pause();
                 beepManager.playBeepSoundAndVibrate();
                 checkForChief(result.getText());
             }
@@ -84,7 +85,6 @@ public class LinkChiefActivity extends AppCompatActivity {
     //==============================================================================================
     public void checkForChief(String scanStr){
         try{
-            barcodeView.pause();
             LoginHelper helper = new LoginHelper();
             helper.verifyChief(scanStr);
 

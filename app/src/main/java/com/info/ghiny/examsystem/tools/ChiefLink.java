@@ -3,7 +3,11 @@ package com.info.ghiny.examsystem.tools;
 import android.os.AsyncTask;
 
 import com.info.ghiny.examsystem.MainLoginActivity;
+import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+
+import java.util.List;
 
 /**
  * Created by GhinY on 08/07/2016.
@@ -11,6 +15,8 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
     private static boolean completeFlag = false;
+    private List<ExamSubject> subjects;
+    private ExamSubjectAdapter adapter;
     //private static ErrorManager errorManager;
 
     //= Setter & Getter ============================================================================
@@ -31,8 +37,10 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     }
 
     //= Public Methods =============================================================================
-    public void publishMsg(String msg){
-        publishProgress(msg);
+    public void publishMsg(ExamSubjectAdapter adapter, List<ExamSubject> subjects){
+        publishProgress("Message");
+        this.adapter    = adapter;
+        this.subjects   = subjects;
     }
 
     @Override
@@ -51,6 +59,6 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     @Override
     protected void onProgressUpdate(String... values){
         super.onProgressUpdate(values);
-        setCompleteFlag(false);
+        adapter.updatePapers(subjects);
     }
 }

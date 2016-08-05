@@ -12,28 +12,30 @@ import static org.junit.Assert.*;
  * Created by GhinY on 16/05/2016.
  */
 public class StaffIdentityTest {
-    /*@Test
+    @Test
     public void testMatchPasswordGivenSameIdShouldReturnTrue() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
+        actualId.setPassword("0000");
 
-        boolean returnItem = actualId.tryLogin("0000");
+        boolean returnItem = actualId.matchPassword("0000");
         assertTrue(returnItem);
     }
 
     @Test
     public void testMatchPasswordGivenDiffIdShouldReturnFalse() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
+        actualId.setPassword("0000");
 
-        boolean returnItem = actualId.tryLogin("0001");
+        boolean returnItem = actualId.matchPassword("0001");
         assertFalse(returnItem);
     }
 
     @Test
     public void testMatchPasswordGivenDiffPassShouldReturnFalse() throws Exception {
-        StaffIdentity actualId   = new StaffIdentity("15WAU09184", "0000", true, "FOONG", "H1");
+        StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
+        actualId.setPassword("0000");
 
-        boolean returnItem = actualId.tryLogin(null);
+        boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);
     }
-*/
 }

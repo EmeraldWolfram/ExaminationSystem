@@ -1,19 +1,14 @@
 package com.info.ghiny.examsystem;
 
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.ActionMode;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +36,6 @@ import java.util.List;
 public class MainLoginActivity extends AppCompatActivity {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
-    private static final int PASSWORD_REQ_CODE = 888;
     private ErrorManager errorManager;
     private ChiefLink connect;
     private LoginHelper helper;
@@ -71,6 +65,7 @@ public class MainLoginActivity extends AppCompatActivity {
     //==============================================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
 
@@ -84,6 +79,8 @@ public class MainLoginActivity extends AppCompatActivity {
         connect = new ChiefLink();
         connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+        ExternalDbLoader.setChiefLink(connect);
+
         barcodeView = (BarcodeView) findViewById(R.id.loginScanner);
         assert barcodeView != null;
         //barcodeView.setStatusText("Searching for Authorized Invigilator's StaffIdentity");
@@ -91,6 +88,7 @@ public class MainLoginActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         super.onResume();
         while(ExternalDbLoader.getTcpClient() == null){}
 
@@ -102,6 +100,7 @@ public class MainLoginActivity extends AppCompatActivity {
                     ChiefLink.setCompleteFlag(true);
 
                     StaffIdentity id    = JsonHelper.parseStaffIdentity(message);
+                    id.setPassword(LoginHelper.getStaff().getPassword());
                     LoginHelper.setStaff(id);
 
                     AttendanceList attdList = JsonHelper.parseAttdList(message);
@@ -126,7 +125,20 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show();
+        super.onStart();
+    }
+
+    @Override
+    protected void onRestart() {
+        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
+        super.onRestart();
+    }
+
+    @Override
     protected void onPause() {
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
         super.onPause();
         barcodeView.pause();
     }
@@ -156,7 +168,7 @@ public class MainLoginActivity extends AppCompatActivity {
             helper.checkQrId(scanStr);
 
             Intent pwIntent = new Intent(this, PopUpLogin.class);
-            startActivityForResult(pwIntent, PASSWORD_REQ_CODE);
+            startActivityForResult(pwIntent, PopUpLogin.PASSWORD_REQ_CODE);
         } catch (ProcessException err) {
             errorManager.displayError(err);
             barcodeView.resume();
@@ -165,7 +177,7 @@ public class MainLoginActivity extends AppCompatActivity {
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
-        if(reqCode == PASSWORD_REQ_CODE && resCode == RESULT_OK){
+        if(reqCode == PopUpLogin.PASSWORD_REQ_CODE && resCode == RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
                 barcodeView.pause();
@@ -190,7 +202,6 @@ public class MainLoginActivity extends AppCompatActivity {
                 errorManager.displayError(err);
                 barcodeView.resume();
             }
-
         }
     }
 }

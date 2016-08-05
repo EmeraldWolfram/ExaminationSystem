@@ -35,8 +35,8 @@ public class ErrorManager {
             case ProcessException.FATAL_MESSAGE:
                 showFatalError(err);
                 break;
-            case ProcessException.RESEND_CANCEL:
-                showResendCancelDialog(err);
+            case ProcessException.YES_NO_MESSAGE:
+                showYesNoDialog(err);
                 break;
         }
     }
@@ -87,15 +87,15 @@ public class ErrorManager {
         alert.show();
     }
 
-    public void showResendCancelDialog(ProcessException err){
+    public void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
 
-        dialog.setPositiveButton(ProcessException.resendButton,
-                err.getListener(ProcessException.resendButton));
-        dialog.setNegativeButton(ProcessException.cancelButton,
-                err.getListener(ProcessException.cancelButton));
+        dialog.setPositiveButton(ProcessException.yesButton,
+                err.getListener(ProcessException.yesButton));
+        dialog.setNegativeButton(ProcessException.noButton,
+                err.getListener(ProcessException.noButton));
 
         AlertDialog alert = dialog.create();
         alert.show();

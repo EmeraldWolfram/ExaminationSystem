@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.tools.AssignHelper;
 import com.info.ghiny.examsystem.tools.ErrorManager;
+import com.info.ghiny.examsystem.tools.IconManager;
+import com.info.ghiny.examsystem.tools.LoginHelper;
 import com.info.ghiny.examsystem.tools.ProcessException;
 import com.info.ghiny.examsystem.tools.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -113,13 +116,49 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Intent intent   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(intent, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == RESULT_OK){
+            String password = data.getStringExtra("Password");
+            try{
+                barcodeView.pause();
+                if(!LoginHelper.getStaff().matchPassword(password))
+                    throw new ProcessException("Access denied. Incorrect Password",
+                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+
+                barcodeView.resume();
+            } catch(ProcessException err){
+                errManager.displayError(err);
+                Intent intent   = new Intent(this, PopUpLogin.class);
+                startActivityForResult(intent, PopUpLogin.PASSWORD_REQ_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        ProcessException err    = new ProcessException("Confirm logout and exit?",
+                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
+        err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                AssignInfoActivity.this.finish();
+            }
+        });
+        errManager.displayError(err);
     }
 
     //==============================================================================================

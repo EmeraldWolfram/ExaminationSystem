@@ -409,11 +409,11 @@ public class AttendanceListTest {
     public void testParseStatus() throws Exception{
         AttendanceList attdList = new AttendanceList();
 
-        Status absent    = attdList.parseStatus("ELIGIBLE");
-        Status absent2   = attdList.parseStatus("ELIGIBLE");
-        Status barred    = attdList.parseStatus("BARRED");
-        Status exempted  = attdList.parseStatus("EXEMPTED");
-        Status quarantized = attdList.parseStatus("QUARANTIZED");
+        Status absent    = Status.parseStatus("ELIGIBLE");
+        Status absent2   = Status.parseStatus("ELIGIBLE");
+        Status barred    = Status.parseStatus("BARRED");
+        Status exempted  = Status.parseStatus("EXEMPTED");
+        Status quarantized = Status.parseStatus("QUARANTIZED");
 
         assertEquals(Status.ABSENT, absent);
         assertEquals(Status.ABSENT, absent2);

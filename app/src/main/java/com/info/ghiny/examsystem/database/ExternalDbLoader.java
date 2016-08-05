@@ -25,6 +25,7 @@ import java.util.List;
 public class ExternalDbLoader {
 
     private static TCPClient tcpClient;
+    private static ChiefLink chiefLink;
 
     //= Setter & Getter ============================================================================
     public static void setTcpClient(TCPClient tcpClient) {
@@ -32,6 +33,13 @@ public class ExternalDbLoader {
     }
     public static TCPClient getTcpClient() {
         return tcpClient;
+    }
+
+    public static void setChiefLink(ChiefLink chiefLink) {
+        ExternalDbLoader.chiefLink = chiefLink;
+    }
+    public static ChiefLink getChiefLink() {
+        return chiefLink;
     }
 
     //= Public Methods =============================================================================

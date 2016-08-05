@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.tools;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
@@ -167,7 +168,7 @@ public class JsonHelper {
                     cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
 
                     String status   = jsonCdd.getString(Candidate.CDD_STATUS);
-                    cdd.setStatus(attdList.parseStatus(status));
+                    cdd.setStatus(Status.parseStatus(status));
                     cdd.setTableNumber(0);
                     cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
                     cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
@@ -230,7 +231,7 @@ public class JsonHelper {
                     subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
 
                     String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
-                    subject.setPaperSession(subject.parseSession(session));
+                    subject.setPaperSession(Session.parseSession(session));
                     subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
 
                     subjects.add(subject);

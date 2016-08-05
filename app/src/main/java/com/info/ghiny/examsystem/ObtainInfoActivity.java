@@ -111,7 +111,7 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 try{
                     ChiefLink.setCompleteFlag(true);
                     List<ExamSubject> subjects = JsonHelper.parsePaperList(message);
-                    listAdapter.updatePapers(subjects);
+                    ExternalDbLoader.getChiefLink().publishMsg(listAdapter, subjects);
                 } catch (ProcessException err) {
                     Intent errIn = new Intent(ObtainInfoActivity.this, FancyErrorWindow.class);
                     errIn.putExtra("ErrorTxt", err.getErrorMsg());

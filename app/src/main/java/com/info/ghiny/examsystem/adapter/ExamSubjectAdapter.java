@@ -25,7 +25,7 @@ public class ExamSubjectAdapter extends BaseAdapter {
     }
 
     public void updatePapers(List<ExamSubject> papers){
-        setPapers(papers);
+        ExamSubjectAdapter.papers   = papers;
         notifyDataSetChanged();
     }
     public void setPapers(List<ExamSubject> papers) {
