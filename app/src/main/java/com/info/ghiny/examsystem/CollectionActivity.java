@@ -11,35 +11,27 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.tools.ChiefLink;
-import com.info.ghiny.examsystem.tools.ConfigManager;
-import com.info.ghiny.examsystem.tools.ErrorManager;
-import com.info.ghiny.examsystem.tools.IconManager;
-import com.info.ghiny.examsystem.tools.InfoCollectHelper;
-import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.TCPClient;
+import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.manager.CollectManager;
+import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConfigManager;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.InfoCollectHelper;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class CollectionActivity extends AppCompatActivity {
+public class CollectionActivity extends AppCompatActivity implements ScannerView {
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
-    private InfoCollectHelper helper;
     private ErrorManager errorManager;
-
-    private DialogInterface.OnClickListener timesOutListener =
-            new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    barcodeView.resume();
-                    dialog.cancel();
-                }
-            };
-
+    private CollectManager collectManager;
     private static BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -63,8 +55,8 @@ public class CollectionActivity extends AppCompatActivity {
         assert bundleView  != null;
         bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
-        helper          = new InfoCollectHelper();
         errorManager    = new ErrorManager(this);
+        collectManager  = new CollectManager(this);
 
         barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
         assert barcodeView != null;
@@ -73,29 +65,14 @@ public class CollectionActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        collectManager.onResume(errorManager);
         super.onResume();
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            //here the messageReceived method is implemented
-            @Override
-            public void messageReceived(String message) {
-                try{
-                    ChiefLink.setCompleteFlag(true);
-                    boolean ack = JsonHelper.parseBoolean(message);
-                } catch (ProcessException err) {
-                    //Intent errIn = new Intent(CollectionActivity.this, FancyErrorWindow.class);
-                    //errIn.putExtra("Error", err.getErrorMsg());
-                    //startActivity(errIn);
-                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-                }
-            }
-        });
-        barcodeView.resume();
     }
 
     @Override
     protected void onPause() {
+        collectManager.onPause();
         super.onPause();
-        barcodeView.pause();
     }
 
     @Override
@@ -106,28 +83,35 @@ public class CollectionActivity extends AppCompatActivity {
 
     //==============================================================================================
     private void onScanBundle(String scanStr){
-        try{
-            barcodeView.pause();
-            helper.bundleCollection(scanStr);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()){
-                        ProcessException err = new ProcessException(
-                                "Bundle collection times out.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton, timesOutListener);
-                        barcodeView.pause();
-                        errorManager.displayError(err);
-                        barcodeView.resume();
-                    }
-                }
-            }, 10000);
+        collectManager.onScanForCollection(scanStr);
+    }
 
-        } catch (ProcessException err) {
-            errorManager.displayError(err);
-            barcodeView.resume();
-        }
+    @Override
+    public void navigateActivity(Class<?> cls) {}
+
+    @Override
+    public void displayError(ProcessException err) {
+        errorManager.displayError(err);
+    }
+
+    @Override
+    public void pauseScanning() {
+        barcodeView.pause();
+    }
+
+    @Override
+    public void resumeScanning() {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void securityPrompt() {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
     }
 }

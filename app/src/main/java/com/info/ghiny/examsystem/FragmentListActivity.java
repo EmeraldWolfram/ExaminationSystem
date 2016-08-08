@@ -11,32 +11,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 
-import com.info.ghiny.examsystem.adapter.ViewPagerAdapter;
+import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.manager.FragListManager;
+import com.info.ghiny.examsystem.manager.ViewPagerAdapter;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.tools.ChiefLink;
-import com.info.ghiny.examsystem.tools.ErrorManager;
-import com.info.ghiny.examsystem.tools.FragmentHelper;
-import com.info.ghiny.examsystem.tools.IconManager;
-import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.TCPClient;
+import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.FragmentHelper;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 12/06/2016.
  */
-public class FragmentListActivity extends AppCompatActivity {
+public class FragmentListActivity extends AppCompatActivity implements GeneralView {
 
     private ErrorManager errorManager;
-    private FragmentHelper helper;
-    private DialogInterface.OnClickListener timesOutListener =
-            new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            };
+    private FragListManager fragListManager;
 
     //==============================================================================================
     @Override
@@ -52,7 +47,7 @@ public class FragmentListActivity extends AppCompatActivity {
         assert tabLayout != null;
 
         errorManager    = new ErrorManager(this);
-        helper          = new FragmentHelper();
+        fragListManager = new FragListManager(this);
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -62,63 +57,34 @@ public class FragmentListActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        fragListManager.onResume(errorManager);
         super.onResume();
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            @Override
-            public void messageReceived(String message) {
-                try{
-                    ChiefLink.setCompleteFlag(true);
-                    boolean uploaded = JsonHelper.parseBoolean(message);
-                    CheckListLoader dbLoader = new CheckListLoader(FragmentListActivity.this);
-                    //LocalDbLoader dbLoader  =
-                    //        new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-                    dbLoader.clearDatabase();
-                } catch (ProcessException err){
-                    //Intent errIn = new Intent(FragmentListActivity.this, FancyErrorWindow.class);
-                    //errIn.putExtra("ErrorTxt", err.getErrorMsg());
-                    //errIn.putExtra("ErrorIcon", err.getErrorIcon());
-                    //startActivity(errIn);
-                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-
-                }
-            }
-        });
     }
 
     //==============================================================================================
     public void onUpload(View view){
-        Intent authorSign = new Intent(this, PopUpLogin.class);
-        startActivityForResult(authorSign, PopUpLogin.PASSWORD_REQ_CODE);
+        navigateActivity(PopUpLogin.class);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == RESULT_OK){
-            String password = data.getStringExtra("Password");
-            try{
-                if(!LoginHelper.getStaff().matchPassword(password))
-                    throw new ProcessException("Submission denied. Incorrect Password",
-                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+        fragListManager.onReceivePassword(requestCode, resultCode, data);
+    }
 
-                helper.uploadAttdList();
+    @Override
+    public void finishActivity() {
+        finish();
+    }
 
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(!ChiefLink.isComplete()){
-                            ProcessException err = new ProcessException(
-                                    "Server busy. Upload times out.\nPlease try again later.",
-                                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                            err.setListener(ProcessException.okayButton, timesOutListener);
-                            errorManager.displayError(err);
-                        }
-                    }
-                }, 5000);
-            } catch(ProcessException err){
-                errorManager.displayError(err);
-            }
-        }
+    @Override
+    public void displayError(ProcessException err) {
+        errorManager.displayError(err);
+    }
+
+    @Override
+    public void navigateActivity(Class<?> cls) {
+        Intent secure   = new Intent(this, cls);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 }
 

@@ -4,10 +4,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
-import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
+import com.info.ghiny.examsystem.manager.ExamSubjectAdapter;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.List;
 

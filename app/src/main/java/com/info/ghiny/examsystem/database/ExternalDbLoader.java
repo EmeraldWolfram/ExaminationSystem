@@ -1,23 +1,11 @@
 package com.info.ghiny.examsystem.database;
 
-import android.os.Handler;
-
-import com.info.ghiny.examsystem.MainLoginActivity;
-import com.info.ghiny.examsystem.adapter.ExamSubjectAdapter;
-import com.info.ghiny.examsystem.tools.AssignHelper;
-import com.info.ghiny.examsystem.tools.ChiefLink;
-import com.info.ghiny.examsystem.tools.ErrorManager;
-import com.info.ghiny.examsystem.tools.IconManager;
-import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.TCPClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
+import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 07/07/2016.

@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.info.ghiny.examsystem.tools.ConfigManager;
-import com.info.ghiny.examsystem.tools.CustomToast;
-import com.info.ghiny.examsystem.tools.LoginHelper;
+import com.info.ghiny.examsystem.model.ConfigManager;
+import com.info.ghiny.examsystem.model.CustomToast;
+import com.info.ghiny.examsystem.model.LoginHelper;
 
 /**
  * Created by GhinY on 21/05/2016.

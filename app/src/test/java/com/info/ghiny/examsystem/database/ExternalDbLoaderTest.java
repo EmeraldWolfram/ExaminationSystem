@@ -1,10 +1,10 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.ChiefLink;
-import com.info.ghiny.examsystem.tools.JsonHelper;
-import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.TCPClient;
+import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.IconManager;
-import com.info.ghiny.examsystem.tools.ProcessException;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.ArrayList;
 import java.util.List;

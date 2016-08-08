@@ -13,13 +13,16 @@ import android.widget.TextView;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.tools.AssignHelper;
-import com.info.ghiny.examsystem.tools.ConfigManager;
-import com.info.ghiny.examsystem.tools.ErrorManager;
-import com.info.ghiny.examsystem.tools.IconManager;
-import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
-import com.info.ghiny.examsystem.tools.OnSwipeListener;
+import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.SetterView;
+import com.info.ghiny.examsystem.manager.AssignManager;
+import com.info.ghiny.examsystem.model.AssignHelper;
+import com.info.ghiny.examsystem.model.ConfigManager;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -29,11 +32,12 @@ import java.util.List;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
+public class AssignInfoActivity extends AppCompatActivity implements SetterView, ScannerView {
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
-    private AssignHelper assignHelper;
+    //private AssignHelper assignHelper;
+    private AssignManager assignManager;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -55,18 +59,9 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
+        CheckListLoader clLoader = new CheckListLoader(this);
+        assignManager   = new AssignManager(this, this, clLoader);
         errManager      = new ErrorManager(this);
-        assignHelper    = new AssignHelper();
-        assignHelper.setAssignAct(this);
-
-        try{
-            //LocalDbLoader jdbcLoader = new LocalDbLoader(LocalDbLoader.DRIVER, LocalDbLoader.ADDRESS);
-            //assignHelper.initLoader(jdbcLoader);
-            CheckListLoader clLoader = new CheckListLoader(this);
-            assignHelper.initLoader(clLoader);
-        } catch (ProcessException err){
-            errManager.displayError(err);
-        }
 
         //Set swiping gesture
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
@@ -74,13 +69,11 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeBottom(){
-                Intent obtainIntent = new Intent(AssignInfoActivity.this, ObtainInfoActivity.class);
-                startActivity(obtainIntent);
+                navigateActivity(ObtainInfoActivity.class);
             }
             @Override
             public void onSwipeLeft() {
-                Intent listIntent = new Intent(AssignInfoActivity.this, FragmentListActivity.class);
-                startActivity(listIntent);
+                navigateActivity(FragmentListActivity.class);
             }
         });
 
@@ -94,13 +87,13 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
     @Override
     protected void onResume() {
         super.onResume();
-        barcodeView.resume();
+        assignManager.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        barcodeView.pause();
+        assignManager.onPause();
     }
 
     @Override
@@ -108,105 +101,81 @@ public class AssignInfoActivity extends AppCompatActivity implements ViewSetter{
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
-
     @Override
     protected void onRestart() {
         super.onRestart();
-        Intent intent   = new Intent(this, PopUpLogin.class);
-        startActivityForResult(intent, PopUpLogin.PASSWORD_REQ_CODE);
+        assignManager.onRestart();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == RESULT_OK){
-            String password = data.getStringExtra("Password");
-            try{
-                barcodeView.pause();
-                if(!LoginHelper.getStaff().matchPassword(password))
-                    throw new ProcessException("Access denied. Incorrect Password",
-                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-
-                barcodeView.resume();
-            } catch(ProcessException err){
-                errManager.displayError(err);
-                Intent intent   = new Intent(this, PopUpLogin.class);
-                startActivityForResult(intent, PopUpLogin.PASSWORD_REQ_CODE);
-            }
-        }
+        assignManager.onReceivePassword(requestCode, resultCode, data);
     }
 
     @Override
     public void onBackPressed() {
-        ProcessException err    = new ProcessException("Confirm logout and exit?",
-                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
-        err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                AssignInfoActivity.this.finish();
-            }
-        });
-        errManager.displayError(err);
+        assignManager.onBackPressed();
     }
 
     //==============================================================================================
     public void onScanTableOrCandidate(String scanString){
-        try{
-            assignHelper.tryAssignScanValue(scanString);
-        } catch(ProcessException err){
-            barcodeView.pause();
-            errManager.displayError(err);
-            barcodeView.resume();
-        }
+        assignManager.onScanForTableOrCandidate(scanString);
     }
 
     //= Interface Method ==========================================================================
     @Override
-    public void clearView() {
-        TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-        TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-        TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
-
-        assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
-
-        setTableView(0);
-        cddView.setText("");
-        regNumView.setText("");
-        paperView.setText("");
-    }
-
-    @Override
-    public void setTableView(Integer tableNum) {
+    public void setTableView(String tableNum) {
         TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
         assert tableView != null;
         tableView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.THICK_FONT));
-
-        if(tableNum != 0)
-            tableView.setText(tableNum.toString());
-        else
-            tableView.setText("");
+        tableView.setText(tableNum);
     }
 
     @Override
-    public void setCandidateView(Candidate cdd) {
-        try{
-            TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-            TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-            TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
+    public void setCandidateView(String cddIndex, String cddRegNum, String cddPaper) {
+        TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
+        TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
+        TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
+        assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
 
-            assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
+        cddView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.BOLD_FONT));
+        regNumView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
+        paperView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
 
-            cddView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.BOLD_FONT));
-            regNumView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
-            paperView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
+        cddView.setText(cddIndex);
+        regNumView.setText(cddRegNum);
+        paperView.setText(cddPaper);
+    }
 
-            cddView.setText(cdd.getExamIndex());
-            regNumView.setText(cdd.getRegNum());
-            paperView.setText(cdd.getPaper().toString());
-        } catch (ProcessException err) {
-            barcodeView.pause();
-            errManager.displayError(err);
-            barcodeView.resume();
-        }
+    @Override
+    public void navigateActivity(Class<?> cls) {
+        Intent nextAct  = new Intent(this, cls);
+        startActivity(nextAct);
+    }
+
+    @Override
+    public void displayError(ProcessException err) {
+        errManager.displayError(err);
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
+    }
+
+    @Override
+    public void resumeScanning() {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void pauseScanning() {
+        barcodeView.pause();
+    }
+
+    @Override
+    public void securityPrompt() {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 }

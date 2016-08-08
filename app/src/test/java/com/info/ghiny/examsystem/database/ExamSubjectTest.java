@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.tools.ProcessException;
+import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Test;
 

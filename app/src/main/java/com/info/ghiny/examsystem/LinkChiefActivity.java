@@ -9,20 +9,23 @@ import android.view.MenuInflater;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
-import com.info.ghiny.examsystem.tools.ErrorManager;
-import com.info.ghiny.examsystem.tools.LoginHelper;
-import com.info.ghiny.examsystem.tools.ProcessException;
+import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.manager.ConnectionManager;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.LoginManager;
+import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class LinkChiefActivity extends AppCompatActivity {
+public class LinkChiefActivity extends AppCompatActivity implements GeneralView {
     private static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
-
     private BeepManager beepManager;
+    private ConnectionManager conManager;
+
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -30,7 +33,7 @@ public class LinkChiefActivity extends AppCompatActivity {
             if (result.getText() != null) {
                 barcodeView.pause();
                 beepManager.playBeepSoundAndVibrate();
-                checkForChief(result.getText());
+                onScanForChief(result.getText());
             }
         }
         @Override
@@ -44,6 +47,7 @@ public class LinkChiefActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_link_chief);
 
+        conManager   = new ConnectionManager(this);
         errorManager = new ErrorManager(this);
         beepManager  = new BeepManager(this);
         beepManager.setBeepEnabled(true);
@@ -57,7 +61,6 @@ public class LinkChiefActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        beepManager.close();
         barcodeView.pause();
     }
 
@@ -67,6 +70,11 @@ public class LinkChiefActivity extends AppCompatActivity {
         barcodeView.resume();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beepManager.close();
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -83,16 +91,24 @@ public class LinkChiefActivity extends AppCompatActivity {
     }
 
     //==============================================================================================
-    public void checkForChief(String scanStr){
-        try{
-            LoginHelper helper = new LoginHelper();
-            helper.verifyChief(scanStr);
+    public void onScanForChief(String scanStr){
+        conManager.onScanForChief(scanStr);
+        barcodeView.resume();
+    }
 
-            Intent login    = new Intent(this, MainLoginActivity.class);
-            startActivity(login);
-        } catch (ProcessException err){
-            errorManager.displayError(err);
-            barcodeView.resume();
-        }
+    @Override
+    public void displayError(ProcessException err) {
+        errorManager.displayError(err);
+    }
+
+    @Override
+    public void navigateActivity(Class<?> cls) {
+        Intent login    = new Intent(this, cls);
+        startActivity(login);
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
     }
 }

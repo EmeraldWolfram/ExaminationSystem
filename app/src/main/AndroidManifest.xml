@@ -42,9 +42,6 @@
             android:screenOrientation="userPortrait"
             android:theme="@style/AppTheme.CustomTheme" />
         <activity
-            android:name=".FancyErrorWindow"
-            android:screenOrientation="userPortrait" />
-        <activity
             android:name=".CollectionActivity"
             android:screenOrientation="userPortrait" />
         <activity android:name=".ExamListActivity"></activity>
