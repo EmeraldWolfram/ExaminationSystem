@@ -134,7 +134,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
 
     @Override
     public void resumeScanning() {
-        barcodeView.decodeSingle(callback);
+        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 }

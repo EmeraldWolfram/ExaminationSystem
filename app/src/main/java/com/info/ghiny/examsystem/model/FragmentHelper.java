@@ -18,12 +18,12 @@ public class FragmentHelper {
     //= public Methods =============================================================================
     public void uploadAttdList() throws ProcessException{
         ChiefLink.setCompleteFlag(false);
-        ExternalDbLoader.updateAttdList(AssignHelper.getAttdList());
+        ExternalDbLoader.updateAttdList(AssignModel.getAttdList());
     }
 
     public List<String> getTitleList(Status status){
         List<String> papers = new ArrayList<>();
-        AttendanceList attdList = AssignHelper.getAttdList();
+        AttendanceList attdList = AssignModel.getAttdList();
 
         HashMap<String, HashMap<String, HashMap<String, Candidate>>>
                 paperMap = attdList.getPaperList(status);
@@ -43,7 +43,7 @@ public class FragmentHelper {
         HashMap<String, Candidate> cddMap;
         HashMap<String, List<Candidate>> cddChild   = new HashMap<>();
 
-        AttendanceList attdList     = AssignHelper.getAttdList();
+        AttendanceList attdList     = AssignModel.getAttdList();
         List<String> paperHeader    = getTitleList(status);
 
         for(int i = 0; i < paperHeader.size(); i++){
@@ -66,8 +66,8 @@ public class FragmentHelper {
     }
 
     public static void resetCandidate(Integer table){
-        AttendanceList attdList = AssignHelper.getAttdList();
-        HashMap<Integer, String> assgnList  = AssignHelper.getAssgnList();
+        AttendanceList attdList = AssignModel.getAttdList();
+        HashMap<Integer, String> assgnList  = AssignModel.getAssgnList();
 
         if(table != null){
             Candidate cdd = attdList.getCandidate(assgnList.get(table));

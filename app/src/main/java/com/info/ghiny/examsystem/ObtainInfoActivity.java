@@ -60,7 +60,6 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
         infoManager = new ObtainInfoManager(this);
         errManager  = new ErrorManager(this);
 
-
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
@@ -69,7 +68,6 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
                 finish();
             }
         });
-
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
         barcodeView.decodeContinuous(callback);

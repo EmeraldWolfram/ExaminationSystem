@@ -74,7 +74,6 @@ public class FragListManager {
                     boolean uploaded = JsonHelper.parseBoolean(message);
                 } catch (ProcessException err){
                     ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-
                 }
             }
         });
