@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 
 import com.info.ghiny.examsystem.AssignInfoActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -97,17 +98,7 @@ public class LoginManager {
             public void messageReceived(String message) {
                 try{
                     ChiefLink.setCompleteFlag(true);
-
-                    StaffIdentity id    = JsonHelper.parseStaffIdentity(message);
-                    id.setPassword(LoginHelper.getStaff().getPassword());
-                    LoginHelper.setStaff(id);
-
-                    AttendanceList attdList = JsonHelper.parseAttdList(message);
-                    AssignModel.setAttdList(attdList);
-
-                    HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(message);
-                    Candidate.setPaperList(papers);
-
+                    loginModel.checkLoginResult(message);
                     scannerView.navigateActivity(AssignInfoActivity.class);
                 } catch (ProcessException err) {
                     ExternalDbLoader.getChiefLink().publishError(errorManager, err);

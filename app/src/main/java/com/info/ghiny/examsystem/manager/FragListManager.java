@@ -54,7 +54,9 @@ public class FragListManager {
                                     dialog.cancel();
                                 }
                             });
-                            generalView.displayError(err);
+                            if(generalView != null){
+                                generalView.displayError(err);
+                            }
                         }
                     }
                 }, 5000);

@@ -117,7 +117,7 @@ public class JsonHelperTest {
             StaffIdentity staff = JsonHelper.parseStaffIdentity(
                     "{\"Status\":[\"Collector\",\"Chief\"]," +
                             "\"Venue\":\"M5\",\"Result\":true," +
-                            "\"NAME\":\"TESTER 1\",\"IdNo\":\"246810\"}");
+                            "\"NAME\":\"TESTER 1\",\"IdNo\":\"246810\"}", 3);
 
             fail("Expected FATAL_MESSAGE but none thrown");
         } catch (ProcessException err){
@@ -132,7 +132,7 @@ public class JsonHelperTest {
         StaffIdentity staff = JsonHelper.parseStaffIdentity(
                 "{\"Status\":[\"Collector\",\"Chief\"]," +
                         "\"Venue\":\"M5\",\"Result\":true," +
-                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");
+                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}", 3);
         assertNotNull(staff);
         assertEquals("TESTER 1", staff.getName());
         assertEquals("M5", staff.getVenueHandling());
@@ -142,11 +142,12 @@ public class JsonHelperTest {
     @Test
     public void testParseStaffIdentity_False_Result_throw_MESSAGE_TOAST() throws Exception {
         try{
-            StaffIdentity staff = JsonHelper.parseStaffIdentity("{\"Result\":false}");
+            StaffIdentity staff = JsonHelper.parseStaffIdentity("{\"Result\":false}", 3);
 
             fail("Expected MESSAGE_TOAST but none thrown");
         } catch (ProcessException err){
-            assertEquals("Incorrect Login Id or Password", err.getErrorMsg());
+            assertEquals("Incorrect Login Id or Password\n" +
+                    "3 attempt left", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
         }
 
@@ -451,7 +452,7 @@ public class JsonHelperTest {
         try{
             assertFalse(JsonHelper.parseBoolean("{\"Result\":false}"));
         } catch (ProcessException err){
-            assertEquals("Upload Failed", err.getErrorMsg());
+            assertEquals("Request Failed", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
     }

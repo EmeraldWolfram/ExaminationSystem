@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by GhinY on 06/06/2016.
@@ -105,7 +106,7 @@ public class JsonHelper {
         }
     }
 
-    public static StaffIdentity parseStaffIdentity(String inStr) throws ProcessException{
+    public static StaffIdentity parseStaffIdentity(String inStr, int attp) throws ProcessException{
         StaffIdentity staffId   = new StaffIdentity();
 
         try{
@@ -130,7 +131,9 @@ public class JsonHelper {
 
                 return staffId;
             } else {
-                throw new ProcessException("Incorrect Login Id or Password",
+                throw new ProcessException(
+                        String.format(Locale.ENGLISH, "Incorrect Login Id or Password\n" +
+                                "%d attempt left", attp),
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             }
         } catch (JSONException err) {

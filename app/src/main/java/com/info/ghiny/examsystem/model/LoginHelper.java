@@ -1,7 +1,12 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.AttendanceList;
+import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
+
+import java.util.HashMap;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -13,12 +18,13 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
 
 public class LoginHelper {
     private static StaffIdentity staff;
+    private int loginCount = 3;
     //This method take in an id and check if the id is an invigilator identity
+
     //= Setter & Getter ============================================================================
     public static StaffIdentity getStaff() {
         return staff;
     }
-
     public static void setStaff(StaffIdentity staff) {
         LoginHelper.staff = staff;
     }
@@ -44,7 +50,6 @@ public class LoginHelper {
         StaffIdentity staff = new StaffIdentity();
         staff.setIdNo(scanStr);
         LoginHelper.setStaff(staff);
-
     }
 
     public void matchStaffPw(String inputPw) throws ProcessException{
@@ -61,5 +66,20 @@ public class LoginHelper {
                 ExternalDbLoader.tryLogin(staff.getIdNo(), inputPw);
             }
         }
+    }
+
+    public void checkLoginResult(String msgFromChief) throws ProcessException{
+        loginCount--;
+        String pw   = staff.getPassword();
+        staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
+        staff.setPassword(pw);
+
+        loginCount  = 3;
+
+        AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
+        AssignModel.setAttdList(attdList);
+
+        HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
+        Candidate.setPaperList(papers);
     }
 }

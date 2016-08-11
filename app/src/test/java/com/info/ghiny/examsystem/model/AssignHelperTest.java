@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Session;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class AssignHelperTest {
 
     AttendanceList attdList;
-    LocalDbLoader dBLoader;
+    CheckListLoader dBLoader;
     AssignHelper assgnHelper;
     Candidate cdd1;
     Candidate cdd2;
@@ -67,7 +68,7 @@ public class AssignHelperTest {
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        dBLoader = Mockito.mock(LocalDbLoader.class);
+        dBLoader = Mockito.mock(CheckListLoader.class);
         when(dBLoader.emptyAttdInDB()).thenReturn(false);
         when(dBLoader.queryAttendanceList())
                 .thenReturn(attdList)
