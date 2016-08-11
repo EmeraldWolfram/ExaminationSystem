@@ -5,9 +5,11 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.manager.AssignManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ public class FragmentHelperTest {
     AttendanceList attdList;
 
     FragmentHelper helper;
+    AssignManager manager;
 
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList1;
     HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
@@ -56,6 +59,8 @@ public class FragmentHelperTest {
         cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", Status.EXEMPTED);
 
         helper = new FragmentHelper();
+
+        manager = Mockito.mock(AssignManager.class);
     }
 
     //= GET TITLE LIST =============================================================================
@@ -79,7 +84,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
 
         List<String> list = helper.getTitleList(Status.ABSENT);
 
@@ -95,7 +100,7 @@ public class FragmentHelperTest {
      *************************************************************/
     @Test
     public void testGetTitleList_EmptyAttdListShouldNotReturnNull() throws Exception{
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
         List<String> list = helper.getTitleList(Status.ABSENT);
 
         assertNotNull(list);
@@ -131,7 +136,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
         List<String> list = helper.getTitleList(Status.ABSENT);
 
         assertEquals(3, list.size());
@@ -159,7 +164,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
 
         HashMap<String, List<Candidate>> testMap = helper.getChildList(Status.ABSENT);
 
@@ -187,7 +192,7 @@ public class FragmentHelperTest {
      *************************************************************/
     @Test
     public void testGetChildList_EmptyAttdListShouldNotReturnNull() throws Exception{
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
         HashMap<String, List<Candidate>> map = helper.getChildList(Status.ABSENT);
 
         assertNotNull(map);
@@ -223,7 +228,7 @@ public class FragmentHelperTest {
         attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
 
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
         HashMap<String, List<Candidate>> map = helper.getChildList(Status.ABSENT);
 
         assertEquals(3, map.size());
@@ -254,15 +259,15 @@ public class FragmentHelperTest {
     @Test
     public void testResetNewAssign_doNothingWhenNoAssignBefore() throws Exception {
         FragmentHelper.resetCandidate(null);
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
 
-        assertEquals(0, AssignHelper.getAssgnList().size());
-        assertEquals(attdList, AssignHelper.getAttdList());
+        assertEquals(0, AssignModel.getAssgnList().size());
+        assertEquals(attdList, AssignModel.getAttdList());
     }
 
     @Test
     public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
-        AssignHelper assgnHelper = new AssignHelper();
+        AssignModel assgnHelper = new AssignModel(manager);
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         HashMap<String, ExamSubject> paperList   = new HashMap<>();
         ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,
@@ -275,13 +280,13 @@ public class FragmentHelperTest {
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        AssignHelper.setAttdList(attdList);
+        AssignModel.setAttdList(attdList);
         Candidate.setPaperList(paperList);
 
         assgnHelper.checkCandidate("15WAU00001");
         assgnHelper.checkTable("12");
         assertTrue(assgnHelper.tryAssignCandidate());
-        assertEquals(1, AssignHelper.getAssgnList().size());
+        assertEquals(1, AssignModel.getAssgnList().size());
         assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());
 
         FragmentHelper.resetCandidate(12);
