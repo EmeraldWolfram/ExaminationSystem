@@ -22,10 +22,12 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class LoginManager {
     private ScannerView scannerView;
     private LoginHelper loginModel;
+    private Handler handler;
 
     public LoginManager(ScannerView scannerView){
         this.scannerView    = scannerView;
         this.loginModel     = new LoginHelper();
+        this.handler        = new Handler();
 
         ChiefLink connect   = new ChiefLink();
         connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -34,6 +36,10 @@ public class LoginManager {
 
     public void setLoginModel(LoginHelper loginModel) {
         this.loginModel = loginModel;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
     //==============================================================================================
@@ -54,7 +60,7 @@ public class LoginManager {
             String password = intent.getStringExtra("Password");
             try{
                 loginModel.matchStaffPw(password);
-                startTimer();
+                handler.postDelayed(timer, 5000);
             } catch(ProcessException err){
                 scannerView.displayError(err);
                 scannerView.resumeScanning();
@@ -82,32 +88,13 @@ public class LoginManager {
 
     public void onDestroy(){
         try {
+            handler.removeCallbacks(timer);
             ExternalDbLoader.getTcpClient().stopClient();
             ExternalDbLoader.getChiefLink().cancel(true);
             ExternalDbLoader.setChiefLink(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void startTimer(){
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(!ChiefLink.isComplete()){
-                    ProcessException err = new ProcessException(
-                            "Identity verification times out.",
-                            ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                    err.setListener(ProcessException.okayButton, timesOutListener);
-                    if(scannerView != null){
-                        scannerView.pauseScanning();
-                        scannerView.displayError(err);
-                        scannerView.resumeScanning();
-                    }
-                }
-            }
-        }, 5000);
     }
 
     public void onMessageReceiveFromChief(ErrorManager errorManager, String message){
@@ -130,4 +117,21 @@ public class LoginManager {
                     dialog.cancel();
                 }
             };
+
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            if(!ChiefLink.isComplete()){
+                ProcessException err = new ProcessException(
+                        "Identity verification times out.",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, timesOutListener);
+                if(scannerView != null){
+                    scannerView.pauseScanning();
+                    scannerView.displayError(err);
+                    scannerView.resumeScanning();
+                }
+            }
+        }
+    };
 }

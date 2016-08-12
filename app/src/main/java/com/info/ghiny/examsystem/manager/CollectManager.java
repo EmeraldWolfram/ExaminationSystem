@@ -19,33 +19,19 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class CollectManager {
     private InfoCollectHelper infoModel;
     private ScannerView scannerView;
+    private Handler handler;
 
     public CollectManager(ScannerView scannerView){
         this.scannerView    = scannerView;
-        infoModel   = new InfoCollectHelper();
+        this.infoModel      = new InfoCollectHelper();
+        this.handler        = new Handler();
     }
 
     public void onScanForCollection(String scanStr){
         try{
             scannerView.pauseScanning();
             infoModel.bundleCollection(scanStr);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()){
-                        ProcessException err = new ProcessException(
-                                "Bundle collection times out.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton, timesOutListener);
-                        if(scannerView != null){
-                            scannerView.pauseScanning();
-                            scannerView.displayError(err);
-                            scannerView.resumeScanning();
-                        }
-                    }
-                }
-            }, 10000);
+            handler.postDelayed(timer, 10000);
 
         } catch (ProcessException err) {
             scannerView.displayError(err);
@@ -73,6 +59,10 @@ public class CollectManager {
         scannerView.resumeScanning();
     }
 
+    public void onDestroy(){
+        handler.removeCallbacks(timer);
+    }
+
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
                 @Override
@@ -81,4 +71,21 @@ public class CollectManager {
                     dialog.cancel();
                 }
             };
+
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            if(!ChiefLink.isComplete()){
+                ProcessException err = new ProcessException(
+                        "Bundle collection times out.",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, timesOutListener);
+                if(scannerView != null){
+                    scannerView.pauseScanning();
+                    scannerView.displayError(err);
+                    scannerView.resumeScanning();
+                }
+            }
+        }
+    };
 }

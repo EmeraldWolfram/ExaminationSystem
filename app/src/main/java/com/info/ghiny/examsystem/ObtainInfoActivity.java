@@ -92,6 +92,12 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
                 || super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        infoManager.onDestroy();
+        super.onDestroy();
+    }
+
     //==============================================================================================
     private void onScan(String scanStr){
         infoManager.onScanForCandidateDetail(scanStr);

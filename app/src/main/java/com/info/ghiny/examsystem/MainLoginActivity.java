@@ -1,11 +1,8 @@
 package com.info.ghiny.examsystem;
 
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -15,7 +12,7 @@ import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.manager.LoginManager;
 import com.info.ghiny.examsystem.model.ChiefLink;
-import com.info.ghiny.examsystem.model.ConfigManager;
+import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -29,7 +26,6 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
 
     private LoginManager loginManager;
     private ErrorManager errorManager;
-    private ChiefLink connect;
 
     private static BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {

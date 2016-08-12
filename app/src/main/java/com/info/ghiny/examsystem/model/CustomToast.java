@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.manager.ConfigManager;
 
 /**
  * Created by GhinY on 23/05/2016.

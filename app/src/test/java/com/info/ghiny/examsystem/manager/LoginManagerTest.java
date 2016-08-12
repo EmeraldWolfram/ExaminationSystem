@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
 
 import com.info.ghiny.examsystem.AssignInfoActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -22,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,7 @@ public class LoginManagerTest {
     private LoginManager manager;
     private LoginHelper loginModel;
     private ScannerView scannerView;
+    private Handler handler;
     private Intent password;
 
     @Before
@@ -44,8 +47,10 @@ public class LoginManagerTest {
         scannerView = Mockito.mock(ScannerView.class);
         password    = Mockito.mock(Intent.class);
         loginModel  = Mockito.mock(LoginHelper.class);
+        handler     = Mockito.mock(Handler.class);
         manager     = new LoginManager(scannerView);
         manager.setLoginModel(loginModel);
+        manager.setHandler(handler);
     }
 
     //= OnScanForIdentity() ========================================================================
@@ -81,18 +86,40 @@ public class LoginManagerTest {
     }
 
     //= OnReceivePassword() ========================================================================
-    @Test
-    public void testOnReceivePassword() throws Exception {
-        //when(password.getStringExtra("Password")).thenReturn("123456");
-        //doNothing().when(loginModel).matchStaffPw("123456");
-        //doNothing().when(manager).startTimer();
 
-        //manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
-        //verify(scannerView).pauseScanning();
-        //verify(scannerView, never()).displayError(any(ProcessException.class));
-        //verify(scannerView, never()).resumeScanning();
+    /**
+     * onReceivePassword()
+     *
+     * 1. View notify user input password, pause the Scanning and request Model to verify
+     * 2. View notify user input password, model complain with Exception, pause the scanning
+     *    display the error and resume the scanning
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOnReceivePassword_ModelDidNotComplain() throws Exception {
+        when(password.getStringExtra("Password")).thenReturn("123456");
+        doNothing().when(loginModel).matchStaffPw("123456");
+
+        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+        verify(handler).postDelayed(any(Runnable.class), anyInt());
+        verify(scannerView).pauseScanning();
+        verify(scannerView, never()).displayError(any(ProcessException.class));
+        verify(scannerView, never()).resumeScanning();
     }
 
+    @Test
+    public void testOnReceivePassword_ModelComplain() throws Exception {
+        when(password.getStringExtra("Password")).thenReturn("");
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
+        doThrow(err).when(loginModel).matchStaffPw("");
+
+        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(scannerView).pauseScanning();
+        verify(scannerView).displayError(err);
+        verify(scannerView).resumeScanning();
+    }
     //= OnPause() ==================================================================================
 
     /**

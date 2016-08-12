@@ -21,13 +21,26 @@ import com.info.ghiny.examsystem.model.TCPClient;
  * Created by GhinY on 08/08/2016.
  */
 public class FragListManager {
-
+    private Handler handler;
     private GeneralView generalView;
     private FragmentHelper fragmentModel;
 
     public FragListManager(GeneralView generalView){
         this.generalView    = generalView;
         this.fragmentModel  = new FragmentHelper();
+        this.handler        = new Handler();
+    }
+
+    public void setFragmentModel(FragmentHelper fragmentModel) {
+        this.fragmentModel = fragmentModel;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    public void signToUpload(){
+        generalView.navigateActivity(PopUpLogin.class);
     }
 
     public void onReceivePassword(int requestCode, int resultCode, Intent data){
@@ -40,31 +53,11 @@ public class FragListManager {
 
                 fragmentModel.uploadAttdList();
 
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(!ChiefLink.isComplete()){
-                            ProcessException err = new ProcessException(
-                                    "Server busy. Upload times out.\nPlease try again later.",
-                                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                            err.setListener(ProcessException.okayButton, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                            if(generalView != null){
-                                generalView.displayError(err);
-                            }
-                        }
-                    }
-                }, 5000);
+                handler.postDelayed(timer, 5000);
             } catch(ProcessException err){
                 generalView.displayError(err);
             }
         }
-
     }
 
     public void onResume(final ErrorManager errorManager){
@@ -80,4 +73,28 @@ public class FragListManager {
             }
         });
     }
+
+    public void onDestroy(){
+        handler.removeCallbacks(timer);
+    }
+
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            if(!ChiefLink.isComplete()){
+                ProcessException err = new ProcessException(
+                        "Server busy. Upload times out.\nPlease try again later.",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                if(generalView != null){
+                    generalView.displayError(err);
+                }
+            }
+        }
+    };
 }

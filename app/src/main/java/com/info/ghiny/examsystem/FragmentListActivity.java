@@ -61,9 +61,15 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         super.onResume();
     }
 
+    @Override
+    protected void onDestroy() {
+        fragListManager.onDestroy();
+        super.onDestroy();
+    }
+
     //==============================================================================================
     public void onUpload(View view){
-        navigateActivity(PopUpLogin.class);
+        fragListManager.signToUpload();
     }
 
     @Override

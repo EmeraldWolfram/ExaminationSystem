@@ -20,33 +20,19 @@ public class ObtainInfoManager {
     private InfoCollectHelper infoModel;
     private ScannerView scannerView;
     private String studentSubjects;
+    private Handler handler;
 
     public ObtainInfoManager(ScannerView scannerView){
         this.scannerView    = scannerView;
         this.infoModel      = new InfoCollectHelper();
+        this.handler        = new Handler();
     }
 
     public void onScanForCandidateDetail(String scanStr){
         try{
             scannerView.pauseScanning();
             infoModel.reqCandidatePapers(scanStr);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(!ChiefLink.isComplete()){
-                        ProcessException err = new ProcessException(
-                                "Server busy. Request times out. \n Please try again later.",
-                                ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                        err.setListener(ProcessException.okayButton, timesOutListener);
-                        if(scannerView != null){
-                            scannerView.pauseScanning();
-                            scannerView.displayError(err);
-                            scannerView.resumeScanning();
-                        }
-                    }
-                }
-            }, 5000);
+            handler.postDelayed(timer, 5000);
         } catch (ProcessException err){
             scannerView.displayError(err);
             scannerView.resumeScanning();
@@ -79,6 +65,10 @@ public class ObtainInfoManager {
         scannerView.resumeScanning();
     }
 
+    public void onDestroy(){
+        handler.removeCallbacks(timer);
+    }
+
     private DialogInterface.OnClickListener timesOutListener =
             new DialogInterface.OnClickListener(){
                 @Override
@@ -87,4 +77,21 @@ public class ObtainInfoManager {
                     dialog.cancel();
                 }
             };
+
+    private Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            if(!ChiefLink.isComplete()){
+                ProcessException err = new ProcessException(
+                        "Server busy. Request times out. \n Please try again later.",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, timesOutListener);
+                if(scannerView != null){
+                    scannerView.pauseScanning();
+                    scannerView.displayError(err);
+                    scannerView.resumeScanning();
+                }
+            }
+        }
+    };
 }
