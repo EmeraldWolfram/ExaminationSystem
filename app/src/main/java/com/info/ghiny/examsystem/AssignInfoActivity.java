@@ -11,16 +11,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.manager.AssignManager;
-import com.info.ghiny.examsystem.model.AssignHelper;
 import com.info.ghiny.examsystem.model.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;

@@ -88,14 +88,14 @@ public class AssignHelper {
     }
 
     public static void setAttdList(AttendanceList attdList) {
-        AssignHelper.attdList = attdList;
+        //AssignHelper.attdList = attdList;
     }
     public static AttendanceList getAttdList() {
         return attdList;
     }
 
     public static void setAssgnList(HashMap<Integer, String> assgnList) {
-        AssignHelper.assgnList = assgnList;
+        //AssignHelper.assgnList = assgnList;
     }
     public static HashMap<Integer, String> getAssgnList() {
         return assgnList;

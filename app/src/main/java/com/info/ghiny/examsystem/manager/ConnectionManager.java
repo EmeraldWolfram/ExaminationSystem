@@ -17,6 +17,10 @@ public class ConnectionManager {
         this.loginModel = new LoginHelper();
     }
 
+    public void setLoginModel(LoginHelper loginModel) {
+        this.loginModel = loginModel;
+    }
+
     public void onScanForChief(String scanStr){
         try{
             loginModel.verifyChief(scanStr);

@@ -12,29 +12,16 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.google.zxing.client.android.Intents;
-import com.info.ghiny.examsystem.database.AttendanceList;
-import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.manager.LoginManager;
-import com.info.ghiny.examsystem.model.AssignHelper;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.LoginHelper;
-import com.info.ghiny.examsystem.model.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class MainLoginActivity extends AppCompatActivity implements ScannerView{
@@ -101,6 +88,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
+
         loginManager.onReceivePassword(reqCode, resCode, data);
     }
 

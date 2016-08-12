@@ -291,7 +291,7 @@ public class FragmentHelperTest {
 
         FragmentHelper.resetCandidate(12);
 
-        assertEquals(0, AssignHelper.getAssgnList().size());
+        assertEquals(0, AssignModel.getAssgnList().size());
         assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
     }
 }

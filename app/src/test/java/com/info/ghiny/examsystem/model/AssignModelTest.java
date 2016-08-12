@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by GhinY on 15/06/2016.
  */
-public class AssignHelperTest {
+public class AssignModelTest {
 
     AttendanceList attdList;
     CheckListLoader dBLoader;
