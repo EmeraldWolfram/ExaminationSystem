@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.model.AssignModel;
@@ -31,6 +32,10 @@ public class AssignManager {
         } catch (ProcessException err) {
             scannerView.displayError(err);
         }
+    }
+
+    public void setAssignModel(AssignModel assignModel) {
+        this.assignModel = assignModel;
     }
 
     public void onScanForTableOrCandidate(String scanStr){
@@ -96,8 +101,9 @@ public class AssignManager {
 
     public void setCandidate(Candidate cdd){
         try{
+            ExamSubject paper = cdd.getPaper();
             setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(),
-                    cdd.getPaper().toString());
+                    paper.toString());
         } catch (ProcessException err) {
             scannerView.displayError(err);
         }
