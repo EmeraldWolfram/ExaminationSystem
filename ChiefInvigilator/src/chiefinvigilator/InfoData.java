@@ -93,7 +93,6 @@ public class InfoData {
     public InfoData( String ic, String name, String regNum,
                     String status, String attendance, String tableNum,
                     String progName, String faculty,
-                    String date, String session,
                     String paperCode, String paperDesc,
                     String venueName, String venueSize
                     ){
@@ -138,7 +137,6 @@ public class InfoData {
         String sql =    "SELECT CandidateInfo.IC, CandidateInfo.Name, CandidateInfo.RegNum "
                 + ", CandidateAttendance.Status, CandidateAttendance.Attendance, CandidateAttendance.TableNumber "
                 + ", Programme.Name AS ProgName, Programme.Faculty "
-                + ", Paper.Date, Paper.Session "
                 + ", PaperInfo.PaperCode, PaperInfo.PaperDescription "
                 + ", Venue.Name AS VenueName, Venue.Size, * "
                 + " FROM CandidateInfo "
@@ -167,8 +165,6 @@ public class InfoData {
                                         rs.getString("TableNumber"),
                                         rs.getString("ProgName"),
                                         rs.getString("Faculty"),
-                                        rs.getString("Date"),
-                                        rs.getString("Session"),
                                         rs.getString("PaperCode"),
                                         rs.getString("PaperDescription"),
                                         rs.getString("VenueName"),

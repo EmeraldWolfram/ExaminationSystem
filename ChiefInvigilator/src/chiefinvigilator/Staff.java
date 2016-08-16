@@ -22,15 +22,15 @@ import org.json.JSONObject;
  */
 public class Staff {
     
-    String id;
-    String name;
-    String status;
-    String attendance;
-    String block;
-    String venue;
-    String session;
-    String date;
-    String password;
+    String id = null;
+    String name = null;
+    String status = null;
+    String attendance = null;
+    String block = null;
+    String venue = null;
+    String session = null;
+    String date = null;
+    String password = null;
     
     public Staff(){
     }
@@ -154,17 +154,20 @@ public class Staff {
      * @param jsonString  contains json object in string format
      * @throws Exception 
      */
-    public void setIdPsFromJsonString(String jsonString) throws Exception{
+    public boolean setIdPsFromJsonString(String jsonString) throws Exception{
+        boolean match;
         try {
             JSONObject json = new JSONObject(jsonString);
-            
-            setID(json.getString("IdNo"));
-            setPassword(json.getString("Password"));
+            match = staffVerify(json.getString("IdNo"),json.getString("Password"));
+
         } catch (JSONException ex) {
             throw new Exception("Error: Staff.setIdPsFromJsonString fail!!  "+ex.getMessage());
         }
         
+        return match;
+        
     }
+    
     
     /**
      * @brief   To check the id and the password of the staff from database
@@ -173,12 +176,14 @@ public class Staff {
      * @return match        The result of the checking ,true is correct while false is incorrect
      * @throws SQLException 
      */
-    public boolean staffVerify() throws SQLException {
+    public boolean staffVerify(String id, String password) throws SQLException, Exception {
         boolean match = false;
+        
+        this.id = id;
+        this.password = password;
         
             Connection conn = new ConnectDB("UserDatabase.db").connect();
             String sql = "SELECT Username, Password FROM User where Username=? and Password=?";
-
 
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1,id);
@@ -190,6 +195,10 @@ public class Staff {
             result.close();
             ps.close();
             conn.close();
+            
+            if(match == true)
+                getInvInfo();
+            
         
         return match;
     }
@@ -202,14 +211,12 @@ public class Staff {
      */
     public void getInvInfo() throws Exception{
         
-        Connection conn = new ConnectDB("ChiefDataBase.db").connect();
+        Connection conn = new ConnectDB().connect();
         String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS Staff_id, "
                 + "StaffInfo.Name AS StaffName "
                 + ",* FROM InvigilatorAndAssistant "
-                + "LEFT OUTER JOIN Paper ON Paper.Paper_id = InvigilatorAndAssistant.Paper_id "
-                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
-                + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
-                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = Staff_id "
+                + "LEFT OUTER JOIN Venue ON Venue.Venue_id = InvigilatorAndAssistant.Venue_id "
+                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.StaffID = InvigilatorAndAssistant.StaffID "
                 + "WHERE Staff_id = ? ";
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -219,13 +226,12 @@ public class Staff {
 
             ResultSet result = ps.executeQuery();
             
+            System.out.print(id);
             if(result.isBeforeFirst())
                 while(result.next()){
                     setName(result.getString("StaffName"));
                     setStatus(result.getString("Status"));
                     setVenue(result.getString("VenueName"));
-                    setSession(result.getString("Session"));
-                    setDate(result.getString("Date"));
 
                 }
             else

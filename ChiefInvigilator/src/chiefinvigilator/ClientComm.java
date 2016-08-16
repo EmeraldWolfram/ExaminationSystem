@@ -70,10 +70,10 @@ public class ClientComm {
                     do{
 
                     retreiveMsg  = receiveMessage();
-                    staff.setIdPsFromJsonString(retreiveMsg);
-                    System.out.println(retreiveMsg);
+                    signIn = staff.setIdPsFromJsonString(retreiveMsg);
+                    System.out.println("id and ps " + retreiveMsg);
                     
-                    signIn = staff.staffVerify();
+//                    signIn = staff.staffVerify();
 
                     if(signIn){
                         staff.getInvInfo();
@@ -91,6 +91,7 @@ public class ClientComm {
                         sendMessage(jsonMsg.toString());
                         
                     }
+                    System.out.println(signIn);
                     }while(signIn != true);
                     
                     
@@ -135,7 +136,7 @@ public class ClientComm {
     }
     
     private String receiveMessage() throws IOException{
-        System.out.println(socket.getLocalPort());
+//        System.out.println(socket.getLocalPort());
         InputStreamReader ir = new InputStreamReader(socket.getInputStream());
         BufferedReader br = new BufferedReader(ir);
 
@@ -143,10 +144,11 @@ public class ClientComm {
     }
     
     private void sendMessage(String message) throws IOException{
-        System.out.println("Message sent: " + message);
+        
         PrintStream out = new PrintStream(socket.getOutputStream());
         out.println(message);
         out.flush();
+        System.out.println("Message sent: " + message);
     }
     
     public void checkIn(JSONObject json) throws IOException, JSONException{ 
@@ -254,7 +256,7 @@ public class ClientComm {
         return paperList;
     }
     
-    public ArrayList<Paper> getCddPapers(String candidateID) throws SQLException{
+    public ArrayList<Paper> getCddPapers(String candidateID) throws SQLException, Exception{
         ArrayList<Paper> cddPapers = new ArrayList<>();
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT Venue.Name AS VenueName "
@@ -281,10 +283,14 @@ public class ClientComm {
                                         ));
         }
         
+        
         result.close();
         ps.close();
         conn.close();
         
+        if(cddPapers.isEmpty())
+            throw new Exception("Data not Found!!");
+                    
         return cddPapers;
     }
     
@@ -338,7 +344,7 @@ public class ClientComm {
         return jArr;
     }
     
-    public JSONObject prepareCddPapers(String candidateID) throws SQLException, JSONException{
+    public JSONObject prepareCddPapers(String candidateID) throws SQLException, JSONException, Exception{
         JSONObject json = new JSONObject();
         ArrayList<Paper> cddPapers = new ArrayList<>();
         
