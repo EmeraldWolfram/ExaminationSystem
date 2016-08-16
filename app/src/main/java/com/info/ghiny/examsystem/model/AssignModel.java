@@ -93,10 +93,10 @@ public class AssignModel {
     public void tryAssignScanValue(String scanStr) throws ProcessException{
         if(scanStr.length() < 4 && scanStr.length() > 0){
             checkTable(scanStr);
-            presenter.setTable(tempTable);
+            presenter.displayTable(tempTable);
         } else if(scanStr.length() == 10){
             checkCandidate(scanStr);
-            presenter.setCandidate(tempCdd);
+            presenter.displayCandidate(tempCdd);
         } else {
             throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
                     IconManager.MESSAGE);
@@ -142,9 +142,11 @@ public class AssignModel {
                     IconManager.WARNING);
         }
 
-        if(attdList == null || attdList.getAttendanceList() == null)
-            throw new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
+        if(attdList == null || attdList.getAttendanceList() == null){
+
+            ProcessException err =  new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
                     IconManager.WARNING);
+        }
 
         Candidate candidate = attdList.getCandidate(scanString);
 
@@ -186,8 +188,8 @@ public class AssignModel {
 
         if(tempTable != null && tempCdd != null){
             //If ExamSubject range does not meet, DO something
-            attempReassign();
             attempInvalidSeat();
+            attempReassign();
 
             assignCandidate();
             assigned    = true;
@@ -236,7 +238,7 @@ public class AssignModel {
                 tempCdd.getProgramme());
         assgnList.put(tempTable, tempCdd.getRegNum());
 
-        presenter.clearTableAndCandidate();
+        presenter.resetDisplay();
     }
 
     //= Methods for abnormal cases =================================================================
@@ -284,7 +286,8 @@ public class AssignModel {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     updateNewCandidate();
-                    presenter.clearTableAndCandidate();
+                    presenter.resetDisplay();
+                    presenter.onResume();
                     dialog.cancel();
                 }
             };
@@ -294,7 +297,8 @@ public class AssignModel {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     cancelNewAssign();
-                    presenter.clearTableAndCandidate();
+                    presenter.resetDisplay();
+                    presenter.onResume();
                     dialog.cancel();
                 }
             };

@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.manager.LoginManager;
-import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -85,7 +84,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
 
-        loginManager.onReceivePassword(reqCode, resCode, data);
+        loginManager.onPasswordReceived(reqCode, resCode, data);
     }
 
     //Interface of View ============================================================================

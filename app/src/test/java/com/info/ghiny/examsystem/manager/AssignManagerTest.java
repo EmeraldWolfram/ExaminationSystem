@@ -1,7 +1,6 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -10,26 +9,20 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.model.AssignModel;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Calendar;
-import java.util.HashMap;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -98,7 +91,7 @@ public class AssignManagerTest {
     //= OnReceivePassword() ========================================================================
 
     /**
-     * onReceivePassword()
+     * onPasswordReceived()
      *
      * 1. when the password is correct, pause the scanning and resume the scanning
      * 2. when the password is incorrect, pause the scanning, display the error,
@@ -111,7 +104,7 @@ public class AssignManagerTest {
         Intent pw    = Mockito.mock(Intent.class);
         when(pw.getStringExtra("Password")).thenReturn("123456");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(scannerView).pauseScanning();
         verify(scannerView).resumeScanning();
@@ -124,7 +117,7 @@ public class AssignManagerTest {
         Intent pw    = Mockito.mock(Intent.class);
         when(pw.getStringExtra("Password")).thenReturn("wrong_Password");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(scannerView).pauseScanning();
         verify(scannerView, never()).resumeScanning();
@@ -195,7 +188,7 @@ public class AssignManagerTest {
     //= SetTable() =================================================================================
 
     /**
-     * setTable()
+     * displayTable()
      *
      * Set TextView (tableNum) in the View
      *
@@ -207,20 +200,20 @@ public class AssignManagerTest {
 
     @Test
     public void testSetTable_withNumberZeroOrSmaller() throws Exception {
-        manager.setTable(0);
+        manager.displayTable(0);
         verify(setterView).setTableView("");
     }
 
     @Test
     public void testSetTable_withNumberLargerThanZero() throws Exception {
-        manager.setTable(12);
+        manager.displayTable(12);
         verify(setterView).setTableView("12");
     }
 
     //= SetCandidate() =============================================================================
 
     /**
-     * setCandidate(Candidate)
+     * displayCandidate(Candidate)
      *
      * Set all the TextView related to Candidate (Index, RegNum, Paper ...) in the View
      *
@@ -238,7 +231,7 @@ public class AssignManagerTest {
         when(cdd.getRegNum()).thenReturn("15WAU00001");
         when(cdd.getPaper()).thenReturn(paper);
 
-        manager.setCandidate(cdd);
+        manager.displayCandidate(cdd);
 
         verify(setterView).setCandidateView("W0000AUMB", "15WAU00001", "BAME 0001  SUBJECT 1");
         verify(scannerView, never()).displayError(any(ProcessException.class));
@@ -250,7 +243,7 @@ public class AssignManagerTest {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 0);
         when(cdd.getPaper()).thenThrow(err);
 
-        manager.setCandidate(cdd);
+        manager.displayCandidate(cdd);
 
         verify(setterView, never()).setCandidateView(anyString(), anyString(), anyString());
         verify(scannerView).displayError(any(ProcessException.class));
@@ -259,7 +252,7 @@ public class AssignManagerTest {
     //= ClearTableAndCandidate() ===================================================================
 
     /**
-     * clearTableAndCandidate()
+     * resetDisplay()
      *
      * clear the Table and Candidate related TextView in the layout xml
      *
@@ -268,7 +261,7 @@ public class AssignManagerTest {
 
     @Test
     public void testClearTableAndCandidate() throws Exception {
-        manager.clearTableAndCandidate();
+        manager.resetDisplay();
         verify(setterView).setTableView("");
         verify(setterView).setCandidateView("", "", "");
     }

@@ -6,6 +6,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.IconManager;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by GhinY on 14/05/2016.
@@ -42,7 +43,7 @@ public class Candidate {
                      String paperCode, Status status){
         this.tableNumber    = tableNumber;
         this.programme      = programme;
-        this.examIndex = sName;
+        this.examIndex      = sName;
         this.regNum         = regNum;
         this.paperCode      = paperCode;
         this.status         = status;
@@ -73,7 +74,9 @@ public class Candidate {
     public ExamSubject getPaper() throws ProcessException {
         ExamSubject subject = getExamSubject(paperCode);
         if(subject == null){
-            throw new ProcessException("There is no suitable paper for this candidate in this room",
+            //throw new ProcessException("There is no suitable paper for this candidate in this room",
+            throw new ProcessException(String.format(Locale.ENGLISH, "Paper " + paperCode
+                    + " is not in the initialize List that have %d subjects", paperList.size()),
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
         return subject;
@@ -100,7 +103,7 @@ public class Candidate {
 
     //Static Method ----------------------------------------------------------------------------
     public static void setPaperList(HashMap<String, ExamSubject> papers){
-        paperList = papers;
+        Candidate.paperList = papers;
     }
 
     @Nullable

@@ -8,7 +8,6 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
-import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -16,14 +15,12 @@ import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -68,7 +65,7 @@ public class FragListManagerTest {
     //= OnReceivePassword() ========================================================================
 
     /**
-     * onReceivePassword()
+     * onPasswordReceived()
      *
      * 1. Model notify a Positive Result, tell Model to upload attendance and start timer
      * 2. Model notify a Negative Result, display the error thrown by Model
@@ -82,7 +79,7 @@ public class FragListManagerTest {
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel).uploadAttdList();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
@@ -95,7 +92,7 @@ public class FragListManagerTest {
 
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel, never()).uploadAttdList();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());

@@ -1,10 +1,8 @@
 package com.info.ghiny.examsystem;
 
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,16 +12,8 @@ import android.view.View;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.manager.FragListManager;
 import com.info.ghiny.examsystem.manager.ViewPagerAdapter;
-import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.FragmentHelper;
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 12/06/2016.
@@ -74,7 +64,7 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        fragListManager.onReceivePassword(requestCode, resultCode, data);
+        fragListManager.onPasswordReceived(requestCode, resultCode, data);
     }
 
     @Override

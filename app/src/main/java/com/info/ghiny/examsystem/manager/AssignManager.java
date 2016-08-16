@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import com.info.ghiny.examsystem.FragmentListActivity;
+import com.info.ghiny.examsystem.ObtainInfoActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.interfacer.AssignPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.model.AssignModel;
@@ -18,14 +21,16 @@ import com.info.ghiny.examsystem.model.ProcessException;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class AssignManager {
+public class AssignManager implements AssignPresenter{
     private ScannerView scannerView;
     private SetterView setterView;
     private AssignModel assignModel;
+    private boolean navigationFlag;
 
     public AssignManager(ScannerView scannerView, SetterView setterView, CheckListLoader dBLoader){
         this.scannerView    = scannerView;
         this.setterView     = setterView;
+        this.navigationFlag = false;
         this.assignModel    = new AssignModel(this);
         try{
             this.assignModel.initLoader(dBLoader);
@@ -38,18 +43,42 @@ public class AssignManager {
         this.assignModel = assignModel;
     }
 
-    public void onScanForTableOrCandidate(String scanStr){
-        try{
-            scannerView.pauseScanning();
-            assignModel.tryAssignScanValue(scanStr);
-            scannerView.resumeScanning();
-        } catch (ProcessException err) {
-            scannerView.displayError(err);
-            scannerView.resumeScanning();
-        }
+    @Override
+    public void onPause(){
+        scannerView.pauseScanning();
     }
 
-    public void onReceivePassword(int requestCode, int resultCode, Intent data){
+    @Override
+    public void onResume(){
+        scannerView.resumeScanning();
+    }
+
+    @Override
+    public void onRestart() {
+        if(!navigationFlag){
+            scannerView.securityPrompt();
+        }
+        navigationFlag  = false;
+    }
+
+    @Override
+    public void onBackPressed(){
+        scannerView.pauseScanning();
+        ProcessException err    = new ProcessException("Confirm logout and exit?",
+                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
+        err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                scannerView.finishActivity();
+            }
+        });
+        err.setListener(ProcessException.noButton, buttonListener);
+        scannerView.displayError(err);
+    }
+
+    @Override
+    public void onPasswordReceived(int requestCode, int resultCode, Intent data){
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
@@ -66,32 +95,38 @@ public class AssignManager {
         }
     }
 
-    public void onBackPressed(){
-        ProcessException err    = new ProcessException("Confirm logout and exit?",
-                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
-        err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                scannerView.finishActivity();
+    @Override
+    public void onScanForTableOrCandidate(String scanStr){
+        try{
+            scannerView.pauseScanning();
+            assignModel.tryAssignScanValue(scanStr);
+            scannerView.resumeScanning();
+        } catch (ProcessException err) {
+            if(err.getErrorType() != ProcessException.MESSAGE_TOAST){
+                err.setListener(ProcessException.okayButton, buttonListener);
+                err.setListener(ProcessException.noButton, buttonListener);
+                err.setListener(ProcessException.yesButton, buttonListener);
             }
-        });
-        scannerView.displayError(err);
+            scannerView.displayError(err);
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                scannerView.resumeScanning();
+        }
     }
 
-    public void onPause(){
-        scannerView.pauseScanning();
+    @Override
+    public void navigateToDisplay(){
+        navigationFlag  = true;
+        scannerView.navigateActivity(FragmentListActivity.class);
     }
 
-    public void onResume(){
-        scannerView.resumeScanning();
+    @Override
+    public void navigateToDetail(){
+        navigationFlag  = true;
+        scannerView.navigateActivity(ObtainInfoActivity.class);
     }
 
-    public void onRestart() {
-        scannerView.securityPrompt();
-    }
-
-    public void setTable(Integer tableNum){
+    @Override
+    public void displayTable(Integer tableNum){
         if(tableNum > 0){
             setterView.setTableView(tableNum.toString());
         } else{
@@ -99,7 +134,8 @@ public class AssignManager {
         }
     }
 
-    public void setCandidate(Candidate cdd){
+    @Override
+    public void displayCandidate(Candidate cdd){
         try{
             ExamSubject paper = cdd.getPaper();
             setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(),
@@ -109,8 +145,17 @@ public class AssignManager {
         }
     }
 
-    public void clearTableAndCandidate(){
+    @Override
+    public void resetDisplay(){
         setterView.setTableView("");
         setterView.setCandidateView("","","");
     }
+
+    private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            scannerView.resumeScanning();
+            dialog.cancel();
+        }
+    };
 }

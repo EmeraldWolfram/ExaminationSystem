@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import com.info.ghiny.examsystem.ExamListActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.ObtainInfoPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.IconManager;
@@ -16,7 +17,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class ObtainInfoManager {
+public class ObtainInfoManager implements ObtainInfoPresenter{
     private InfoCollectHelper infoModel;
     private ScannerView scannerView;
     private String studentSubjects;
@@ -28,25 +29,24 @@ public class ObtainInfoManager {
         this.handler        = new Handler();
     }
 
-    public void onScanForCandidateDetail(String scanStr){
-        try{
-            scannerView.pauseScanning();
-            infoModel.reqCandidatePapers(scanStr);
-            handler.postDelayed(timer, 5000);
-        } catch (ProcessException err){
-            scannerView.displayError(err);
-            scannerView.resumeScanning();
-        }
+    public void setInfoModel(InfoCollectHelper infoModel) {
+        this.infoModel = infoModel;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
     public String getStudentSubjects() {
         return studentSubjects;
     }
 
+    @Override
     public void onPause(){
         scannerView.pauseScanning();
     }
 
+    @Override
     public void onResume(final ErrorManager errManager){
         ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             @Override
@@ -65,8 +65,21 @@ public class ObtainInfoManager {
         scannerView.resumeScanning();
     }
 
+    @Override
     public void onDestroy(){
         handler.removeCallbacks(timer);
+    }
+
+    @Override
+    public void onScanForCandidateDetail(String scanStr){
+        try{
+            scannerView.pauseScanning();
+            infoModel.reqCandidatePapers(scanStr);
+            handler.postDelayed(timer, 5000);
+        } catch (ProcessException err){
+            scannerView.displayError(err);
+            scannerView.resumeScanning();
+        }
     }
 
     private DialogInterface.OnClickListener timesOutListener =

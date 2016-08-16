@@ -9,6 +9,7 @@ import android.os.Handler;
 import com.info.ghiny.examsystem.AssignInfoActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.LoginPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.IconManager;
@@ -19,7 +20,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class LoginManager {
+public class LoginManager implements LoginPresenter {
     private ScannerView scannerView;
     private LoginHelper loginModel;
     private Handler handler;
@@ -43,6 +44,40 @@ public class LoginManager {
     }
 
     //==============================================================================================
+
+    @Override
+    public void onPause(){
+        scannerView.pauseScanning();
+    }
+
+    @Override
+    public void onResume(final ErrorManager errorManager){
+        while(ExternalDbLoader.getTcpClient() == null){}
+
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+            //here the messageReceived method is implemented
+            @Override
+            public void messageReceived(String message) {
+                onChiefRespond(errorManager, message);
+            }
+        });
+
+        scannerView.resumeScanning();
+    }
+
+    @Override
+    public void onDestroy(){
+        try {
+            handler.removeCallbacks(timer);
+            ExternalDbLoader.getTcpClient().stopClient();
+            ExternalDbLoader.getChiefLink().cancel(true);
+            ExternalDbLoader.setChiefLink(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onScanForIdentity(String scanStr){
         scannerView.pauseScanning();
         try{
@@ -54,7 +89,8 @@ public class LoginManager {
         }
     }
 
-    public void onReceivePassword(int reqCode, int resCode, Intent intent){
+    @Override
+    public void onPasswordReceived(int reqCode, int resCode, Intent intent){
         if(reqCode == PopUpLogin.PASSWORD_REQ_CODE && resCode == Activity.RESULT_OK){
             scannerView.pauseScanning();
             String password = intent.getStringExtra("Password");
@@ -68,36 +104,8 @@ public class LoginManager {
         }
     }
 
-    public void onPause(){
-        scannerView.pauseScanning();
-    }
-
-    public void onResume(final ErrorManager errorManager){
-        while(ExternalDbLoader.getTcpClient() == null){}
-
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            //here the messageReceived method is implemented
-            @Override
-            public void messageReceived(String message) {
-                onMessageReceiveFromChief(errorManager, message);
-            }
-        });
-
-        scannerView.resumeScanning();
-    }
-
-    public void onDestroy(){
-        try {
-            handler.removeCallbacks(timer);
-            ExternalDbLoader.getTcpClient().stopClient();
-            ExternalDbLoader.getChiefLink().cancel(true);
-            ExternalDbLoader.setChiefLink(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void onMessageReceiveFromChief(ErrorManager errorManager, String message){
+    @Override
+    public void onChiefRespond(ErrorManager errorManager, String message){
         try{
             ChiefLink.setCompleteFlag(true);
             loginModel.checkLoginResult(message);

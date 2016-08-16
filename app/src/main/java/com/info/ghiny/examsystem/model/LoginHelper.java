@@ -80,6 +80,7 @@ public class LoginHelper {
         AssignModel.setAttdList(attdList);
 
         HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
+
         Candidate.setPaperList(papers);
     }
 }

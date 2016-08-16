@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import com.google.zxing.client.android.Intents;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.CollectionPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.IconManager;
@@ -16,7 +17,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class CollectManager {
+public class CollectManager implements CollectionPresenter{
     private InfoCollectHelper infoModel;
     private ScannerView scannerView;
     private Handler handler;
@@ -27,22 +28,12 @@ public class CollectManager {
         this.handler        = new Handler();
     }
 
-    public void onScanForCollection(String scanStr){
-        try{
-            scannerView.pauseScanning();
-            infoModel.bundleCollection(scanStr);
-            handler.postDelayed(timer, 10000);
-
-        } catch (ProcessException err) {
-            scannerView.displayError(err);
-            scannerView.resumeScanning();
-        }
-    }
-
+    @Override
     public void onPause(){
         scannerView.pauseScanning();
     }
 
+    @Override
     public void onResume(final ErrorManager errorManager){
         ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
@@ -59,8 +50,22 @@ public class CollectManager {
         scannerView.resumeScanning();
     }
 
+    @Override
     public void onDestroy(){
         handler.removeCallbacks(timer);
+    }
+
+    @Override
+    public void onScanForCollection(String scanStr){
+        try{
+            scannerView.pauseScanning();
+            infoModel.bundleCollection(scanStr);
+            handler.postDelayed(timer, 10000);
+
+        } catch (ProcessException err) {
+            scannerView.displayError(err);
+            scannerView.resumeScanning();
+        }
     }
 
     private DialogInterface.OnClickListener timesOutListener =

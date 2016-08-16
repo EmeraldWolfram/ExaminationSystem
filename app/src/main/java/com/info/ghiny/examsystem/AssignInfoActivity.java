@@ -64,18 +64,17 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeBottom(){
-                navigateActivity(ObtainInfoActivity.class);
+                assignManager.navigateToDetail();
             }
             @Override
             public void onSwipeLeft() {
-                navigateActivity(FragmentListActivity.class);
+                assignManager.navigateToDisplay();
             }
         });
 
         //Barcode Viewer
         barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
         assert barcodeView != null;
-        barcodeView.decodeContinuous(callback);
         barcodeView.setStatusText("Ready to take candidates attendance");
     }
 
@@ -104,7 +103,7 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        assignManager.onReceivePassword(requestCode, resultCode, data);
+        assignManager.onPasswordReceived(requestCode, resultCode, data);
     }
 
     @Override
@@ -160,6 +159,7 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
 
     @Override
     public void resumeScanning() {
+        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 

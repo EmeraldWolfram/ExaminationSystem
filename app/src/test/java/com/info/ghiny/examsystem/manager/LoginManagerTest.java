@@ -85,10 +85,10 @@ public class LoginManagerTest {
         verify(scannerView).resumeScanning();
     }
 
-    //= OnReceivePassword() ========================================================================
+    //= OnPasswordReceived() ========================================================================
 
     /**
-     * onReceivePassword()
+     * onPasswordReceived()
      *
      * 1. View notify user input password, pause the Scanning and request Model to verify
      * 2. View notify user input password, model complain with Exception, pause the scanning
@@ -97,11 +97,11 @@ public class LoginManagerTest {
      * @throws Exception
      */
     @Test
-    public void testOnReceivePassword_ModelDidNotComplain() throws Exception {
+    public void testOnPasswordReceived_ModelDidNotComplain() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("123456");
         doNothing().when(loginModel).matchStaffPw("123456");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(scannerView).pauseScanning();
         verify(scannerView, never()).displayError(any(ProcessException.class));
@@ -109,12 +109,12 @@ public class LoginManagerTest {
     }
 
     @Test
-    public void testOnReceivePassword_ModelComplain() throws Exception {
+    public void testOnPasswordReceived_ModelComplain() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("");
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
         doThrow(err).when(loginModel).matchStaffPw("");
 
-        manager.onReceivePassword(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(scannerView).pauseScanning();
         verify(scannerView).displayError(err);
@@ -155,10 +155,10 @@ public class LoginManagerTest {
         verify(scannerView).resumeScanning();
     }
 
-    //= OnMessageReceiveFromChief() ================================================================
+    //= OnChiefRespond() ================================================================
 
     /**
-     * onMessageReceiveFromChief()
+     * onChiefRespond()
      *
      * 1. control View to navigate to another View when the message is positive
      * 2. control View to display error and resume the scanning when the message is negative
@@ -166,12 +166,12 @@ public class LoginManagerTest {
      * @throws Exception
      */
     @Test
-    public void testOnMessageReceiveFromChief_withPositiveResult() throws Exception {
+    public void testOnChiefRespond_withPositiveResult() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setChiefLink(new ChiefLink());
         doNothing().when(loginModel).checkLoginResult("Message");
 
-        manager.onMessageReceiveFromChief(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "Message");
 
         verify(scannerView).navigateActivity(AssignInfoActivity.class);
         verify(scannerView, never()).displayError(any(ProcessException.class));
@@ -179,14 +179,14 @@ public class LoginManagerTest {
     }
 
     @Test
-    public void testOnMessageReceiveFromChief_withError() throws Exception {
+    public void testOnChiefRespond_withError() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ChiefLink chiefLink       = Mockito.mock(ChiefLink.class);
         ExternalDbLoader.setChiefLink(chiefLink);
         doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
                 .when(loginModel).checkLoginResult("Message");
 
-        manager.onMessageReceiveFromChief(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "Message");
 
         verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
         verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
