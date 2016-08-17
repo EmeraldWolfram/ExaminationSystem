@@ -84,8 +84,13 @@ public class LoginManager implements LoginPresenter {
             loginModel.checkQrId(scanStr);
             scannerView.securityPrompt();
         } catch(ProcessException err){
+            err.setListener(ProcessException.okayButton, buttonListener);
+            err.setListener(ProcessException.yesButton, buttonListener);
+            err.setListener(ProcessException.noButton, buttonListener);
+
             scannerView.displayError(err);
-            scannerView.resumeScanning();
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                scannerView.resumeScanning();
         }
     }
 
@@ -98,8 +103,13 @@ public class LoginManager implements LoginPresenter {
                 loginModel.matchStaffPw(password);
                 handler.postDelayed(timer, 5000);
             } catch(ProcessException err){
+                err.setListener(ProcessException.okayButton, buttonListener);
+                err.setListener(ProcessException.yesButton, buttonListener);
+                err.setListener(ProcessException.noButton, buttonListener);
+
                 scannerView.displayError(err);
-                scannerView.resumeScanning();
+                if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                    scannerView.resumeScanning();
             }
         }
     }
@@ -111,8 +121,14 @@ public class LoginManager implements LoginPresenter {
             loginModel.checkLoginResult(message);
             scannerView.navigateActivity(AssignInfoActivity.class);
         } catch (ProcessException err) {
+            err.setListener(ProcessException.okayButton, buttonListener);
+            err.setListener(ProcessException.yesButton, buttonListener);
+            err.setListener(ProcessException.noButton, buttonListener);
+
             ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-            scannerView.resumeScanning();
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST){
+                scannerView.resumeScanning();
+            }
         }
     }
 
@@ -134,12 +150,26 @@ public class LoginManager implements LoginPresenter {
                         "Identity verification times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                 err.setListener(ProcessException.okayButton, timesOutListener);
+                err.setBackPressListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        scannerView.resumeScanning();
+                        dialog.cancel();
+                    }
+                });
                 if(scannerView != null){
                     scannerView.pauseScanning();
                     scannerView.displayError(err);
-                    scannerView.resumeScanning();
                 }
             }
+        }
+    };
+
+    private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            scannerView.resumeScanning();
+            dialog.cancel();
         }
     };
 }

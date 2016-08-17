@@ -181,13 +181,12 @@ public class JsonHelper {
                 }
                 return attdList;
             } else {
-                throw new ProcessException("Unable to download Attendance List",
+                throw new ProcessException("Unable to download Attendance List\nPlease retry login",
                         ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
             }
         } catch (JSONException err){
-            throw new ProcessException("FATAL: Packet from Chief corrupted\n" +
-                    "Please Consult Developer!",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Packet from Chief corrupted\nPlease Consult Developer!",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
     }
 
@@ -210,12 +209,12 @@ public class JsonHelper {
                 }
                 return map;
             } else {
-                throw new ProcessException("FATAL: Unable to download Exam Paper from Chief",
-                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+                throw new ProcessException("Unable to download Exam Paper from Chief\n" +
+                        "Please retry login", ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
             }
         }catch (JSONException err){
-            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Data from Chief corrupted\nPlease Consult Developer",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
     }
 

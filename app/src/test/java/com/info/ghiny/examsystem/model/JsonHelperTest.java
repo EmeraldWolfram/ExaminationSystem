@@ -227,8 +227,8 @@ public class JsonHelperTest {
 
             fail("Expected FATAL_MESSAGE but none thrown!");
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL: Packet from Chief corrupted\nPlease Consult Developer!",
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("Packet from Chief corrupted\nPlease Consult Developer!",
                     err.getErrorMsg());
         }
     }
@@ -242,7 +242,7 @@ public class JsonHelperTest {
 
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
-            assertEquals("Unable to download Attendance List", err.getErrorMsg());
+            assertEquals("Unable to download Attendance List\nPlease retry login", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
 
@@ -276,8 +276,8 @@ public class JsonHelperTest {
 
             HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("Data from Chief corrupted\nPlease Consult Developer",
                     err.getErrorMsg());
         }
     }
@@ -323,8 +323,9 @@ public class JsonHelperTest {
 
             HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL: Unable to download Exam Paper from Chief", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("Unable to download Exam Paper from Chief\nPlease retry login",
+                    err.getErrorMsg());
         }
     }
     //= ParsePaperList =============================================================================

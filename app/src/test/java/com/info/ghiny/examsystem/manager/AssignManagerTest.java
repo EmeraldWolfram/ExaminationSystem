@@ -29,6 +29,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
+import static org.junit.Assert.*;
+
 /**
  * Created by GhinY on 12/08/2016.
  */
@@ -61,7 +63,8 @@ public class AssignManagerTest {
      *
      * Always pause the scanner and resume the scanner
      * 1. Model did not throw any error
-     * 2. Model throw an error
+     * 2. Model throw a MESSAGE_TOAST error
+     * 3. Model throw a MESSAGE_DIALOG error
      *
      * @throws Exception
      */
@@ -77,7 +80,7 @@ public class AssignManagerTest {
     }
 
     @Test
-    public void testOnScanForTableOrCandidate_withNegativeResult() throws Exception {
+    public void testOnScanForTableOrCandidate_withNegativeToastResult() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 12);
         doThrow(err).when(assignModel).tryAssignScanValue("XXX");
 
@@ -88,7 +91,21 @@ public class AssignManagerTest {
         verify(scannerView).resumeScanning();
     }
 
-    //= OnReceivePassword() ========================================================================
+    @Test
+    public void testOnScanForTableOrCandidate_withNegativeDialogResult() throws Exception {
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 12);
+        doThrow(err).when(assignModel).tryAssignScanValue("XXX");
+
+        manager.onScanForTableOrCandidate("XXX");
+
+        verify(scannerView).pauseScanning();
+        verify(scannerView).displayError(err);
+        verify(scannerView, never()).resumeScanning();
+
+        assertNotNull(err.getListener(ProcessException.okayButton));
+    }
+
+    //= OnPasswordReceived() ========================================================================
 
     /**
      * onPasswordReceived()
@@ -100,7 +117,7 @@ public class AssignManagerTest {
      * @throws Exception
      */
     @Test
-    public void testOnReceivePassword() throws Exception {
+    public void testOnPasswordReceived() throws Exception {
         Intent pw    = Mockito.mock(Intent.class);
         when(pw.getStringExtra("Password")).thenReturn("123456");
 
@@ -113,7 +130,7 @@ public class AssignManagerTest {
     }
 
     @Test
-    public void testOnReceivePassword_withErrorThrown() throws Exception {
+    public void testOnPasswordReceived_withErrorThrown() throws Exception {
         Intent pw    = Mockito.mock(Intent.class);
         when(pw.getStringExtra("Password")).thenReturn("wrong_Password");
 

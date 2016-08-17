@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.manager;
 
+import android.content.DialogInterface;
 import android.os.Handler;
 
 import com.google.zxing.client.android.Intents;
@@ -13,16 +14,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Created by GhinY on 12/08/2016.
@@ -50,7 +54,8 @@ public class ObtainInfoManagerTest {
      * onScanForCandidate()
      *
      * 1. No complain from Model, pause the scanner, and start the delay
-     * 2. Complain from Model, pause the scanner, display the error and resume the scanner
+     * 2. Complain from Model, pause the scanner, toast error and resume the scanner
+     * 3. Complain from Model, pause the scanner, show error dialog and did not resume
      *
      * @throws Exception
      */
@@ -68,7 +73,7 @@ public class ObtainInfoManagerTest {
     }
 
     @Test
-    public void testOnScanForCandidateDetail_ModelComplain() throws Exception {
+    public void testOnScanForCandidateDetail_ModelComplainWithToast() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
         doThrow(err).when(infoModel).reqCandidatePapers("33");
 
@@ -79,6 +84,20 @@ public class ObtainInfoManagerTest {
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(scannerView).displayError(err);
         verify(scannerView).resumeScanning();
+    }
+
+    @Test
+    public void testOnScanForCandidateDetail_ModelComplainWithDialog() throws Exception {
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
+        doThrow(err).when(infoModel).reqCandidatePapers("33");
+
+        manager.onScanForCandidateDetail("33");
+
+        verify(scannerView).pauseScanning();
+        verify(infoModel).reqCandidatePapers("33");
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(scannerView).displayError(err);
+        verify(scannerView, never()).resumeScanning();
     }
 
     //= onPause() ==================================================================================

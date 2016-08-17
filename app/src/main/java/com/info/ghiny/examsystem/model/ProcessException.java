@@ -22,6 +22,7 @@ public class ProcessException extends Exception {
     public static final String noButton     = "NO";
 
     private HashMap<String, DialogInterface.OnClickListener> buttonMap;
+    private DialogInterface.OnCancelListener backPressListener;
     private int errorType;
     private String errorMsg;
     private int errorIconType;
@@ -37,11 +38,15 @@ public class ProcessException extends Exception {
         this.errorType      = errType;
         this.errorMsg       = errMsg;
         this.errorIconType  = errIconType;
-        this.buttonMap   = new HashMap<>();
+        this.buttonMap      = new HashMap<>();
     }
 
     public void setListener(String btnText, DialogInterface.OnClickListener listener){
         buttonMap.put(btnText, listener);
+    }
+
+    public void setBackPressListener(DialogInterface.OnCancelListener backPressListener) {
+        this.backPressListener = backPressListener;
     }
 
     public DialogInterface.OnClickListener getListener(String btnText){
@@ -57,6 +62,19 @@ public class ProcessException extends Exception {
         }
 
         return listener;
+    }
+
+    public DialogInterface.OnCancelListener getBackPressListener() {
+        if(backPressListener == null){
+            return new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    dialog.cancel();
+                }
+            };
+        } else {
+            return backPressListener;
+        }
     }
 
     public int getErrorType(){

@@ -57,7 +57,13 @@ public class ObtainInfoManager implements ObtainInfoPresenter{
                     studentSubjects = message;
                     scannerView.navigateActivity(ExamListActivity.class);
                 } catch (ProcessException err) {
+                    err.setListener(ProcessException.okayButton, buttonListener);
+                    err.setListener(ProcessException.yesButton, buttonListener);
+                    err.setListener(ProcessException.noButton, buttonListener);
+
                     ExternalDbLoader.getChiefLink().publishError(errManager, err);
+                    if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                        scannerView.resumeScanning();
                 }
             }
         });
@@ -77,8 +83,11 @@ public class ObtainInfoManager implements ObtainInfoPresenter{
             infoModel.reqCandidatePapers(scanStr);
             handler.postDelayed(timer, 5000);
         } catch (ProcessException err){
+            err.setListener(ProcessException.okayButton, buttonListener);
+
             scannerView.displayError(err);
-            scannerView.resumeScanning();
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                scannerView.resumeScanning();
         }
     }
 
@@ -99,12 +108,26 @@ public class ObtainInfoManager implements ObtainInfoPresenter{
                         "Server busy. Request times out. \n Please try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                 err.setListener(ProcessException.okayButton, timesOutListener);
+                err.setBackPressListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        scannerView.resumeScanning();
+                        dialog.cancel();
+                    }
+                });
                 if(scannerView != null){
                     scannerView.pauseScanning();
                     scannerView.displayError(err);
-                    scannerView.resumeScanning();
                 }
             }
+        }
+    };
+
+    private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            scannerView.resumeScanning();
+            dialog.cancel();
         }
     };
 }

@@ -50,11 +50,12 @@ public class ErrorManager {
     public void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
-        dialog.setCancelable(true);
+        dialog.setCancelable(false);
         dialog.setPositiveButton(ProcessException.updateButton,
-                err.getListener(ProcessException.updateButton));
+                getListener(err, ProcessException.updateButton));
         dialog.setNegativeButton(ProcessException.cancelButton,
-                err.getListener(ProcessException.cancelButton));
+                getListener(err, ProcessException.cancelButton));
+
         AlertDialog alert = dialog.create();
         alert.show();
     }
@@ -63,8 +64,10 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
+        dialog.setOnCancelListener(err.getBackPressListener());
         dialog.setNeutralButton(ProcessException.okayButton,
-                err.getListener(ProcessException.okayButton));
+                getListener(err, ProcessException.okayButton));
+
         AlertDialog alert = dialog.create();
         alert.show();
     }
@@ -73,12 +76,15 @@ public class ErrorManager {
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
+        dialog.setOnCancelListener(err.getBackPressListener());
 
         dialog.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        act.finish();
                         dialog.cancel();
                     }
                 });
+
 
         AlertDialog alert = dialog.create();
         alert.show();
@@ -87,15 +93,29 @@ public class ErrorManager {
     public void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
-
         dialog.setCancelable(true);
+        dialog.setOnCancelListener(err.getBackPressListener());
 
         dialog.setPositiveButton(ProcessException.yesButton,
-                err.getListener(ProcessException.yesButton));
+                getListener(err, ProcessException.yesButton));
         dialog.setNegativeButton(ProcessException.noButton,
-                err.getListener(ProcessException.noButton));
+                getListener(err, ProcessException.noButton));
 
         AlertDialog alert = dialog.create();
         alert.show();
+    }
+
+    private DialogInterface.OnClickListener getListener(ProcessException err, String button){
+        DialogInterface.OnClickListener listener = err.getListener(button);
+        if(listener == null){
+            listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            };
+        }
+
+        return listener;
     }
 }

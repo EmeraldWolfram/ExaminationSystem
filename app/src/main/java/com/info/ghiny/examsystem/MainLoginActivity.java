@@ -26,7 +26,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     private LoginManager loginManager;
     private ErrorManager errorManager;
 
-    private static BarcodeView barcodeView;
+    private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
@@ -83,7 +83,6 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
-
         loginManager.onPasswordReceived(reqCode, resCode, data);
     }
 

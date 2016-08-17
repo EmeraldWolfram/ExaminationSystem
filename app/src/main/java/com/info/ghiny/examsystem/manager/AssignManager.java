@@ -66,6 +66,13 @@ public class AssignManager implements AssignPresenter{
         scannerView.pauseScanning();
         ProcessException err    = new ProcessException("Confirm logout and exit?",
                 ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
+        err.setBackPressListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                scannerView.resumeScanning();
+                dialog.cancel();
+            }
+        });
         err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -102,11 +109,10 @@ public class AssignManager implements AssignPresenter{
             assignModel.tryAssignScanValue(scanStr);
             scannerView.resumeScanning();
         } catch (ProcessException err) {
-            if(err.getErrorType() != ProcessException.MESSAGE_TOAST){
-                err.setListener(ProcessException.okayButton, buttonListener);
-                err.setListener(ProcessException.noButton, buttonListener);
-                err.setListener(ProcessException.yesButton, buttonListener);
-            }
+            err.setListener(ProcessException.okayButton, buttonListener);
+            err.setListener(ProcessException.noButton, buttonListener);
+            err.setListener(ProcessException.yesButton, buttonListener);
+
             scannerView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
                 scannerView.resumeScanning();
@@ -138,8 +144,7 @@ public class AssignManager implements AssignPresenter{
     public void displayCandidate(Candidate cdd){
         try{
             ExamSubject paper = cdd.getPaper();
-            setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(),
-                    paper.toString());
+            setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(), paper.toString());
         } catch (ProcessException err) {
             scannerView.displayError(err);
         }
