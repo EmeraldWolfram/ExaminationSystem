@@ -59,6 +59,7 @@ public class TCPClient implements Runnable{
         mRun = false;
     }
 
+    @Override
     public void run(){
         mRun = true;
 

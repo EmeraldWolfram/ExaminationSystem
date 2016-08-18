@@ -90,6 +90,7 @@ public class ObtainInfoManagerTest {
     public void testOnScanForCandidateDetail_ModelComplainWithDialog() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
         doThrow(err).when(infoModel).reqCandidatePapers("33");
+        assertNull(err.getListener(ProcessException.okayButton));
 
         manager.onScanForCandidateDetail("33");
 
@@ -98,6 +99,7 @@ public class ObtainInfoManagerTest {
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(scannerView).displayError(err);
         verify(scannerView, never()).resumeScanning();
+        assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
     //= onPause() ==================================================================================

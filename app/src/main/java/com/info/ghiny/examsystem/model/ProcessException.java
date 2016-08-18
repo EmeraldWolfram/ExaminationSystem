@@ -52,15 +52,6 @@ public class ProcessException extends Exception {
     public DialogInterface.OnClickListener getListener(String btnText){
         DialogInterface.OnClickListener listener = buttonMap.get(btnText);
 
-        if(listener == null){
-            listener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            };
-        }
-
         return listener;
     }
 

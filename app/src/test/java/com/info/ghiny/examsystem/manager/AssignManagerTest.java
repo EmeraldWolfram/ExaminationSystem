@@ -84,11 +84,14 @@ public class AssignManagerTest {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 12);
         doThrow(err).when(assignModel).tryAssignScanValue("XXX");
 
+        assertNull(err.getListener(ProcessException.okayButton));
+
         manager.onScanForTableOrCandidate("XXX");
 
         verify(scannerView).pauseScanning();
         verify(scannerView).displayError(err);
         verify(scannerView).resumeScanning();
+        assertNull(err.getListener(ProcessException.okayButton));
     }
 
     @Test
@@ -96,6 +99,7 @@ public class AssignManagerTest {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 12);
         doThrow(err).when(assignModel).tryAssignScanValue("XXX");
 
+        assertNull(err.getListener(ProcessException.okayButton));
         manager.onScanForTableOrCandidate("XXX");
 
         verify(scannerView).pauseScanning();

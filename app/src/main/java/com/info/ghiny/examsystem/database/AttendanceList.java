@@ -2,7 +2,6 @@ package com.info.ghiny.examsystem.database;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class AttendanceList {
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
-        attendanceList.put(Status.QUARANTIZED, quaran);
+        attendanceList.put(Status.QUARANTINED, quaran);
     }
 
     public AttendanceList(HashMap<String, HashMap<String, HashMap<String, Candidate>>> present,
@@ -40,7 +39,7 @@ public class AttendanceList {
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
-        attendanceList.put(Status.QUARANTIZED, quaran);
+        attendanceList.put(Status.QUARANTINED, quaran);
     }
 
     //Inherit Methods

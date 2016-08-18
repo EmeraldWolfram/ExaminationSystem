@@ -1,5 +1,4 @@
 package com.info.ghiny.examsystem.database;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,10 +13,11 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class CheckListLoader {
-    private static final int DATABASE_VERSION       = 1;
-    public static final String DATABASE_NAME       = "FragListDb";
+    private static final int DATABASE_VERSION       = 3;
+    public static final String DATABASE_NAME        = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
+    private static final String USER_TABLE          = "ConnectionTable";
 
     private static final String SAVE_ATTENDANCE = "INSERT OR REPLACE INTO "     + ATTENDANCE_TABLE
             + " (" + Candidate.CDD_EXAM_INDEX   + ", " + Candidate.CDD_REG_NUM
@@ -30,6 +30,11 @@ public class CheckListLoader {
             + ", " + ExamSubject.PAPER_START_NO + ", " + ExamSubject.PAPER_TOTAL_CDD
             + ") VALUES ('";
 
+    private static final String SAVE_USER = "INSERT OR REPLACE INTO "  + USER_TABLE
+            + " (" + Connector.CONNECT_IP       + ", " + Connector.CONNECT_PORT
+            + ", " + Connector.CONNECT_DATE     + ", " + Connector.CONNECT_SESSION
+            + ") VALUES ('";
+
     private static SQLiteDatabase database;
     private static CheckListOpenHelper openHelper;
 
@@ -38,6 +43,9 @@ public class CheckListLoader {
         database    = openHelper.getWritableDatabase();
     }
 
+    public static void setDatabase(SQLiteDatabase database) {
+        CheckListLoader.database = database;
+    }
 
     //AVAILABLE METHOD ========================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -64,6 +72,17 @@ public class CheckListLoader {
         return status;
     }
 
+    public boolean emptyUserInDB(){
+        Boolean status = true;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM " + USER_TABLE, null);
+        if(ptr.moveToFirst())
+            status = false;
+
+        ptr.close();
+        return status;
+    }
+
     //Simply clean the database
     public void clearDatabase(){
         database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
@@ -71,9 +90,13 @@ public class CheckListLoader {
         database.execSQL("VACUUM");
     }
 
+    public void clearUserDatabase(){
+        database.execSQL("DELETE FROM " + USER_TABLE);
+        database.execSQL("VACUUM");
+    }
+
     //Clear the database and save a new set of AttendanceList into the database
     public void saveAttendanceList(AttendanceList attdList){
-        clearDatabase();
         List<String> regNumList = attdList.getAllCandidateRegNumList();
 
         for(int i = 0; i < regNumList.size(); i++)
@@ -88,6 +111,14 @@ public class CheckListLoader {
             savePaper(papers.get(paperArr[i]));
     }
 
+    public void saveConnector(Connector connector){
+        database.execSQL(SAVE_USER
+                + connector.getIpAddress()          +   "', "
+                + connector.getPortNumber()         +   ", '"
+                + connector.getDateInString()       +   "', '"
+                + connector.getSession().toString() +   "')");
+    }
+
     //Retrieve an attendanceList from the database
     public AttendanceList queryAttendanceList() {
         AttendanceList attdList = new AttendanceList();
@@ -96,7 +127,7 @@ public class CheckListLoader {
         statusList.add(Status.ABSENT);
         statusList.add(Status.BARRED);
         statusList.add(Status.EXEMPTED);
-        statusList.add(Status.QUARANTIZED);
+        statusList.add(Status.QUARANTINED);
 
         for(int j = 0; j < statusList.size(); j++){
             List<Candidate> cdds = getCandidatesWithStatus(statusList.get(j));
@@ -130,6 +161,28 @@ public class CheckListLoader {
         return paperMap;
     }
 
+    public Connector queryConnector(){
+        Connector connector = null;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + USER_TABLE, null);
+
+        if(ptr.moveToFirst()){
+            String ipAddress    = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_IP));
+            Integer portNumber  = ptr.getInt(ptr.getColumnIndex(Connector.CONNECT_PORT));
+            String date         = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_DATE));
+            String session      = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_SESSION));
+
+            connector   = new Connector(ipAddress, portNumber);
+            connector.setDate(connector.parseStringToDate(date));
+            connector.setSession(Session.parseSession(session));
+        }
+
+        ptr.close();
+
+        return connector;
+    }
+
+
     //INTERNAL HIDDEN TOOLS ====================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -157,7 +210,7 @@ public class CheckListLoader {
         List<Candidate> candidates= new ArrayList<>();
 
         Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE + " WHERE "
-                + Candidate.CDD_STATUS +" = ?"+status.toString(), new String[]{status.toString()});
+                + Candidate.CDD_STATUS +" = ?", new String[]{status.toString()});
 
         if(ptr.moveToFirst()){
             do{
@@ -197,7 +250,7 @@ public class CheckListLoader {
                     + Candidate.CDD_STATUS      + " TEXT    NOT NULL, "
                     + Candidate.CDD_PAPER       + " TEXT    NOT NULL, "
                     + Candidate.CDD_PROG        + " TEXT    NOT NULL, "
-                    + Candidate.CDD_TABLE       + " INT     NOT NULL)");
+                    + Candidate.CDD_TABLE       + " INTEGER NOT NULL)");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
                     + ExamSubject.PAPER_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -205,12 +258,20 @@ public class CheckListLoader {
                     + ExamSubject.PAPER_DESC        + " TEXT    NOT NULL, "
                     + ExamSubject.PAPER_START_NO    + " INTEGER NOT NULL, "
                     + ExamSubject.PAPER_TOTAL_CDD   + " INTEGER NOT NULL)");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + USER_TABLE + "( "
+                    + Connector.CONNECT_DB_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + Connector.CONNECT_IP      + " TEXT    NOT NULL, "
+                    + Connector.CONNECT_PORT    + " INTEGER NOT NULL, "
+                    + Connector.CONNECT_DATE    + " TEXT    NOT NULL, "
+                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXIST " + ATTENDANCE_TABLE);
             db.execSQL("DROP TABLE IF EXIST " + PAPERS_TABLE);
+            db.execSQL("DROP TABLE IF EXIST " + USER_TABLE);
             onCreate(db);
         }
     }

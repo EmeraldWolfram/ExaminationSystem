@@ -139,6 +139,7 @@ public class CollectManagerTest {
     public void testOnScanForCollection_withNegativeDialog() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
         doThrow(err).when(infoModel).bundleCollection("PAPER ABCD");
+        assertNull(err.getListener(ProcessException.okayButton));
 
         manager.onScanForCollection("PAPER ABCD");
 
@@ -147,5 +148,6 @@ public class CollectManagerTest {
 
         verify(scannerView).displayError(err);
         verify(scannerView, never()).resumeScanning();
+        assertNotNull(err.getListener(ProcessException.okayButton));
     }
 }

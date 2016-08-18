@@ -15,25 +15,25 @@ public class ErrorManager {
     private Activity act;
 
     public ErrorManager(Activity act) {
-        this.act = act;
+        this.act        = act;
     }
 
     public void displayError(ProcessException err){
         switch(err.getErrorType()){
             case ProcessException.UPDATE_PROMPT:
-                showReassignDialog(err);
+                this.showReassignDialog(err);
                 break;
             case ProcessException.MESSAGE_DIALOG:
-                showMessageDialog(err);
+                this.showMessageDialog(err);
                 break;
             case ProcessException.MESSAGE_TOAST:
-                showToastMessage(err);
+                this.showToastMessage(err);
                 break;
             case ProcessException.FATAL_MESSAGE:
-                showFatalError(err);
+                this.showFatalError(err);
                 break;
             case ProcessException.YES_NO_MESSAGE:
-                showYesNoDialog(err);
+                this.showYesNoDialog(err);
                 break;
         }
     }
@@ -84,7 +84,6 @@ public class ErrorManager {
                         dialog.cancel();
                     }
                 });
-
 
         AlertDialog alert = dialog.create();
         alert.show();

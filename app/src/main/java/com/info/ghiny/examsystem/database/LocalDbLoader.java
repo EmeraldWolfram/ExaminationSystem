@@ -171,7 +171,7 @@ public class LocalDbLoader {
         statusList.add(Status.ABSENT);
         statusList.add(Status.BARRED);
         statusList.add(Status.EXEMPTED);
-        statusList.add(Status.QUARANTIZED);
+        statusList.add(Status.QUARANTINED);
 
         try {
             for(int j = 0; j < statusList.size(); j++){

@@ -413,12 +413,12 @@ public class AttendanceListTest {
         Status absent2   = Status.parseStatus("ELIGIBLE");
         Status barred    = Status.parseStatus("BARRED");
         Status exempted  = Status.parseStatus("EXEMPTED");
-        Status quarantized = Status.parseStatus("QUARANTIZED");
+        Status quarantized = Status.parseStatus("QUARANTINED");
 
         assertEquals(Status.ABSENT, absent);
         assertEquals(Status.ABSENT, absent2);
         assertEquals(Status.BARRED, barred);
         assertEquals(Status.EXEMPTED, exempted);
-        assertEquals(Status.QUARANTIZED, quarantized);
+        assertEquals(Status.QUARANTINED, quarantized);
     }
 }

@@ -8,7 +8,7 @@ public enum Status {
     ABSENT,
     EXEMPTED,
     BARRED,
-    QUARANTIZED;
+    QUARANTINED;
 
 
     @Override
@@ -22,8 +22,8 @@ public enum Status {
                 return Status.BARRED;
             case "EXEMPTED":
                 return Status.EXEMPTED;
-            case "QUARANTIZED":
-                return Status.QUARANTIZED;
+            case "QUARANTINED":
+                return Status.QUARANTINED;
             default:
                 return Status.ABSENT;
         }

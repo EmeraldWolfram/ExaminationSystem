@@ -15,19 +15,8 @@ import java.util.List;
 public class ChiefLink extends AsyncTask<String, String, TCPClient> {
 
     private static boolean completeFlag = false;
-    //private List<ExamSubject> subjects;
-    //private ExamSubjectAdapter adapter;
     private ErrorManager errorManager;
     private ProcessException err;
-
-    //= Setter & Getter ============================================================================
-    //public static void setErrorManager(ErrorManager errorManager) {
-    //    ChiefLink.errorManager = errorManager;
-    //}
-
-    //public static ErrorManager getErrorManager() {
-    //    return errorManager;
-    //}
 
     //= Setter & Getter ============================================================================
     public static boolean isComplete() {
@@ -38,16 +27,10 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     }
 
     //= Public Methods =============================================================================
-    public void publishMsg(ExamSubjectAdapter adapter, List<ExamSubject> subjects){
-        publishProgress("Message");
-        //this.adapter    = adapter;
-        //this.subjects   = subjects;
-    }
-
     public void publishError(ErrorManager errManager, ProcessException err){
-        publishProgress("Error");
         this.errorManager   = errManager;
         this.err            = err;
+        publishProgress("Error");
     }
 
     @Override
@@ -67,6 +50,5 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
     protected void onProgressUpdate(String... values){
         super.onProgressUpdate(values);
         errorManager.displayError(err);
-        //adapter.updatePapers(subjects);
     }
 }

@@ -295,7 +295,7 @@ public class LocalDbLoaderTest {
             assertEquals(0, map1.getNumberOfCandidates(Status.ABSENT));
             assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
             assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTINED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -319,7 +319,7 @@ public class LocalDbLoaderTest {
             assertEquals(0, map1.getNumberOfCandidates(Status.ABSENT));
             assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
             assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTINED));
         } catch (Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }
@@ -348,7 +348,7 @@ public class LocalDbLoaderTest {
             assertEquals(1, map1.getNumberOfCandidates(Status.ABSENT));
             assertEquals(0, map1.getNumberOfCandidates(Status.BARRED));
             assertEquals(0, map1.getNumberOfCandidates(Status.EXEMPTED));
-            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTIZED));
+            assertEquals(0, map1.getNumberOfCandidates(Status.QUARANTINED));
         } catch(Exception err){
             fail("No exception expected but " + err.getMessage() + " was thrown.");
         }

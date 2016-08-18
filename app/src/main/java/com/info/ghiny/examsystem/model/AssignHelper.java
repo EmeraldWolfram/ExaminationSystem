@@ -212,7 +212,7 @@ public class AssignHelper {
                 throw new ProcessException(candidate.getExamIndex() + " have been barred",
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             }
-            if(candidate.getStatus() == Status.QUARANTIZED){
+            if(candidate.getStatus() == Status.QUARANTINED){
                 throw new ProcessException("The paper was quarantized for "
                         + candidate.getExamIndex(),
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);

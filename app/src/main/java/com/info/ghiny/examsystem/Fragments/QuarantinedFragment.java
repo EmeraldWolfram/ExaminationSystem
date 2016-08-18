@@ -36,8 +36,8 @@ public class QuarantinedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_quarantined, container, false);
         FragmentHelper helper = new FragmentHelper();
 
-        List<String> header = helper.getTitleList(Status.QUARANTIZED);
-        HashMap<String, List<Candidate>> child = helper.getChildList(Status.QUARANTIZED);
+        List<String> header = helper.getTitleList(Status.QUARANTINED);
+        HashMap<String, List<Candidate>> child = helper.getChildList(Status.QUARANTINED);
 
         ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.quarantizedList);
         barredList.setAdapter(new FragListAdapter(getContext(), header, child));

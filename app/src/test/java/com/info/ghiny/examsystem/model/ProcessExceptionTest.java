@@ -119,7 +119,7 @@ public class ProcessExceptionTest {
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
             assertEquals(R.drawable.msg_icon, err.getErrorIcon());
-            assertNotNull(err.getListener("Whatever"));
+            assertNull(err.getListener("Whatever"));
     }
 }
 

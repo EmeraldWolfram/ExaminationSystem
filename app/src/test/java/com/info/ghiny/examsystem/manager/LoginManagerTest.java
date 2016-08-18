@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -58,7 +59,8 @@ public class LoginManagerTest {
      * onScanForIdentity()
      *
      * 1. prompt user to key-in password if Model didn't throw any error
-     * 2. display the error and resume scanning if Model throw any error
+     * 2. display the error and resume scanning if Model throw Toast error
+     * 3. display dialog error but no resume scanning if Model throw Dialog error
      *
      * @throws Exception
      */
@@ -85,15 +87,30 @@ public class LoginManagerTest {
         verify(scannerView).resumeScanning();
     }
 
+    @Test
+    public void testOnScanForIdentity_SomeDialogError() throws Exception {
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
+        doThrow(err).when(loginModel).checkQrId("xyz");
+
+        assertNull(err.getListener(ProcessException.okayButton));
+        manager.onScanForIdentity("xyz");
+
+        verify(scannerView, never()).securityPrompt();
+        verify(scannerView).displayError(any(ProcessException.class));
+        verify(scannerView, never()).resumeScanning();
+        assertNotNull(err.getListener(ProcessException.okayButton));
+    }
+
     //= OnPasswordReceived() ========================================================================
 
     /**
      * onPasswordReceived()
      *
      * 1. View notify user input password, pause the Scanning and request Model to verify
-     * 2. View notify user input password, model complain with Exception, pause the scanning
+     * 2. View notify user input password, model complain with Toast, pause the scanning
      *    display the error and resume the scanning
-     *
+     * 3. View notify user input password, model complain with Dialog, pause the scanning
+     *    display the error, did not resume but set listener that will resume onClick
      * @throws Exception
      */
     @Test
@@ -109,17 +126,36 @@ public class LoginManagerTest {
     }
 
     @Test
-    public void testOnPasswordReceived_ModelComplain() throws Exception {
+    public void testOnPasswordReceived_ModelComplainWithToast() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("");
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
         doThrow(err).when(loginModel).matchStaffPw("");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(scannerView).pauseScanning();
         verify(scannerView).displayError(err);
         verify(scannerView).resumeScanning();
     }
+
+    @Test
+    public void testOnPasswordReceived_ModelComplainWithDialog() throws Exception {
+        when(password.getStringExtra("Password")).thenReturn("");
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
+        doThrow(err).when(loginModel).matchStaffPw("");
+
+        assertNull(err.getListener(ProcessException.okayButton));
+
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
+
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(scannerView).pauseScanning();
+        verify(scannerView).displayError(err);
+        verify(scannerView, never()).resumeScanning();
+        assertNotNull(err.getListener(ProcessException.okayButton));
+    }
+
     //= OnPause() ==================================================================================
 
     /**
@@ -179,7 +215,7 @@ public class LoginManagerTest {
     }
 
     @Test
-    public void testOnChiefRespond_withError() throws Exception {
+    public void testOnChiefRespond_withToastError() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ChiefLink chiefLink       = Mockito.mock(ChiefLink.class);
         ExternalDbLoader.setChiefLink(chiefLink);
@@ -191,5 +227,24 @@ public class LoginManagerTest {
         verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
         verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(scannerView).resumeScanning();
+    }
+
+    @Test
+    public void testOnChiefRespond_withDialogError() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        ChiefLink chiefLink       = Mockito.mock(ChiefLink.class);
+        ExternalDbLoader.setChiefLink(chiefLink);
+
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
+        doThrow(err).when(loginModel).checkLoginResult("Message");
+
+        assertNull(err.getListener(ProcessException.okayButton));
+
+        manager.onChiefRespond(errorManager, "Message");
+
+        verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
+        verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(scannerView, never()).resumeScanning();
+        assertNotNull(err.getListener(ProcessException.okayButton));
     }
 }
