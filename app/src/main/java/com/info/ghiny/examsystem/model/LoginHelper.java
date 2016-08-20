@@ -2,10 +2,13 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -33,11 +36,29 @@ public class LoginHelper {
     public void verifyChief(String scanStr) throws ProcessException{
         if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
             String[] chiefArr   = scanStr.split(":");
-            TCPClient.SERVERIP      = chiefArr[1];
-            TCPClient.SERVERPORT    = Integer.parseInt(chiefArr[2]);
+            Connector connector     = new Connector(chiefArr[1], Integer.parseInt(chiefArr[2]));
+            TCPClient.setConnector(connector);
+            //Also save the connector into database
         } else {
             throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
+        }
+    }
+
+    public boolean tryConnection(CheckListLoader dbLoader){
+        Connector connector = connector   = dbLoader.queryConnector();
+
+        Calendar now    = Calendar.getInstance();
+        if(connector == null){
+            return false;
+        } else {
+            if(now.get(Calendar.YEAR) == connector.getDate().get(Calendar.YEAR)
+                    && now.get(Calendar.MONTH) == connector.getDate().get(Calendar.MONTH)
+                    && now.get(Calendar.DAY_OF_MONTH) == connector.getDate().get(Calendar.DAY_OF_MONTH)){
+                TCPClient.setConnector(connector);
+                return true;
+            }
+            return false;
         }
     }
 
@@ -76,11 +97,14 @@ public class LoginHelper {
 
         loginCount  = 3;
 
+        ExternalDbLoader.dlPaperList();
+    }
+
+    public void checkDetail(String msgFromChief) throws ProcessException {
         AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
         AssignModel.setAttdList(attdList);
 
         HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
-
         Candidate.setPaperList(papers);
     }
 }

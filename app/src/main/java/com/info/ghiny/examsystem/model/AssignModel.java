@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Created by GhinY on 08/08/2016.
  */
 public class AssignModel {
-    private static HashMap<Integer, String> assgnList = new HashMap<>();
+    private HashMap<Integer, String> assgnList = new HashMap<>();
     private static AttendanceList attdList;
     private Integer tempTable    = null;
     private Candidate tempCdd    = null;
@@ -37,8 +37,8 @@ public class AssignModel {
 
         //this.clLoader = dBLoader;
         //attdList    = clLoader.queryAttendanceList();
-        Candidate.setPaperList(dBLoader.queryPapers());
-        AssignModel.setAttdList(dBLoader.queryAttendanceList());
+        //Candidate.setPaperList(dBLoader.queryPapers());
+        //AssignModel.setAttdList(dBLoader.queryAttendanceList());
     }
 
     //For test purposes=============================================================================
@@ -58,11 +58,11 @@ public class AssignModel {
         return attdList;
     }
 
-    public static void setAssgnList(HashMap<Integer, String> assgnList) {
-        AssignModel.assgnList = assgnList;
+    public void setAssgnList(HashMap<Integer, String> assgnList) {
+        this.assgnList = assgnList;
     }
 
-    public static HashMap<Integer, String> getAssgnList() {
+    public HashMap<Integer, String> getAssgnList() {
         return assgnList;
     }
 

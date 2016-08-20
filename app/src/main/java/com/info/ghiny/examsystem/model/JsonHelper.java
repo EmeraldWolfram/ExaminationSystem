@@ -29,6 +29,7 @@ public class JsonHelper {
     public static final String TYPE_PAPERS_CDD      = "CddPapers";
     public static final String TYPE_ATTD_LIST       = "AttdList";
     public static final String TYPE_COLLECT         = "Collection";
+    //public static final
 
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";

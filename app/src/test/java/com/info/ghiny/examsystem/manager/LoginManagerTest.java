@@ -21,10 +21,13 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -205,9 +208,19 @@ public class LoginManagerTest {
     public void testOnChiefRespond_withPositiveResult() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setChiefLink(new ChiefLink());
+
         doNothing().when(loginModel).checkLoginResult("Message");
+        doNothing().when(loginModel).checkDetail(anyString());
+
+        assertFalse(manager.isDlFlag());
 
         manager.onChiefRespond(errorManager, "Message");
+        assertTrue(manager.isDlFlag());
+        verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
+
+        manager.onChiefRespond(errorManager, "Message");
+        assertFalse(manager.isDlFlag());
+
 
         verify(scannerView).navigateActivity(AssignInfoActivity.class);
         verify(scannerView, never()).displayError(any(ProcessException.class));
@@ -222,11 +235,14 @@ public class LoginManagerTest {
         doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
                 .when(loginModel).checkLoginResult("Message");
 
+        assertFalse(manager.isDlFlag());
         manager.onChiefRespond(errorManager, "Message");
+        assertFalse(manager.isDlFlag());
+
 
         verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
         verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(scannerView).resumeScanning();
+        verify(scannerView, never()).resumeScanning();
     }
 
     @Test
@@ -240,7 +256,9 @@ public class LoginManagerTest {
 
         assertNull(err.getListener(ProcessException.okayButton));
 
+        assertFalse(manager.isDlFlag());
         manager.onChiefRespond(errorManager, "Message");
+        assertFalse(manager.isDlFlag());
 
         verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
         verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));

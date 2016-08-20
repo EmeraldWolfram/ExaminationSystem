@@ -76,7 +76,7 @@ public class AssignModelTest {
         assgnHelper.initLoader(dBLoader);
         assgnHelper.setTempCdd(null);
         assgnHelper.setTempTable(null);
-        AssignModel.setAssgnList(new HashMap<Integer, String>());
+        assgnHelper.setAssgnList(new HashMap<Integer, String>());
         Candidate.setPaperList(paperList);
     }
 
@@ -247,7 +247,7 @@ public class AssignModelTest {
         assgnList.put(14, "15WAU00001");
 
         try{
-            AssignModel.setAssgnList(assgnList);
+            assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
             boolean test = assgnHelper.tryAssignCandidate();
@@ -267,7 +267,7 @@ public class AssignModelTest {
         assgnList.put(14, "15WAU00005");
 
         try{
-            AssignModel.setAssgnList(assgnList);
+            assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("55");
             assgnHelper.checkCandidate("15WAU00001");
             boolean test = assgnHelper.tryAssignCandidate();
@@ -300,8 +300,8 @@ public class AssignModelTest {
 
         assgnHelper.updateNewCandidate();
 
-        assertEquals(1, AssignModel.getAssgnList().size());
-        assertEquals("15WAU00002", AssignModel.getAssgnList().get(14));
+        assertEquals(1, assgnHelper.getAssgnList().size());
+        assertEquals("15WAU00002", assgnHelper.getAssgnList().get(14));
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.ABSENT, cdd1.getStatus());
@@ -327,9 +327,9 @@ public class AssignModelTest {
 
         assgnHelper.updateNewCandidate();
 
-        assertEquals(1, AssignModel.getAssgnList().size());
-        assertNull(AssignModel.getAssgnList().get(12));
-        assertEquals("15WAU00001", AssignModel.getAssgnList().get(14));
+        assertEquals(1, assgnHelper.getAssgnList().size());
+        assertNull(assgnHelper.getAssgnList().get(12));
+        assertEquals("15WAU00001", assgnHelper.getAssgnList().get(14));
         assertEquals(14, (int)attdList.getCandidate("15WAU00001").getTableNumber());
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
     }
@@ -355,9 +355,9 @@ public class AssignModelTest {
 
         assgnHelper.cancelNewAssign();
 
-        assertEquals(1, AssignModel.getAssgnList().size());
-        assertNull(AssignModel.getAssgnList().get(14));
-        assertEquals("15WAU00001", AssignModel.getAssgnList().get(12));
+        assertEquals(1, assgnHelper.getAssgnList().size());
+        assertNull(assgnHelper.getAssgnList().get(14));
+        assertEquals("15WAU00001", assgnHelper.getAssgnList().get(12));
         assertEquals(12, (int)attdList.getCandidate("15WAU00001").getTableNumber());
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
     }
@@ -382,8 +382,8 @@ public class AssignModelTest {
 
         assgnHelper.cancelNewAssign();
 
-        assertEquals(1, AssignModel.getAssgnList().size());
-        assertEquals("15WAU00001", AssignModel.getAssgnList().get(14));
+        assertEquals(1, assgnHelper.getAssgnList().size());
+        assertEquals("15WAU00001", assgnHelper.getAssgnList().get(14));
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.PRESENT, cdd1.getStatus());
@@ -419,7 +419,7 @@ public class AssignModelTest {
         assgnList.put(14, "15WAU00001");
 
         try{
-            AssignModel.setAssgnList(assgnList);
+            assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
             assgnHelper.attempReassign();
@@ -439,7 +439,7 @@ public class AssignModelTest {
         assgnList.put(14, "15WAU00005");
 
         try{
-            AssignModel.setAssgnList(assgnList);
+            assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("55");
             assgnHelper.checkCandidate("15WAU00001");
             assgnHelper.attempInvalidSeat();

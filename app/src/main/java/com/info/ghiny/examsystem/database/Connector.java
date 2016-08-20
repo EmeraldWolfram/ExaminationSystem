@@ -90,4 +90,9 @@ public class Connector {
 
         return dbDate;
     }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.ENGLISH, "$CHIEF:" + ipAddress + ":" + portNumber + ":$");
+    }
 }

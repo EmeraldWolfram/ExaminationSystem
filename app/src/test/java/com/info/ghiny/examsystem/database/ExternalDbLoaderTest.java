@@ -131,7 +131,7 @@ public class ExternalDbLoaderTest {
      */
     @Test
     public void testDlAttdList() throws Exception {
-        LoginHelper.setStaff(staff);    //To set the venue to H3
+/*        LoginHelper.setStaff(staff);    //To set the venue to H3
         AttendanceList attdList = new AttendanceList();
 
         Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
@@ -152,7 +152,7 @@ public class ExternalDbLoaderTest {
         doNothing().when(tcpClient).sendMessage("Json H3");
 
         ExternalDbLoader.dlAttdList();
-
+*/
     }
     //= DlPaperList() ===============================================================================
 

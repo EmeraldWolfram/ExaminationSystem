@@ -52,6 +52,7 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
 
         barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
         assert barcodeView != null;
+        barcodeView.decodeContinuous(callback);
     }
 
     @Override
@@ -98,7 +99,6 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
 
     @Override
     public void resumeScanning() {
-        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 

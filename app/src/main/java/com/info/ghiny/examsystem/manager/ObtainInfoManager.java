@@ -62,8 +62,6 @@ public class ObtainInfoManager implements ObtainInfoPresenter{
                     err.setListener(ProcessException.noButton, buttonListener);
 
                     ExternalDbLoader.getChiefLink().publishError(errManager, err);
-                    if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                        scannerView.resumeScanning();
                 }
             }
         });

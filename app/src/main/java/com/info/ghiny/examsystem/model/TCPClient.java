@@ -2,6 +2,8 @@ package com.info.ghiny.examsystem.model;
 
 
 
+import com.info.ghiny.examsystem.database.Connector;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -18,8 +20,9 @@ public class TCPClient implements Runnable{
     /**
      * Specify the Server Ip Address here. Whereas our Socket Server is started.
      * */
-    public static String SERVERIP = "192.168.0.112"; // your computer IP address
-    public static int SERVERPORT = 5657;
+    //public static String SERVERIP = "192.168.0.112"; // your computer IP address
+    //public static int SERVERPORT = 5657;
+    public static Connector connector;
     private OnMessageReceived mMessageListener = null;
     private boolean mRun = false;
 
@@ -33,11 +36,15 @@ public class TCPClient implements Runnable{
         mMessageListener = listener;
     }
 
-    public static void setServerIp(String ipAddress){
+    /*public static void setServerIp(String ipAddress){
         TCPClient.SERVERIP = ipAddress;
     }
     public static void setServerPort(int portNumber){
         TCPClient.SERVERPORT = portNumber;
+    }*/
+
+    public static void setConnector(Connector connector) {
+        TCPClient.connector = connector;
     }
 
     public void setMessageListener(OnMessageReceived mMessageListener) {
@@ -65,14 +72,18 @@ public class TCPClient implements Runnable{
 
         try {
             //here you must put your computer's IP address.
-            InetAddress serverAddr = InetAddress.getByName(SERVERIP);
+            //InetAddress serverAddr = InetAddress.getByName(SERVERIP);
+            InetAddress serverAddr = InetAddress.getByName(connector.getIpAddress());
 
             //create a socket to make the connection with the server
-            Socket socket = new Socket(serverAddr, SERVERPORT);
+            //Socket socket = new Socket(serverAddr, SERVERPORT);
+            Socket socket = new Socket(serverAddr, connector.getPortNumber());
             try {
                 //out = sender
-                out = new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(socket.getOutputStream())), true);
+                //out = new PrintWriter(new BufferedWriter(
+                //        new OutputStreamWriter(socket.getOutputStream())), true);
+                out = new PrintWriter(
+                        new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
                 //in = receiver
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

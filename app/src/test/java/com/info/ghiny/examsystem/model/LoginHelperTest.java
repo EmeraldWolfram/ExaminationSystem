@@ -1,16 +1,23 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Calendar;
+
 import static org.junit.Assert.*;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -24,8 +31,7 @@ public class LoginHelperTest {
 
     @Before
     public void setUp() throws Exception{
-        TCPClient.setServerIp(null);
-        TCPClient.setServerPort(0);
+        TCPClient.setConnector(null);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
         PowerMockito.mockStatic(ExternalDbLoader.class);
 
@@ -41,14 +47,13 @@ public class LoginHelperTest {
     @Test
     public void testVerifyChief_If_correct_String_format() throws Exception{
         try{
-            assertNull(TCPClient.SERVERIP);
-            assertEquals(0, TCPClient.SERVERPORT);
+            assertNull(TCPClient.connector);
 
             String str = "$CHIEF:192.168.0.1:5000:$";
             helper.verifyChief(str);
 
-            assertEquals("192.168.0.1", TCPClient.SERVERIP);
-            assertEquals(5000, TCPClient.SERVERPORT);
+            assertEquals("192.168.0.1", TCPClient.connector.getIpAddress());
+            assertEquals(Integer.valueOf(5000), TCPClient.connector.getPortNumber());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -63,16 +68,14 @@ public class LoginHelperTest {
     @Test
     public void testVerifyChief_If_wrong_String_format() throws Exception{
         try{
-            assertNull(TCPClient.SERVERIP);
-            assertEquals(0, TCPClient.SERVERPORT);
+            assertNull(TCPClient.connector);
 
             String str = "$CHIEF:192.168.0.1:5000:";
             helper.verifyChief(str);
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
-            assertNull(TCPClient.SERVERIP);
-            assertEquals(0, TCPClient.SERVERPORT);
+            assertNull(TCPClient.connector);
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a chief address", err.getErrorMsg());
         }
@@ -136,6 +139,24 @@ public class LoginHelperTest {
         }
     }
 
+    /**
+     * matchStaffPw(String inputPw)
+     *
+     * when the inputPw was empty
+     * MESSAGE_TOAST will be thrown
+     */
+    @Test
+    public void testMatchStaffPw_Valid_PW_should_send_message() throws Exception{
+        try{
+            LoginHelper.setStaff(staffId);
+            helper.matchStaffPw("ABCD");
+
+            //assertEquals("Please enter a password to proceed", err.getErrorMsg());
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
     //= checkQrId() ================================================================================
     /**
      * checkQrId(scanStr)
@@ -164,6 +185,49 @@ public class LoginHelperTest {
         } catch (ProcessException err) {
             fail("Expected nothing but thrown " + err.getErrorMsg());
         }
+    }
+
+    //= TryConnection() ============================================================================
+
+    /**
+     *
+     */
+    @Test
+    public void testTryConnection_withEmptyDb_return_false() throws Exception {
+        CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
+
+        when(dbLoader.queryConnector()).thenReturn(null);
+        assertFalse(helper.tryConnection(dbLoader));
+    }
+
+    @Test
+    public void testTryConnection_withInvalidDb_return_false() throws Exception {
+        CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
+        Connector connector         = new Connector("127.0.0.1", 6666);
+        Calendar date               = Calendar.getInstance();
+        date.set(2016, 7, 18);
+        connector.setDate(date);
+
+        when(dbLoader.queryConnector()).thenReturn(connector);
+        assertFalse(helper.tryConnection(dbLoader));
+    }
+
+    @Test
+    public void testTryConnection_withValidDb_return_true() throws Exception {
+        CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
+        Connector connector         = new Connector("127.0.0.1", 6666);
+
+        when(dbLoader.queryConnector()).thenReturn(connector);
+        assertTrue(helper.tryConnection(dbLoader));
+    }
+
+    @Test
+    public void testTryConnection_withEmptyUserDb_return_false() throws Exception {
+        CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
+        Connector connector         = new Connector("127.0.0.1", 6666);
+
+        when(dbLoader.queryConnector()).thenReturn(connector);
+        assertTrue(helper.tryConnection(dbLoader));
     }
 
 }

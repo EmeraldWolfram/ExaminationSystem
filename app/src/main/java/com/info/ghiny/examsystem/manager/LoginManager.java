@@ -24,15 +24,12 @@ public class LoginManager implements LoginPresenter {
     private ScannerView scannerView;
     private LoginHelper loginModel;
     private Handler handler;
+    private boolean dlFlag = false;
 
     public LoginManager(ScannerView scannerView){
         this.scannerView    = scannerView;
         this.loginModel     = new LoginHelper();
         this.handler        = new Handler();
-
-        ChiefLink connect   = new ChiefLink();
-        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        ExternalDbLoader.setChiefLink(connect);
     }
 
     public void setLoginModel(LoginHelper loginModel) {
@@ -41,6 +38,10 @@ public class LoginManager implements LoginPresenter {
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public boolean isDlFlag() {
+        return dlFlag;
     }
 
     //==============================================================================================
@@ -69,9 +70,10 @@ public class LoginManager implements LoginPresenter {
     public void onDestroy(){
         try {
             handler.removeCallbacks(timer);
-            ExternalDbLoader.getTcpClient().stopClient();
-            ExternalDbLoader.getChiefLink().cancel(true);
-            ExternalDbLoader.setChiefLink(null);
+            //ExternalDbLoader.getTcpClient().sendMessage("Termination");
+            //ExternalDbLoader.getTcpClient().stopClient();
+            //ExternalDbLoader.getChiefLink().cancel(true);
+            //ExternalDbLoader.setChiefLink(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,18 +119,21 @@ public class LoginManager implements LoginPresenter {
     @Override
     public void onChiefRespond(ErrorManager errorManager, String message){
         try{
-            ChiefLink.setCompleteFlag(true);
-            loginModel.checkLoginResult(message);
-            scannerView.navigateActivity(AssignInfoActivity.class);
+            if(!dlFlag){
+                ChiefLink.setCompleteFlag(true);
+                loginModel.checkLoginResult(message);
+                dlFlag = true;
+            } else {
+                loginModel.checkDetail(message);
+                dlFlag = false;
+                scannerView.navigateActivity(AssignInfoActivity.class);
+            }
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
 
             ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-            if(err.getErrorType() == ProcessException.MESSAGE_TOAST){
-                scannerView.resumeScanning();
-            }
         }
     }
 

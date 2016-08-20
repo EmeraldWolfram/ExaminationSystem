@@ -54,8 +54,6 @@ public class CollectManager implements CollectionPresenter{
                     err.setListener(ProcessException.okayButton, buttonListener);
 
                     ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-                    if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                        scannerView.resumeScanning();
                 }
             }
         });

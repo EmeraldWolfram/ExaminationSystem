@@ -9,7 +9,9 @@ import android.view.MenuInflater;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.manager.ConnectionManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.LoginManager;
@@ -20,7 +22,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class LinkChiefActivity extends AppCompatActivity implements GeneralView {
+public class LinkChiefActivity extends AppCompatActivity implements ScannerView {
     private static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
     private BeepManager beepManager;
@@ -47,11 +49,14 @@ public class LinkChiefActivity extends AppCompatActivity implements GeneralView 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_link_chief);
 
-        conManager   = new ConnectionManager(this);
-        errorManager = new ErrorManager(this);
-        beepManager  = new BeepManager(this);
+        CheckListLoader dbLoader    = new CheckListLoader(this);
+        conManager                  = new ConnectionManager(this, dbLoader);
+        errorManager                = new ErrorManager(this);
+        beepManager                 = new BeepManager(this);
         beepManager.setBeepEnabled(true);
         beepManager.setVibrateEnabled(true);
+
+        conManager.setupConnection();
 
         barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
         assert barcodeView != null;
@@ -60,18 +65,19 @@ public class LinkChiefActivity extends AppCompatActivity implements GeneralView 
 
     @Override
     protected void onPause() {
+        conManager.onPause();
         super.onPause();
-        barcodeView.pause();
     }
 
     @Override
     protected void onResume() {
+        conManager.onResume();
         super.onResume();
-        barcodeView.resume();
     }
 
     @Override
     protected void onDestroy() {
+        conManager.onDestroy();
         super.onDestroy();
         beepManager.close();
     }
@@ -84,6 +90,7 @@ public class LinkChiefActivity extends AppCompatActivity implements GeneralView 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Experiment on Menu Bar
         MenuInflater inflater   = getMenuInflater();
         inflater.inflate(R.menu.home_option_menu, menu);
 
@@ -93,7 +100,6 @@ public class LinkChiefActivity extends AppCompatActivity implements GeneralView 
     //==============================================================================================
     public void onScanForChief(String scanStr){
         conManager.onScanForChief(scanStr);
-        barcodeView.resume();
     }
 
     @Override
@@ -111,4 +117,17 @@ public class LinkChiefActivity extends AppCompatActivity implements GeneralView 
     public void finishActivity() {
         finish();
     }
+
+    @Override
+    public void resumeScanning() {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void pauseScanning() {
+        barcodeView.pause();
+    }
+
+    @Override
+    public void securityPrompt() {}
 }

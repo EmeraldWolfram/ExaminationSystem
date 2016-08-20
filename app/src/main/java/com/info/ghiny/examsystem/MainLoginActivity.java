@@ -51,6 +51,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
         loginManager    = new LoginManager(this);
         errorManager    = new ErrorManager(this);
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
+        barcodeView.decodeContinuous(callback);
     }
 
     @Override
@@ -116,7 +117,6 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
 
     @Override
     public void resumeScanning() {
-        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 }

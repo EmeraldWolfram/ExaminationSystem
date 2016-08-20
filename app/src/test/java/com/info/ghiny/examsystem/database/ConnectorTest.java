@@ -50,4 +50,10 @@ public class ConnectorTest {
 
         assertNull(date);
     }
+
+    @Test
+    public void testToString() throws Exception{
+        Connector connector = new Connector("127.0.0.1", 6666);
+        assertEquals("$CHIEF:127.0.0.1:6666:$", connector.toString());
+    }
 }

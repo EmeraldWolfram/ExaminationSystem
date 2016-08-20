@@ -66,7 +66,7 @@ public class FragmentHelper {
     }
 
     public static void resetCandidate(Integer table){
-        AttendanceList attdList = AssignModel.getAttdList();
+        /*AttendanceList attdList = AssignModel.getAttdList();
         HashMap<Integer, String> assgnList  = AssignModel.getAssgnList();
 
         if(table != null){
@@ -76,7 +76,7 @@ public class FragmentHelper {
             cdd.setStatus(Status.ABSENT);
             attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
             assgnList.remove(table);
-        }
+        }*/
     }
 
 }

@@ -74,6 +74,7 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
 
         //Barcode Viewer
         barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
+        barcodeView.decodeContinuous(callback);
         assert barcodeView != null;
         barcodeView.setStatusText("Ready to take candidates attendance");
     }
@@ -159,7 +160,6 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
 
     @Override
     public void resumeScanning() {
-        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 

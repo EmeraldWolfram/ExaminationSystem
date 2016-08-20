@@ -45,19 +45,22 @@ public class ExternalDbLoader {
 
     public static void dlAttdList(){
 
-        String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
-                LoginHelper.getStaff().getVenueHandling());
+        //String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
+        //        LoginHelper.getStaff().getVenueHandling());
 
-        if (str != null && tcpClient != null) {
-            tcpClient.sendMessage(str);
-        }
+        //if (str != null && tcpClient != null) {
+        //    tcpClient.sendMessage(str);
+        //}
     }
 
-    public static void dlPaperList() {
+    public static void dlPaperList() throws ProcessException {
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
                 LoginHelper.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
+        } else {
+            throw new ProcessException("FATAL: Fail to request attendance list!\n" +
+                    "Please consult developer", ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 

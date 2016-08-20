@@ -70,6 +70,7 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
         });
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
+        barcodeView.decodeContinuous(callback);
         barcodeView.setStatusText("Scan candidate ID to get his/her exam details");
     }
 
@@ -125,7 +126,6 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
 
     @Override
     public void resumeScanning() {
-        barcodeView.decodeContinuous(callback);
         barcodeView.resume();
     }
 
