@@ -92,6 +92,16 @@ public class LoginHelper {
     public void checkLoginResult(String msgFromChief) throws ProcessException{
         loginCount--;
         String pw   = staff.getPassword();
+
+        if(loginCount < 1){
+            try{
+                staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
+            } catch (ProcessException err) {
+                throw new ProcessException("You have failed to login!",
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            }
+
+        }
         staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
         staff.setPassword(pw);
 
