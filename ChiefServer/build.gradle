@@ -1,0 +1,53 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'chiefinvigilator.ChiefInvigilator'
+}
+
+repositories {
+    mavenCentral()
+    // You may define additional repositories, or even remove "mavenCentral()".
+    // Read more about repositories here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
+}
+
+dependencies {
+    // TODO: Add dependencies here ...
+    
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.8.11.2'
+
+    compile 'org.mockito:mockito-core:1.10.19'
+    
+    // https://mvnrepository.com/artifact/org.jooq/jooq
+    compile group: 'org.jooq', name: 'jooq', version: '3.8.4'
+    
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20151123'
+    
+    // https://mvnrepository.com/artifact/com.google.zxing/core
+    compile group: 'com.google.zxing', name: 'core', version: '3.2.1'
+
+    // https://mvnrepository.com/artifact/org.swinglabs/swingx
+    compile group: 'org.swinglabs', name: 'swingx', version: '1.6.1'
+
+    // https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
+
+    // https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
+    
+    // You can read more about how to add dependency here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+}
