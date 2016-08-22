@@ -2,37 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/obtainInfoLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#2196F3">
+    android:layout_height="match_parent">
 
     <com.journeyapps.barcodescanner.CompoundBarcodeView
         android:id="@+id/obtainScanner"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_above="@+id/studentInfoLayout"
-        android:layout_alignParentTop="true">
+        android:layout_height="match_parent">
 
     </com.journeyapps.barcodescanner.CompoundBarcodeView>
 
-    <View
-        android:id="@+id/obtainDummy"
-        android:layout_width="match_parent"
-        android:layout_height="320dp"/>
-
-    <LinearLayout
-        android:id="@+id/studentInfoLayout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    <ImageView
+        android:src="@drawable/scan_frame"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/obtainDummy"
-        android:background="#2196F3">
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"/>
 
-        <ListView
-            android:id="@+id/paperInfoList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
 
-    </LinearLayout>
+
+
 
 </RelativeLayout>

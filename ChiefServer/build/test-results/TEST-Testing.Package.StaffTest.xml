@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Testing.Package.StaffTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2016-08-20T07:05:47" hostname="Kriss" time="0.35">
+  <properties/>
+  <testcase name="testGetCddList" classname="Testing.Package.StaffTest" time="0.321"/>
+  <testcase name="testStaff" classname="Testing.Package.StaffTest" time="0.002"/>
+  <testcase name="testGetPapers2" classname="Testing.Package.StaffTest" time="0.003"/>
+  <testcase name="testGetCddList2" classname="Testing.Package.StaffTest" time="0.003"/>
+  <testcase name="testStaff2" classname="Testing.Package.StaffTest" time="0.003"/>
+  <testcase name="testGetPapers" classname="Testing.Package.StaffTest" time="0.002"/>
+  <testcase name="testPrepareInvExamList" classname="Testing.Package.StaffTest" time="0.009"/>
+  <testcase name="testGetPapers_Not_Found" classname="Testing.Package.StaffTest" time="0.003"/>
+  <testcase name="testGetCddList_Not_Found" classname="Testing.Package.StaffTest" time="0.002"/>
+  <system-out><![CDATA[nullW1005ADAC
+nullW1004ADAC
+RMB3W0001AAAA
+RMB3W0002AAAA
+RMB3W0003AAAA
+RMB3W0004AAAA
+RMB3W0005AAAA
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

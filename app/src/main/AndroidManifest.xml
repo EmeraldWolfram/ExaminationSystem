@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.info.ghiny.examsystem">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,26 +14,37 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainLoginActivity"
+            android:name=".LinkChiefActivity"
             android:screenOrientation="userPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name=".MainLoginActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
             android:name=".ObtainInfoActivity"
-            android:screenOrientation="userPortrait"/>
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".AssignInfoActivity"
-            android:screenOrientation="userPortrait"/>
+            android:screenOrientation="userPortrait" />
         <activity
-            android:name=".CheckListActivity"
-            android:screenOrientation="userPortrait"/>
+            android:name=".FragmentListActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".HomeOptionActivity"
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".PopUpLogin"
-            android:theme="@style/AppTheme.CustomTheme"
-            android:screenOrientation="userPortrait"/>
+            android:screenOrientation="userPortrait"
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity
+            android:name=".CollectionActivity"
+            android:screenOrientation="userPortrait" />
+        <activity android:name=".ExamListActivity"></activity>
     </application>
 
 </manifest>

@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.info.ghiny.examsystem.MainLoginActivity"
-    android:background="@color/abc_search_url_text_selected">
+    android:background="#000000">
 
     <TextView
         android:id="@+id/identityText"
@@ -19,23 +19,28 @@
         android:textSize="18sp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="5dp"
-        android:textColor="@color/primary_text_default_material_dark"
+        android:textColor="#FFFFFF"
         android:textColorHighlight="@android:color/holo_green_light" />
 
-    <View
-        android:id="@+id/loginDummy"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/identityText">
-    </View>
 
-    <com.journeyapps.barcodescanner.CompoundBarcodeView
-        android:id="@+id/loginScanner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignTop="@+id/loginDummy">
-    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+        <com.journeyapps.barcodescanner.BarcodeView
+            android:id="@+id/loginScanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.journeyapps.barcodescanner.BarcodeView>
+
+        <ImageView
+            android:src="@drawable/scan_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+
 
 
 </RelativeLayout>

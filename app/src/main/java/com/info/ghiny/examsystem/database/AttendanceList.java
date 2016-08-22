@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.database;
 
-import android.view.inputmethod.CursorAnchorInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +10,6 @@ import java.util.Map;
  * Created by GhinY on 25/05/2016.
  */
 public class AttendanceList {
-    public enum Status {
-        PRESENT,
-        ABSENT,
-        EXEMPTED,
-        BARRED
-    }
     private HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
             attendanceList;
 
@@ -27,22 +20,26 @@ public class AttendanceList {
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> absent  = new HashMap<>();
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> barred  = new HashMap<>();
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt  = new HashMap<>();
+        HashMap<String, HashMap<String, HashMap<String, Candidate>>> quaran  = new HashMap<>();
 
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
+        attendanceList.put(Status.QUARANTINED, quaran);
     }
 
     public AttendanceList(HashMap<String, HashMap<String, HashMap<String, Candidate>>> present,
                           HashMap<String, HashMap<String, HashMap<String, Candidate>>> absent,
                           HashMap<String, HashMap<String, HashMap<String, Candidate>>> barred,
-                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt){
+                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> exempt,
+                          HashMap<String, HashMap<String, HashMap<String, Candidate>>> quaran){
         attendanceList = new HashMap<>();
         attendanceList.put(Status.PRESENT, present);
         attendanceList.put(Status.ABSENT, absent);
         attendanceList.put(Status.BARRED, barred);
         attendanceList.put(Status.EXEMPTED, exempt);
+        attendanceList.put(Status.QUARANTINED, quaran);
     }
 
     //Inherit Methods
@@ -86,6 +83,7 @@ public class AttendanceList {
     //Available Methods
     //=========================================================================
 
+    //------------------- AttendanceList Setter Getter ------------------------------------
     public HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
     getAttendanceList() {
         return attendanceList;
@@ -95,7 +93,7 @@ public class AttendanceList {
             HashMap<String, Candidate>>>> attendanceList) {
         this.attendanceList = attendanceList;
     }
-
+    //------------------- Methods Calculate Number of Item _-------------------------------
     public int getNumberOfStatus(){
         return attendanceList.size();
     }
@@ -140,6 +138,7 @@ public class AttendanceList {
         return size;
     }
 
+    //------------------- Major Attendance Taking Tools --------------------------------------
     public void addCandidate(Candidate cdd, String paperCode, Status status, String programme){
         assert cdd      != null : "Input Candidate argument cannot be null";
         assert paperCode!= null : "Input PaperCode argument cannot be null";

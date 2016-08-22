@@ -17,6 +17,8 @@ public class CandidateAttendance {
     String attendance;
     Integer tableNo;
     
+    public CandidateAttendance(){}
+    
     public CandidateAttendance( Integer ca_id,
                                 String ic,
                                 Integer paper_id,

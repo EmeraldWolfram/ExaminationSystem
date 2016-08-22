@@ -1,22 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E3F2FD"
-    android:layout_marginTop="2sp">
+    android:columnCount="6"
+    android:rowCount="2"
+    android:background="@drawable/custom_border"
+    android:layout_margin="5dp">
 
     <TextView
         android:id="@+id/paperCodeNameText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:paddingBottom="5sp"/>
+        android:textSize="18sp"
+        android:padding="5dp"
+        android:layout_gravity="start"
+        android:layout_column="0"
+        android:layout_row="0"
+        android:layout_columnSpan="5"
+        android:text="BAME 0000  TEST SUBJECT" />
 
     <TextView
-        android:id="@+id/paperDetailText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"/>
+        android:id="@+id/paperVenueText"
+        android:textSize="28sp"
+        android:padding="10dp"
+        android:layout_gravity="end"
+        android:layout_column="5"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:text="H4"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/paperDayText"
+        android:textSize="12sp"
+        android:padding="5dp"
+        android:layout_gravity="start"
+        android:layout_column="0"
+        android:layout_row="1"
+        android:layout_columnSpan="3"
+        android:text="6 day left"/>
+
+    <TextView
+        android:id="@+id/paperSessionText"
+        android:textSize="12sp"
+        android:layout_column="4"
+        android:layout_row="1"
+        android:text="AM"/>
+
+</GridLayout>

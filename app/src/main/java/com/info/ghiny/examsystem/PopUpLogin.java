@@ -1,31 +1,38 @@
 package com.info.ghiny.examsystem;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.info.ghiny.examsystem.manager.ConfigManager;
+import com.info.ghiny.examsystem.model.CustomToast;
+import com.info.ghiny.examsystem.model.LoginHelper;
 
 /**
  * Created by GhinY on 21/05/2016.
  */
 public class PopUpLogin extends Activity {
 
+    public static final int PASSWORD_REQ_CODE = 888;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pop_up_window);
 
-        String name     = getIntent().getStringExtra("Name");
-        String regNum   = getIntent().getStringExtra("RegNum");
-
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
-        nameView.setText(name);
-        regNView.setText(regNum);
+        TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
+        nameView.setText(LoginHelper.getStaff().getName());
+        nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+        regNView.setText(LoginHelper.getStaff().getIdNo());
+        regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+        entView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -41,5 +48,11 @@ public class PopUpLogin extends Activity {
 
         this.setResult(RESULT_OK, getIntent());
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        CustomToast toast   = new CustomToast(this);
+        toast.showCustomMessage("Please enter a password to proceed", R.drawable.warn_icon);
     }
 }

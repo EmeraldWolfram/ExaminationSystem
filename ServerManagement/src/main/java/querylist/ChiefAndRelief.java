@@ -14,8 +14,8 @@ public class ChiefAndRelief {
     Integer si_id;
     String block;
     Integer session_id;
-    String status;
-    String attendance;
+    String status = "";
+    String attendance = "";
     String signInTime;
     
     public ChiefAndRelief(){}

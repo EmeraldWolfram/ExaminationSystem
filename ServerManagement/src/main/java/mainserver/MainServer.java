@@ -5,6 +5,10 @@
  */
 package mainserver;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
@@ -16,7 +20,7 @@ public class MainServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        MessageListener ml = new MessageListener(5006);
         
     }
     

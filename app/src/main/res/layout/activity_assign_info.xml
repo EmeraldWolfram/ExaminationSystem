@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/assignInfoActivityLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="@color/colorDarkGreen">
 
     <LinearLayout
         android:id="@+id/tableInfoLayout"
@@ -14,14 +13,16 @@
         android:layout_alignParentTop="true">
         <TextView
             android:id="@+id/tableNumberText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_margin="4sp"
-            android:paddingTop="4sp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:textSize="45sp"
-            android:background="@drawable/table_num"/>
+            android:background="@drawable/rounded_table"/>
 
         <LinearLayout
+            android:id="@+id/assignInfoLinearLayout"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -47,13 +48,23 @@
 
     </LinearLayout>
 
-    <com.journeyapps.barcodescanner.CompoundBarcodeView
-        android:id="@+id/assignScanner"
+    <RelativeLayout
+        android:id="@+id/assignInfoBarcodeLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="match_parent"
         android:layout_below="@id/tableInfoLayout">
+        <com.journeyapps.barcodescanner.CompoundBarcodeView
+            android:id="@+id/assignScanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.journeyapps.barcodescanner.CompoundBarcodeView>
 
-    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+        <ImageView
+            android:src="@drawable/scan_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>

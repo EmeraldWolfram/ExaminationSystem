@@ -1,37 +1,38 @@
 package com.info.ghiny.examsystem.database;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.info.ghiny.examsystem.database.Candidate;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 /**
- * Created by GhinY on 23/05/2016.
+ * Created by GhinY on 22/07/2016.
  */
 public class CheckListLoader {
-    private static final int DATABASE_VERSION       = 11;
-    private static final String DATABASE_NAME       = "checkListDB";
+    private static final int DATABASE_VERSION       = 3;
+    public static final String DATABASE_NAME        = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
+    private static final String PAPERS_TABLE        = "PaperTable";
+    private static final String USER_TABLE          = "ConnectionTable";
 
-    public static final String TABLE_INFO_ID            = "_id";
-    public static final String TABLE_INFO_COLUMN_NAME   = "Name";
-    public static final String TABLE_INFO_COLUMN_REGNUM = "RegNum";
-    public static final String TABLE_INFO_COLUMN_CODE   = "Code";
-    public static final String TABLE_INFO_COLUMN_TABLE  = "TableNo";
-    public static final String TABLE_INFO_COLUMN_STATUS = "Status";
-    public static final String TABLE_INFO_COLUMN_PRG    = "Programme";
+    private static final String SAVE_ATTENDANCE = "INSERT OR REPLACE INTO "     + ATTENDANCE_TABLE
+            + " (" + Candidate.CDD_EXAM_INDEX   + ", " + Candidate.CDD_REG_NUM
+            + ", " + Candidate.CDD_TABLE        + ", " + Candidate.CDD_STATUS
+            + ", " + Candidate.CDD_PAPER        + ", " + Candidate.CDD_PROG
+            + ") VALUES ('";
 
-    private static final String SAVE_ATTENDANCE = "INSERT INTO " + ATTENDANCE_TABLE
-            + " (" + TABLE_INFO_COLUMN_NAME     + ", " + TABLE_INFO_COLUMN_REGNUM
-            + ", " + TABLE_INFO_COLUMN_CODE     + ", " + TABLE_INFO_COLUMN_TABLE
-            + ", " + TABLE_INFO_COLUMN_STATUS   + ", " + TABLE_INFO_COLUMN_PRG
+    private static final String SAVE_PAPER = "INSERT OR REPLACE INTO "  + PAPERS_TABLE
+            + " (" + ExamSubject.PAPER_CODE     + ", " + ExamSubject.PAPER_DESC
+            + ", " + ExamSubject.PAPER_START_NO + ", " + ExamSubject.PAPER_TOTAL_CDD
+            + ") VALUES ('";
+
+    private static final String SAVE_USER = "INSERT OR REPLACE INTO "  + USER_TABLE
+            + " (" + Connector.CONNECT_IP       + ", " + Connector.CONNECT_PORT
+            + ", " + Connector.CONNECT_DATE     + ", " + Connector.CONNECT_SESSION
             + ") VALUES ('";
 
     private static SQLiteDatabase database;
@@ -42,39 +43,14 @@ public class CheckListLoader {
         database    = openHelper.getWritableDatabase();
     }
 
+    public static void setDatabase(SQLiteDatabase database) {
+        CheckListLoader.database = database;
+    }
 
     //AVAILABLE METHOD ========================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    //Clear the database and save a new set of AttendanceList into the database
-    public void saveAttendanceList(AttendanceList attdList){
-        clearDatabase();
-        List<String> regNumList = attdList.getAllCandidateRegNumList();
-
-        for(int i = 0; i < regNumList.size(); i++)
-            saveAttendance(attdList.getCandidate(regNumList.get(i)));
-    }
-
-    //Simply clean the database
-    public static void clearDatabase(){
-        database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
-        database.execSQL("VACUUM");
-    }
-
-    //Retrieve an attendanceList from the database
-    public HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
-    getLastSavedAttendanceList(){
-        HashMap<AttendanceList.Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> map;
-        map = new HashMap<>();
-        map.put(AttendanceList.Status.PRESENT, getPaperMap(AttendanceList.Status.PRESENT));
-        map.put(AttendanceList.Status.ABSENT, getPaperMap(AttendanceList.Status.ABSENT));
-        map.put(AttendanceList.Status.BARRED, getPaperMap(AttendanceList.Status.BARRED));
-        map.put(AttendanceList.Status.EXEMPTED, getPaperMap(AttendanceList.Status.EXEMPTED));
-
-        return map;
-    }
-
-    public boolean isEmpty(){
+    public boolean emptyAttdInDB(){
         Boolean status = true;
 
         Cursor ptr = database.rawQuery("SELECT * FROM " + ATTENDANCE_TABLE, null);
@@ -85,126 +61,173 @@ public class CheckListLoader {
         return status;
     }
 
+    public boolean emptyPapersInDB(){
+        Boolean status = true;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM " + PAPERS_TABLE, null);
+        if(ptr.moveToFirst())
+            status = false;
+
+        ptr.close();
+        return status;
+    }
+
+    public boolean emptyUserInDB(){
+        Boolean status = true;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM " + USER_TABLE, null);
+        if(ptr.moveToFirst())
+            status = false;
+
+        ptr.close();
+        return status;
+    }
+
+    //Simply clean the database
+    public void clearDatabase(){
+        database.execSQL("DELETE FROM " + ATTENDANCE_TABLE);
+        database.execSQL("DELETE FROM " + PAPERS_TABLE);
+        database.execSQL("VACUUM");
+    }
+
+    public void clearUserDatabase(){
+        database.execSQL("DELETE FROM " + USER_TABLE);
+        database.execSQL("VACUUM");
+    }
+
+    //Clear the database and save a new set of AttendanceList into the database
+    public void saveAttendanceList(AttendanceList attdList){
+        List<String> regNumList = attdList.getAllCandidateRegNumList();
+
+        for(int i = 0; i < regNumList.size(); i++)
+            saveAttendance(attdList.getCandidate(regNumList.get(i)));
+    }
+
+    public void savePaperList(HashMap<String, ExamSubject> papers){
+        String[] paperArr = Arrays.copyOf(papers.keySet().toArray(),
+                papers.keySet().toArray().length, String[].class);
+
+        for(int i = 0; i < paperArr.length; i++)
+            savePaper(papers.get(paperArr[i]));
+    }
+
+    public void saveConnector(Connector connector){
+        database.execSQL(SAVE_USER
+                + connector.getIpAddress()          +   "', "
+                + connector.getPortNumber()         +   ", '"
+                + connector.getDateInString()       +   "', '"
+                + connector.getSession().toString() +   "')");
+    }
+
+    //Retrieve an attendanceList from the database
+    public AttendanceList queryAttendanceList() {
+        AttendanceList attdList = new AttendanceList();
+        List<Status> statusList = new ArrayList<>();
+        statusList.add(Status.PRESENT);
+        statusList.add(Status.ABSENT);
+        statusList.add(Status.BARRED);
+        statusList.add(Status.EXEMPTED);
+        statusList.add(Status.QUARANTINED);
+
+        for(int j = 0; j < statusList.size(); j++){
+            List<Candidate> cdds = getCandidatesWithStatus(statusList.get(j));
+            for(int i = 0; i < cdds.size(); i ++ ){
+                attdList.addCandidate(cdds.get(i), cdds.get(i).getPaperCode(),
+                        cdds.get(i).getStatus(), cdds.get(i).getProgramme());
+            }
+        }
+        return attdList;
+    }
+
+    public HashMap<String, ExamSubject> queryPapers() {
+        HashMap<String, ExamSubject> paperMap = new HashMap<>();
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + PAPERS_TABLE, null);
+
+        if(ptr.moveToFirst()){
+            do{
+                ExamSubject subject = new ExamSubject();
+
+                subject.setPaperCode(ptr.getString(ptr.getColumnIndex(ExamSubject.PAPER_CODE)));
+                subject.setPaperDesc(ptr.getString(ptr.getColumnIndex(ExamSubject.PAPER_DESC)));
+                subject.setStartTableNum(ptr.getInt(ptr.getColumnIndex(ExamSubject.PAPER_START_NO)));
+                subject.setNumOfCandidate(ptr.getInt(ptr.getColumnIndex(ExamSubject.PAPER_TOTAL_CDD)));
+                paperMap.put(subject.getPaperCode(), subject);
+            }while (ptr.moveToNext());
+        }
+
+        ptr.close();
+
+        return paperMap;
+    }
+
+    public Connector queryConnector(){
+        Connector connector = null;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + USER_TABLE, null);
+
+        if(ptr.moveToFirst()){
+            String ipAddress    = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_IP));
+            Integer portNumber  = ptr.getInt(ptr.getColumnIndex(Connector.CONNECT_PORT));
+            String date         = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_DATE));
+            String session      = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_SESSION));
+
+            connector   = new Connector(ipAddress, portNumber);
+            connector.setDate(connector.parseStringToDate(date));
+            connector.setSession(Session.parseSession(session));
+        }
+
+        ptr.close();
+
+        return connector;
+    }
+
+
     //INTERNAL HIDDEN TOOLS ====================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     //Save an instance of Candidate into the database
     private void saveAttendance(Candidate cdd){
         database.execSQL(SAVE_ATTENDANCE
-                + cdd.getStudentName()  + "', '"
-                + cdd.getRegNum()       + "', '"
-                + cdd.getPaperCode()    + "', "
+                + cdd.getExamIndex()    + "', '"
+                + cdd.getRegNum()       + "', "
                 + cdd.getTableNumber()  + ", '"
                 + cdd.getStatus()       + "', '"
+                + cdd.getPaperCode()    + "', '"
                 + cdd.getProgramme()    + "')");
     }
 
-    //Get a Map of PaperSubject with Candidates filled
-    private HashMap<String, HashMap<String, HashMap<String, Candidate>>>
-    getPaperMap(AttendanceList.Status status){
-
-        HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperMap = new HashMap<>();
-        List<String> paperCodeList = getDistinctPaperCode();
-
-        Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
-                + TABLE_INFO_COLUMN_STATUS + " = ?", new String[]{status.toString()});
-
-        for(int i = 0; i < paperCodeList.size(); i++){
-            if (ptr.moveToFirst()) {
-                do {
-                    HashMap<String, HashMap<String, Candidate>> prgMap;
-                    prgMap = getProgrammeMap(status, paperCodeList.get(i));
-
-                    paperMap.put(paperCodeList.get(i), prgMap);
-                } while (ptr.moveToNext());
-            }
-        }
-        paperCodeList.clear();
-        ptr.close();
-        return paperMap;
+    private void savePaper(ExamSubject paper){
+        database.execSQL(SAVE_PAPER
+                + paper.getPaperCode()      + "', '"
+                + paper.getPaperDesc()      + "', "
+                + paper.getStartTableNum()  + ", "
+                + paper.getNumOfCandidate() + ")");
     }
 
-    private HashMap<String, HashMap<String, Candidate>>
-    getProgrammeMap(AttendanceList.Status status, String paperCode){
+    private List<Candidate> getCandidatesWithStatus(Status status){
 
-        HashMap<String, HashMap<String, Candidate>> prgMap = new HashMap<>();
-        List<String> prgList = getDistinctProgramme();
+        List<Candidate> candidates= new ArrayList<>();
 
-        Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
-                + TABLE_INFO_COLUMN_STATUS + " = ? AND " + TABLE_INFO_COLUMN_CODE
-                + " = ?" , new String[]{status.toString(), paperCode});
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE + " WHERE "
+                + Candidate.CDD_STATUS +" = ?", new String[]{status.toString()});
 
-        for(int i = 0; i < prgList.size(); i++){
-            if (ptr.moveToFirst()) {
-                do {
-                    HashMap<String, Candidate> candidateMap;
-                    candidateMap = getCandidateList(paperCode, status, prgList.get(i));
-
-                    prgMap.put(prgList.get(i), candidateMap);
-                } while (ptr.moveToNext());
-            }
-        }
-        prgList.clear();
-        ptr.close();
-        return prgMap;
-    }
-
-    //Get a Map of Candidates that have the given status and paperCode
-    private HashMap<String, Candidate>
-    getCandidateList(String paperCode, AttendanceList.Status status, String prg){
-        HashMap<String, Candidate> candidateMap= new HashMap<>();
-        Cursor ptr  = database.rawQuery("SELECT * FROM "  + ATTENDANCE_TABLE+ " WHERE "
-                + TABLE_INFO_COLUMN_CODE + " = ? AND " + TABLE_INFO_COLUMN_STATUS
-                + " = ? AND " + TABLE_INFO_COLUMN_PRG + " = ?",
-                new String[]{paperCode, status.toString(), prg});
-
-        if (ptr.moveToFirst()) {
-            do {
+        if(ptr.moveToFirst()){
+            do{
                 Candidate cdd = new Candidate();
 
-                cdd.setStudentName(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_NAME)));
-                cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(TABLE_INFO_COLUMN_TABLE)));
-                cdd.setRegNum(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_REGNUM)));
-                cdd.setPaperCode(paperCode);
+                cdd.setExamIndex(ptr.getString(ptr.getColumnIndex(Candidate.CDD_EXAM_INDEX)));
+                cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(Candidate.CDD_TABLE)));
+                cdd.setRegNum(ptr.getString(ptr.getColumnIndex(Candidate.CDD_REG_NUM)));
+                cdd.setPaperCode(ptr.getString(ptr.getColumnIndex(Candidate.CDD_PAPER)));
                 cdd.setStatus(status);
-                cdd.setProgramme(prg);
-
-                candidateMap.put(cdd.getRegNum(), cdd);
-            } while (ptr.moveToNext());
+                cdd.setProgramme(ptr.getString(ptr.getColumnIndex(Candidate.CDD_PROG)));
+                candidates.add(cdd);
+            }while (ptr.moveToNext());
         }
         ptr.close();
-        return candidateMap;
-    }
 
-    //Get a List that contain all distinct PaperCode available
-    private List<String> getDistinctPaperCode(){
-        List<String> paperCodeList = new ArrayList<>();
-
-        Cursor ptr = database.query(true, ATTENDANCE_TABLE, new String[] { TABLE_INFO_COLUMN_CODE },
-                                    null, null, TABLE_INFO_COLUMN_CODE, null, null, null);
-
-        if (ptr.moveToFirst()) {
-            do {
-                paperCodeList.add(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_CODE)));
-            } while (ptr.moveToNext());
-        }
-        ptr.close();
-        return paperCodeList;
-    }
-
-    private List<String> getDistinctProgramme(){
-        List<String> programmeList = new ArrayList<>();
-
-        Cursor ptr = database.query(true, ATTENDANCE_TABLE, new String[] { TABLE_INFO_COLUMN_PRG },
-                null, null, TABLE_INFO_COLUMN_PRG, null, null, null);
-
-        if (ptr.moveToFirst()) {
-            do {
-                programmeList.add(ptr.getString(ptr.getColumnIndex(TABLE_INFO_COLUMN_PRG)));
-            } while (ptr.moveToNext());
-        }
-        ptr.close();
-        return programmeList;
+        return candidates;
     }
 
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -212,7 +235,7 @@ public class CheckListLoader {
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================================
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    private class CheckListOpenHelper extends SQLiteOpenHelper{
+    private class CheckListOpenHelper extends SQLiteOpenHelper {
 
         public CheckListOpenHelper(Context context){
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -220,19 +243,35 @@ public class CheckListLoader {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "( "
-                    + TABLE_INFO_ID    + " INTEGER PRIMARY KEY, "
-                    + TABLE_INFO_COLUMN_PRG    + " TEXT, "
-                    + TABLE_INFO_COLUMN_NAME    + " TEXT, "
-                    + TABLE_INFO_COLUMN_REGNUM  + " TEXT, "
-                    + TABLE_INFO_COLUMN_CODE    + " TEXT, "
-                    + TABLE_INFO_COLUMN_TABLE   + " INTEGER, "
-                    + TABLE_INFO_COLUMN_STATUS  + " TEXT )");
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + ATTENDANCE_TABLE  + "( "
+                    + Candidate.CDD_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + Candidate.CDD_REG_NUM     + " TEXT    NOT NULL, "
+                    + Candidate.CDD_EXAM_INDEX  + " TEXT    NOT NULL, "
+                    + Candidate.CDD_STATUS      + " TEXT    NOT NULL, "
+                    + Candidate.CDD_PAPER       + " TEXT    NOT NULL, "
+                    + Candidate.CDD_PROG        + " TEXT    NOT NULL, "
+                    + Candidate.CDD_TABLE       + " INTEGER NOT NULL)");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
+                    + ExamSubject.PAPER_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + ExamSubject.PAPER_CODE        + " TEXT    NOT NULL, "
+                    + ExamSubject.PAPER_DESC        + " TEXT    NOT NULL, "
+                    + ExamSubject.PAPER_START_NO    + " INTEGER NOT NULL, "
+                    + ExamSubject.PAPER_TOTAL_CDD   + " INTEGER NOT NULL)");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + USER_TABLE + "( "
+                    + Connector.CONNECT_DB_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + Connector.CONNECT_IP      + " TEXT    NOT NULL, "
+                    + Connector.CONNECT_PORT    + " INTEGER NOT NULL, "
+                    + Connector.CONNECT_DATE    + " TEXT    NOT NULL, "
+                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXIST " + ATTENDANCE_TABLE);
+            db.execSQL("DROP TABLE IF EXIST " + PAPERS_TABLE);
+            db.execSQL("DROP TABLE IF EXIST " + USER_TABLE);
             onCreate(db);
         }
     }

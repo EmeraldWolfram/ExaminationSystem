@@ -1,17 +1,26 @@
 package com.info.ghiny.examsystem;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.ExamDatabaseLoader;
-import com.info.ghiny.examsystem.database.Identity;
-import com.info.ghiny.examsystem.tools.ExamSystemAdapter;
-import com.info.ghiny.examsystem.tools.OnSwipeListener;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.manager.ObtainInfoManager;
+import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.model.InfoCollectHelper;
+import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.OnSwipeListener;
+import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -21,20 +30,18 @@ import java.util.List;
 /**
  * Created by GhinY on 07/05/2016.
  */
-public class ObtainInfoActivity extends AppCompatActivity {
-    public ExamSystemAdapter systemAdapter;
-    public ExamDatabaseLoader databaseHelper;
-
+public class ObtainInfoActivity extends AppCompatActivity implements ScannerView {
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
+
+    private ObtainInfoManager infoManager;
+    private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
-    private Identity student;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                student = databaseHelper.getIdentity(result.getText());
-                barcodeView.setStatusText(student.getName() + "\n" + student.getRegNum());
-                displayResult();
+                barcodeView.setStatusText(result.getText());
+                onScan(result.getText());
                 //get The info of the student here
             }
         }
@@ -43,34 +50,24 @@ public class ObtainInfoActivity extends AppCompatActivity {
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
         }
     };
+
+    //==============================================================================================
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
-        databaseHelper = new ExamDatabaseLoader(this);
-        systemAdapter = new ExamSystemAdapter(this, null);
-
-        ListView paperList = (ListView)findViewById(R.id.paperInfoList);
-        assert paperList != null;
-        paperList.setAdapter(systemAdapter);
+        infoManager = new ObtainInfoManager(this);
+        errManager  = new ErrorManager(this);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
-
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeTop() {
                 finish();
             }
         });
-        paperList.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeTop() {
-                finish();
-            }
-        });
-
 
         barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
         barcodeView.decodeContinuous(callback);
@@ -79,16 +76,14 @@ public class ObtainInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        infoManager.onResume(errManager);
         super.onResume();
-
-        barcodeView.resume();
     }
 
     @Override
     protected void onPause() {
+        infoManager.onPause();
         super.onPause();
-
-        barcodeView.pause();
     }
 
     @Override
@@ -97,8 +92,47 @@ public class ObtainInfoActivity extends AppCompatActivity {
                 || super.onKeyDown(keyCode, event);
     }
 
-    private void displayResult(){
-        //pass in the IC to getExamTable
-        systemAdapter.changeCursor(databaseHelper.getExamTable());
+    @Override
+    protected void onDestroy() {
+        infoManager.onDestroy();
+        super.onDestroy();
+    }
+
+    //==============================================================================================
+    private void onScan(String scanStr){
+        infoManager.onScanForCandidateDetail(scanStr);
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
+    }
+
+    @Override
+    public void pauseScanning() {
+        barcodeView.pause();
+    }
+
+    @Override
+    public void securityPrompt() {
+        //Intent secure   = new Intent(this, PopUpLogin.class);
+        //startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    }
+
+    @Override
+    public void displayError(ProcessException err) {
+        errManager.displayError(err);
+    }
+
+    @Override
+    public void resumeScanning() {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void navigateActivity(Class<?> cls) {
+        Intent displayList = new Intent(this, cls);
+        displayList.putExtra(JsonHelper.LIST_LIST, infoManager.getStudentSubjects());
+        startActivity(displayList);
     }
 }
