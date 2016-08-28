@@ -118,16 +118,16 @@ public class LoginManager implements LoginPresenter {
 
     @Override
     public void onChiefRespond(ErrorManager errorManager, String message){
-        try{
-            if(!dlFlag){
-                ChiefLink.setCompleteFlag(true);
-                loginModel.checkLoginResult(message);
-                dlFlag = true;
-            } else {
-                loginModel.checkDetail(message);
-                dlFlag = false;
-                scannerView.navigateActivity(AssignInfoActivity.class);
-            }
+        try {
+            //if(!dlFlag){
+            ChiefLink.setCompleteFlag(true);
+            loginModel.checkLoginResult(message);
+            //    dlFlag = true;
+            //} else {
+            //    loginModel.checkDetail(message);
+            //    dlFlag = false;
+            scannerView.navigateActivity(AssignInfoActivity.class);
+            //}
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);

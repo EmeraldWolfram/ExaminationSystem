@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
 
@@ -33,6 +34,9 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         assert viewPager != null;
         assert tabLayout != null;
 
@@ -55,6 +59,16 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
     protected void onDestroy() {
         fragListManager.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //==============================================================================================

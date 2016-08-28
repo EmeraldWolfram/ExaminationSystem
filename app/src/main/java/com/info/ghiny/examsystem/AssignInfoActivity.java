@@ -31,7 +31,6 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
     private static final String TAG = AssignInfoActivity.class.getSimpleName();
 
     //Required Tools
-    //private AssignHelper assignHelper;
     private AssignManager assignManager;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;

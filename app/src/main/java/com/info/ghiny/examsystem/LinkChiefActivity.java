@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
@@ -96,6 +97,7 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
 
         return true;
     }
+
 
     //==============================================================================================
     public void onScanForChief(String scanStr){

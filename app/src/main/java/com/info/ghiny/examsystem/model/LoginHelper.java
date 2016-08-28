@@ -105,9 +105,14 @@ public class LoginHelper {
         staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
         staff.setPassword(pw);
 
-        loginCount  = 3;
+        AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
+        AssignModel.setAttdList(attdList);
 
-        ExternalDbLoader.dlPaperList();
+        HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
+        Candidate.setPaperList(papers);
+
+        loginCount  = 3;
+        //ExternalDbLoader.dlPaperList();
     }
 
     public void checkDetail(String msgFromChief) throws ProcessException {

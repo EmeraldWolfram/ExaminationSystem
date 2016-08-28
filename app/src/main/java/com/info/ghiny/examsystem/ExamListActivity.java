@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.info.ghiny.examsystem.manager.ExamSubjectAdapter;
@@ -26,6 +27,9 @@ public class ExamListActivity extends AppCompatActivity {
 
         String message  = getIntent().getStringExtra(JsonHelper.LIST_LIST);
 
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         try{
             List<ExamSubject> subjects  = JsonHelper.parsePaperList(message);
             listAdapter.updatePapers(subjects);
@@ -34,5 +38,15 @@ public class ExamListActivity extends AppCompatActivity {
         }
 
         paperList.setAdapter(listAdapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
