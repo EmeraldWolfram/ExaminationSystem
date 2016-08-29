@@ -3,9 +3,20 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Handler;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
@@ -17,6 +28,8 @@ import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -43,6 +56,33 @@ public class FragListManager implements AttendanceListPresenter {
     @Override
     public void signToUpload(){
         generalView.navigateActivity(PopUpLogin.class);
+    }
+
+    public void toggleUnassign(View view){
+        float clear     = 1;
+        float chalky    = 0.1f;
+
+        ViewGroup parent = (ViewGroup) view.getParent();
+
+        TextView table  = (TextView) parent.findViewById(R.id.assignedTableText);
+        TextView cdd    = (TextView) parent.findViewById(R.id.assignedCddText);
+        TextView prg    = (TextView) parent.findViewById(R.id.assignedPrgText);
+        CheckBox bt     = (CheckBox) parent.findViewById(R.id.uncheckPresent);
+        TextView status = (TextView) parent.findViewById(R.id.checkboxStatus);
+
+        if(bt.isChecked()){
+            table.setAlpha(clear);
+            cdd.setAlpha(clear);
+            prg.setAlpha(clear);
+            status.setText(R.string.checked);
+            //remove from list by MODEL
+        } else {
+            table.setAlpha(chalky);
+            cdd.setAlpha(chalky);
+            prg.setAlpha(chalky);
+            status.setText(R.string.unchecked);
+            //add to delete list by MODEL
+        }
     }
 
     @Override

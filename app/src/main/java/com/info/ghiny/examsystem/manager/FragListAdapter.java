@@ -2,11 +2,14 @@ package com.info.ghiny.examsystem.manager;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -59,9 +62,11 @@ public class FragListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.attendance_body, null);
         }
 
-        final TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
+        TextView tableNumView   = (TextView) convertView.findViewById(R.id.assignedTableText);
         TextView candidateView  = (TextView) convertView.findViewById(R.id.assignedCddText);
         TextView cddPrgView     = (TextView) convertView.findViewById(R.id.assignedPrgText);
+        CheckBox checkBox       = (CheckBox) convertView.findViewById(R.id.uncheckPresent);
+        TextView boxStatus      = (TextView) convertView.findViewById(R.id.checkboxStatus);
 
         tableNumView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Chunkfive.otf"));
         candidateView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf"));
@@ -71,22 +76,28 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         candidateView.setText(childCdd.getExamIndex());
         cddPrgView.setText(childCdd.getProgramme());
 
-        if(childCdd.getTableNumber() != 0)
+        if(childCdd.getTableNumber() != 0){
             tableNumView.setBackgroundResource(R.drawable.rounded_table);
-        else{
+            checkBox.setChecked(true);
+            boxStatus.setText(R.string.checked);
+            //checkBox.setImageResource(R.drawable.ic_check_box_black_24dp);
+        } else {
             tableNumView.setText("");
+            checkBox.setVisibility(View.INVISIBLE);
         }
 
-        final LinearLayout assignResult = (LinearLayout)convertView.findViewById(R.id.assignedCddLayout);
-        assert assignResult != null;
-        assignResult.setOnTouchListener(new OnSwipeListener(context){
-            @Override
-            public void onSwipeRight() {
-                FragmentHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
-                assignResult.setVisibility(View.GONE);
-                notifyDataSetChanged();
-            }
-        });
+
+
+        //final LinearLayout assignResult = (LinearLayout)convertView.findViewById(R.id.assignedCddLayout);
+        //assert assignResult != null;
+        //assignResult.setOnTouchListener(new OnSwipeListener(context){
+        //    @Override
+        //    public void onSwipeRight() {
+        //        FragmentHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+        //        assignResult.setVisibility(View.GONE);
+        //        notifyDataSetChanged();
+        //    }
+        //});
 
         return convertView;
     }

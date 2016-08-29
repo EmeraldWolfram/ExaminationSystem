@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
@@ -16,10 +15,12 @@
 
     <LinearLayout
         android:id="@+id/assignedCddLayout"
+        android:layout_toEndOf="@id/assignedTableText"
         android:orientation="vertical"
         android:layout_marginStart="5sp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/assignedCddText"
             android:layout_width="wrap_content"
@@ -36,5 +37,19 @@
             android:textColor="#156039" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/checkboxStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/uncheckPresent" />
 
-</LinearLayout>
+    <CheckBox
+        android:id="@+id/uncheckPresent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:text=""
+        android:onClick="onUncheck" />
+</RelativeLayout>

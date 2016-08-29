@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.manager.FragListAdapter;
@@ -40,7 +41,4 @@ public class PresentFragment extends Fragment {
 
         return view;
     }
-
-
-
 }
