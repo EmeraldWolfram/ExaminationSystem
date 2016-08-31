@@ -294,4 +294,185 @@ public class FragmentHelperTest {
         assertEquals(0, AssignModel.getAssgnList().size());
         assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());*/
     }
+
+    //= UnassignCandidate() ==========================================================================
+
+    /**
+     * unassignCandidate()
+     *
+     * remove the candidate from PRESENT list and add to ABSENT list
+     *
+     * 1. Successfully remove a candidate with PRESENT to ABSENT
+     * 2. Throw FATAL ERROR (Corrupt) when the candidate is ABSENT when called
+     * 3. Throw FATAL ERROR (Corrupt) when the candidate is BARRED when called
+     * 4. Throw FATAL ERROR (Corrupt) when the candidate is EXEMPTED when called
+     * 5. Throw FATAL ERRPR (Corrupt) when the candidate is not in the attendance list
+     * 6. Throw FATAL ERROR (NULL POINTER) when the attendance list is null
+     */
+
+    @Test
+    public void testUnassignCandidate_1_PositiveTest() throws Exception {
+        cdd1.setTableNumber(12);
+        cdd1.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        AssignModel.setAttdList(attdList);
+
+        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.ABSENT));
+
+        helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+        assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+    }
+
+    @Test
+    public void testUnassignCandidate_2_NegativeTest() throws Exception {
+        try{
+            cdd1.setTableNumber(12);
+            cdd1.setStatus(Status.ABSENT);
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            AssignModel.setAttdList(attdList);
+            assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+            assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
+            helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but no error was thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testUnassignCandidate_3_NegativeTest() throws Exception {
+        try{
+            cdd1.setTableNumber(12);
+            cdd1.setStatus(Status.BARRED);
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            AssignModel.setAttdList(attdList);
+
+            helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but no error was thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testUnassignCandidate_4_NegativeTest() throws Exception {
+        try{
+            cdd1.setTableNumber(12);
+            cdd1.setStatus(Status.EXEMPTED);
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            AssignModel.setAttdList(attdList);
+
+            helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but no error was thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testUnassignCandidate_5_NegativeTest() throws Exception {
+        try{
+            AssignModel.setAttdList(attdList);
+
+            helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but no error was thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testUnassignCandidate_6_NegativeTest() throws Exception {
+        try{
+            helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but no error was thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Attendance List not initialized", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
+    }
+
+    //= AssignCandidate() ==========================================================================
+
+    /**
+     * assignCandidate()
+     *
+     * place ABSENT candidate back to previous assigned PRESENT position
+     *
+     * 1. Successfully undo the unassign action
+     * 2. Throw FATAL_MESSAGE (Corrupt) when the candidate is not assigned previously
+     * 3. Throw FATAL_MESSAGE (Corrupt) when candidate not in attendance list
+     * 4. Throw FATAL_MESSAGE (Null Pointer) when the attendance list is null
+     */
+
+    @Test
+    public void testAssignCandidate_1_PositiveTest() throws Exception {
+        cdd1.setTableNumber(12);
+        cdd1.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        AssignModel.setAttdList(attdList);
+        helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
+
+        assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+
+        helper.assignCandidate(cdd1.getExamIndex());
+
+        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(0, attdList.getNumberOfCandidates(Status.ABSENT));
+    }
+
+    @Test
+    public void testAssignCandidate_2_NegativeTest_UnassignNeverCallBefore() throws Exception {
+        try{
+            cdd1.setTableNumber(0);
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            AssignModel.setAttdList(attdList);
+            helper.assignCandidate(cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but none were thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL ERROR: Candidate is never assign before", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testAssignCandidate_3_NegativeTest_CandidateNotInAttdList() throws Exception {
+        try{
+            AssignModel.setAttdList(attdList);
+            helper.assignCandidate(cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but none were thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testAssignCandidate_4_NegativeTest_AttdListIsNull() throws Exception {
+        try{
+            helper.assignCandidate(cdd1.getExamIndex());
+
+            fail("Expected FATAL_MESSAGE but none were thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL ERROR: Attendance List not initialized", err.getErrorMsg());
+        }
+    }
+
+
 }

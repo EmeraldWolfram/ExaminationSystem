@@ -421,4 +421,43 @@ public class AttendanceListTest {
         assertEquals(Status.EXEMPTED, exempted);
         assertEquals(Status.QUARANTINED, quarantized);
     }
+
+    //= GetCandidateUsingIndex() ===================================================================
+
+    /**
+     * getCandidateUsingIndex()
+     *
+     * using an input ExamIndex to get the Candidate object
+     *
+     * 1. Get the object successfully when the index is valid
+     * 2. If the index is invalid, return null
+     * 3. If attendance list is empty, also return null
+     */
+
+    @Test
+    public void testGetCandidateUsingIndex() throws Exception {
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+        Candidate cdd   = attdList.getCandidateUsingExamIndex("FGY");
+
+        assertEquals(cdd1, cdd);
+    }
+
+    @Test
+    public void testGetCandidateUsingIndex_ReturnNullWhenNoSuchIndex() throws Exception {
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+        Candidate cdd   = attdList.getCandidateUsingExamIndex("ABC");
+
+        assertNull(cdd);
+    }
+
+    @Test
+    public void testGetCandidateUsingIndex_ReturnNullWhenAttdListIsEmpty() throws Exception {
+        Candidate cdd   = attdList.getCandidateUsingExamIndex("ABC");
+
+        assertNull(cdd);
+    }
 }

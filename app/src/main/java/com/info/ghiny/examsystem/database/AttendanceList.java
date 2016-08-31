@@ -179,6 +179,20 @@ public class AttendanceList {
         return candidate;
     }
 
+    public Candidate getCandidateUsingExamIndex(String index){
+        Candidate targetCdd     = null;
+        List<String> cddList    = getAllCandidateRegNumList();
+
+        for(int i=0; i < cddList.size(); i++){
+            Candidate cdd   = getCandidate(cddList.get(i));
+            if(cdd.getExamIndex().equals(index)){
+                targetCdd   = cdd;
+            }
+        }
+
+        return targetCdd;
+    }
+
     public List<String> getAllCandidateRegNumList(){
         List<String> regNumList = new ArrayList<>();
 

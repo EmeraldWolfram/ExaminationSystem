@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.interfacer;
 
 import android.content.Intent;
+import android.view.View;
 
 import com.info.ghiny.examsystem.manager.ErrorManager;
 
@@ -10,6 +11,7 @@ import com.info.ghiny.examsystem.manager.ErrorManager;
 public interface AttendanceListPresenter {
     void onResume(final ErrorManager errorManager);
     void onDestroy();
+    void toggleUnassign(View view);
     void signToUpload();
     void onPasswordReceived(int requestCode, int resultCode, Intent data);
 }

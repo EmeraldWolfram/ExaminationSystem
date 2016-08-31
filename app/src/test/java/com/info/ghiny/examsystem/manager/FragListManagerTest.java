@@ -3,6 +3,10 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -15,10 +19,21 @@ import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.w3c.dom.Text;
 
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
@@ -26,11 +41,17 @@ import static org.mockito.Mockito.when;
 /**
  * Created by GhinY on 12/08/2016.
  */
+
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class FragListManagerTest {
     private FragmentHelper fragModel;
     private FragListManager manager;
     private GeneralView generalView;
     private Handler handler;
+    private View view;
+    private TextView dummyView;
+    private CheckBox dummyBox;
 
     @Before
     public void setUp() throws Exception {
@@ -45,6 +66,10 @@ public class FragListManagerTest {
         manager     = new FragListManager(generalView);
         manager.setFragmentModel(fragModel);
         manager.setHandler(handler);
+
+        view        = Mockito.mock(View.class);
+        dummyView   = Mockito.mock(TextView.class);
+        dummyBox    = Mockito.mock(CheckBox.class);
     }
 
     //= signToUpload() =================================================================================
@@ -131,5 +156,102 @@ public class FragListManagerTest {
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
         verify(handler).removeCallbacks(any(Runnable.class));
+    }
+
+    //= ToggleUnassign() ===========================================================================
+    /**
+     * toggleUnassign()
+     *
+     * Undo assign or redo assign depend on the current state
+     *
+     * When current state is assigned
+     * 1. set status to unassign, set text to chalky and call unassign function in Model
+     * 2. display error when unassign function in model throw an error
+     */
+
+    @Test
+    public void testToggleUnassign_Assigned_1_PositiveTest() throws Exception {
+        ViewGroup parent  = Mockito.mock(ViewGroup.class);
+        when(view.getParent()).thenReturn(parent);
+        when(parent.findViewById(anyInt())).thenReturn(dummyView)
+                .thenReturn(dummyView).thenReturn(dummyView)
+                .thenReturn(dummyBox).thenReturn(dummyView);
+        when(dummyView.getText()).thenReturn("Testing");
+        doNothing().when(fragModel).unassignCandidate(anyString(), anyString());
+
+        manager.toggleUnassign(view);
+
+        verify(dummyView, times(3)).setAlpha(0.1f);
+        verify(fragModel).unassignCandidate(anyString(), anyString());
+        verify(fragModel, never()).assignCandidate(anyString());
+        verify(generalView, never()).displayError(any(ProcessException.class));
+    }
+
+    @Test
+    public void testToggleUnassign_Assigned_2_NegativeTest() throws Exception {
+        ViewGroup parent  = Mockito.mock(ViewGroup.class);
+        when(view.getParent()).thenReturn(parent);
+        when(parent.findViewById(anyInt())).thenReturn(dummyView)
+                .thenReturn(dummyView).thenReturn(dummyView)
+                .thenReturn(dummyBox).thenReturn(dummyView);
+        when(dummyView.getText()).thenReturn("Testing");
+
+        ProcessException err = new ProcessException(ProcessException.FATAL_MESSAGE);
+        doThrow(err).when(fragModel).unassignCandidate(anyString(), anyString());
+
+        manager.toggleUnassign(view);
+
+        verify(dummyView, never()).setAlpha(anyFloat());
+        verify(fragModel).unassignCandidate(anyString(), anyString());
+        verify(fragModel, never()).assignCandidate(anyString());
+        verify(generalView).displayError(err);
+    }
+
+    /**
+     * toggleUnassign()
+     *
+     * When current state is unassigned
+     * 1. set status to assign, set text to clear and call assign function in Model
+     * 2. display error when assign function in model throw an error
+     *
+     */
+
+    @Test
+    public void testToggleUnassign_Unassigned_1_PositiveTest() throws ProcessException {
+        ViewGroup parent  = Mockito.mock(ViewGroup.class);
+        when(view.getParent()).thenReturn(parent);
+        when(parent.findViewById(anyInt())).thenReturn(dummyView)
+                .thenReturn(dummyView).thenReturn(dummyView)
+                .thenReturn(dummyBox).thenReturn(dummyView);
+        when(dummyView.getText()).thenReturn("Testing");
+        when(dummyBox.isChecked()).thenReturn(true);
+        doNothing().when(fragModel).assignCandidate(anyString());
+
+        manager.toggleUnassign(view);
+
+        verify(dummyView, times(3)).setAlpha(1.0f);
+        verify(fragModel, never()).unassignCandidate(anyString(), anyString());
+        verify(fragModel).assignCandidate(anyString());
+        verify(generalView, never()).displayError(any(ProcessException.class));
+    }
+
+    @Test
+    public void testToggleUnassign_Unassigned_2_NegativeTest() throws ProcessException {
+        ViewGroup parent  = Mockito.mock(ViewGroup.class);
+        when(view.getParent()).thenReturn(parent);
+        when(parent.findViewById(anyInt())).thenReturn(dummyView)
+                .thenReturn(dummyView).thenReturn(dummyView)
+                .thenReturn(dummyBox).thenReturn(dummyView);
+        when(dummyView.getText()).thenReturn("Testing");
+        when(dummyBox.isChecked()).thenReturn(true);
+        ProcessException err = new ProcessException(ProcessException.FATAL_MESSAGE);
+        doThrow(err).when(fragModel).assignCandidate(anyString());
+
+        manager.toggleUnassign(view);
+
+        verify(dummyView, never()).setAlpha(1.0f);
+        verify(fragModel, never()).unassignCandidate(anyString(), anyString());
+        verify(fragModel).assignCandidate(anyString());
+        verify(generalView).displayError(err);
     }
 }

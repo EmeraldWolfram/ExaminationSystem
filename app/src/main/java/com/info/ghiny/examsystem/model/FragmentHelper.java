@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.manager.FragListManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,11 @@ import java.util.List;
  * Created by GhinY on 24/06/2016.
  */
 public class FragmentHelper {
+    private HashMap<String, Integer> unassignedMap;
+
+    public FragmentHelper(){
+        unassignedMap   = new HashMap<>();
+    }
 
     //= public Methods =============================================================================
     public void uploadAttdList() throws ProcessException{
@@ -63,6 +69,61 @@ public class FragmentHelper {
         }
 
         return cddChild;
+    }
+
+    public void unassignCandidate(String tableNumber, String cddIndex) throws ProcessException{
+        assert tableNumber  != null;
+        assert cddIndex     != null;
+
+        AttendanceList attdList = AssignModel.getAttdList();
+        if(attdList == null){
+            throw new ProcessException("FATAL ERROR: Attendance List not initialized",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        Candidate targetCdd   = attdList.getCandidateUsingExamIndex(cddIndex);
+
+        if(targetCdd == null || targetCdd.getStatus() != Status.PRESENT){
+            throw new ProcessException("FATAL ERROR: Candidate Info Corrupted",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        unassignedMap.put(targetCdd.getRegNum(), Integer.parseInt(tableNumber));
+        targetCdd.setStatus(Status.ABSENT);
+        targetCdd.setTableNumber(0);
+
+        attdList.removeCandidate(targetCdd.getRegNum());
+        attdList.addCandidate(targetCdd, targetCdd.getPaperCode(),
+                targetCdd.getStatus(), targetCdd.getProgramme());
+    }
+
+    public void assignCandidate(String cddIndex) throws ProcessException{
+        assert cddIndex != null;
+
+        AttendanceList attdList = AssignModel.getAttdList();
+        if(attdList == null){
+            throw new ProcessException("FATAL ERROR: Attendance List not initialized",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        Candidate cdd   = attdList.getCandidateUsingExamIndex(cddIndex);
+
+        if(cdd == null || cdd.getStatus() != Status.ABSENT){
+            throw new ProcessException("FATAL ERROR: Candidate Info Corrupted",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        Integer table   = unassignedMap.get(cdd.getRegNum());
+        if(table == null){
+            throw new ProcessException("FATAL ERROR: Candidate is never assign before",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        attdList.removeCandidate(cdd.getRegNum());
+        cdd.setTableNumber(table);
+        cdd.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+        unassignedMap.remove(cdd.getRegNum());
     }
 
     public static void resetCandidate(Integer table){

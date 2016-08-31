@@ -58,8 +58,9 @@ public class FragListManager implements AttendanceListPresenter {
         generalView.navigateActivity(PopUpLogin.class);
     }
 
+    @Override
     public void toggleUnassign(View view){
-        float clear     = 1;
+        float clear     = 1.0f;
         float chalky    = 0.1f;
 
         ViewGroup parent = (ViewGroup) view.getParent();
@@ -69,19 +70,24 @@ public class FragListManager implements AttendanceListPresenter {
         TextView prg    = (TextView) parent.findViewById(R.id.assignedPrgText);
         CheckBox bt     = (CheckBox) parent.findViewById(R.id.uncheckPresent);
         TextView status = (TextView) parent.findViewById(R.id.checkboxStatus);
-
-        if(bt.isChecked()){
-            table.setAlpha(clear);
-            cdd.setAlpha(clear);
-            prg.setAlpha(clear);
-            status.setText(R.string.checked);
-            //remove from list by MODEL
-        } else {
-            table.setAlpha(chalky);
-            cdd.setAlpha(chalky);
-            prg.setAlpha(chalky);
-            status.setText(R.string.unchecked);
-            //add to delete list by MODEL
+        try{
+            if(bt.isChecked()){
+                fragmentModel.assignCandidate(cdd.getText().toString());
+                table.setAlpha(clear);
+                cdd.setAlpha(clear);
+                prg.setAlpha(clear);
+                status.setText(R.string.checked);
+                //remove from list by MODEL
+            } else {
+                fragmentModel.unassignCandidate(table.getText().toString(), cdd.getText().toString());
+                table.setAlpha(chalky);
+                cdd.setAlpha(chalky);
+                prg.setAlpha(chalky);
+                status.setText(R.string.unchecked);
+                //add to delete list by MODEL
+            }
+        } catch (ProcessException err) {
+            generalView.displayError(err);
         }
     }
 

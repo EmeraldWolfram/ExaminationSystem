@@ -17,7 +17,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="enter_pw">Enter Your Password:</string>
     <string name="error_icon">Error Icon</string>
-    <string name="unchecked">UNASSIGNED</string>
-    <string name="checked">ASSIGNED</string>
+    <string name="unchecked">UNASSIGNED\nUNDO?</string>
+    <string name="checked">ASSIGNED\nUNASSIGN?</string>
 
 </resources>

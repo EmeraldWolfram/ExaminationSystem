@@ -39,11 +39,11 @@ public class Candidate {
         status      = Status.ABSENT;
     }
 
-    public Candidate(int tableNumber, String programme, String sName, String regNum,
+    public Candidate(int tableNumber, String programme, String examIndex, String regNum,
                      String paperCode, Status status){
         this.tableNumber    = tableNumber;
         this.programme      = programme;
-        this.examIndex      = sName;
+        this.examIndex      = examIndex;
         this.regNum         = regNum;
         this.paperCode      = paperCode;
         this.status         = status;
