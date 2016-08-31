@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.Icon;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -9,6 +10,7 @@ import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.manager.AssignManager;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -22,6 +24,24 @@ public class AssignModel {
 
     public AssignModel(AssignManager presenter){
         this.presenter  = presenter;
+    }
+
+    public void updateAssignList() throws ProcessException{
+        assgnList.clear();
+
+        if(attdList == null){
+            throw new ProcessException("FATAL ERROR: Attendance List is not initialize",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        List<String> cddList    = attdList.getAllCandidateRegNumList();
+
+        for(int i=0; i < cddList.size(); i++){
+            Candidate cdd   = attdList.getCandidate(cddList.get(i));
+            if(cdd.getStatus() == Status.PRESENT){
+                assgnList.put(cdd.getTableNumber(), cdd.getRegNum());
+            }
+        }
     }
 
     //= Setter & Getter ============================================================================
@@ -144,9 +164,8 @@ public class AssignModel {
         }
 
         if(attdList == null || attdList.getAttendanceList() == null){
-
-            ProcessException err =  new ProcessException("No Attendance List", ProcessException.MESSAGE_DIALOG,
-                    IconManager.WARNING);
+            throw new ProcessException("No Attendance List",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
 
         Candidate candidate = attdList.getCandidate(scanString);

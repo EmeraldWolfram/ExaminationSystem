@@ -50,7 +50,12 @@ public class AssignManager implements AssignPresenter{
 
     @Override
     public void onResume(){
-        scannerView.resumeScanning();
+        try{
+            assignModel.updateAssignList();
+            scannerView.resumeScanning();
+        } catch (ProcessException err) {
+            scannerView.displayError(err);
+        }
     }
 
     @Override

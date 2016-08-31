@@ -450,5 +450,59 @@ public class AssignModelTest {
         }
     }
 
+    //= UpdateAssignList() =========================================================================
+    /**
+     * updateAssignList()
+     *
+     * update assign list according to the present candidates in attendance list
+     *
+     * 1. Successfully extract present candidates into assign list
+     * 2. When the attendance list is null, throw FATAL_MESSAGE (NULL Pointer)
+     * 3. When the attendance list is empty, do nothing
+     *
+     */
+
+    @Test
+    public void testUpdateAssignList_1_PositiveTest() throws Exception {
+        cdd1.setTableNumber(12);
+        cdd1.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+        AssignModel.setAttdList(attdList);
+
+        HashMap<Integer, String> map = assgnHelper.getAssgnList();
+        assertEquals(0, map.size());
+
+        assgnHelper.updateAssignList();
+
+        assertEquals(1, map.size());
+        assertEquals(cdd1.getRegNum(), map.get(12));
+    }
+
+    @Test
+    public void testUpdateAssignList_2_NegativeTest() throws Exception {
+        try{
+            AssignModel.setAttdList(null);
+
+            assgnHelper.updateAssignList();
+
+            fail("Expected FATAL_MESSAGE but non were thrown");
+        } catch (ProcessException err) {
+            assertEquals("FATAL ERROR: Attendance List is not initialize", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+
+        }
+    }
+
+    @Test
+    public void testUpdateAssignList_3_NegativeTest() throws Exception {
+        AssignModel.setAttdList(attdList);
+
+        assertEquals(0, assgnHelper.getAssgnList().size());
+        assgnHelper.updateAssignList();
+        assertEquals(0, assgnHelper.getAssgnList().size());
+    }
+
 
 }
