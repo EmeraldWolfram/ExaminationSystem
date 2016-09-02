@@ -10,5 +10,8 @@
     <style name="AppTheme.CustomTheme">
         <item name="android:windowIsTranslucent">true</item>
     </style>
-
+    <!--
+    <style name="AppTheme.Base" parent="android:Theme.Material.Light">
+        <item name="android:windowContentTransitions">true</item>
+    </style> -->
 </resources>

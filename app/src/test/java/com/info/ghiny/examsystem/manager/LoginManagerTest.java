@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class LoginManagerTest {
     public void testOnScanForIdentity_validId() throws Exception {
         doNothing().when(loginModel).checkQrId("0123456");
 
-        manager.onScanForIdentity("012345");
+        manager.onScan("012345");
 
         verify(scannerView).securityPrompt();
         verify(scannerView, never()).displayError(any(ProcessException.class));
@@ -83,7 +84,7 @@ public class LoginManagerTest {
         doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
                 .when(loginModel).checkQrId("xyz");
 
-        manager.onScanForIdentity("xyz");
+        manager.onScan("xyz");
 
         verify(scannerView, never()).securityPrompt();
         verify(scannerView).displayError(any(ProcessException.class));
@@ -96,7 +97,7 @@ public class LoginManagerTest {
         doThrow(err).when(loginModel).checkQrId("xyz");
 
         assertNull(err.getListener(ProcessException.okayButton));
-        manager.onScanForIdentity("xyz");
+        manager.onScan("xyz");
 
         verify(scannerView, never()).securityPrompt();
         verify(scannerView).displayError(any(ProcessException.class));
@@ -187,10 +188,14 @@ public class LoginManagerTest {
     @Test
     public void testOnResume() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        TCPClient tcpClient = Mockito.mock(TCPClient.class);
+
+        ExternalDbLoader.setTcpClient(tcpClient);
         ExternalDbLoader.setChiefLink(new ChiefLink());
 
         manager.onResume(errorManager);
 
+        verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
         verify(scannerView).resumeScanning();
     }
 
@@ -212,14 +217,14 @@ public class LoginManagerTest {
         doNothing().when(loginModel).checkLoginResult("Message");
         doNothing().when(loginModel).checkDetail(anyString());
 
-        assertFalse(manager.isDlFlag());
+        //assertFalse(manager.isDlFlag());
 
         manager.onChiefRespond(errorManager, "Message");
-        assertTrue(manager.isDlFlag());
-        verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
+        //assertTrue(manager.isDlFlag());
+        //verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
 
-        manager.onChiefRespond(errorManager, "Message");
-        assertFalse(manager.isDlFlag());
+        //manager.onChiefRespond(errorManager, "Message");
+        //assertFalse(manager.isDlFlag());
 
 
         verify(scannerView).navigateActivity(AssignInfoActivity.class);

@@ -13,6 +13,8 @@ import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.interfacer.AssignPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
+import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
 import com.info.ghiny.examsystem.model.AssignModel;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.LoginHelper;
@@ -21,7 +23,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class AssignManager implements AssignPresenter{
+public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSecurePresenter{
     private ScannerView scannerView;
     private SetterView setterView;
     private AssignModel assignModel;
@@ -108,7 +110,7 @@ public class AssignManager implements AssignPresenter{
     }
 
     @Override
-    public void onScanForTableOrCandidate(String scanStr){
+    public void onScan(String scanStr){
         try{
             scannerView.pauseScanning();
             assignModel.tryAssignScanValue(scanStr);

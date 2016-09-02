@@ -72,7 +72,7 @@ public class AssignManagerTest {
     public void testOnScanForTableOrCandidate_withoutAnyNegativeResult() throws Exception {
         doNothing().when(assignModel).tryAssignScanValue("30");
 
-        manager.onScanForTableOrCandidate("30");
+        manager.onScan("30");
 
         verify(scannerView).pauseScanning();
         verify(scannerView).resumeScanning();
@@ -86,12 +86,12 @@ public class AssignManagerTest {
 
         assertNull(err.getListener(ProcessException.okayButton));
 
-        manager.onScanForTableOrCandidate("XXX");
+        manager.onScan("XXX");
 
         verify(scannerView).pauseScanning();
         verify(scannerView).displayError(err);
         verify(scannerView).resumeScanning();
-        assertNull(err.getListener(ProcessException.okayButton));
+        assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class AssignManagerTest {
         doThrow(err).when(assignModel).tryAssignScanValue("XXX");
 
         assertNull(err.getListener(ProcessException.okayButton));
-        manager.onScanForTableOrCandidate("XXX");
+        manager.onScan("XXX");
 
         verify(scannerView).pauseScanning();
         verify(scannerView).displayError(err);

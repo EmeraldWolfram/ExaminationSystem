@@ -39,7 +39,7 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                onScanTableOrCandidate(result.getText());
+                assignManager.onScan(result.getText());
             }
         }
         @Override
@@ -109,11 +109,6 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
     @Override
     public void onBackPressed() {
         assignManager.onBackPressed();
-    }
-
-    //==============================================================================================
-    public void onScanTableOrCandidate(String scanString){
-        assignManager.onScanForTableOrCandidate(scanString);
     }
 
     //= Interface Method ==========================================================================

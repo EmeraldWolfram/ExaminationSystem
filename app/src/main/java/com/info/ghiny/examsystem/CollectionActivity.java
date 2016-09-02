@@ -29,7 +29,7 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                onScanBundle(result.getText());
+                collectManager.onScan(result.getText());
             }
         }
         @Override
@@ -80,10 +80,6 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
     }
 
     //==============================================================================================
-    private void onScanBundle(String scanStr){
-        collectManager.onScanForCollection(scanStr);
-    }
-
     @Override
     public void navigateActivity(Class<?> cls) {}
 

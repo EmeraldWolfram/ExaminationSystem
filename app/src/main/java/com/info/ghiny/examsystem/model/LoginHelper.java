@@ -90,6 +90,7 @@ public class LoginHelper {
     }
 
     public void checkLoginResult(String msgFromChief) throws ProcessException{
+        ChiefLink.setCompleteFlag(true);
         loginCount--;
         String pw   = staff.getPassword();
 

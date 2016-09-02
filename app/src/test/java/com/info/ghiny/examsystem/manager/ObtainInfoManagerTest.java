@@ -63,7 +63,7 @@ public class ObtainInfoManagerTest {
     public void testOnScanForCandidateDetail_ModelNotComplaining() throws Exception {
         doNothing().when(infoModel).reqCandidatePapers("15WAU00001");
 
-        manager.onScanForCandidateDetail("15WAU00001");
+        manager.onScan("15WAU00001");
 
         verify(scannerView).pauseScanning();
         verify(infoModel).reqCandidatePapers("15WAU00001");
@@ -77,7 +77,7 @@ public class ObtainInfoManagerTest {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
         doThrow(err).when(infoModel).reqCandidatePapers("33");
 
-        manager.onScanForCandidateDetail("33");
+        manager.onScan("33");
 
         verify(scannerView).pauseScanning();
         verify(infoModel).reqCandidatePapers("33");
@@ -92,7 +92,7 @@ public class ObtainInfoManagerTest {
         doThrow(err).when(infoModel).reqCandidatePapers("33");
         assertNull(err.getListener(ProcessException.okayButton));
 
-        manager.onScanForCandidateDetail("33");
+        manager.onScan("33");
 
         verify(scannerView).pauseScanning();
         verify(infoModel).reqCandidatePapers("33");

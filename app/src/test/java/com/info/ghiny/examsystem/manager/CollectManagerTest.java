@@ -111,7 +111,7 @@ public class CollectManagerTest {
     public void testOnScanForCollection_withPositiveResult() throws Exception {
         doNothing().when(infoModel).bundleCollection("PAPER ABCD");
 
-        manager.onScanForCollection("PAPER ABCD");
+        manager.onScan("PAPER ABCD");
 
         verify(scannerView).pauseScanning();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
@@ -126,7 +126,7 @@ public class CollectManagerTest {
 
         doThrow(err).when(infoModel).bundleCollection("PAPER ABCD");
 
-        manager.onScanForCollection("PAPER ABCD");
+        manager.onScan("PAPER ABCD");
 
         verify(scannerView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
@@ -141,7 +141,7 @@ public class CollectManagerTest {
         doThrow(err).when(infoModel).bundleCollection("PAPER ABCD");
         assertNull(err.getListener(ProcessException.okayButton));
 
-        manager.onScanForCollection("PAPER ABCD");
+        manager.onScan("PAPER ABCD");
 
         verify(scannerView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());

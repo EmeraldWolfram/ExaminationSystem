@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.AssignInfoActivity;
@@ -11,6 +10,8 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.LoginHelper;
@@ -20,7 +21,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class LoginManager implements LoginPresenter {
+public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConnPresenter {
     private ScannerView scannerView;
     private LoginHelper loginModel;
     private Handler handler;
@@ -51,6 +52,10 @@ public class LoginManager implements LoginPresenter {
         scannerView.pauseScanning();
     }
 
+    public void onResume() {
+        scannerView.resumeScanning();
+    }
+
     @Override
     public void onResume(final ErrorManager errorManager){
         while(ExternalDbLoader.getTcpClient() == null){}
@@ -63,24 +68,24 @@ public class LoginManager implements LoginPresenter {
             }
         });
 
-        scannerView.resumeScanning();
+        onResume();
     }
 
     @Override
     public void onDestroy(){
-        try {
-            handler.removeCallbacks(timer);
+        //try {
+        handler.removeCallbacks(timer);
             //ExternalDbLoader.getTcpClient().sendMessage("Termination");
             //ExternalDbLoader.getTcpClient().stopClient();
             //ExternalDbLoader.getChiefLink().cancel(true);
             //ExternalDbLoader.setChiefLink(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //} catch (Exception e) {
+        //    e.printStackTrace();
+        //}
     }
 
     @Override
-    public void onScanForIdentity(String scanStr){
+    public void onScan(String scanStr){
         scannerView.pauseScanning();
         try{
             loginModel.checkQrId(scanStr);
@@ -120,7 +125,6 @@ public class LoginManager implements LoginPresenter {
     public void onChiefRespond(ErrorManager errorManager, String message){
         try {
             //if(!dlFlag){
-            ChiefLink.setCompleteFlag(true);
             loginModel.checkLoginResult(message);
             //    dlFlag = true;
             //} else {

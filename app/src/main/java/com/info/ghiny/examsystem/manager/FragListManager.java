@@ -21,6 +21,8 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.IconManager;
@@ -34,7 +36,7 @@ import org.w3c.dom.Text;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class FragListManager implements AttendanceListPresenter {
+public class FragListManager implements AttendanceListPresenter, TaskConnPresenter, TaskSecurePresenter {
     private Handler handler;
     private GeneralView generalView;
     private FragmentHelper fragmentModel;
@@ -92,6 +94,21 @@ public class FragListManager implements AttendanceListPresenter {
     }
 
     @Override
+    public void onRestart() {
+        //generalView.securityPrompt();
+    }
+
+    @Override
+    public void onChiefRespond(ErrorManager errManager, String messageRx) {
+        try{
+            ChiefLink.setCompleteFlag(true);
+            boolean uploaded = JsonHelper.parseBoolean(messageRx);
+        } catch (ProcessException err){
+            ExternalDbLoader.getChiefLink().publishError(errManager, err);
+        }
+    }
+
+    @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data){
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
@@ -114,12 +131,7 @@ public class FragListManager implements AttendanceListPresenter {
         ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {
-                try{
-                    ChiefLink.setCompleteFlag(true);
-                    boolean uploaded = JsonHelper.parseBoolean(message);
-                } catch (ProcessException err){
-                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-                }
+                onChiefRespond(errorManager, message);
             }
         });
     }

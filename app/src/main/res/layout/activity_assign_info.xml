@@ -19,6 +19,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="45sp"
+            android:elevation="8dp"
             android:background="@drawable/rounded_table"/>
 
         <LinearLayout

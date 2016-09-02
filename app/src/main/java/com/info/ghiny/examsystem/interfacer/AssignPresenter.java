@@ -9,12 +9,7 @@ import com.info.ghiny.examsystem.database.Candidate;
  */
 public interface AssignPresenter {
     //INTERFACE FOR VIEW
-    void onPause();
-    void onResume();
-    void onRestart();
     void onBackPressed();
-    void onScanForTableOrCandidate(String scanStr);
-    void onPasswordReceived(int requestCode, int resultCode, Intent data);
     void navigateToDisplay();
     void navigateToDetail();
 

@@ -31,7 +31,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                onScanIdentity(result.getText());
+                loginManager.onScan(result.getText());
             }
         }
         @Override
@@ -79,10 +79,6 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     }
 
     //==============================================================================================
-    private void onScanIdentity(String scanStr){
-        loginManager.onScanForIdentity(scanStr);
-    }
-
     public void onActivityResult(int reqCode, int resCode, Intent data){
         loginManager.onPasswordReceived(reqCode, resCode, data);
     }

@@ -9,6 +9,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.ConnectPresenter;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -16,7 +17,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class ConnectionManager implements ConnectPresenter {
+public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
     private ScannerView generalView;
     private LoginHelper loginModel;
     private CheckListLoader dbLoader;
@@ -32,7 +33,7 @@ public class ConnectionManager implements ConnectPresenter {
     }
 
     @Override
-    public void onScanForChief(String scanStr){
+    public void onScan(String scanStr){
         try{
             generalView.pauseScanning();
             loginModel.verifyChief(scanStr);
@@ -49,6 +50,16 @@ public class ConnectionManager implements ConnectPresenter {
     }
 
     @Override
+    public void onPause() {
+        generalView.pauseScanning();
+    }
+
+    @Override
+    public void onResume() {
+        generalView.resumeScanning();
+    }
+
+    @Override
     public void setupConnection(){
         if(loginModel.tryConnection(dbLoader)){
             //Connect here if wanted
@@ -62,17 +73,7 @@ public class ConnectionManager implements ConnectPresenter {
     }
 
     @Override
-    public void onPause() {
-        generalView.pauseScanning();
-    }
-
-    @Override
-    public void onResume() {
-        generalView.resumeScanning();
-    }
-
-    @Override
-    public void onDestroy(){
+    public void closeConnection(){
         try {
             ExternalDbLoader.getTcpClient().sendMessage("Termination");
             ExternalDbLoader.getTcpClient().stopClient();

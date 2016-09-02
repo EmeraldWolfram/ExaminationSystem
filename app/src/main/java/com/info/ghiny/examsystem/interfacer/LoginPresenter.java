@@ -9,17 +9,7 @@ import com.info.ghiny.examsystem.manager.ErrorManager;
  */
 public interface LoginPresenter {
     /**
-     * onPause() will always be called when:
-     * -PopUpLogin that prompt user to key-in password is called
-     *
-     * onResume() will be called when the PopUpLogin window is gone
-     *      &
-     * onPasswordReceived() will then be called upon password received
+     * This method is used to handle the password entered by the user
      */
-    void onResume(final ErrorManager errorManager);
-    void onPause();
-    void onDestroy();
-    void onScanForIdentity(String scanStr);
     void onPasswordReceived(int reqCode, int resCode, Intent intent);
-    void onChiefRespond(ErrorManager errorManager, String message);
 }

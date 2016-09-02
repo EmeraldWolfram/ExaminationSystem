@@ -59,7 +59,7 @@ public class ConnectionManagerTest {
     public void testOnScanForChief_withPositiveResult() throws Exception {
         doNothing().when(loginModel).verifyChief("$CHIEF:...:$");
 
-        manager.onScanForChief("$CHIEF:...:$");
+        manager.onScan("$CHIEF:...:$");
         verify(genView).pauseScanning();
         verify(genView).navigateActivity(MainLoginActivity.class);
         verify(genView, never()).displayError(err);
@@ -71,7 +71,7 @@ public class ConnectionManagerTest {
 
         doThrow(err).when(loginModel).verifyChief("");
 
-        manager.onScanForChief("");
+        manager.onScan("");
         verify(genView).pauseScanning();
         verify(genView, never()).navigateActivity(MainLoginActivity.class);
         verify(genView).displayError(err);

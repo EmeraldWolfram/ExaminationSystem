@@ -1,12 +1,18 @@
 package com.info.ghiny.examsystem;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
@@ -36,7 +42,7 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
             if (result.getText() != null) {
                 barcodeView.pause();
                 beepManager.playBeepSoundAndVibrate();
-                onScanForChief(result.getText());
+                conManager.onScan(result.getText());
             }
         }
         @Override
@@ -48,6 +54,7 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_link_chief);
 
         CheckListLoader dbLoader    = new CheckListLoader(this);
@@ -78,7 +85,7 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
 
     @Override
     protected void onDestroy() {
-        conManager.onDestroy();
+        conManager.closeConnection();
         super.onDestroy();
         beepManager.close();
     }
@@ -100,10 +107,6 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
 
 
     //==============================================================================================
-    public void onScanForChief(String scanStr){
-        conManager.onScanForChief(scanStr);
-    }
-
     @Override
     public void displayError(ProcessException err) {
         errorManager.displayError(err);
@@ -112,7 +115,13 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
     @Override
     public void navigateActivity(Class<?> cls) {
         Intent login    = new Intent(this, cls);
-        startActivity(login);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setExitTransition(new Slide(Gravity.END));
+            getWindow().setReenterTransition(new Slide(Gravity.START));
+            startActivity(login, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        } else {
+            startActivity(login);
+        }
     }
 
     @Override

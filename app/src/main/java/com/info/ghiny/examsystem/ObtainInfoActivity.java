@@ -41,7 +41,7 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                onScan(result.getText());
+                infoManager.onScan(result.getText());
                 //get The info of the student here
             }
         }
@@ -99,10 +99,6 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     }
 
     //==============================================================================================
-    private void onScan(String scanStr){
-        infoManager.onScanForCandidateDetail(scanStr);
-    }
-
     @Override
     public void finishActivity() {
         finish();

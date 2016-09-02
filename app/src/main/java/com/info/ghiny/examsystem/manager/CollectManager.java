@@ -1,23 +1,28 @@
 package com.info.ghiny.examsystem.manager;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 
-import com.google.zxing.client.android.Intents;
+import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.CollectionPresenter;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
 import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class CollectManager implements CollectionPresenter{
+public class CollectManager implements TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter{
     private InfoCollectHelper infoModel;
     private ScannerView scannerView;
     private Handler handler;
@@ -42,22 +47,20 @@ public class CollectManager implements CollectionPresenter{
     }
 
     @Override
+    public void onResume() {
+        scannerView.resumeScanning();
+    }
+
+    @Override
     public void onResume(final ErrorManager errorManager){
         ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
-                try{
-                    ChiefLink.setCompleteFlag(true);
-                    boolean ack = JsonHelper.parseBoolean(message);
-                } catch (ProcessException err) {
-                    err.setListener(ProcessException.okayButton, buttonListener);
-
-                    ExternalDbLoader.getChiefLink().publishError(errorManager, err);
-                }
+                onChiefRespond(errorManager, message);
             }
         });
-        scannerView.resumeScanning();
+        onResume();
     }
 
     @Override
@@ -66,7 +69,42 @@ public class CollectManager implements CollectionPresenter{
     }
 
     @Override
-    public void onScanForCollection(String scanStr){
+    public void onChiefRespond(ErrorManager errManager, String messageRx) {
+        try{
+            ChiefLink.setCompleteFlag(true);
+            boolean ack = JsonHelper.parseBoolean(messageRx);
+        } catch (ProcessException err) {
+            err.setListener(ProcessException.okayButton, buttonListener);
+
+            ExternalDbLoader.getChiefLink().publishError(errManager, err);
+        }
+    }
+
+    @Override
+    public void onPasswordReceived(int requestCode, int resultCode, Intent data) {
+        if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            String password = data.getStringExtra("Password");
+            try{
+                scannerView.pauseScanning();
+                if(!LoginHelper.getStaff().matchPassword(password))
+                    throw new ProcessException("Access denied. Incorrect Password",
+                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+
+                scannerView.resumeScanning();
+            } catch(ProcessException err){
+                scannerView.displayError(err);
+                scannerView.securityPrompt();
+            }
+        }
+    }
+
+    @Override
+    public void onRestart() {
+        scannerView.securityPrompt();
+    }
+
+    @Override
+    public void onScan(String scanStr){
         try{
             scannerView.pauseScanning();
             infoModel.bundleCollection(scanStr);
