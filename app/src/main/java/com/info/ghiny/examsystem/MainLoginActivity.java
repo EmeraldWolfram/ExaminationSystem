@@ -107,6 +107,9 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     }
 
     @Override
+    public void beep() {}
+
+    @Override
     public void pauseScanning() {
         barcodeView.pause();
     }

@@ -153,6 +153,15 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
     }
 
     @Override
+    public void securityPrompt() {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    }
+
+    @Override
+    public void beep() {}
+
+    @Override
     public void resumeScanning() {
         barcodeView.resume();
     }
@@ -160,11 +169,5 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
     @Override
     public void pauseScanning() {
         barcodeView.pause();
-    }
-
-    @Override
-    public void securityPrompt() {
-        Intent secure   = new Intent(this, PopUpLogin.class);
-        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 }

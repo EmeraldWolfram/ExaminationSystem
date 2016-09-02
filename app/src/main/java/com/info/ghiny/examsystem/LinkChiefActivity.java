@@ -130,6 +130,11 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
     }
 
     @Override
+    public void beep() {
+        beepManager.playBeepSoundAndVibrate();
+    }
+
+    @Override
     public void resumeScanning() {
         barcodeView.resume();
     }

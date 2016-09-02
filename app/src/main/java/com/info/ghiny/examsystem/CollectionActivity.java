@@ -89,6 +89,15 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
+    public void securityPrompt() {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    }
+
+    @Override
+    public void beep() {}
+
+    @Override
     public void pauseScanning() {
         barcodeView.pause();
     }
@@ -96,12 +105,6 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
     @Override
     public void resumeScanning() {
         barcodeView.resume();
-    }
-
-    @Override
-    public void securityPrompt() {
-        Intent secure   = new Intent(this, PopUpLogin.class);
-        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
     @Override

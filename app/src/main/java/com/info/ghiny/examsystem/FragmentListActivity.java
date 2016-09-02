@@ -108,8 +108,10 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
+    @Override
     public void securityPrompt(){
-
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 }
 

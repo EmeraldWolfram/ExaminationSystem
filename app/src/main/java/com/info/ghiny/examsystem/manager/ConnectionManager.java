@@ -18,12 +18,12 @@ import com.info.ghiny.examsystem.model.ProcessException;
  * Created by GhinY on 08/08/2016.
  */
 public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
-    private ScannerView generalView;
+    private ScannerView scannerView;
     private LoginHelper loginModel;
     private CheckListLoader dbLoader;
 
-    public ConnectionManager(ScannerView generalView, CheckListLoader dbLoader){
-        this.generalView    = generalView;
+    public ConnectionManager(ScannerView scannerView, CheckListLoader dbLoader){
+        this.scannerView    = scannerView;
         this.loginModel     = new LoginHelper();
         this.dbLoader       = dbLoader;
     }
@@ -35,28 +35,28 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
     @Override
     public void onScan(String scanStr){
         try{
-            generalView.pauseScanning();
+            scannerView.pauseScanning();
             loginModel.verifyChief(scanStr);
 
             ChiefLink connect   = new ChiefLink();
             connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ExternalDbLoader.setChiefLink(connect);
 
-            generalView.navigateActivity(MainLoginActivity.class);
+            scannerView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
-            generalView.displayError(err);
-            generalView.resumeScanning();
+            scannerView.displayError(err);
+            scannerView.resumeScanning();
         }
     }
 
     @Override
     public void onPause() {
-        generalView.pauseScanning();
+        scannerView.pauseScanning();
     }
 
     @Override
     public void onResume() {
-        generalView.resumeScanning();
+        scannerView.resumeScanning();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
             connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ExternalDbLoader.setChiefLink(connect);
 
-            generalView.navigateActivity(MainLoginActivity.class);
+            scannerView.navigateActivity(MainLoginActivity.class);
         }
         //Setup ChiefLink and TCP Client
     }

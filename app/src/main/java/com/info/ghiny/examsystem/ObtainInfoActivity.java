@@ -105,8 +105,8 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
-    public void pauseScanning() {
-        barcodeView.pause();
+    public void displayError(ProcessException err) {
+        errManager.displayError(err);
     }
 
     @Override
@@ -116,19 +116,22 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
-    public void displayError(ProcessException err) {
-        errManager.displayError(err);
+    public void navigateActivity(Class<?> cls) {
+        Intent displayList = new Intent(this, cls);
+        displayList.putExtra(JsonHelper.LIST_LIST, infoManager.getStudentSubjects());
+        startActivity(displayList);
+    }
+
+    @Override
+    public void beep() {}
+
+    @Override
+    public void pauseScanning() {
+        barcodeView.pause();
     }
 
     @Override
     public void resumeScanning() {
         barcodeView.resume();
-    }
-
-    @Override
-    public void navigateActivity(Class<?> cls) {
-        Intent displayList = new Intent(this, cls);
-        displayList.putExtra(JsonHelper.LIST_LIST, infoManager.getStudentSubjects());
-        startActivity(displayList);
     }
 }
