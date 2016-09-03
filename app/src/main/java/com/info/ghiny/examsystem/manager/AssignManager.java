@@ -63,7 +63,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     @Override
     public void onRestart() {
         if(!navigationFlag){
-            scannerView.securityPrompt();
+            scannerView.securityPrompt(false);
         }
         navigationFlag  = false;
     }
@@ -104,7 +104,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
                 scannerView.resumeScanning();
             } catch(ProcessException err){
                 scannerView.displayError(err);
-                scannerView.securityPrompt();
+                scannerView.securityPrompt(false);
             }
         }
     }

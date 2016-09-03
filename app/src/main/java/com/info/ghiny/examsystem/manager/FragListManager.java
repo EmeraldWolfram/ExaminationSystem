@@ -3,21 +3,14 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
@@ -31,8 +24,6 @@ import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by GhinY on 08/08/2016.
  */
@@ -40,6 +31,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
     private Handler handler;
     private GeneralView generalView;
     private FragmentHelper fragmentModel;
+    private boolean uploadFlag = false;
 
     public FragListManager(GeneralView generalView){
         this.generalView    = generalView;
@@ -57,7 +49,8 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
 
     @Override
     public void signToUpload(){
-        generalView.navigateActivity(PopUpLogin.class);
+        uploadFlag = true;
+        generalView.securityPrompt(true);
     }
 
     @Override
@@ -95,7 +88,8 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
 
     @Override
     public void onRestart() {
-        //generalView.securityPrompt();
+        uploadFlag = false;
+        generalView.securityPrompt(false);
     }
 
     @Override
@@ -117,11 +111,13 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
                     throw new ProcessException("Submission denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 
-                fragmentModel.uploadAttdList();
-
-                handler.postDelayed(timer, 5000);
+                if(uploadFlag){
+                    fragmentModel.uploadAttdList();
+                    handler.postDelayed(timer, 5000);
+                }
             } catch(ProcessException err){
                 generalView.displayError(err);
+                generalView.securityPrompt(uploadFlag);
             }
         }
     }

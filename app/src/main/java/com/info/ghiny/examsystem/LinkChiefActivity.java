@@ -40,8 +40,6 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.pause();
-                beepManager.playBeepSoundAndVibrate();
                 conManager.onScan(result.getText());
             }
         }
@@ -145,5 +143,5 @@ public class LinkChiefActivity extends AppCompatActivity implements ScannerView 
     }
 
     @Override
-    public void securityPrompt() {}
+    public void securityPrompt(boolean cancellable) {}
 }

@@ -1,26 +1,19 @@
 package com.info.ghiny.examsystem;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.ScannerView;
 import com.info.ghiny.examsystem.manager.ObtainInfoManager;
-import com.info.ghiny.examsystem.model.ChiefLink;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -87,6 +80,12 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
+    protected void onRestart() {
+        infoManager.onRestart();
+        super.onRestart();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event)
                 || super.onKeyDown(keyCode, event);
@@ -96,6 +95,11 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     protected void onDestroy() {
         infoManager.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        infoManager.onPasswordReceived(requestCode, resultCode, data);
     }
 
     //==============================================================================================
@@ -110,9 +114,10 @@ public class ObtainInfoActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
-    public void securityPrompt() {
-        //Intent secure   = new Intent(this, PopUpLogin.class);
-        //startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    public void securityPrompt(boolean cancellable) {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        secure.putExtra("Cancellable", cancellable);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
     @Override

@@ -34,8 +34,9 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
 
     @Override
     public void onScan(String scanStr){
+        scannerView.pauseScanning();
+        scannerView.beep();
         try{
-            scannerView.pauseScanning();
             loginModel.verifyChief(scanStr);
 
             ChiefLink connect   = new ChiefLink();

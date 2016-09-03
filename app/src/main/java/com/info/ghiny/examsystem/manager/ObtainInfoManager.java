@@ -106,7 +106,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
 
     @Override
     public void onRestart() {
-        scannerView.securityPrompt();
+        scannerView.securityPrompt(false);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
                 scannerView.resumeScanning();
             } catch(ProcessException err){
                 scannerView.displayError(err);
-                scannerView.securityPrompt();
+                scannerView.securityPrompt(false);
             }
         }
     }

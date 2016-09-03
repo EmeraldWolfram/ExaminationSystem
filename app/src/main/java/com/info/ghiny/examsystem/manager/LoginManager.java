@@ -89,7 +89,7 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
         scannerView.pauseScanning();
         try{
             loginModel.checkQrId(scanStr);
-            scannerView.securityPrompt();
+            scannerView.securityPrompt(true);
         } catch(ProcessException err){
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);

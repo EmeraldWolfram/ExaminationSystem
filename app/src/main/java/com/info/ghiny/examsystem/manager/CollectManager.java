@@ -93,14 +93,14 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
                 scannerView.resumeScanning();
             } catch(ProcessException err){
                 scannerView.displayError(err);
-                scannerView.securityPrompt();
+                scannerView.securityPrompt(false);
             }
         }
     }
 
     @Override
     public void onRestart() {
-        scannerView.securityPrompt();
+        scannerView.securityPrompt(false);
     }
 
     @Override

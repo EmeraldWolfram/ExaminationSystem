@@ -20,11 +20,9 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.w3c.dom.Text;
 
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;

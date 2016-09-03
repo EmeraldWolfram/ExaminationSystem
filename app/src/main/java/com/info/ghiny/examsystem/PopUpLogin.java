@@ -18,7 +18,7 @@ import com.info.ghiny.examsystem.model.LoginHelper;
 public class PopUpLogin extends Activity {
 
     public static final int PASSWORD_REQ_CODE = 888;
-
+    private boolean cancellable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,8 @@ public class PopUpLogin extends Activity {
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         getWindow().setLayout((int)(width * 0.9), (int)(height * 0.3));
+
+        cancellable = getIntent().getBooleanExtra("Cancellable", false);
     }
 
     public void onLogin(View view){
@@ -52,7 +54,12 @@ public class PopUpLogin extends Activity {
 
     @Override
     public void onBackPressed() {
-        CustomToast toast   = new CustomToast(this);
-        toast.showCustomMessage("Please enter a password to proceed", R.drawable.warn_icon);
+        if(cancellable){
+            this.setResult(RESULT_CANCELED, getIntent());
+            finish();
+        } else {
+            CustomToast toast   = new CustomToast(this);
+            toast.showCustomMessage("Please enter a password to proceed", R.drawable.warn_icon);
+        }
     }
 }

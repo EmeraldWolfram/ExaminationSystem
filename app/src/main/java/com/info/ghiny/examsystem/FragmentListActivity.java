@@ -8,19 +8,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.ViewTreeObserver;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.manager.FragListManager;
 import com.info.ghiny.examsystem.manager.ViewPagerAdapter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -60,6 +53,12 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
     protected void onResume() {
         fragListManager.onResume(errorManager);
         super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        fragListManager.onRestart();
+        super.onRestart();
     }
 
     @Override
@@ -109,8 +108,9 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
     }
 
     @Override
-    public void securityPrompt(){
+    public void securityPrompt(boolean cancellable){
         Intent secure   = new Intent(this, PopUpLogin.class);
+        secure.putExtra("Cancellable", cancellable);
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 }

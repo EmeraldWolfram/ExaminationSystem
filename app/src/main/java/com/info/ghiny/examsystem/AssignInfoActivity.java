@@ -153,8 +153,9 @@ public class AssignInfoActivity extends AppCompatActivity implements SetterView,
     }
 
     @Override
-    public void securityPrompt() {
+    public void securityPrompt(boolean cancellable) {
         Intent secure   = new Intent(this, PopUpLogin.class);
+        secure.putExtra("Cancellable", cancellable);
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 

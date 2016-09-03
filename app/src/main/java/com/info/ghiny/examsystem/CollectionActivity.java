@@ -68,6 +68,12 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
+    protected void onRestart() {
+        collectManager.onRestart();
+        super.onRestart();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event)
                 || super.onKeyDown(keyCode, event);
@@ -89,8 +95,9 @@ public class CollectionActivity extends AppCompatActivity implements ScannerView
     }
 
     @Override
-    public void securityPrompt() {
+    public void securityPrompt(boolean cancellable) {
         Intent secure   = new Intent(this, PopUpLogin.class);
+        secure.putExtra("Cancellable", cancellable);
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 

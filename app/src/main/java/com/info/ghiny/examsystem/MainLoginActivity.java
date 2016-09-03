@@ -101,8 +101,9 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     }
 
     @Override
-    public void securityPrompt() {
+    public void securityPrompt(boolean cancellable) {
         Intent pwPrompt = new Intent(this, PopUpLogin.class);
+        pwPrompt.putExtra("Cancellable", cancellable);
         startActivityForResult(pwPrompt, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
