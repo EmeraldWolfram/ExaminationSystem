@@ -16,7 +16,7 @@ import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -95,10 +95,10 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            ChiefLink.setCompleteFlag(true);
+            ConnectionTask.setCompleteFlag(true);
             boolean uploaded = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err){
-            ExternalDbLoader.getChiefLink().publishError(errManager, err);
+            ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
     }
 
@@ -140,7 +140,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
     private Runnable timer = new Runnable() {
         @Override
         public void run() {
-            if(!ChiefLink.isComplete()){
+            if(!ConnectionTask.isComplete()){
                 ProcessException err = new ProcessException(
                         "Server busy. Upload times out.\nPlease try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

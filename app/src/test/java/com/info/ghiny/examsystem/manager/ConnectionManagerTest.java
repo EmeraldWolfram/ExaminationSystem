@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.manager;
 
 import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class ConnectionManagerTest {
 
     private ConnectionManager manager;
-    private ScannerView genView;
+    private TaskScanView genView;
     private LoginHelper loginModel;
     private ProcessException err;
     private CheckListLoader dbLoader;
@@ -36,7 +36,7 @@ public class ConnectionManagerTest {
     @Before
     public void setUp() throws Exception {
         err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        genView     = Mockito.mock(ScannerView.class);
+        genView     = Mockito.mock(TaskScanView.class);
         loginModel  = Mockito.mock(LoginHelper.class);
         dbLoader    = Mockito.mock(CheckListLoader.class);
         manager     = new ConnectionManager(genView, dbLoader);

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.manager.AssignManager;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -27,8 +27,8 @@ import java.util.List;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class AssignInfoActivity extends AppCompatActivity implements SetterView, ScannerView {
-    private static final String TAG = AssignInfoActivity.class.getSimpleName();
+public class TakeAttendanceActivity extends AppCompatActivity implements SetterView, TaskScanView {
+    private static final String TAG = TakeAttendanceActivity.class.getSimpleName();
 
     //Required Tools
     private AssignManager assignManager;

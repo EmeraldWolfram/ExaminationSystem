@@ -11,7 +11,7 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.interfacer.AssignPresenter;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
@@ -24,20 +24,20 @@ import com.info.ghiny.examsystem.model.ProcessException;
  * Created by GhinY on 08/08/2016.
  */
 public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSecurePresenter{
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
     private SetterView setterView;
     private AssignModel assignModel;
     private boolean navigationFlag;
 
-    public AssignManager(ScannerView scannerView, SetterView setterView, CheckListLoader dBLoader){
-        this.scannerView    = scannerView;
+    public AssignManager(TaskScanView taskScanView, SetterView setterView, CheckListLoader dBLoader){
+        this.taskScanView = taskScanView;
         this.setterView     = setterView;
         this.navigationFlag = false;
         this.assignModel    = new AssignModel(this);
         try{
             this.assignModel.initLoader(dBLoader);
         } catch (ProcessException err) {
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
         }
     }
 
@@ -47,36 +47,36 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
 
     @Override
     public void onPause(){
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
     }
 
     @Override
     public void onResume(){
         try{
             assignModel.updateAssignList();
-            scannerView.resumeScanning();
+            taskScanView.resumeScanning();
         } catch (ProcessException err) {
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
         }
     }
 
     @Override
     public void onRestart() {
         if(!navigationFlag){
-            scannerView.securityPrompt(false);
+            taskScanView.securityPrompt(false);
         }
         navigationFlag  = false;
     }
 
     @Override
     public void onBackPressed(){
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
         ProcessException err    = new ProcessException("Confirm logout and exit?",
                 ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
         err.setBackPressListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
                 dialog.cancel();
             }
         });
@@ -84,11 +84,11 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
-                scannerView.finishActivity();
+                taskScanView.finishActivity();
             }
         });
         err.setListener(ProcessException.noButton, buttonListener);
-        scannerView.displayError(err);
+        taskScanView.displayError(err);
     }
 
     @Override
@@ -96,15 +96,15 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                scannerView.pauseScanning();
+                taskScanView.pauseScanning();
                 if(!LoginHelper.getStaff().matchPassword(password))
                     throw new ProcessException("Access denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
             } catch(ProcessException err){
-                scannerView.displayError(err);
-                scannerView.securityPrompt(false);
+                taskScanView.displayError(err);
+                taskScanView.securityPrompt(false);
             }
         }
     }
@@ -112,30 +112,30 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     @Override
     public void onScan(String scanStr){
         try{
-            scannerView.pauseScanning();
+            taskScanView.pauseScanning();
             assignModel.tryAssignScanValue(scanStr);
-            scannerView.resumeScanning();
+            taskScanView.resumeScanning();
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
 
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
         }
     }
 
     @Override
     public void navigateToDisplay(){
         navigationFlag  = true;
-        scannerView.navigateActivity(FragmentListActivity.class);
+        taskScanView.navigateActivity(FragmentListActivity.class);
     }
 
     @Override
     public void navigateToDetail(){
         navigationFlag  = true;
-        scannerView.navigateActivity(ObtainInfoActivity.class);
+        taskScanView.navigateActivity(ObtainInfoActivity.class);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
             ExamSubject paper = cdd.getPaper();
             setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(), paper.toString());
         } catch (ProcessException err) {
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
         }
     }
 
@@ -166,7 +166,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            scannerView.resumeScanning();
+            taskScanView.resumeScanning();
             dialog.cancel();
         }
     };

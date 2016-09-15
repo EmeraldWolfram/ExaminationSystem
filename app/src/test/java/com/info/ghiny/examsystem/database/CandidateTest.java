@@ -74,7 +74,7 @@ public class CandidateTest {
             fail("Exception MESSAGE_DIALOG expected but none thrown");
         }catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
-            assertEquals("There is no suitable paper for this candidate in this room",
+            assertEquals("Paper BAME 2004 is not in the initialize List that have 1 subjects",
                     err.getErrorMsg());
         }
     }

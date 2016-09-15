@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.AssignInfoActivity;
+import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -41,17 +42,19 @@ import static org.mockito.Mockito.verify;
 public class LoginManagerTest {
     private LoginManager manager;
     private LoginHelper loginModel;
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private Handler handler;
     private Intent password;
 
     @Before
     public void setUp() throws Exception {
-        scannerView = Mockito.mock(ScannerView.class);
+        taskScanView = Mockito.mock(TaskScanView.class);
+        taskConnView = Mockito.mock(TaskConnView.class);
         password    = Mockito.mock(Intent.class);
         loginModel  = Mockito.mock(LoginHelper.class);
         handler     = Mockito.mock(Handler.class);
-        manager     = new LoginManager(scannerView);
+        manager     = new LoginManager(taskScanView, taskConnView);
         manager.setLoginModel(loginModel);
         manager.setHandler(handler);
     }
@@ -72,9 +75,9 @@ public class LoginManagerTest {
 
         manager.onScan("012345");
 
-        verify(scannerView).securityPrompt();
-        verify(scannerView, never()).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).securityPrompt(true);
+        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
@@ -84,9 +87,9 @@ public class LoginManagerTest {
 
         manager.onScan("xyz");
 
-        verify(scannerView, never()).securityPrompt();
-        verify(scannerView).displayError(any(ProcessException.class));
-        verify(scannerView).resumeScanning();
+        verify(taskScanView, never()).securityPrompt(true);
+        verify(taskScanView).displayError(any(ProcessException.class));
+        verify(taskScanView).resumeScanning();
     }
 
     @Test
@@ -97,9 +100,9 @@ public class LoginManagerTest {
         assertNull(err.getListener(ProcessException.okayButton));
         manager.onScan("xyz");
 
-        verify(scannerView, never()).securityPrompt();
-        verify(scannerView).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView, never()).securityPrompt(true);
+        verify(taskScanView).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -122,9 +125,9 @@ public class LoginManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView).pauseScanning();
-        verify(scannerView, never()).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).pauseScanning();
+        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
@@ -136,9 +139,9 @@ public class LoginManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView).pauseScanning();
-        verify(scannerView).displayError(err);
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).pauseScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView).resumeScanning();
     }
 
     @Test
@@ -152,9 +155,9 @@ public class LoginManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView).pauseScanning();
-        verify(scannerView).displayError(err);
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).pauseScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -170,7 +173,7 @@ public class LoginManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -178,7 +181,7 @@ public class LoginManagerTest {
     /**
      * onResume()
      *
-     * setListener to ExternalDbLoader.ChiefLink
+     * setListener to ExternalDbLoader.ConnectionTask
      * control View to resume scanning
      *
      * @throws Exception
@@ -189,12 +192,12 @@ public class LoginManagerTest {
         TCPClient tcpClient = Mockito.mock(TCPClient.class);
 
         ExternalDbLoader.setTcpClient(tcpClient);
-        ExternalDbLoader.setChiefLink(new ChiefLink());
+        ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
         manager.onResume(errorManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).resumeScanning();
     }
 
     //= OnChiefRespond() ================================================================
@@ -210,7 +213,7 @@ public class LoginManagerTest {
     @Test
     public void testOnChiefRespond_withPositiveResult() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
-        ExternalDbLoader.setChiefLink(new ChiefLink());
+        ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
         doNothing().when(loginModel).checkLoginResult("Message");
         doNothing().when(loginModel).checkDetail(anyString());
@@ -219,22 +222,22 @@ public class LoginManagerTest {
 
         manager.onChiefRespond(errorManager, "Message");
         //assertTrue(manager.isDlFlag());
-        //verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
+        //verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
 
         //manager.onChiefRespond(errorManager, "Message");
         //assertFalse(manager.isDlFlag());
 
 
-        verify(scannerView).navigateActivity(AssignInfoActivity.class);
-        verify(scannerView, never()).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
     public void testOnChiefRespond_withToastError() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
-        ChiefLink chiefLink       = Mockito.mock(ChiefLink.class);
-        ExternalDbLoader.setChiefLink(chiefLink);
+        ConnectionTask connectionTask = Mockito.mock(ConnectionTask.class);
+        ExternalDbLoader.setConnectionTask(connectionTask);
         doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
                 .when(loginModel).checkLoginResult("Message");
 
@@ -243,16 +246,16 @@ public class LoginManagerTest {
         assertFalse(manager.isDlFlag());
 
 
-        verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
-        verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
     public void testOnChiefRespond_withDialogError() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
-        ChiefLink chiefLink       = Mockito.mock(ChiefLink.class);
-        ExternalDbLoader.setChiefLink(chiefLink);
+        ConnectionTask connectionTask = Mockito.mock(ConnectionTask.class);
+        ExternalDbLoader.setConnectionTask(connectionTask);
 
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
         doThrow(err).when(loginModel).checkLoginResult("Message");
@@ -263,9 +266,9 @@ public class LoginManagerTest {
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
-        verify(scannerView, never()).navigateActivity(AssignInfoActivity.class);
-        verify(chiefLink).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 }

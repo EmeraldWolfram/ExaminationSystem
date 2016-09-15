@@ -395,6 +395,7 @@ public class FragmentHelperTest {
     @Test
     public void testUnassignCandidate_6_NegativeTest() throws Exception {
         try{
+            AssignModel.setAttdList(null);
             helper.unassignCandidate(cdd1.getTableNumber().toString(), cdd1.getExamIndex());
 
             fail("Expected FATAL_MESSAGE but no error was thrown");

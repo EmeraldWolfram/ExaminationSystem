@@ -82,7 +82,7 @@ public class FragListManagerTest {
     @Test
     public void testSignToUpload() throws Exception {
         manager.signToUpload();
-        verify(generalView).navigateActivity(PopUpLogin.class);
+        verify(generalView).securityPrompt(true);
     }
 
     //= OnReceivePassword() ========================================================================
@@ -92,6 +92,8 @@ public class FragListManagerTest {
      *
      * 1. Model notify a Positive Result, tell Model to upload attendance and start timer
      * 2. Model notify a Negative Result, display the error thrown by Model
+     * 3. Extended: Receive Correct Password, prompt because of inactivity
+     * 4. Extended: Receive Wrong Password, prompt because of inactivity
      *
      * @throws Exception
      */
@@ -101,6 +103,8 @@ public class FragListManagerTest {
         Intent pw = Mockito.mock(Intent.class);
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
+        doNothing().when(generalView).securityPrompt(true);
+        manager.signToUpload();
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
@@ -113,6 +117,36 @@ public class FragListManagerTest {
     public void testOnReceivePassword_IncorrectPassword() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
 
+        doNothing().when(generalView).securityPrompt(true);
+        when(pw.getStringExtra("Password")).thenReturn("abcdef");
+
+        manager.signToUpload();
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+
+        verify(fragModel, never()).uploadAttdList();
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(generalView).displayError(any(ProcessException.class));
+    }
+
+    @Test
+    public void testOnReceivePassword_CorrectPassword_PromptOnInactiviy() throws Exception {
+        Intent pw = Mockito.mock(Intent.class);
+
+        when(pw.getStringExtra("Password")).thenReturn("123456");
+        doNothing().when(generalView).securityPrompt(true);
+
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
+
+        verify(fragModel, never()).uploadAttdList();
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(generalView, never()).displayError(any(ProcessException.class));
+    }
+
+    @Test
+    public void testOnReceivePassword_IncorrectPassword_PromptOnInactivity() throws Exception {
+        Intent pw = Mockito.mock(Intent.class);
+
+        doNothing().when(generalView).securityPrompt(true);
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);

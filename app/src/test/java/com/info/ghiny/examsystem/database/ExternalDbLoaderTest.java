@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -25,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Created by GhinY on 10/07/2016.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({JsonHelper.class, ChiefLink.class, TCPClient.class})
+@PrepareForTest({JsonHelper.class, ConnectionTask.class, TCPClient.class})
 public class ExternalDbLoaderTest {
     StaffIdentity staff;
     TCPClient tcpClient;
@@ -33,7 +33,7 @@ public class ExternalDbLoaderTest {
     @Before
     public void setUp() throws Exception {
         PowerMockito.mockStatic(JsonHelper.class);
-        PowerMockito.mockStatic(ChiefLink.class);
+        PowerMockito.mockStatic(ConnectionTask.class);
         tcpClient = PowerMockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
         staff   = new StaffIdentity("246800", true, "Dr. TDD", "H3");
@@ -57,8 +57,8 @@ public class ExternalDbLoaderTest {
     public void testGetStaffIdentity() throws Exception {
         when(JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800")).thenReturn("Json Id");
         doNothing().when(tcpClient).sendMessage("Json Id");
-        when(ChiefLink.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
-        when(ChiefLink.getMsgReceived()).thenReturn("Staff in Json");
+        when(ConnectionTask.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
+        when(ConnectionTask.getMsgReceived()).thenReturn("Staff in Json");
         when(JsonHelper.parseStaffIdentity("Staff in Json")).thenReturn(staff);
 
         StaffIdentity id = ExternalDbLoader.getStaffIdentity("246800");
@@ -70,8 +70,8 @@ public class ExternalDbLoaderTest {
     public void testGetStaffIdentity_returnNullWhenParserReturnNull() throws Exception {
         when(JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800")).thenReturn("Json Id");
         doNothing().when(tcpClient).sendMessage("Json Id");
-        when(ChiefLink.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
-        when(ChiefLink.getMsgReceived()).thenReturn("Something Wrong");
+        when(ConnectionTask.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
+        when(ConnectionTask.getMsgReceived()).thenReturn("Something Wrong");
         when(JsonHelper.parseStaffIdentity("Something Wrong")).thenReturn(null);
 
         StaffIdentity id = ExternalDbLoader.getStaffIdentity("246800");

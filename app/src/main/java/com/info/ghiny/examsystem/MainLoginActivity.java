@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,8 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.manager.LoginManager;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -20,11 +22,12 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class MainLoginActivity extends AppCompatActivity implements ScannerView{
+public class MainLoginActivity extends AppCompatActivity implements TaskScanView, TaskConnView {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
     private LoginManager loginManager;
     private ErrorManager errorManager;
+    private ProgressDialog progDialog;
 
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -48,7 +51,7 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
         TextView idView = (TextView)findViewById(R.id.identityText);    assert idView  != null;
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
-        loginManager    = new LoginManager(this);
+        loginManager    = new LoginManager(this, this);
         errorManager    = new ErrorManager(this);
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
         barcodeView.decodeContinuous(callback);
@@ -118,5 +121,16 @@ public class MainLoginActivity extends AppCompatActivity implements ScannerView{
     @Override
     public void resumeScanning() {
         barcodeView.resume();
+    }
+
+    @Override
+    public void openProgressWindow() {
+        progDialog  = ProgressDialog.show(this, "Verifying:", "Waiting for Chief Respond...");
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
     }
 }

@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import android.content.DialogInterface;
 
-import com.info.ghiny.examsystem.AssignInfoActivity;
+import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -22,7 +22,7 @@ public class AssignHelper {
     private CheckListLoader clLoader;
     private static HashMap<Integer, String> assgnList = new HashMap<>();
     private static AttendanceList attdList;
-    private AssignInfoActivity assignAct;
+    private TakeAttendanceActivity assignAct;
 
     private final DialogInterface.OnClickListener updateListener =
             new DialogInterface.OnClickListener(){
@@ -101,10 +101,10 @@ public class AssignHelper {
         return assgnList;
     }
 
-    public void setAssignAct(AssignInfoActivity assignAct) {
+    public void setAssignAct(TakeAttendanceActivity assignAct) {
         this.assignAct = assignAct;
     }
-    protected AssignInfoActivity getAssignAct(){
+    protected TakeAttendanceActivity getAssignAct(){
         return assignAct;
     }
 

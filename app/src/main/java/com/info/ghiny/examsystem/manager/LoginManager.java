@@ -5,14 +5,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.AssignInfoActivity;
+import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginPresenter;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -22,13 +23,15 @@ import com.info.ghiny.examsystem.model.TCPClient;
  * Created by GhinY on 08/08/2016.
  */
 public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConnPresenter {
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private LoginHelper loginModel;
     private Handler handler;
     private boolean dlFlag = false;
 
-    public LoginManager(ScannerView scannerView){
-        this.scannerView    = scannerView;
+    public LoginManager(TaskScanView taskScanView, TaskConnView taskConnView){
+        this.taskScanView   = taskScanView;
+        this.taskConnView   = taskConnView;
         this.loginModel     = new LoginHelper();
         this.handler        = new Handler();
     }
@@ -49,11 +52,11 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
 
     @Override
     public void onPause(){
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
     }
 
     public void onResume() {
-        scannerView.resumeScanning();
+        taskScanView.resumeScanning();
     }
 
     @Override
@@ -74,11 +77,12 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
     @Override
     public void onDestroy(){
         //try {
+        taskConnView.closeProgressWindow();
         handler.removeCallbacks(timer);
             //ExternalDbLoader.getTcpClient().sendMessage("Termination");
             //ExternalDbLoader.getTcpClient().stopClient();
-            //ExternalDbLoader.getChiefLink().cancel(true);
-            //ExternalDbLoader.setChiefLink(null);
+            //ExternalDbLoader.getConnectionTask().cancel(true);
+            //ExternalDbLoader.setConnectionTask(null);
         //} catch (Exception e) {
         //    e.printStackTrace();
         //}
@@ -86,37 +90,38 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
 
     @Override
     public void onScan(String scanStr){
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
         try{
             loginModel.checkQrId(scanStr);
-            scannerView.securityPrompt(true);
+            taskScanView.securityPrompt(true);
         } catch(ProcessException err){
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
 
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
         }
     }
 
     @Override
     public void onPasswordReceived(int reqCode, int resCode, Intent intent){
         if(reqCode == PopUpLogin.PASSWORD_REQ_CODE && resCode == Activity.RESULT_OK){
-            scannerView.pauseScanning();
+            taskScanView.pauseScanning();
             String password = intent.getStringExtra("Password");
             try{
                 loginModel.matchStaffPw(password);
+                taskConnView.openProgressWindow();
                 handler.postDelayed(timer, 5000);
             } catch(ProcessException err){
                 err.setListener(ProcessException.okayButton, buttonListener);
                 err.setListener(ProcessException.yesButton, buttonListener);
                 err.setListener(ProcessException.noButton, buttonListener);
 
-                scannerView.displayError(err);
+                taskScanView.displayError(err);
                 if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                    scannerView.resumeScanning();
+                    taskScanView.resumeScanning();
             }
         }
     }
@@ -125,19 +130,20 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
     public void onChiefRespond(ErrorManager errorManager, String message){
         try {
             //if(!dlFlag){
+            taskConnView.closeProgressWindow();
             loginModel.checkLoginResult(message);
             //    dlFlag = true;
             //} else {
             //    loginModel.checkDetail(message);
             //    dlFlag = false;
-            scannerView.navigateActivity(AssignInfoActivity.class);
+            taskScanView.navigateActivity(TakeAttendanceActivity.class);
             //}
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
 
-            ExternalDbLoader.getChiefLink().publishError(errorManager, err);
+            ExternalDbLoader.getConnectionTask().publishError(errorManager, err);
         }
     }
 
@@ -146,7 +152,7 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    scannerView.resumeScanning();
+                    taskScanView.resumeScanning();
                     dialog.cancel();
                 }
             };
@@ -154,7 +160,9 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
     private Runnable timer = new Runnable() {
         @Override
         public void run() {
-            if(!ChiefLink.isComplete()){
+            if(!ConnectionTask.isComplete()){
+                taskConnView.closeProgressWindow();
+
                 ProcessException err = new ProcessException(
                         "Identity verification times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
@@ -162,13 +170,13 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
                 err.setBackPressListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        scannerView.resumeScanning();
+                        taskScanView.resumeScanning();
                         dialog.cancel();
                     }
                 });
-                if(scannerView != null){
-                    scannerView.pauseScanning();
-                    scannerView.displayError(err);
+                if(taskScanView != null){
+                    taskScanView.pauseScanning();
+                    taskScanView.displayError(err);
                 }
             }
         }
@@ -177,7 +185,7 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
     private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            scannerView.resumeScanning();
+            taskScanView.resumeScanning();
             dialog.cancel();
         }
     };

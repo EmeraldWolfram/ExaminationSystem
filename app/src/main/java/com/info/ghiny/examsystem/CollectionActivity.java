@@ -8,7 +8,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.manager.CollectManager;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -19,7 +19,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class CollectionActivity extends AppCompatActivity implements ScannerView {
+public class CollectionActivity extends AppCompatActivity implements TaskScanView {
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
     private ErrorManager errorManager;

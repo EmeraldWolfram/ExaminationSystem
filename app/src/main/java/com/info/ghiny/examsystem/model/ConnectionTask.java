@@ -2,17 +2,13 @@ package com.info.ghiny.examsystem.model;
 
 import android.os.AsyncTask;
 
-import com.info.ghiny.examsystem.manager.ExamSubjectAdapter;
-import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-
-import java.util.List;
 
 /**
  * Created by GhinY on 08/07/2016.
  */
-public class ChiefLink extends AsyncTask<String, String, TCPClient> {
+public class ConnectionTask extends AsyncTask<String, String, TCPClient> {
 
     private static boolean completeFlag = false;
     private ErrorManager errorManager;
@@ -23,7 +19,7 @@ public class ChiefLink extends AsyncTask<String, String, TCPClient> {
         return completeFlag;
     }
     public static void setCompleteFlag(boolean completeFlag) {
-        ChiefLink.completeFlag = completeFlag;
+        ConnectionTask.completeFlag = completeFlag;
     }
 
     //= Public Methods =============================================================================

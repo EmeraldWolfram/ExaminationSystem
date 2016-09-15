@@ -1,32 +1,25 @@
 package com.info.ghiny.examsystem.manager;
 
-import android.content.DialogInterface;
 import android.os.Handler;
 
-import com.google.zxing.client.android.Intents;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Created by GhinY on 12/08/2016.
@@ -34,16 +27,16 @@ import static org.mockito.Mockito.withSettings;
 public class ObtainInfoManagerTest {
     private Handler handler;
     private InfoCollectHelper infoModel;
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
     private ObtainInfoManager manager;
 
     @Before
     public void setUp() throws Exception {
         infoModel = Mockito.mock(InfoCollectHelper.class);
-        scannerView = Mockito.mock(ScannerView.class);
+        taskScanView = Mockito.mock(TaskScanView.class);
         handler = Mockito.mock(Handler.class);
 
-        manager = new ObtainInfoManager(scannerView);
+        manager = new ObtainInfoManager(taskScanView);
         manager.setHandler(handler);
         manager.setInfoModel(infoModel);
     }
@@ -65,11 +58,11 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("15WAU00001");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(infoModel).reqCandidatePapers("15WAU00001");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView, never()).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
@@ -79,11 +72,11 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("33");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView).displayError(err);
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView).resumeScanning();
     }
 
     @Test
@@ -94,11 +87,11 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("33");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(scannerView).displayError(err);
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -115,7 +108,7 @@ public class ObtainInfoManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
     }
 
     //= onResume() =================================================================================
@@ -136,7 +129,7 @@ public class ObtainInfoManagerTest {
         manager.onResume(errManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).resumeScanning();
     }
 
     //= onDestroy() ================================================================================

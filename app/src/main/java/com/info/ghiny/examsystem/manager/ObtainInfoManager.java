@@ -8,11 +8,11 @@ import android.os.Handler;
 import com.info.ghiny.examsystem.ExamListActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -25,12 +25,12 @@ import com.info.ghiny.examsystem.model.TCPClient;
  */
 public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, TaskSecurePresenter{
     private InfoCollectHelper infoModel;
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
     private String studentSubjects;
     private Handler handler;
 
-    public ObtainInfoManager(ScannerView scannerView){
-        this.scannerView    = scannerView;
+    public ObtainInfoManager(TaskScanView taskScanView){
+        this.taskScanView = taskScanView;
         this.infoModel      = new InfoCollectHelper();
         this.handler        = new Handler();
     }
@@ -49,12 +49,12 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
 
     @Override
     public void onPause(){
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
     }
 
     @Override
     public void onResume() {
-        scannerView.resumeScanning();
+        taskScanView.resumeScanning();
     }
 
     @Override
@@ -71,16 +71,16 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            ChiefLink.setCompleteFlag(true);
+            ConnectionTask.setCompleteFlag(true);
             boolean ack =   JsonHelper.parseBoolean(messageRx);
             studentSubjects = messageRx;
-            scannerView.navigateActivity(ExamListActivity.class);
+            taskScanView.navigateActivity(ExamListActivity.class);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
 
-            ExternalDbLoader.getChiefLink().publishError(errManager, err);
+            ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
     }
 
@@ -92,21 +92,21 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
     @Override
     public void onScan(String scanStr){
         try{
-            scannerView.pauseScanning();
+            taskScanView.pauseScanning();
             infoModel.reqCandidatePapers(scanStr);
             handler.postDelayed(timer, 5000);
         } catch (ProcessException err){
             err.setListener(ProcessException.okayButton, buttonListener);
 
-            scannerView.displayError(err);
+            taskScanView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
         }
     }
 
     @Override
     public void onRestart() {
-        scannerView.securityPrompt(false);
+        taskScanView.securityPrompt(false);
     }
 
     @Override
@@ -114,15 +114,15 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                scannerView.pauseScanning();
+                taskScanView.pauseScanning();
                 if(!LoginHelper.getStaff().matchPassword(password))
                     throw new ProcessException("Access denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 
-                scannerView.resumeScanning();
+                taskScanView.resumeScanning();
             } catch(ProcessException err){
-                scannerView.displayError(err);
-                scannerView.securityPrompt(false);
+                taskScanView.displayError(err);
+                taskScanView.securityPrompt(false);
             }
         }
     }
@@ -131,7 +131,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    scannerView.resumeScanning();
+                    taskScanView.resumeScanning();
                     dialog.cancel();
                 }
             };
@@ -139,7 +139,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
     private Runnable timer = new Runnable() {
         @Override
         public void run() {
-            if(!ChiefLink.isComplete()){
+            if(!ConnectionTask.isComplete()){
                 ProcessException err = new ProcessException(
                         "Server busy. Request times out. \n Please try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
@@ -147,13 +147,13 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
                 err.setBackPressListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        scannerView.resumeScanning();
+                        taskScanView.resumeScanning();
                         dialog.cancel();
                     }
                 });
-                if(scannerView != null){
-                    scannerView.pauseScanning();
-                    scannerView.displayError(err);
+                if(taskScanView != null){
+                    taskScanView.pauseScanning();
+                    taskScanView.displayError(err);
                 }
             }
         }
@@ -162,7 +162,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
     private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            scannerView.resumeScanning();
+            taskScanView.resumeScanning();
             dialog.cancel();
         }
     };

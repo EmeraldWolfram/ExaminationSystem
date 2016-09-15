@@ -5,23 +5,19 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Explode;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.Window;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.manager.ConnectionManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.manager.LoginManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -29,7 +25,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class LinkChiefActivity extends AppCompatActivity implements ScannerView {
+public class LinkChiefActivity extends AppCompatActivity implements TaskScanView {
     private static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
     private BeepManager beepManager;

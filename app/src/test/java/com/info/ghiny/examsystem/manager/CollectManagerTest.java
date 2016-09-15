@@ -3,7 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -11,7 +11,6 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -24,7 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 17/08/2016.
@@ -35,16 +33,16 @@ import static org.mockito.Mockito.when;
 public class CollectManagerTest {
     private Handler handler;
     private InfoCollectHelper infoModel;
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
     private CollectManager manager;
 
     @Before
     public void setUp() throws Exception {
         infoModel = Mockito.mock(InfoCollectHelper.class);
-        scannerView = Mockito.mock(ScannerView.class);
+        taskScanView = Mockito.mock(TaskScanView.class);
         handler = Mockito.mock(Handler.class);
 
-        manager = new CollectManager(scannerView);
+        manager = new CollectManager(taskScanView);
         manager.setHandler(handler);
         manager.setInfoModel(infoModel);
     }
@@ -61,7 +59,7 @@ public class CollectManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -80,7 +78,7 @@ public class CollectManagerTest {
         ExternalDbLoader.setTcpClient(tcpClient);
 
         manager.onResume(errManager);
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).resumeScanning();
     }
 
     //= OnDestroy() ================================================================================
@@ -113,11 +111,11 @@ public class CollectManagerTest {
 
         manager.onScan("PAPER ABCD");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
 
-        verify(scannerView, never()).displayError(any(ProcessException.class));
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanView, never()).resumeScanning();
     }
 
     @Test
@@ -128,11 +126,11 @@ public class CollectManagerTest {
 
         manager.onScan("PAPER ABCD");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
 
-        verify(scannerView).displayError(err);
-        verify(scannerView).resumeScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView).resumeScanning();
     }
 
     @Test
@@ -143,11 +141,11 @@ public class CollectManagerTest {
 
         manager.onScan("PAPER ABCD");
 
-        verify(scannerView).pauseScanning();
+        verify(taskScanView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
 
-        verify(scannerView).displayError(err);
-        verify(scannerView, never()).resumeScanning();
+        verify(taskScanView).displayError(err);
+        verify(taskScanView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 }

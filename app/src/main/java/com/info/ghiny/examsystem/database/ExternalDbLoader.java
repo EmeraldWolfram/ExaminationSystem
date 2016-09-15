@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
@@ -13,7 +13,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class ExternalDbLoader {
 
     private static TCPClient tcpClient;
-    private static ChiefLink chiefLink;
+    private static ConnectionTask connectionTask;
 
     //= Setter & Getter ============================================================================
     public static void setTcpClient(TCPClient tcpClient) {
@@ -23,11 +23,11 @@ public class ExternalDbLoader {
         return tcpClient;
     }
 
-    public static void setChiefLink(ChiefLink chiefLink) {
-        ExternalDbLoader.chiefLink = chiefLink;
+    public static void setConnectionTask(ConnectionTask connectionTask) {
+        ExternalDbLoader.connectionTask = connectionTask;
     }
-    public static ChiefLink getChiefLink() {
-        return chiefLink;
+    public static ConnectionTask getConnectionTask() {
+        return connectionTask;
     }
 
     //= Public Methods =============================================================================

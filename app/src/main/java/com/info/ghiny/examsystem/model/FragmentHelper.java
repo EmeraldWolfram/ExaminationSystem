@@ -4,7 +4,6 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.manager.FragListManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public class FragmentHelper {
 
     //= public Methods =============================================================================
     public void uploadAttdList() throws ProcessException{
-        ChiefLink.setCompleteFlag(false);
+        ConnectionTask.setCompleteFlag(false);
         ExternalDbLoader.updateAttdList(AssignModel.getAttdList());
     }
 

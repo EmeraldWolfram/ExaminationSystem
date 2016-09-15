@@ -29,7 +29,7 @@
             android:name=".ObtainInfoActivity"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".AssignInfoActivity"
+            android:name=".TakeAttendanceActivity"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".FragmentListActivity"

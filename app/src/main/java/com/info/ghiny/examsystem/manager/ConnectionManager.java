@@ -4,13 +4,11 @@ import android.os.AsyncTask;
 
 import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.ConnectPresenter;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
-import com.info.ghiny.examsystem.interfacer.ScannerView;
+import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
-import com.info.ghiny.examsystem.model.ChiefLink;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
@@ -18,12 +16,12 @@ import com.info.ghiny.examsystem.model.ProcessException;
  * Created by GhinY on 08/08/2016.
  */
 public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
-    private ScannerView scannerView;
+    private TaskScanView taskScanView;
     private LoginHelper loginModel;
     private CheckListLoader dbLoader;
 
-    public ConnectionManager(ScannerView scannerView, CheckListLoader dbLoader){
-        this.scannerView    = scannerView;
+    public ConnectionManager(TaskScanView taskScanView, CheckListLoader dbLoader){
+        this.taskScanView = taskScanView;
         this.loginModel     = new LoginHelper();
         this.dbLoader       = dbLoader;
     }
@@ -34,43 +32,43 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
 
     @Override
     public void onScan(String scanStr){
-        scannerView.pauseScanning();
-        scannerView.beep();
+        taskScanView.pauseScanning();
+        taskScanView.beep();
         try{
             loginModel.verifyChief(scanStr);
 
-            ChiefLink connect   = new ChiefLink();
+            ConnectionTask connect   = new ConnectionTask();
             connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ExternalDbLoader.setChiefLink(connect);
+            ExternalDbLoader.setConnectionTask(connect);
 
-            scannerView.navigateActivity(MainLoginActivity.class);
+            taskScanView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
-            scannerView.displayError(err);
-            scannerView.resumeScanning();
+            taskScanView.displayError(err);
+            taskScanView.resumeScanning();
         }
     }
 
     @Override
     public void onPause() {
-        scannerView.pauseScanning();
+        taskScanView.pauseScanning();
     }
 
     @Override
     public void onResume() {
-        scannerView.resumeScanning();
+        taskScanView.resumeScanning();
     }
 
     @Override
     public void setupConnection(){
         if(loginModel.tryConnection(dbLoader)){
             //Connect here if wanted
-            ChiefLink connect   = new ChiefLink();
+            ConnectionTask connect   = new ConnectionTask();
             connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ExternalDbLoader.setChiefLink(connect);
+            ExternalDbLoader.setConnectionTask(connect);
 
-            scannerView.navigateActivity(MainLoginActivity.class);
+            taskScanView.navigateActivity(MainLoginActivity.class);
         }
-        //Setup ChiefLink and TCP Client
+        //Setup ConnectionTask and TCP Client
     }
 
     @Override
@@ -78,11 +76,11 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
         try {
             ExternalDbLoader.getTcpClient().sendMessage("Termination");
             ExternalDbLoader.getTcpClient().stopClient();
-            ExternalDbLoader.getChiefLink().cancel(true);
-            ExternalDbLoader.setChiefLink(null);
+            ExternalDbLoader.getConnectionTask().cancel(true);
+            ExternalDbLoader.setConnectionTask(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //Close ChiefLink and TCP Client
+        //Close ConnectionTask and TCP Client
     }
 }

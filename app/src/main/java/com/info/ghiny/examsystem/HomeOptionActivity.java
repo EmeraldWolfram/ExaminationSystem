@@ -18,7 +18,7 @@ public class HomeOptionActivity extends AppCompatActivity{
     }
 
     public void onAssign(View view){
-        Intent assignIntent = new Intent(this, AssignInfoActivity.class);
+        Intent assignIntent = new Intent(this, TakeAttendanceActivity.class);
         startActivity(assignIntent);
     }
 
