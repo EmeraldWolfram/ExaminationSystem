@@ -7,6 +7,7 @@ import android.os.Handler;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
@@ -25,10 +26,12 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class CollectManager implements TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter{
     private InfoCollectHelper infoModel;
     private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private Handler handler;
 
-    public CollectManager(TaskScanView taskScanView){
+    public CollectManager(TaskScanView taskScanView, TaskConnView taskConnView){
         this.taskScanView = taskScanView;
+        this.taskConnView = taskConnView;
         this.infoModel      = new InfoCollectHelper();
         this.handler        = new Handler();
     }
@@ -65,12 +68,14 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
 
     @Override
     public void onDestroy(){
+        taskConnView.closeProgressWindow();
         handler.removeCallbacks(timer);
     }
 
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
+            taskConnView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
             boolean ack = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err) {
@@ -108,6 +113,7 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
         try{
             taskScanView.pauseScanning();
             infoModel.bundleCollection(scanStr);
+            taskConnView.openProgressWindow();
             handler.postDelayed(timer, 5000);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
@@ -131,6 +137,7 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
         @Override
         public void run() {
             if(!ConnectionTask.isComplete()){
+                taskConnView.closeProgressWindow();
                 ProcessException err = new ProcessException(
                         "Bundle collection times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

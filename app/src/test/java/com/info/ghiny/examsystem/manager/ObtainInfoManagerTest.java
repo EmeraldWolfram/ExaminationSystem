@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -28,15 +29,17 @@ public class ObtainInfoManagerTest {
     private Handler handler;
     private InfoCollectHelper infoModel;
     private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private ObtainInfoManager manager;
 
     @Before
     public void setUp() throws Exception {
         infoModel = Mockito.mock(InfoCollectHelper.class);
         taskScanView = Mockito.mock(TaskScanView.class);
+        taskConnView = Mockito.mock(TaskConnView.class);
         handler = Mockito.mock(Handler.class);
 
-        manager = new ObtainInfoManager(taskScanView);
+        manager = new ObtainInfoManager(taskScanView, taskConnView);
         manager.setHandler(handler);
         manager.setInfoModel(infoModel);
     }
@@ -59,6 +62,7 @@ public class ObtainInfoManagerTest {
         manager.onScan("15WAU00001");
 
         verify(taskScanView).pauseScanning();
+        verify(taskConnView).openProgressWindow();
         verify(infoModel).reqCandidatePapers("15WAU00001");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(taskScanView, never()).displayError(any(ProcessException.class));
@@ -73,6 +77,7 @@ public class ObtainInfoManagerTest {
         manager.onScan("33");
 
         verify(taskScanView).pauseScanning();
+        verify(taskConnView, never()).openProgressWindow();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskScanView).displayError(err);
@@ -88,6 +93,7 @@ public class ObtainInfoManagerTest {
         manager.onScan("33");
 
         verify(taskScanView).pauseScanning();
+        verify(taskConnView, never()).openProgressWindow();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskScanView).displayError(err);
@@ -146,6 +152,7 @@ public class ObtainInfoManagerTest {
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
 
+        verify(taskConnView).closeProgressWindow();
         verify(handler).removeCallbacks(any(Runnable.class));
     }
 }

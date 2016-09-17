@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.manager.CollectManager;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -19,11 +21,12 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class CollectionActivity extends AppCompatActivity implements TaskScanView {
+public class CollectionActivity extends AppCompatActivity implements TaskScanView, TaskConnView {
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
     private ErrorManager errorManager;
     private CollectManager collectManager;
+    private ProgressDialog progDialog;
     private static BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -48,7 +51,7 @@ public class CollectionActivity extends AppCompatActivity implements TaskScanVie
         bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         errorManager    = new ErrorManager(this);
-        collectManager  = new CollectManager(this);
+        collectManager  = new CollectManager(this, this);
 
         barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
         assert barcodeView != null;
@@ -117,5 +120,16 @@ public class CollectionActivity extends AppCompatActivity implements TaskScanVie
     @Override
     public void finishActivity() {
         finish();
+    }
+
+    @Override
+    public void openProgressWindow() {
+        progDialog  = ProgressDialog.show(this, "Notify Collection:", "Waiting for Acknowledgement...");
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
     }
 }

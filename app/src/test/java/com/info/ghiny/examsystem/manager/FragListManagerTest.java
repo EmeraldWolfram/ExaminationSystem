@@ -12,11 +12,13 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
+import org.apache.tools.ant.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,7 @@ public class FragListManagerTest {
     private FragmentHelper fragModel;
     private FragListManager manager;
     private GeneralView generalView;
+    private TaskConnView taskConnView;
     private Handler handler;
     private View view;
     private TextView dummyView;
@@ -58,10 +61,11 @@ public class FragListManagerTest {
         LoginHelper.setStaff(id);
 
         generalView = Mockito.mock(GeneralView.class);
+        taskConnView= Mockito.mock(TaskConnView.class);
         fragModel   = Mockito.mock(FragmentHelper.class);
         handler     = Mockito.mock(Handler.class);
 
-        manager     = new FragListManager(generalView);
+        manager     = new FragListManager(generalView, taskConnView);
         manager.setFragmentModel(fragModel);
         manager.setHandler(handler);
 
@@ -109,6 +113,7 @@ public class FragListManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel).uploadAttdList();
+        verify(taskConnView).openProgressWindow();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(generalView, never()).displayError(any(ProcessException.class));
     }
@@ -124,6 +129,7 @@ public class FragListManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel, never()).uploadAttdList();
+        verify(taskConnView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(generalView).displayError(any(ProcessException.class));
     }
@@ -138,6 +144,7 @@ public class FragListManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel, never()).uploadAttdList();
+        verify(taskConnView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(generalView, never()).displayError(any(ProcessException.class));
     }
@@ -152,6 +159,7 @@ public class FragListManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
         verify(fragModel, never()).uploadAttdList();
+        verify(taskConnView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(generalView).displayError(any(ProcessException.class));
     }
@@ -187,6 +195,7 @@ public class FragListManagerTest {
     @Test
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
+        verify(taskConnView).closeProgressWindow();
         verify(handler).removeCallbacks(any(Runnable.class));
     }
 

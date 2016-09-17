@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,6 +12,7 @@ import android.view.View;
 
 
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.manager.FragListManager;
 import com.info.ghiny.examsystem.manager.ViewPagerAdapter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -19,10 +21,11 @@ import com.info.ghiny.examsystem.model.ProcessException;
 /**
  * Created by GhinY on 12/06/2016.
  */
-public class FragmentListActivity extends AppCompatActivity implements GeneralView {
+public class FragmentListActivity extends AppCompatActivity implements GeneralView, TaskConnView {
 
     private ErrorManager errorManager;
     private FragListManager fragListManager;
+    private ProgressDialog progDialog;
 
     //==============================================================================================
     @Override
@@ -41,7 +44,7 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         assert tabLayout != null;
 
         errorManager    = new ErrorManager(this);
-        fragListManager = new FragListManager(this);
+        fragListManager = new FragListManager(this, this);
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -112,6 +115,17 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         Intent secure   = new Intent(this, PopUpLogin.class);
         secure.putExtra("Cancellable", cancellable);
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+    }
+
+    @Override
+    public void openProgressWindow() {
+        progDialog  = ProgressDialog.show(this, "Sending:", "Uploading Attendance List...");
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
     }
 }
 

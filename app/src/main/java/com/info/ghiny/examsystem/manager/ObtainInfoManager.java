@@ -8,6 +8,7 @@ import android.os.Handler;
 import com.info.ghiny.examsystem.ExamListActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
@@ -26,11 +27,13 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, TaskSecurePresenter{
     private InfoCollectHelper infoModel;
     private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private String studentSubjects;
     private Handler handler;
 
-    public ObtainInfoManager(TaskScanView taskScanView){
+    public ObtainInfoManager(TaskScanView taskScanView, TaskConnView taskConnView){
         this.taskScanView = taskScanView;
+        this.taskConnView = taskConnView;
         this.infoModel      = new InfoCollectHelper();
         this.handler        = new Handler();
     }
@@ -71,6 +74,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
+            taskConnView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
             boolean ack =   JsonHelper.parseBoolean(messageRx);
             studentSubjects = messageRx;
@@ -86,6 +90,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
 
     @Override
     public void onDestroy(){
+        taskConnView.closeProgressWindow();
         handler.removeCallbacks(timer);
     }
 
@@ -94,6 +99,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
         try{
             taskScanView.pauseScanning();
             infoModel.reqCandidatePapers(scanStr);
+            taskConnView.openProgressWindow();
             handler.postDelayed(timer, 5000);
         } catch (ProcessException err){
             err.setListener(ProcessException.okayButton, buttonListener);
@@ -127,7 +133,7 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
         }
     }
 
-    private DialogInterface.OnClickListener timesOutListener =
+    private DialogInterface.OnClickListener timesOutBtnListener =
             new DialogInterface.OnClickListener(){
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -140,10 +146,11 @@ public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, 
         @Override
         public void run() {
             if(!ConnectionTask.isComplete()){
+                taskConnView.closeProgressWindow();
                 ProcessException err = new ProcessException(
                         "Server busy. Request times out. \n Please try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                err.setListener(ProcessException.okayButton, timesOutListener);
+                err.setListener(ProcessException.okayButton, timesOutBtnListener);
                 err.setBackPressListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {

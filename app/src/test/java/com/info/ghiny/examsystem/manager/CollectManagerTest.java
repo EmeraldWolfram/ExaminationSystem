@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -11,6 +12,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -34,15 +36,17 @@ public class CollectManagerTest {
     private Handler handler;
     private InfoCollectHelper infoModel;
     private TaskScanView taskScanView;
+    private TaskConnView taskConnView;
     private CollectManager manager;
 
     @Before
     public void setUp() throws Exception {
         infoModel = Mockito.mock(InfoCollectHelper.class);
         taskScanView = Mockito.mock(TaskScanView.class);
+        taskConnView = Mockito.mock(TaskConnView.class);
         handler = Mockito.mock(Handler.class);
 
-        manager = new CollectManager(taskScanView);
+        manager = new CollectManager(taskScanView, taskConnView);
         manager.setHandler(handler);
         manager.setInfoModel(infoModel);
     }
@@ -93,6 +97,7 @@ public class CollectManagerTest {
     @Test
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
+        verify(taskConnView).closeProgressWindow();
         verify(handler).removeCallbacks(any(Runnable.class));
     }
 
@@ -112,6 +117,7 @@ public class CollectManagerTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskScanView).pauseScanning();
+        verify(taskConnView).openProgressWindow();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
 
         verify(taskScanView, never()).displayError(any(ProcessException.class));
@@ -127,6 +133,7 @@ public class CollectManagerTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskScanView).pauseScanning();
+        verify(taskConnView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
 
         verify(taskScanView).displayError(err);
@@ -143,6 +150,7 @@ public class CollectManagerTest {
 
         verify(taskScanView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskConnView, never()).openProgressWindow();
 
         verify(taskScanView).displayError(err);
         verify(taskScanView, never()).resumeScanning();

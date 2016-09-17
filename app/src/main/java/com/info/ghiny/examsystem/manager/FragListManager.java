@@ -15,6 +15,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
+import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
@@ -30,11 +31,13 @@ import com.info.ghiny.examsystem.model.TCPClient;
 public class FragListManager implements AttendanceListPresenter, TaskConnPresenter, TaskSecurePresenter {
     private Handler handler;
     private GeneralView generalView;
+    private TaskConnView taskConnView;
     private FragmentHelper fragmentModel;
     private boolean uploadFlag = false;
 
-    public FragListManager(GeneralView generalView){
+    public FragListManager(GeneralView generalView, TaskConnView taskConnView){
         this.generalView    = generalView;
+        this.taskConnView   = taskConnView;
         this.fragmentModel  = new FragmentHelper();
         this.handler        = new Handler();
     }
@@ -95,6 +98,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
+            taskConnView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
             boolean uploaded = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err){
@@ -113,6 +117,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
 
                 if(uploadFlag){
                     fragmentModel.uploadAttdList();
+                    taskConnView.openProgressWindow();
                     handler.postDelayed(timer, 5000);
                 }
             } catch(ProcessException err){
@@ -134,6 +139,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
 
     @Override
     public void onDestroy(){
+        taskConnView.closeProgressWindow();
         handler.removeCallbacks(timer);
     }
 
@@ -141,6 +147,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
         @Override
         public void run() {
             if(!ConnectionTask.isComplete()){
+                taskConnView.closeProgressWindow();
                 ProcessException err = new ProcessException(
                         "Server busy. Upload times out.\nPlease try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
