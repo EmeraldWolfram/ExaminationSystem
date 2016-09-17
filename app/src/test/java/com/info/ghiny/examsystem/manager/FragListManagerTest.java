@@ -13,6 +13,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -27,6 +28,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyInt;
@@ -89,7 +92,7 @@ public class FragListManagerTest {
         verify(generalView).securityPrompt(true);
     }
 
-    //= OnReceivePassword() ========================================================================
+    //= OnPasswordReceived() ========================================================================
 
     /**
      * onPasswordReceived()
@@ -165,7 +168,6 @@ public class FragListManagerTest {
     }
 
     //= OnResume() =================================================================================
-
     /**
      * onResume()
      *
@@ -183,6 +185,20 @@ public class FragListManagerTest {
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
     }
+
+    //= OnRestart() ================================================================================
+    /**
+     * onRestart()
+     *
+     * verify if security prompt is called whenever onRestart was called
+     *
+     */
+    @Test
+    public void testOnRestart() throws Exception {
+        manager.onRestart();
+        verify(generalView).securityPrompt(false);
+    }
+
 
     //= OnDestroy() ================================================================================
     /**
@@ -205,7 +221,7 @@ public class FragListManagerTest {
      *
      * Undo assign or redo assign depend on the current state
      *
-     * When current state is assigned
+     * When current state is ASSIGNED
      * 1. set status to unassign, set text to chalky and call unassign function in Model
      * 2. display error when unassign function in model throw an error
      */
@@ -251,7 +267,7 @@ public class FragListManagerTest {
     /**
      * toggleUnassign()
      *
-     * When current state is unassigned
+     * When current state is UNASSIGNED
      * 1. set status to assign, set text to clear and call assign function in Model
      * 2. display error when assign function in model throw an error
      *
@@ -294,5 +310,46 @@ public class FragListManagerTest {
         verify(fragModel, never()).unassignCandidate(anyString(), anyString());
         verify(fragModel).assignCandidate(anyString());
         verify(generalView).displayError(err);
+    }
+
+    //= OnChiefRespond() ===========================================================================
+    /**
+     * onChiefRespond()
+     *
+     * Whatever the result, when receive a respond, call closeProgressDialog
+     * 1. When respond is positive, do nothing
+     * 2. When respond is negative, display the error
+     *
+     */
+    @Test
+    public void testOnChiefRespond_1() throws Exception {
+        ErrorManager errManager = Mockito.mock(ErrorManager.class);
+        ConnectionTask.setCompleteFlag(false);
+        ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
+        ExternalDbLoader.setConnectionTask(conTask);
+        String message = "{\"Result\":true}";
+
+        assertFalse(ConnectionTask.isComplete());
+        manager.onChiefRespond(errManager, message);
+
+        verify(taskConnView).closeProgressWindow();
+        assertTrue(ConnectionTask.isComplete());
+        verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
+    }
+
+    @Test
+    public void testOnChiefRespond_2() throws Exception {
+        ErrorManager errManager = Mockito.mock(ErrorManager.class);
+        ConnectionTask.setCompleteFlag(false);
+        ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
+        ExternalDbLoader.setConnectionTask(conTask);
+        String message = "{\"Result\":false}";
+
+        assertFalse(ConnectionTask.isComplete());
+        manager.onChiefRespond(errManager, message);
+
+        verify(taskConnView).closeProgressWindow();
+        assertTrue(ConnectionTask.isComplete());
+        verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 }

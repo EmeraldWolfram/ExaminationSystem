@@ -59,7 +59,7 @@ public class AssignManagerTest {
     //= OnScanForTableOrCandidate() ================================================================
 
     /**
-     * onScanForTableOrCandidate()
+     * onScan()
      *
      * Always pause the scanner and resume the scanner
      * 1. Model did not throw any error

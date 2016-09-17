@@ -24,6 +24,8 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
+
+
 public class ObtainInfoManager implements TaskScanPresenter, TaskConnPresenter, TaskSecurePresenter{
     private InfoCollectHelper infoModel;
     private TaskScanView taskScanView;

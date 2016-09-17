@@ -63,7 +63,7 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
                 onChiefRespond(errorManager, message);
             }
         });
-        onResume();
+        this.onResume();
     }
 
     @Override
@@ -80,7 +80,6 @@ public class CollectManager implements TaskConnPresenter, TaskScanPresenter, Tas
             boolean ack = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
-
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
     }

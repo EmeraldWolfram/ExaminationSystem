@@ -207,6 +207,8 @@ public class LoginManagerTest {
      *
      * 1. control View to navigate to another View when the message is positive
      * 2. control View to display error and resume the scanning when the message is negative
+     * 3. control View to display dialog and resume scanning after dialog ended when message
+     *    is negative
      *
      * @throws Exception
      */
