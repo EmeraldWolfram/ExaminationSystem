@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
+import android.os.AsyncTask;
+
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -33,20 +35,25 @@ public class LoginHelper {
     }
 
     //= Useable Methods ============================================================================
-    public void verifyChief(String scanStr) throws ProcessException{
+    //Methods for ConnectionPresenter
+    public void tryConnectWithQR(String scanStr, CheckListLoader dbLoader) throws ProcessException{
         if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
             String[] chiefArr   = scanStr.split(":");
             Connector connector     = new Connector(chiefArr[1], Integer.parseInt(chiefArr[2]));
+            dbLoader.saveConnector(connector);
+
             TCPClient.setConnector(connector);
-            //Also save the connector into database
+            ConnectionTask connect   = new ConnectionTask();
+            connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            ExternalDbLoader.setConnectionTask(connect);
         } else {
             throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         }
     }
 
-    public boolean tryConnection(CheckListLoader dbLoader){
-        Connector connector = connector   = dbLoader.queryConnector();
+    public boolean tryConnectWithDatabase(CheckListLoader dbLoader){
+        Connector connector = dbLoader.queryConnector();
 
         Calendar now    = Calendar.getInstance();
         if(connector == null){
@@ -55,13 +62,30 @@ public class LoginHelper {
             if(now.get(Calendar.YEAR) == connector.getDate().get(Calendar.YEAR)
                     && now.get(Calendar.MONTH) == connector.getDate().get(Calendar.MONTH)
                     && now.get(Calendar.DAY_OF_MONTH) == connector.getDate().get(Calendar.DAY_OF_MONTH)){
+
                 TCPClient.setConnector(connector);
+                ConnectionTask connect   = new ConnectionTask();
+                connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                ExternalDbLoader.setConnectionTask(connect);
+                //Check on connection established is required
                 return true;
             }
             return false;
         }
     }
 
+    public void closeConnection() throws Exception{
+        if(ExternalDbLoader.getTcpClient() != null){
+            ExternalDbLoader.getTcpClient().sendMessage("Termination");
+            ExternalDbLoader.getTcpClient().stopClient();
+        }
+        if(ExternalDbLoader.getConnectionTask() != null){
+            ExternalDbLoader.getConnectionTask().cancel(true);
+            ExternalDbLoader.setConnectionTask(null);
+        }
+    }
+
+    //Methods for LoginPresenter
     public void checkQrId(String scanStr) throws ProcessException{
         if(scanStr.length() != 6){
             throw new ProcessException("Invalid staff ID Number", ProcessException.MESSAGE_TOAST,

@@ -39,7 +39,6 @@ public class ConnectionTask extends AsyncTask<String, String, TCPClient> {
         ExternalDbLoader.setTcpClient(tcpClient);
         if(tcpClient != null)
             tcpClient.run();
-
         return null;
     }
 

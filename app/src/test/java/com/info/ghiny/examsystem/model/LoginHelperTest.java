@@ -9,75 +9,84 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Calendar;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.verifyNew;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 15/06/2016.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ExternalDbLoader.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class LoginHelperTest {
-    LoginHelper helper;
-    StaffIdentity staffId;
+    private LoginHelper helper;
+    private StaffIdentity staffId;
+    private CheckListLoader dbLoader;
 
     @Before
     public void setUp() throws Exception{
         TCPClient.setConnector(null);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
-        PowerMockito.mockStatic(ExternalDbLoader.class);
+        dbLoader    = Mockito.mock(CheckListLoader.class);
 
+        ExternalDbLoader.setConnectionTask(null);
         helper  = new LoginHelper();
     }
-    //= VerifyChief() ==============================================================================
+    //= TryConnectWithQR() ==============================================================================
     /**
-     *  verifyChief()
+     *  tryConnectWithQR()
      *
      *  when input String was correct Chief Address format
      *  TCP Client ServerIP and ServerPort will be set
+     *  and new Thread will be started
      */
     @Test
-    public void testVerifyChief_If_correct_String_format() throws Exception{
+    public void testTryConnectWithQR_If_correct_String_format() throws Exception{
         try{
             assertNull(TCPClient.connector);
+            assertNull(ExternalDbLoader.getConnectionTask());
 
             String str = "$CHIEF:192.168.0.1:5000:$";
-            helper.verifyChief(str);
+            helper.tryConnectWithQR(str, dbLoader);
 
+            verify(dbLoader).saveConnector(any(Connector.class));
             assertEquals("192.168.0.1", TCPClient.connector.getIpAddress());
             assertEquals(Integer.valueOf(5000), TCPClient.connector.getPortNumber());
+            assertNotNull(ExternalDbLoader.getConnectionTask());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     /**
-     *  verifyChief()
+     *  tryConnectWithQR()
      *
      *  when input String was incorrect Chief Address format
      *  MESSAGE TOAST shall be thrown
      */
     @Test
-    public void testVerifyChief_If_wrong_String_format() throws Exception{
+    public void testTryConnectWithQR_If_wrong_String_format() throws Exception{
         try{
             assertNull(TCPClient.connector);
-
+            assertNull(ExternalDbLoader.getConnectionTask());
             String str = "$CHIEF:192.168.0.1:5000:";
-            helper.verifyChief(str);
+
+            helper.tryConnectWithQR(str, dbLoader);
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
             assertNull(TCPClient.connector);
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a chief address", err.getErrorMsg());
+            verify(dbLoader, never()).saveConnector(any(Connector.class));
+            assertNull(ExternalDbLoader.getConnectionTask());
         }
     }
 
@@ -187,47 +196,113 @@ public class LoginHelperTest {
         }
     }
 
-    //= TryConnection() ============================================================================
+    //= TryConnectWithDatabase() ============================================================================
 
     /**
+     * tryConnectWithDatabase(...)
      *
+     * 1. Database is empty, return false and did not start any thread
+     * 2. Database stored invalid connector, return false and did not start any thread
+     * 3. Database contain valid connector, start a new thread and return true
      */
     @Test
-    public void testTryConnection_withEmptyDb_return_false() throws Exception {
+    public void testTryConnectWithDatabase_withEmptyDb_return_false() throws Exception {
         CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
-
         when(dbLoader.queryConnector()).thenReturn(null);
-        assertFalse(helper.tryConnection(dbLoader));
+        assertNull(ExternalDbLoader.getConnectionTask());
+
+        assertFalse(helper.tryConnectWithDatabase(dbLoader));
+        assertNull(ExternalDbLoader.getConnectionTask());
     }
 
     @Test
-    public void testTryConnection_withInvalidDb_return_false() throws Exception {
+    public void testTryConnectWithDatabase_withInvalidDb_return_false() throws Exception {
         CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
         Connector connector         = new Connector("127.0.0.1", 6666);
         Calendar date               = Calendar.getInstance();
         date.set(2016, 7, 18);
         connector.setDate(date);
+        assertNull(ExternalDbLoader.getConnectionTask());
 
         when(dbLoader.queryConnector()).thenReturn(connector);
-        assertFalse(helper.tryConnection(dbLoader));
+        assertFalse(helper.tryConnectWithDatabase(dbLoader));
+        assertNull(ExternalDbLoader.getConnectionTask());
     }
 
     @Test
-    public void testTryConnection_withValidDb_return_true() throws Exception {
+    public void testTryConnectWithDatabase_withValidDb_return_true() throws Exception {
         CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
         Connector connector         = new Connector("127.0.0.1", 6666);
-
         when(dbLoader.queryConnector()).thenReturn(connector);
-        assertTrue(helper.tryConnection(dbLoader));
+        assertNull(ExternalDbLoader.getConnectionTask());
+
+        assertTrue(helper.tryConnectWithDatabase(dbLoader));
+        assertNotNull(ExternalDbLoader.getConnectionTask());
+    }
+
+    //= CloseConnection() ==========================================================================
+    /**
+     * closeConnection()
+     *
+     * 1. When ConnectTask = null, TCPClient = null, do nothing
+     * 2. When ConnectTask != null, TCPClient = null, cancel ConnectTask
+     * 3. When ConnectTask = null, TCPClient != null, stop TCPClient
+     * 4. When ConnectTask != null, TCPClient != null, stop TCP and cancel ConnectTask
+     */
+    @Test
+    public void testCloseConnection_BothNull() throws Exception {
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+        TCPClient client    = Mockito.mock(TCPClient.class);
+
+        helper.closeConnection();
+
+        verify(client, never()).stopClient();
+        verify(client, never()).sendMessage("Termination");
+        verify(task, never()).cancel(true);
+        assertNull(ExternalDbLoader.getConnectionTask());
     }
 
     @Test
-    public void testTryConnection_withEmptyUserDb_return_false() throws Exception {
-        CheckListLoader dbLoader    = Mockito.mock(CheckListLoader.class);
-        Connector connector         = new Connector("127.0.0.1", 6666);
+    public void testCloseConnection_TaskNotNull() throws Exception {
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+        TCPClient client    = Mockito.mock(TCPClient.class);
+        ExternalDbLoader.setConnectionTask(task);
 
-        when(dbLoader.queryConnector()).thenReturn(connector);
-        assertTrue(helper.tryConnection(dbLoader));
+        helper.closeConnection();
+
+        verify(client, never()).stopClient();
+        verify(client, never()).sendMessage("Termination");
+        verify(task).cancel(true);
+        assertNull(ExternalDbLoader.getConnectionTask());
+    }
+
+    @Test
+    public void testCloseConnection_TCPClientNotNull() throws Exception {
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+        TCPClient client    = Mockito.mock(TCPClient.class);
+        ExternalDbLoader.setTcpClient(client);
+
+        helper.closeConnection();
+
+        verify(client).stopClient();
+        verify(client).sendMessage("Termination");
+        verify(task, never()).cancel(true);
+        assertNull(ExternalDbLoader.getConnectionTask());
+    }
+
+    @Test
+    public void testCloseConnection_BothNotNull() throws Exception {
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+        TCPClient client    = Mockito.mock(TCPClient.class);
+        ExternalDbLoader.setTcpClient(client);
+        ExternalDbLoader.setConnectionTask(task);
+
+        helper.closeConnection();
+
+        verify(client).stopClient();
+        verify(client).sendMessage("Termination");
+        verify(task).cancel(true);
+        assertNull(ExternalDbLoader.getConnectionTask());
     }
 
 }

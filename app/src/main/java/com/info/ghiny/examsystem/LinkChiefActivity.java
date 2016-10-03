@@ -26,7 +26,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 import java.util.List;
 
 public class LinkChiefActivity extends AppCompatActivity implements TaskScanView {
-    private static final String TAG = LinkChiefActivity.class.getSimpleName();
+    public static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
     private BeepManager beepManager;
     private ConnectionManager conManager;
@@ -40,8 +40,7 @@ public class LinkChiefActivity extends AppCompatActivity implements TaskScanView
             }
         }
         @Override
-        public void possibleResultPoints(List<ResultPoint> resultPoints) {
-        }
+        public void possibleResultPoints(List<ResultPoint> resultPoints) {}
     };
 
     //==============================================================================================
@@ -51,6 +50,7 @@ public class LinkChiefActivity extends AppCompatActivity implements TaskScanView
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_link_chief);
 
+        barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
         CheckListLoader dbLoader    = new CheckListLoader(this);
         conManager                  = new ConnectionManager(this, dbLoader);
         errorManager                = new ErrorManager(this);
@@ -58,10 +58,7 @@ public class LinkChiefActivity extends AppCompatActivity implements TaskScanView
         beepManager.setBeepEnabled(true);
         beepManager.setVibrateEnabled(true);
 
-        conManager.setupConnection();
-
-        barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
-        assert barcodeView != null;
+        conManager.onCreate();
         barcodeView.decodeContinuous(callback);
     }
 
@@ -79,15 +76,14 @@ public class LinkChiefActivity extends AppCompatActivity implements TaskScanView
 
     @Override
     protected void onDestroy() {
-        conManager.closeConnection();
+        conManager.onDestroy();
         super.onDestroy();
         beepManager.close();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return barcodeView.onKeyDown(keyCode, event)
-                || super.onKeyDown(keyCode, event);
+        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
     @Override

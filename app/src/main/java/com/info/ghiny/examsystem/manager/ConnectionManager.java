@@ -1,14 +1,14 @@
 package com.info.ghiny.examsystem.manager;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
+import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.ConnectPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskScanView;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
-import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
@@ -26,21 +26,16 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
         this.dbLoader       = dbLoader;
     }
 
-    public void setLoginModel(LoginHelper loginModel) {
+    void setLoginModel(LoginHelper loginModel) {
         this.loginModel = loginModel;
     }
 
     @Override
     public void onScan(String scanStr){
-        taskScanView.pauseScanning();
-        taskScanView.beep();
         try{
-            loginModel.verifyChief(scanStr);
-
-            ConnectionTask connect   = new ConnectionTask();
-            connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ExternalDbLoader.setConnectionTask(connect);
-
+            taskScanView.pauseScanning();
+            taskScanView.beep();
+            loginModel.tryConnectWithQR(scanStr, dbLoader);
             taskScanView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             taskScanView.displayError(err);
@@ -49,8 +44,10 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
     }
 
     @Override
-    public void onPause() {
-        taskScanView.pauseScanning();
+    public void onCreate(){
+        if(loginModel.tryConnectWithDatabase(dbLoader)){
+            taskScanView.navigateActivity(MainLoginActivity.class);
+        }
     }
 
     @Override
@@ -59,28 +56,16 @@ public class ConnectionManager implements ConnectPresenter, TaskScanPresenter {
     }
 
     @Override
-    public void setupConnection(){
-        if(loginModel.tryConnection(dbLoader)){
-            //Connect here if wanted
-            ConnectionTask connect   = new ConnectionTask();
-            connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ExternalDbLoader.setConnectionTask(connect);
-
-            taskScanView.navigateActivity(MainLoginActivity.class);
-        }
-        //Setup ConnectionTask and TCP Client
+    public void onPause() {
+        taskScanView.pauseScanning();
     }
 
     @Override
-    public void closeConnection(){
+    public void onDestroy(){
         try {
-            ExternalDbLoader.getTcpClient().sendMessage("Termination");
-            ExternalDbLoader.getTcpClient().stopClient();
-            ExternalDbLoader.getConnectionTask().cancel(true);
-            ExternalDbLoader.setConnectionTask(null);
+            loginModel.closeConnection();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(LinkChiefActivity.TAG, e.getMessage());
         }
-        //Close ConnectionTask and TCP Client
     }
 }

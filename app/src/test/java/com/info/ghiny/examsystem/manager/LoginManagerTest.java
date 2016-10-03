@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.TakeAttendanceActivity;
