@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,10 +28,11 @@ public class CollectionModelTest {
 
     private CollectionModel model;
     private CollectionMVP.PresenterForModel presenterFace;
+    private TCPClient tcpClient;
 
     @Before
     public void setUp() throws Exception {
-        TCPClient tcpClient = Mockito.mock(TCPClient.class);
+        tcpClient = Mockito.mock(TCPClient.class);
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
         ExternalDbLoader.setTcpClient(tcpClient);
@@ -49,6 +51,7 @@ public class CollectionModelTest {
     public void bundleCollection() throws Exception {
         try{
             model.bundleCollection("CORRECT FORMAT");
+            verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }

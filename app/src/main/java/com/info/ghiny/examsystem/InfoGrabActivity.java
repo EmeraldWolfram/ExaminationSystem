@@ -3,16 +3,17 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
-import com.info.ghiny.examsystem.manager.ObtainInfoManager;
+import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
+import com.info.ghiny.examsystem.manager.InfoGrabPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.InfoGrabModel;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -25,10 +26,10 @@ import java.util.List;
 /**
  * Created by GhinY on 07/05/2016.
  */
-public class ObtainInfoActivity extends AppCompatActivity implements TaskScanViewOld, TaskConnView {
-    private static final String TAG = ObtainInfoActivity.class.getSimpleName();
+public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.ViewFace {
+    private static final String TAG = InfoGrabActivity.class.getSimpleName();
 
-    private ObtainInfoManager infoManager;
+    private InfoGrabMVP.VPresenter taskPresenter;
     private ErrorManager errManager;
     private ProgressDialog progDialog;
     private CompoundBarcodeView barcodeView;
@@ -37,8 +38,7 @@ public class ObtainInfoActivity extends AppCompatActivity implements TaskScanVie
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                infoManager.onScan(result.getText());
-                //get The info of the student here
+                taskPresenter.onScan(result.getText());
             }
         }
 
@@ -53,15 +53,14 @@ public class ObtainInfoActivity extends AppCompatActivity implements TaskScanVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
-        infoManager = new ObtainInfoManager(this, this);
-        errManager  = new ErrorManager(this);
+        initMVP();
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeTop() {
-                finish();
+                taskPresenter.onSwipeTop();
             }
         });
 
@@ -70,21 +69,31 @@ public class ObtainInfoActivity extends AppCompatActivity implements TaskScanVie
         barcodeView.setStatusText("Scan candidate ID to get his/her exam details");
     }
 
+    private void initMVP(){
+        errManager  = new ErrorManager(this);
+
+        InfoGrabPresenter presenter = new InfoGrabPresenter(this);
+        InfoGrabModel model     = new InfoGrabModel(presenter);
+        presenter.setHandler(new Handler());
+        presenter.setTaskModel(model);
+        taskPresenter   = presenter;
+    }
+
     @Override
     protected void onResume() {
-        infoManager.onResume(errManager);
+        taskPresenter.onResume(errManager);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        infoManager.onPause();
+        taskPresenter.onPause();
         super.onPause();
     }
 
     @Override
     protected void onRestart() {
-        infoManager.onRestart();
+        taskPresenter.onRestart();
         super.onRestart();
     }
 
@@ -96,13 +105,13 @@ public class ObtainInfoActivity extends AppCompatActivity implements TaskScanVie
 
     @Override
     protected void onDestroy() {
-        infoManager.onDestroy();
+        taskPresenter.onDestroy();
         super.onDestroy();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        infoManager.onPasswordReceived(requestCode, resultCode, data);
+        taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
 
     //==============================================================================================
@@ -126,7 +135,7 @@ public class ObtainInfoActivity extends AppCompatActivity implements TaskScanVie
     @Override
     public void navigateActivity(Class<?> cls) {
         Intent displayList = new Intent(this, cls);
-        displayList.putExtra(JsonHelper.LIST_LIST, infoManager.getStudentSubjects());
+        displayList.putExtra(JsonHelper.LIST_LIST, taskPresenter.getStudentSubjects());
         startActivity(displayList);
     }
 

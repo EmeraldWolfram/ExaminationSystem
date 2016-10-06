@@ -12,7 +12,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
 public interface CollectionMVP {
     interface View extends TaskConnView, TaskScanView, GeneralView {}
 
-    interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter {}
+    interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter {
+        void onSwipeBottom();
+    }
 
     interface PresenterForModel extends DialogInterface.OnClickListener,
             DialogInterface.OnCancelListener {

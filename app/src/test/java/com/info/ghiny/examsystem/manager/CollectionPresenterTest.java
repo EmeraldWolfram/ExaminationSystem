@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -270,6 +271,19 @@ public class CollectionPresenterTest {
         verify(taskView).securityPrompt(false);
     }
 
+    //= OnSwipeBottom() ============================================================================
+    /**
+     * onSwipeBottom()
+     *
+     * This method will be called when the CollectionActivity was swiped from top to bottom
+     * this method should start the InfoGrabActivity
+     */
+    @Test
+    public void testOnSwipeBottom() throws Exception {
+        manager.onSwipeBottom();
+        verify(taskView).navigateActivity(InfoGrabActivity.class);
+    }
+
     //= OnClick(...) ===============================================================================
     /**
      * onClick(...)
@@ -340,6 +354,7 @@ public class CollectionPresenterTest {
         manager.onTimesOut(err);
 
         verify(taskView, never()).closeProgressWindow();
+        verify(taskView, never()).pauseScanning();
         verify(taskView, never()).displayError(err);
     }
 
@@ -350,6 +365,7 @@ public class CollectionPresenterTest {
         manager.onTimesOut(err);
 
         verify(taskView).closeProgressWindow();
+        verify(taskView).pauseScanning();
         verify(taskView).displayError(err);
     }
 

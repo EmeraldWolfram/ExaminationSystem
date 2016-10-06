@@ -5,10 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.InfoGrabActivity;
+import com.info.ghiny.examsystem.ExamListActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.CollectionMVP;
+import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -19,16 +19,19 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class CollectionPresenter implements CollectionMVP.PresenterForView, CollectionMVP.PresenterForModel {
-    private CollectionMVP.View taskView;
-    private CollectionMVP.Model taskModel;
-    private Handler handler;
 
-    public CollectionPresenter(CollectionMVP.View taskView){
-        this.taskView       = taskView;
+
+public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MPresenter{
+    private String studentSubjects;
+    private Handler handler;
+    private InfoGrabMVP.ViewFace taskView;
+    private InfoGrabMVP.Model taskModel;
+
+    public InfoGrabPresenter(InfoGrabMVP.ViewFace taskView){
+        this.taskView   = taskView;
     }
 
-    public void setTaskModel(CollectionMVP.Model taskModel) {
+    public void setTaskModel(InfoGrabMVP.Model taskModel) {
         this.taskModel = taskModel;
     }
 
@@ -36,7 +39,11 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
         this.handler = handler;
     }
 
-    //= For View ===================================================================================
+    @Override
+    public String getStudentSubjects() {
+        return studentSubjects;
+    }
+
     @Override
     public void onPause(){
         taskView.pauseScanning();
@@ -48,15 +55,28 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     }
 
     @Override
-    public void onResume(final ErrorManager errorManager){
+    public void onResume(final ErrorManager errManager){
         ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {
-                onChiefRespond(errorManager, message);
+                onChiefRespond(errManager, message);
             }
         });
-        this.onResume();
+        onResume();
+    }
+
+    @Override
+    public void onChiefRespond(ErrorManager errManager, String messageRx) {
+        try{
+            taskView.closeProgressWindow();
+            ConnectionTask.setCompleteFlag(true);
+            boolean ack =   JsonHelper.parseBoolean(messageRx);
+            studentSubjects = messageRx;
+            taskView.navigateActivity(ExamListActivity.class);
+        } catch (ProcessException err) {
+            err.setListener(ProcessException.okayButton, this);
+            ExternalDbLoader.getConnectionTask().publishError(errManager, err);
+        }
     }
 
     @Override
@@ -66,20 +86,24 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     }
 
     @Override
-    public void onRestart() {
-        taskView.securityPrompt(false);
+    public void onScan(String scanStr){
+        try{
+            taskView.pauseScanning();
+            taskModel.reqCandidatePapers(scanStr);
+            taskView.openProgressWindow();
+            handler.postDelayed(taskModel, 5000);
+        } catch (ProcessException err){
+            err.setListener(ProcessException.okayButton, this);
+
+            taskView.displayError(err);
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                taskView.resumeScanning();
+        }
     }
 
     @Override
-    public void onChiefRespond(ErrorManager errManager, String messageRx) {
-        try{
-            taskView.closeProgressWindow();
-            ConnectionTask.setCompleteFlag(true);
-            boolean ack = JsonHelper.parseBoolean(messageRx);
-        } catch (ProcessException err) {
-            err.setListener(ProcessException.okayButton, this);
-            ExternalDbLoader.getConnectionTask().publishError(errManager, err);
-        }
+    public void onRestart() {
+        taskView.securityPrompt(false);
     }
 
     @Override
@@ -101,27 +125,10 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     }
 
     @Override
-    public void onScan(String scanStr){
-        try{
-            taskView.pauseScanning();
-            taskModel.bundleCollection(scanStr);
-            taskView.openProgressWindow();
-            handler.postDelayed(taskModel, 5000);
-        } catch (ProcessException err) {
-            err.setListener(ProcessException.okayButton, this);
-
-            taskView.displayError(err);
-            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                taskView.resumeScanning();
-        }
+    public void onSwipeTop() {
+        taskView.finishActivity();
     }
 
-    @Override
-    public void onSwipeBottom(){
-        taskView.navigateActivity(InfoGrabActivity.class);
-    }
-
-    //= For Model ==================================================================================
     @Override
     public void onClick(DialogInterface dialog, int which) {
         taskView.resumeScanning();

@@ -23,7 +23,7 @@ public class HomeOptionActivity extends AppCompatActivity{
     }
 
     public void onInfo(View view){
-        Intent infoIntent   = new Intent(this, ObtainInfoActivity.class);
+        Intent infoIntent   = new Intent(this, InfoGrabActivity.class);
         startActivity(infoIntent);
     }
 

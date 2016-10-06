@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
@@ -15,6 +16,7 @@ import com.info.ghiny.examsystem.manager.CollectionPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.CollectionModel;
+import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -48,6 +50,15 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
         setContentView(R.layout.activity_collection);
 
         initMVP();
+
+        RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.collectionLayout);
+        assert thisLayout != null;
+        thisLayout.setOnTouchListener(new OnSwipeListener(this){
+            @Override
+            public void onSwipeBottom() {
+                taskPresenter.onSwipeBottom();
+            }
+        });
 
         barcodeView.decodeContinuous(callback);
     }
@@ -103,7 +114,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     //==============================================================================================
     @Override
-    public void navigateActivity(Class<?> cls) {}
+    public void navigateActivity(Class<?> cls) {
+        Intent intent   = new Intent(this, cls);
+        startActivity(intent);
+    }
 
     @Override
     public void displayError(ProcessException err) {

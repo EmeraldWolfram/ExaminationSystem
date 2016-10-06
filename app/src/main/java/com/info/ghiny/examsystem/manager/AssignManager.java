@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 import com.info.ghiny.examsystem.FragmentListActivity;
-import com.info.ghiny.examsystem.ObtainInfoActivity;
+import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
@@ -143,7 +143,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     @Override
     public void onSwipeBottom(){
         navigationFlag  = true;
-        taskScanViewOld.navigateActivity(ObtainInfoActivity.class);
+        taskScanViewOld.navigateActivity(InfoGrabActivity.class);
     }
 
     @Override

@@ -144,6 +144,5 @@ public class ProcessExceptionTest {
         assertEquals(testListener2, err1.getListener(ProcessException.cancelButton));
         assertEquals(testListener3, err2.getListener(ProcessException.updateButton));
         assertEquals(testListener4, err2.getListener(ProcessException.cancelButton));
-
     }
 }
