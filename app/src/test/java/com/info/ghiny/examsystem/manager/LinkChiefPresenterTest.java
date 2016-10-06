@@ -1,10 +1,8 @@
 package com.info.ghiny.examsystem.manager;
 
 import com.info.ghiny.examsystem.MainLoginActivity;
-import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
@@ -28,22 +26,20 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class ConnectionManagerTest {
+public class LinkChiefPresenterTest {
 
-    private ConnectionManager manager;
-    private TaskScanView genView;
-    private LoginHelper loginModel;
+    private LinkChiefPresenter manager;
+    private LinkChiefMVP.ViewFace genView;
+    private LinkChiefMVP.ModelFace genModel;
     private ProcessException err;
-    private CheckListLoader dbLoader;
 
     @Before
     public void setUp() throws Exception {
         err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        genView     = Mockito.mock(TaskScanView.class);
-        loginModel  = Mockito.mock(LoginHelper.class);
-        dbLoader    = Mockito.mock(CheckListLoader.class);
-        manager     = new ConnectionManager(genView, dbLoader);
-        manager.setLoginModel(loginModel);
+        genView     = Mockito.mock(LinkChiefMVP.ViewFace.class);
+        genModel    = Mockito.mock(LinkChiefMVP.ModelFace.class);
+        manager     = new LinkChiefPresenter(genView);
+        manager.setTaskModel(genModel);
     }
 
     //= OnScan() ==============================================================================
@@ -60,7 +56,7 @@ public class ConnectionManagerTest {
      */
     @Test
     public void testOnScan_withPositiveResult() throws Exception {
-        doNothing().when(loginModel).tryConnectWithQR("$CHIEF:...:$", dbLoader);
+        doNothing().when(genModel).tryConnectWithQR("$CHIEF:...:$");
 
         manager.onScan("$CHIEF:...:$");
 
@@ -72,7 +68,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void testOnScan_withErrorThrown() throws Exception {
-        doThrow(err).when(loginModel).tryConnectWithQR("", dbLoader);
+        doThrow(err).when(genModel).tryConnectWithQR("");
 
         manager.onScan("");
 
@@ -95,7 +91,7 @@ public class ConnectionManagerTest {
      */
     @Test
     public void testOnCreate_DbHaveConnectionEntry() throws Exception {
-        when(loginModel.tryConnectWithDatabase(dbLoader)).thenReturn(true);
+        when(genModel.tryConnectWithDatabase()).thenReturn(true);
 
         manager.onCreate();
 
@@ -104,7 +100,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void testOnCreate_DbNoConnectionEntry() throws Exception {
-        when(loginModel.tryConnectWithDatabase(dbLoader)).thenReturn(false);
+        when(genModel.tryConnectWithDatabase()).thenReturn(false);
 
         manager.onCreate();
 
@@ -119,11 +115,11 @@ public class ConnectionManagerTest {
      */
     @Test
     public void testOnDestroy() throws Exception {
-        doNothing().when(loginModel).closeConnection();
+        doNothing().when(genModel).closeConnection();
 
         manager.onDestroy();
 
-        verify(loginModel).closeConnection();
+        verify(genModel).closeConnection();
     }
 
     //= OnPause() ==========================================================================

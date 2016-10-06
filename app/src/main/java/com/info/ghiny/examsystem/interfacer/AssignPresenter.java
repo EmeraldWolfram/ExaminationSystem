@@ -10,8 +10,8 @@ import com.info.ghiny.examsystem.database.Candidate;
 public interface AssignPresenter {
     //INTERFACE FOR VIEW
     void onBackPressed();
-    void navigateToDisplay();
-    void navigateToDetail();
+    void onSwipeLeft();
+    void onSwipeBottom();
 
     //INTERFACE FOR MODEL
     void displayTable(Integer tableNumber);

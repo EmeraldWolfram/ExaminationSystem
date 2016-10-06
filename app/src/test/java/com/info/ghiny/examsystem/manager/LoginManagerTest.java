@@ -2,14 +2,13 @@ package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -43,19 +42,19 @@ import static org.mockito.Mockito.verify;
 public class LoginManagerTest {
     private LoginManager manager;
     private LoginHelper loginModel;
-    private TaskScanView taskScanView;
+    private TaskScanViewOld taskScanViewOld;
     private TaskConnView taskConnView;
     private Handler handler;
     private Intent password;
 
     @Before
     public void setUp() throws Exception {
-        taskScanView = Mockito.mock(TaskScanView.class);
+        taskScanViewOld = Mockito.mock(TaskScanViewOld.class);
         taskConnView = Mockito.mock(TaskConnView.class);
         password    = Mockito.mock(Intent.class);
         loginModel  = Mockito.mock(LoginHelper.class);
         handler     = Mockito.mock(Handler.class);
-        manager     = new LoginManager(taskScanView, taskConnView);
+        manager     = new LoginManager(taskScanViewOld, taskConnView);
         manager.setLoginModel(loginModel);
         manager.setHandler(handler);
     }
@@ -76,9 +75,9 @@ public class LoginManagerTest {
 
         manager.onScan("012345");
 
-        verify(taskScanView).securityPrompt(true);
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).securityPrompt(true);
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).resumeScanning();
     }
 
     @Test
@@ -88,9 +87,9 @@ public class LoginManagerTest {
 
         manager.onScan("xyz");
 
-        verify(taskScanView, never()).securityPrompt(true);
-        verify(taskScanView).displayError(any(ProcessException.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld, never()).securityPrompt(true);
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).resumeScanning();
     }
 
     @Test
@@ -101,9 +100,9 @@ public class LoginManagerTest {
         assertNull(err.getListener(ProcessException.okayButton));
         manager.onScan("xyz");
 
-        verify(taskScanView, never()).securityPrompt(true);
-        verify(taskScanView).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld, never()).securityPrompt(true);
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -126,9 +125,9 @@ public class LoginManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).resumeScanning();
     }
 
     @Test
@@ -140,9 +139,9 @@ public class LoginManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).displayError(err);
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld).resumeScanning();
     }
 
     @Test
@@ -156,9 +155,9 @@ public class LoginManagerTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).displayError(err);
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -174,7 +173,7 @@ public class LoginManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -198,7 +197,7 @@ public class LoginManagerTest {
         manager.onResume(errorManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).resumeScanning();
     }
 
     //= OnChiefRespond() ================================================================
@@ -225,15 +224,15 @@ public class LoginManagerTest {
 
         manager.onChiefRespond(errorManager, "Message");
         //assertTrue(manager.isDlFlag());
-        //verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
+        //verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
 
         //manager.onChiefRespond(errorManager, "Message");
         //assertFalse(manager.isDlFlag());
 
 
-        verify(taskScanView).navigateActivity(TakeAttendanceActivity.class);
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).resumeScanning();
     }
 
     @Test
@@ -249,9 +248,9 @@ public class LoginManagerTest {
         assertFalse(manager.isDlFlag());
 
 
-        verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld, never()).resumeScanning();
     }
 
     @Test
@@ -269,9 +268,9 @@ public class LoginManagerTest {
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
-        verify(taskScanView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 }

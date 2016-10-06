@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +19,14 @@ import com.info.ghiny.examsystem.manager.ConfigManager;
 public class CustomToast {
     private Toast message;
     private Activity activity;
-    View toastView;
-    TextView msgView;
-    ImageView imgView;
+    //private Context context;
+    private View toastView;
+    private TextView msgView;
+    private ImageView imgView;
 
     public CustomToast(Activity activity){
         this.activity = activity;
+        //this.context    = context;
         LayoutInflater toastInflater = activity.getLayoutInflater();
         toastView   = toastInflater.inflate(R.layout.toast_message_layout,
                 (ViewGroup) activity.findViewById(R.id.toastLayout));

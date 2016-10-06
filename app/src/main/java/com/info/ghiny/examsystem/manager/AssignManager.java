@@ -11,7 +11,7 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.interfacer.AssignPresenter;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
@@ -24,22 +24,29 @@ import com.info.ghiny.examsystem.model.ProcessException;
  * Created by GhinY on 08/08/2016.
  */
 public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSecurePresenter{
-    private TaskScanView taskScanView;
+    private TaskScanViewOld taskScanViewOld;
     private SetterView setterView;
     private AssignModel assignModel;
     private boolean navigationFlag;
 
-    public AssignManager(TaskScanView taskScanView, SetterView setterView, CheckListLoader dBLoader){
-        this.taskScanView = taskScanView;
+    public AssignManager(TaskScanViewOld taskScanViewOld, SetterView setterView, CheckListLoader dBLoader){
+        this.taskScanViewOld = taskScanViewOld;
         this.setterView     = setterView;
         this.navigationFlag = false;
         this.assignModel    = new AssignModel(this);
         try{
             this.assignModel.initLoader(dBLoader);
         } catch (ProcessException err) {
-            taskScanView.displayError(err);
+            taskScanViewOld.displayError(err);
         }
     }
+    /**
+    public void onCreate(){
+        use dbLoader to query attdList
+        if available, no need to do anything
+        else download attendance list & paper list
+     }
+     */
 
     public void setAssignModel(AssignModel assignModel) {
         this.assignModel = assignModel;
@@ -47,48 +54,49 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
 
     @Override
     public void onPause(){
-        taskScanView.pauseScanning();
+        taskScanViewOld.pauseScanning();
     }
 
     @Override
     public void onResume(){
         try{
             assignModel.updateAssignList();
-            taskScanView.resumeScanning();
+            taskScanViewOld.resumeScanning();
         } catch (ProcessException err) {
-            taskScanView.displayError(err);
+            taskScanViewOld.displayError(err);
         }
     }
 
     @Override
     public void onRestart() {
         if(!navigationFlag){
-            taskScanView.securityPrompt(false);
+            taskScanViewOld.securityPrompt(false);
         }
         navigationFlag  = false;
     }
 
     @Override
     public void onBackPressed(){
-        taskScanView.pauseScanning();
+        taskScanViewOld.pauseScanning();
         ProcessException err    = new ProcessException("Confirm logout and exit?",
                 ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
         err.setBackPressListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                taskScanView.resumeScanning();
+                taskScanViewOld.resumeScanning();
                 dialog.cancel();
             }
         });
         err.setListener(ProcessException.yesButton, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //Save attendance list & paper list to database
                 dialog.cancel();
-                taskScanView.finishActivity();
+                taskScanViewOld.finishActivity();
             }
         });
         err.setListener(ProcessException.noButton, buttonListener);
-        taskScanView.displayError(err);
+        taskScanViewOld.displayError(err);
     }
 
     @Override
@@ -96,15 +104,15 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                taskScanView.pauseScanning();
+                taskScanViewOld.pauseScanning();
                 if(!LoginHelper.getStaff().matchPassword(password))
                     throw new ProcessException("Access denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 
-                taskScanView.resumeScanning();
+                taskScanViewOld.resumeScanning();
             } catch(ProcessException err){
-                taskScanView.displayError(err);
-                taskScanView.securityPrompt(false);
+                taskScanViewOld.displayError(err);
+                taskScanViewOld.securityPrompt(false);
             }
         }
     }
@@ -112,30 +120,30 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     @Override
     public void onScan(String scanStr){
         try{
-            taskScanView.pauseScanning();
+            taskScanViewOld.pauseScanning();
             assignModel.tryAssignScanValue(scanStr);
-            taskScanView.resumeScanning();
+            taskScanViewOld.resumeScanning();
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, buttonListener);
             err.setListener(ProcessException.noButton, buttonListener);
             err.setListener(ProcessException.yesButton, buttonListener);
 
-            taskScanView.displayError(err);
+            taskScanViewOld.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
-                taskScanView.resumeScanning();
+                taskScanViewOld.resumeScanning();
         }
     }
 
     @Override
-    public void navigateToDisplay(){
+    public void onSwipeLeft(){
         navigationFlag  = true;
-        taskScanView.navigateActivity(FragmentListActivity.class);
+        taskScanViewOld.navigateActivity(FragmentListActivity.class);
     }
 
     @Override
-    public void navigateToDetail(){
+    public void onSwipeBottom(){
         navigationFlag  = true;
-        taskScanView.navigateActivity(ObtainInfoActivity.class);
+        taskScanViewOld.navigateActivity(ObtainInfoActivity.class);
     }
 
     @Override
@@ -153,7 +161,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
             ExamSubject paper = cdd.getPaper();
             setterView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(), paper.toString());
         } catch (ProcessException err) {
-            taskScanView.displayError(err);
+            taskScanViewOld.displayError(err);
         }
     }
 
@@ -166,7 +174,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
     private DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            taskScanView.resumeScanning();
+            taskScanViewOld.resumeScanning();
             dialog.cancel();
         }
     };

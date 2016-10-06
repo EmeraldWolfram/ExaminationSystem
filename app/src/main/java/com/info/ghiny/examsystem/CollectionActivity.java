@@ -3,17 +3,18 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
-import com.info.ghiny.examsystem.manager.CollectManager;
+import com.info.ghiny.examsystem.interfacer.CollectionMVP;
+import com.info.ghiny.examsystem.manager.CollectionPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.CollectionModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -21,18 +22,18 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class CollectionActivity extends AppCompatActivity implements TaskScanView, TaskConnView {
+public class CollectionActivity extends AppCompatActivity implements CollectionMVP.View {
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
     private ErrorManager errorManager;
-    private CollectManager collectManager;
+    private CollectionMVP.PresenterForView taskPresenter;
     private ProgressDialog progDialog;
-    private static BarcodeView barcodeView;
+    private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                collectManager.onScan(result.getText());
+                taskPresenter.onScan(result.getText());
             }
         }
         @Override
@@ -46,33 +47,40 @@ public class CollectionActivity extends AppCompatActivity implements TaskScanVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collection);
 
-        TextView bundleView = (TextView)findViewById(R.id.bundleText);
-        assert bundleView  != null;
-        bundleView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
+        initMVP();
+
+        barcodeView.decodeContinuous(callback);
+    }
+
+    private void initMVP(){
+        TextView head2 = (TextView)findViewById(R.id.bundleText);
+        head2.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         errorManager    = new ErrorManager(this);
-        collectManager  = new CollectManager(this, this);
+        barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);
 
-        barcodeView = (BarcodeView) findViewById(R.id.bundleScanner);
-        assert barcodeView != null;
-        barcodeView.decodeContinuous(callback);
+        CollectionPresenter presenter   = new CollectionPresenter(this);
+        CollectionModel model           = new CollectionModel(presenter);
+        presenter.setHandler(new Handler());
+        presenter.setTaskModel(model);
+        taskPresenter   = presenter;
     }
 
     @Override
     protected void onResume() {
-        collectManager.onResume(errorManager);
+        taskPresenter.onResume(errorManager);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        collectManager.onPause();
+        taskPresenter.onPause();
         super.onPause();
     }
 
     @Override
     protected void onRestart() {
-        collectManager.onRestart();
+        taskPresenter.onRestart();
         super.onRestart();
     }
 
@@ -84,8 +92,13 @@ public class CollectionActivity extends AppCompatActivity implements TaskScanVie
 
     @Override
     protected void onDestroy() {
-        collectManager.onDestroy();
+        taskPresenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
 
     //==============================================================================================

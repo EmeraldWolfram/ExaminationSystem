@@ -15,9 +15,10 @@ import android.view.Window;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
-import com.info.ghiny.examsystem.manager.ConnectionManager;
+import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
+import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.LinkChiefModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -25,18 +26,18 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class LinkChiefActivity extends AppCompatActivity implements TaskScanView {
+public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP.ViewFace {
     public static final String TAG = LinkChiefActivity.class.getSimpleName();
     private ErrorManager errorManager;
     private BeepManager beepManager;
-    private ConnectionManager conManager;
+    private LinkChiefMVP.PresenterFace taskPresenter;
 
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                conManager.onScan(result.getText());
+                taskPresenter.onScan(result.getText());
             }
         }
         @Override
@@ -47,36 +48,47 @@ public class LinkChiefActivity extends AppCompatActivity implements TaskScanView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        }
         setContentView(R.layout.activity_link_chief);
 
+        initMVP();
+
+        taskPresenter.onCreate();
+        barcodeView.decodeContinuous(callback);
+    }
+
+    private void initMVP(){
         barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
+
         CheckListLoader dbLoader    = new CheckListLoader(this);
-        conManager                  = new ConnectionManager(this, dbLoader);
+        LinkChiefModel model       = new LinkChiefModel(dbLoader);
+        LinkChiefPresenter presenter = new LinkChiefPresenter(this);
+        presenter.setTaskModel(model);
+        taskPresenter               = presenter;
+
         errorManager                = new ErrorManager(this);
         beepManager                 = new BeepManager(this);
         beepManager.setBeepEnabled(true);
         beepManager.setVibrateEnabled(true);
-
-        conManager.onCreate();
-        barcodeView.decodeContinuous(callback);
     }
 
     @Override
     protected void onPause() {
-        conManager.onPause();
+        taskPresenter.onPause();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        conManager.onResume();
+        taskPresenter.onResume();
         super.onResume();
     }
 
     @Override
     protected void onDestroy() {
-        conManager.onDestroy();
+        taskPresenter.onDestroy();
         super.onDestroy();
         beepManager.close();
     }

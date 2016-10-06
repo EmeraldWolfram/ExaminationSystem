@@ -8,7 +8,7 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.InfoCollectHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
@@ -40,18 +40,18 @@ import static org.mockito.Mockito.when;
 public class ObtainInfoManagerTest {
     private Handler handler;
     private InfoCollectHelper infoModel;
-    private TaskScanView taskScanView;
+    private TaskScanViewOld taskScanViewOld;
     private TaskConnView taskConnView;
     private ObtainInfoManager manager;
 
     @Before
     public void setUp() throws Exception {
         infoModel = Mockito.mock(InfoCollectHelper.class);
-        taskScanView = Mockito.mock(TaskScanView.class);
+        taskScanViewOld = Mockito.mock(TaskScanViewOld.class);
         taskConnView = Mockito.mock(TaskConnView.class);
         handler = Mockito.mock(Handler.class);
 
-        manager = new ObtainInfoManager(taskScanView, taskConnView);
+        manager = new ObtainInfoManager(taskScanViewOld, taskConnView);
         manager.setHandler(handler);
         manager.setInfoModel(infoModel);
     }
@@ -73,12 +73,12 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("15WAU00001");
 
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
         verify(taskConnView).openProgressWindow();
         verify(infoModel).reqCandidatePapers("15WAU00001");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).resumeScanning();
     }
 
     @Test
@@ -88,12 +88,12 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("33");
 
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
         verify(taskConnView, never()).openProgressWindow();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView).displayError(err);
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld).resumeScanning();
     }
 
     @Test
@@ -104,12 +104,12 @@ public class ObtainInfoManagerTest {
 
         manager.onScan("33");
 
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
         verify(taskConnView, never()).openProgressWindow();
         verify(infoModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanView).displayError(err);
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -126,7 +126,7 @@ public class ObtainInfoManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
     }
 
     //= onResume() =================================================================================
@@ -146,7 +146,7 @@ public class ObtainInfoManagerTest {
         manager.onResume();
 
         verify(tcpClient, never()).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).resumeScanning();
     }
 
     @Test
@@ -158,7 +158,7 @@ public class ObtainInfoManagerTest {
         manager.onResume(errManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).resumeScanning();
     }
 
     //= onRestart() ================================================================================
@@ -171,7 +171,7 @@ public class ObtainInfoManagerTest {
     @Test
     public void testOnRestart() throws Exception {
         manager.onRestart();
-        verify(taskScanView).securityPrompt(false);
+        verify(taskScanViewOld).securityPrompt(false);
     }
 
     //= onDestroy() ================================================================================
@@ -250,10 +250,10 @@ public class ObtainInfoManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).resumeScanning();
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).securityPrompt(false);
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).resumeScanning();
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).securityPrompt(false);
     }
 
     @Test
@@ -267,9 +267,9 @@ public class ObtainInfoManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView, never()).resumeScanning();
-        verify(taskScanView).displayError(any(ProcessException.class));
-        verify(taskScanView).securityPrompt(false);
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).securityPrompt(false);
     }
 }

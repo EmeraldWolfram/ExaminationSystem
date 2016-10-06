@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.manager.ObtainInfoManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by GhinY on 07/05/2016.
  */
-public class ObtainInfoActivity extends AppCompatActivity implements TaskScanView, TaskConnView {
+public class ObtainInfoActivity extends AppCompatActivity implements TaskScanViewOld, TaskConnView {
     private static final String TAG = ObtainInfoActivity.class.getSimpleName();
 
     private ObtainInfoManager infoManager;

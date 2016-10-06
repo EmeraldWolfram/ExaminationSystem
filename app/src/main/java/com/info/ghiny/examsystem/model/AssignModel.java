@@ -1,7 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
 import android.content.DialogInterface;
-import android.graphics.drawable.Icon;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -45,6 +44,7 @@ public class AssignModel {
     }
 
     //= Setter & Getter ============================================================================
+    //This one should be used last not first
     public void initLoader(CheckListLoader dBLoader) throws ProcessException{
         assert dBLoader != null;
 
@@ -60,6 +60,7 @@ public class AssignModel {
         //Candidate.setPaperList(dBLoader.queryPapers());
         //AssignModel.setAttdList(dBLoader.queryAttendanceList());
     }
+    //Should add another function to load out attd List, Maybe in presenter not here also
 
     //For test purposes=============================================================================
     public void setTempCdd(Candidate tempCdd) {
@@ -140,7 +141,7 @@ public class AssignModel {
      *
      * @param scanString    Possible Table Number in the venue
      */
-    public void checkTable(String scanString){
+    void checkTable(String scanString){
         //Add checking mechanism when venue size is valid
         tempTable = Integer.parseInt(scanString);
     }
@@ -157,7 +158,7 @@ public class AssignModel {
      * @param scanString            Possible Register Number of candidate
      * @throws ProcessException
      */
-    public void checkCandidate(String scanString) throws ProcessException {
+    void checkCandidate(String scanString) throws ProcessException {
         if(scanString == null){
             throw new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
@@ -203,13 +204,12 @@ public class AssignModel {
      *
      * @return  the flag of registered the set of table and candidate or failed
      */
-    public boolean tryAssignCandidate() throws ProcessException {
+    boolean tryAssignCandidate() throws ProcessException {
         boolean assigned = false;
 
         if(tempTable != null && tempCdd != null){
-            //If ExamSubject range does not meet, DO something
-            attempInvalidSeat();
-            attempReassign();
+            attemptNotMatch();
+            attemptReassign();
 
             assignCandidate();
             assigned    = true;
@@ -218,7 +218,7 @@ public class AssignModel {
         return assigned;
     }
 
-    public void attempReassign() throws ProcessException{
+    void attemptReassign() throws ProcessException{
         ProcessException err;
         if(assgnList.containsKey(tempTable)){
             err = new ProcessException("Previous: Table " + tempTable + " assigned to "
@@ -242,14 +242,14 @@ public class AssignModel {
         }
     }
 
-    public void attempInvalidSeat() throws ProcessException{
+    void attemptNotMatch() throws ProcessException{
         if(!tempCdd.getPaper().isValidTable(tempTable))
             throw new ProcessException(tempCdd.getExamIndex() + " should not sit here\n"
                     + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    public void assignCandidate(){
+    void assignCandidate(){
         tempCdd.setTableNumber(tempTable);
         tempCdd.setStatus(Status.PRESENT);
 
@@ -270,7 +270,7 @@ public class AssignModel {
     //
     //  resetCandidate()
     //  - Remove away the Candidate
-    public void updateNewCandidate() {
+    void updateNewCandidate() {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
@@ -296,11 +296,12 @@ public class AssignModel {
         tempTable   = null;
     }
 
-    public void cancelNewAssign(){
+    void cancelNewAssign(){
         tempCdd     = null;
         tempTable   = null;
     }
 
+    //==============================================================================================
     private final DialogInterface.OnClickListener updateListener =
             new DialogInterface.OnClickListener(){
                 @Override

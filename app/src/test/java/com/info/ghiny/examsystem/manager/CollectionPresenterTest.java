@@ -1,17 +1,15 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.InfoCollectHelper;
-import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -39,23 +37,23 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class CollectManagerTest {
+public class CollectionPresenterTest {
+    private CollectionMVP.Model taskModel;
+    private CollectionMVP.View taskView;
+    private CollectionPresenter manager;
     private Handler handler;
-    private InfoCollectHelper infoModel;
-    private TaskScanView taskScanView;
-    private TaskConnView taskConnView;
-    private CollectManager manager;
+    private DialogInterface dialog;
 
     @Before
     public void setUp() throws Exception {
-        infoModel = Mockito.mock(InfoCollectHelper.class);
-        taskScanView = Mockito.mock(TaskScanView.class);
-        taskConnView = Mockito.mock(TaskConnView.class);
-        handler = Mockito.mock(Handler.class);
+        taskModel   = Mockito.mock(CollectionMVP.Model.class);
+        taskView    = Mockito.mock(CollectionMVP.View.class);
+        handler     = Mockito.mock(Handler.class);
+        dialog      = Mockito.mock(DialogInterface.class);
 
-        manager = new CollectManager(taskScanView, taskConnView);
+        manager = new CollectionPresenter(taskView);
         manager.setHandler(handler);
-        manager.setInfoModel(infoModel);
+        manager.setTaskModel(taskModel);
     }
 
     //= OnPause() ==================================================================================
@@ -70,7 +68,7 @@ public class CollectManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(taskScanView).pauseScanning();
+        verify(taskView).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -89,7 +87,7 @@ public class CollectManagerTest {
 
         manager.onResume();
         verify(tcpClient, never()).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskView).resumeScanning();
     }
 
     @Test
@@ -100,7 +98,7 @@ public class CollectManagerTest {
 
         manager.onResume(errManager);
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanView).resumeScanning();
+        verify(taskView).resumeScanning();
     }
 
     //= OnRestart() ================================================================================
@@ -114,7 +112,7 @@ public class CollectManagerTest {
     public void testOnRestart() throws Exception {
         manager.onRestart();
 
-        verify(taskScanView).securityPrompt(false);
+        verify(taskView).securityPrompt(false);
     }
 
     //= OnDestroy() ================================================================================
@@ -129,7 +127,7 @@ public class CollectManagerTest {
     @Test
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
-        verify(taskConnView).closeProgressWindow();
+        verify(taskView).closeProgressWindow();
         verify(handler).removeCallbacks(any(Runnable.class));
     }
 
@@ -146,48 +144,48 @@ public class CollectManagerTest {
      */
     @Test
     public void testOnScanForCollection_withPositiveResult() throws Exception {
-        doNothing().when(infoModel).bundleCollection("PAPER ABCD");
+        doNothing().when(taskModel).bundleCollection("PAPER ABCD");
 
         manager.onScan("PAPER ABCD");
 
-        verify(taskScanView).pauseScanning();
-        verify(taskConnView).openProgressWindow();
+        verify(taskView).pauseScanning();
+        verify(taskView).openProgressWindow();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
 
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).resumeScanning();
     }
 
     @Test
     public void testOnScanForCollection_withNegativeToast() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
 
-        doThrow(err).when(infoModel).bundleCollection("PAPER ABCD");
+        doThrow(err).when(taskModel).bundleCollection("PAPER ABCD");
 
         manager.onScan("PAPER ABCD");
 
-        verify(taskScanView).pauseScanning();
-        verify(taskConnView, never()).openProgressWindow();
+        verify(taskView).pauseScanning();
+        verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
 
-        verify(taskScanView).displayError(err);
-        verify(taskScanView).resumeScanning();
+        verify(taskView).displayError(err);
+        verify(taskView).resumeScanning();
     }
 
     @Test
     public void testOnScanForCollection_withNegativeDialog() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
-        doThrow(err).when(infoModel).bundleCollection("PAPER ABCD");
+        doThrow(err).when(taskModel).bundleCollection("PAPER ABCD");
         assertNull(err.getListener(ProcessException.okayButton));
 
         manager.onScan("PAPER ABCD");
 
-        verify(taskScanView).pauseScanning();
+        verify(taskView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskConnView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow();
 
-        verify(taskScanView).displayError(err);
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskView).displayError(err);
+        verify(taskView, never()).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -209,7 +207,7 @@ public class CollectManagerTest {
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);
 
-        verify(taskConnView).closeProgressWindow();
+        verify(taskView).closeProgressWindow();
         assertTrue(ConnectionTask.isComplete());
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
@@ -225,7 +223,7 @@ public class CollectManagerTest {
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);
 
-        verify(taskConnView).closeProgressWindow();
+        verify(taskView).closeProgressWindow();
         assertTrue(ConnectionTask.isComplete());
         verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
@@ -249,10 +247,10 @@ public class CollectManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).resumeScanning();
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).securityPrompt(false);
+        verify(taskView).pauseScanning();
+        verify(taskView).resumeScanning();
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).securityPrompt(false);
     }
 
     @Test
@@ -266,9 +264,94 @@ public class CollectManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView, never()).resumeScanning();
-        verify(taskScanView).displayError(any(ProcessException.class));
-        verify(taskScanView).securityPrompt(false);
+        verify(taskView).pauseScanning();
+        verify(taskView, never()).resumeScanning();
+        verify(taskView).displayError(any(ProcessException.class));
+        verify(taskView).securityPrompt(false);
     }
+
+    //= OnClick(...) ===============================================================================
+    /**
+     * onClick(...)
+     *
+     * Whenever a message window pop out, the camera scanner at the back will be paused
+     * Test if the scanner is resumed, when button is clicked
+     */
+    @Test
+    public void testOnClickNeutralButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEUTRAL);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickNegativeButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEGATIVE);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickPositiveButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    //= OnCancel(...) ==============================================================================
+    /**
+     * onCancel(...)
+     *
+     * Sometimes, a pop out window could be cancelled by pressing the back button
+     * of the phone
+     *
+     * Test if the scanner is resumed when the back button was pressed
+     */
+    @Test
+    public void testOnCancel() throws Exception {
+        manager.onCancel(dialog);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+
+    //= OnTimesOut(...) ============================================================================
+    /**
+     * onTimesOut(...)
+     *
+     * When a message was sent to the chief to query something,
+     * a progress window will pop out and a timer will be started.
+     * If there is no respond from the chief for 5 second, onTimesOut(...)
+     * will be called.
+     *
+     * 1. When taskView is null, do nothing
+     * 2. When taskView is not null, close the progress window and display the error
+     *
+     */
+    @Test
+    public void testOnTimesOutWithNullView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+        CollectionPresenter manager   = new CollectionPresenter(null);
+
+        manager.onTimesOut(err);
+
+        verify(taskView, never()).closeProgressWindow();
+        verify(taskView, never()).displayError(err);
+    }
+
+    @Test
+    public void testOnTimesOutWithView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+
+        manager.onTimesOut(err);
+
+        verify(taskView).closeProgressWindow();
+        verify(taskView).displayError(err);
+    }
+
+
 }

@@ -26,7 +26,7 @@ public class Connector {
     public Connector(String ipAddress, Integer portNumber){
         this.ipAddress     = ipAddress;
         this.portNumber    = portNumber;
-        this.date           = Calendar.getInstance();
+        this.date          = Calendar.getInstance();
 
         int hour            = this.date.get(Calendar.HOUR_OF_DAY);
         if(hour < 12){

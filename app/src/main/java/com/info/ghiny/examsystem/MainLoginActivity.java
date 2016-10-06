@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.manager.LoginManager;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -22,7 +22,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class MainLoginActivity extends AppCompatActivity implements TaskScanView, TaskConnView {
+public class MainLoginActivity extends AppCompatActivity implements TaskScanViewOld, TaskConnView {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
     private LoginManager loginManager;

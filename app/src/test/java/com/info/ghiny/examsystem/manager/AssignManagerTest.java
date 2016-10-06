@@ -9,7 +9,7 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.interfacer.TaskScanView;
+import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.model.AssignModel;
 import com.info.ghiny.examsystem.model.LoginHelper;
@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
  */
 public class AssignManagerTest {
     private AssignModel assignModel;
-    private TaskScanView taskScanView;
+    private TaskScanViewOld taskScanViewOld;
     private SetterView setterView;
     private CheckListLoader dBLoader;
     private AssignManager manager;
@@ -48,11 +48,11 @@ public class AssignManagerTest {
         LoginHelper.setStaff(id);
 
         assignModel = Mockito.mock(AssignModel.class);
-        taskScanView = Mockito.mock(TaskScanView.class);
+        taskScanViewOld = Mockito.mock(TaskScanViewOld.class);
         setterView  = Mockito.mock(SetterView.class);
         dBLoader    = Mockito.mock(CheckListLoader.class);
 
-        manager = new AssignManager(taskScanView, setterView, dBLoader);
+        manager = new AssignManager(taskScanViewOld, setterView, dBLoader);
         manager.setAssignModel(assignModel);
     }
 
@@ -74,9 +74,9 @@ public class AssignManagerTest {
 
         manager.onScan("30");
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).resumeScanning();
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).resumeScanning();
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
     }
 
     @Test
@@ -88,9 +88,9 @@ public class AssignManagerTest {
 
         manager.onScan("XXX");
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).displayError(err);
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld).resumeScanning();
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
 
@@ -102,9 +102,9 @@ public class AssignManagerTest {
         assertNull(err.getListener(ProcessException.okayButton));
         manager.onScan("XXX");
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).displayError(err);
-        verify(taskScanView, never()).resumeScanning();
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).displayError(err);
+        verify(taskScanViewOld, never()).resumeScanning();
 
         assertNotNull(err.getListener(ProcessException.okayButton));
     }
@@ -127,10 +127,10 @@ public class AssignManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView).resumeScanning();
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
-        verify(taskScanView, never()).securityPrompt(false);
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld).resumeScanning();
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).securityPrompt(false);
     }
 
     @Test
@@ -140,10 +140,10 @@ public class AssignManagerTest {
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(taskScanView).pauseScanning();
-        verify(taskScanView, never()).resumeScanning();
-        verify(taskScanView).displayError(any(ProcessException.class));
-        verify(taskScanView).securityPrompt(false);
+        verify(taskScanViewOld).pauseScanning();
+        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).securityPrompt(false);
     }
 
     //= OnBackPressed() ============================================================================
@@ -158,7 +158,7 @@ public class AssignManagerTest {
     @Test
     public void testOnBackPressed() throws Exception {
         manager.onBackPressed();
-        verify(taskScanView).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
     }
 
     //= OnPause() ==================================================================================
@@ -173,7 +173,7 @@ public class AssignManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(taskScanView).pauseScanning();
+        verify(taskScanViewOld).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -188,7 +188,7 @@ public class AssignManagerTest {
     @Test
     public void testOnResume() throws Exception {
         manager.onResume();
-        verify(taskScanView).resumeScanning();
+        verify(taskScanViewOld).resumeScanning();
     }
 
     //= OnRestart() ================================================================================
@@ -203,7 +203,7 @@ public class AssignManagerTest {
     @Test
     public void testOnRestart() throws Exception {
         manager.onRestart();
-        verify(taskScanView).securityPrompt(false);
+        verify(taskScanViewOld).securityPrompt(false);
     }
 
     //= SetTable() =================================================================================
@@ -255,7 +255,7 @@ public class AssignManagerTest {
         manager.displayCandidate(cdd);
 
         verify(setterView).setCandidateView("W0000AUMB", "15WAU00001", "BAME 0001  SUBJECT 1");
-        verify(taskScanView, never()).displayError(any(ProcessException.class));
+        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
     }
 
     @Test
@@ -267,7 +267,7 @@ public class AssignManagerTest {
         manager.displayCandidate(cdd);
 
         verify(setterView, never()).setCandidateView(anyString(), anyString(), anyString());
-        verify(taskScanView).displayError(any(ProcessException.class));
+        verify(taskScanViewOld).displayError(any(ProcessException.class));
     }
 
     //= ClearTableAndCandidate() ===================================================================

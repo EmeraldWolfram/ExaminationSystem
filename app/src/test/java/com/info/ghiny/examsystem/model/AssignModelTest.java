@@ -390,7 +390,7 @@ public class AssignModelTest {
         assertEquals(Status.ABSENT, cdd2.getStatus());
     }
 
-    //= attempReassign() ===========================================================================
+    //= attemptReassign() ===========================================================================
     //If Table have been assigned before, UPDATE_PROMPT should be thrown
     @Test
     public void testAttempReassign_Same_table_should_throw_UPDATE_PROMPT()throws Exception{
@@ -403,7 +403,7 @@ public class AssignModelTest {
             //Second assign 12
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
-            assgnHelper.attempReassign();
+            assgnHelper.attemptReassign();
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
@@ -422,7 +422,7 @@ public class AssignModelTest {
             assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("12");
             assgnHelper.checkCandidate("15WAU00001");
-            assgnHelper.attempReassign();
+            assgnHelper.attemptReassign();
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
@@ -442,7 +442,7 @@ public class AssignModelTest {
             assgnHelper.setAssgnList(assgnList);
             assgnHelper.checkTable("55");
             assgnHelper.checkCandidate("15WAU00001");
-            assgnHelper.attempInvalidSeat();
+            assgnHelper.attemptNotMatch();
             fail("Expected MESSAGE_TOAST but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
