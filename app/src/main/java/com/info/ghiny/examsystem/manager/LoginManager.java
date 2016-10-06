@@ -55,6 +55,7 @@ public class LoginManager implements LoginPresenter, TaskScanPresenter, TaskConn
         taskScanViewOld.pauseScanning();
     }
 
+    @Override
     public void onResume() {
         taskScanViewOld.resumeScanning();
     }

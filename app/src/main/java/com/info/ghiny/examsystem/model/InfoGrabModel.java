@@ -16,6 +16,7 @@ public class InfoGrabModel implements InfoGrabMVP.Model{
         this.taskPresenter  = taskPresenter;
     }
 
+    @Override
     public void reqCandidatePapers(String scanValue) throws ProcessException{
 
         if(scanValue.length() != 10)
@@ -42,6 +43,8 @@ public class InfoGrabModel implements InfoGrabMVP.Model{
         }
     }
 
+
+    //Check Carefully, This method should belong somewhere else
     public static Integer getDaysLeft(Calendar paperDate) {
         Calendar today = Calendar.getInstance();
         Integer numberOfDay;
