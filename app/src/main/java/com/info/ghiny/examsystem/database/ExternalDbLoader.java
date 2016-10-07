@@ -3,7 +3,7 @@ package com.info.ghiny.examsystem.database;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -46,7 +46,7 @@ public class ExternalDbLoader {
     public static void dlAttdList(){
 
         //String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
-        //        LoginHelper.getStaff().getVenueHandling());
+        //        LoginModel.getStaff().getVenueHandling());
 
         //if (str != null && tcpClient != null) {
         //    tcpClient.sendMessage(str);
@@ -55,7 +55,7 @@ public class ExternalDbLoader {
 
     public static void dlPaperList() throws ProcessException {
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
-                LoginHelper.getStaff().getVenueHandling());
+                LoginModel.getStaff().getVenueHandling());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
         } else {

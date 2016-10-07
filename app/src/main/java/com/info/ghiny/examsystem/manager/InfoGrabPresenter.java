@@ -12,7 +12,7 @@ import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -112,7 +112,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
             String password = data.getStringExtra("Password");
             try{
                 taskView.pauseScanning();
-                if(!LoginHelper.getStaff().matchPassword(password))
+                if(!LoginModel.getStaff().matchPassword(password))
                     throw new ProcessException("Access denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 

@@ -12,7 +12,7 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
 import com.info.ghiny.examsystem.interfacer.SetterView;
 import com.info.ghiny.examsystem.model.AssignModel;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class AssignManagerTest {
     public void setUp() throws Exception {
         StaffIdentity id = new StaffIdentity("staff1", true, "AM_Staff", "H3");
         id.setPassword("123456");
-        LoginHelper.setStaff(id);
+        LoginModel.setStaff(id);
 
         assignModel = Mockito.mock(AssignModel.class);
         taskScanViewOld = Mockito.mock(TaskScanViewOld.class);

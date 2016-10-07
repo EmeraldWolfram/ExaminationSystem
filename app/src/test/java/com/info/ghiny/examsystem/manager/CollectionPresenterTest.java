@@ -11,7 +11,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -241,7 +241,7 @@ public class CollectionPresenterTest {
     public void testOnPasswordReceived_1() throws Exception {
         StaffIdentity staffIdentity = new StaffIdentity();
         staffIdentity.setPassword("CORRECT");
-        LoginHelper.setStaff(staffIdentity);
+        LoginModel.setStaff(staffIdentity);
 
         Intent popUpLoginAct = Mockito.mock(Intent.class);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("CORRECT");
@@ -258,7 +258,7 @@ public class CollectionPresenterTest {
     public void testOnPasswordReceived_2() throws Exception {
         StaffIdentity staffIdentity = new StaffIdentity();
         staffIdentity.setPassword("CORRECT");
-        LoginHelper.setStaff(staffIdentity);
+        LoginModel.setStaff(staffIdentity);
 
         Intent popUpLoginAct = Mockito.mock(Intent.class);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("INCORRECT");

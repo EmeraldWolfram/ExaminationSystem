@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.model.CustomToast;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 
 /**
  * Created by GhinY on 21/05/2016.
@@ -28,9 +28,9 @@ public class PopUpLogin extends Activity {
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
         TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
-        nameView.setText(LoginHelper.getStaff().getName());
+        nameView.setText(LoginModel.getStaff().getName());
         nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
-        regNView.setText(LoginHelper.getStaff().getIdNo());
+        regNView.setText(LoginModel.getStaff().getIdNo());
         regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
         entView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 

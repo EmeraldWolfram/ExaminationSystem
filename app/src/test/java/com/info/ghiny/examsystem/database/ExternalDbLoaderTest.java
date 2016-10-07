@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -131,7 +131,7 @@ public class ExternalDbLoaderTest {
      */
     @Test
     public void testDlAttdList() throws Exception {
-/*        LoginHelper.setStaff(staff);    //To set the venue to H3
+/*        LoginModel.setStaff(staff);    //To set the venue to H3
         AttendanceList attdList = new AttendanceList();
 
         Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
@@ -169,7 +169,7 @@ public class ExternalDbLoaderTest {
      */
     @Test
     public void testDlPaperList() throws Exception {
-        LoginHelper.setStaff(staff);    //Set the venue to H3
+        LoginModel.setStaff(staff);    //Set the venue to H3
 
         HashMap<String, ExamSubject> paperList   = new HashMap<>();
         ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,

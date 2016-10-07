@@ -104,7 +104,7 @@ public class AssignModel {
      * 1. checkCandidate
      * 2. checkTable
      *
-     * If the length is not possible to be any useful data for assign process
+     * If the length is not possible to be any useful data for attendance collection process
      * this method throw MESSAGE_TOAST error
      *
      * After that, tryAssignCandidate was called to check if both table and candidate

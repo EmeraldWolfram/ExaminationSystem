@@ -72,8 +72,8 @@ public class JsonHelper {
 
         try{
             list.put(KEY_TYPE_CHECKIN, TYPE_ATTD_LIST);
-            list.put(LIST_INVI, LoginHelper.getStaff().getIdNo());
-            list.put(LIST_VENUE, LoginHelper.getStaff().getVenueHandling());
+            list.put(LIST_INVI, LoginModel.getStaff().getIdNo());
+            list.put(LIST_VENUE, LoginModel.getStaff().getVenueHandling());
 
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
@@ -98,7 +98,7 @@ public class JsonHelper {
         JSONObject object   = new JSONObject();
         try{
             object.put(KEY_TYPE_CHECKIN, TYPE_COLLECT);
-            object.put(COLLECTOR, LoginHelper.getStaff().getIdNo());
+            object.put(COLLECTOR, LoginModel.getStaff().getIdNo());
             object.put(COLLECTED, bundleStr);
 
             return object.toString();

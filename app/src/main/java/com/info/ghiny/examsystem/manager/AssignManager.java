@@ -17,7 +17,7 @@ import com.info.ghiny.examsystem.interfacer.TaskScanPresenter;
 import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
 import com.info.ghiny.examsystem.model.AssignModel;
 import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -105,7 +105,7 @@ public class AssignManager implements AssignPresenter, TaskScanPresenter, TaskSe
             String password = data.getStringExtra("Password");
             try{
                 taskScanViewOld.pauseScanning();
-                if(!LoginHelper.getStaff().matchPassword(password))
+                if(!LoginModel.getStaff().matchPassword(password))
                     throw new ProcessException("Access denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 

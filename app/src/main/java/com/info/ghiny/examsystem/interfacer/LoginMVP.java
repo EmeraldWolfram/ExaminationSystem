@@ -13,6 +13,19 @@ public interface LoginMVP {
     interface View extends TaskScanView, TaskConnView, GeneralView {}
 
     interface VPresenter extends TaskScanPresenter, TaskConnPresenter {
+        /**
+         * onPasswordReceived(...)
+         *
+         * This method was used to handle the String (password) key in by the user
+         * When the password was received
+         *
+         * This method take the string and use it to hash the challenge key send by the
+         * Chief then send back to the Chief. The chief will then check if the password is correct
+         *
+         * @param reqCode   The request code of the password (PASSWORD_REQ_CODE)
+         * @param resCode   The result code (RESULT_OK or RESULT_CANCEL)
+         * @param intent    The password intent that the user key in password
+         */
         void onPasswordReceived(int reqCode, int resCode, Intent intent);
     }
 

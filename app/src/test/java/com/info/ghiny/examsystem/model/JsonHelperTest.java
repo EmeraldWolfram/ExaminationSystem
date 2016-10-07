@@ -70,7 +70,7 @@ public class JsonHelperTest {
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
         attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
-        LoginHelper.setStaff(new StaffIdentity("246260", true, "Dr. Smart", "H1"));
+        LoginModel.setStaff(new StaffIdentity("246260", true, "Dr. Smart", "H1"));
 
         String str = JsonHelper.formatAttdList(attdList);
 
@@ -92,7 +92,7 @@ public class JsonHelperTest {
      */
     @Test
     public void testFormatCollection() throws Exception {
-        LoginHelper.setStaff(new StaffIdentity("246260", true, "Dr. Smart", null));
+        LoginModel.setStaff(new StaffIdentity("246260", true, "Dr. Smart", null));
         String str = JsonHelper.formatCollection("BAME 0001 SUBJECT 1");
 
         assertEquals("{\"Bundle\":\"BAME 0001 SUBJECT 1\",\"Collector\":\"246260\"," +

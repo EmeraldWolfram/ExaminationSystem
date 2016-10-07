@@ -21,7 +21,7 @@ import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -111,7 +111,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                if(!LoginHelper.getStaff().matchPassword(password))
+                if(!LoginModel.getStaff().matchPassword(password))
                     throw new ProcessException("Submission denied. Incorrect Password",
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 

@@ -15,11 +15,10 @@ import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
-import com.info.ghiny.examsystem.model.LoginHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
-import org.apache.tools.ant.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +60,7 @@ public class FragListManagerTest {
     public void setUp() throws Exception {
         StaffIdentity id = new StaffIdentity("staff1", true, "AM_Staff", "H3");
         id.setPassword("123456");
-        LoginHelper.setStaff(id);
+        LoginModel.setStaff(id);
 
         generalView = Mockito.mock(GeneralView.class);
         taskConnView= Mockito.mock(TaskConnView.class);

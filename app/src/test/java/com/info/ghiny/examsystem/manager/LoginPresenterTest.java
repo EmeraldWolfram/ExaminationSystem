@@ -1,16 +1,15 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
+import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.LoginHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -39,29 +38,30 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class LoginManagerTest {
-    private LoginManager manager;
-    private LoginHelper loginModel;
-    private TaskScanViewOld taskScanViewOld;
-    private TaskConnView taskConnView;
+public class LoginPresenterTest {
+    private LoginPresenter manager;
+    private LoginMVP.Model taskModel;
+    private LoginMVP.View taskView;
     private Handler handler;
     private Intent password;
+    private DialogInterface dialog;
 
     @Before
     public void setUp() throws Exception {
-        taskScanViewOld = Mockito.mock(TaskScanViewOld.class);
-        taskConnView = Mockito.mock(TaskConnView.class);
-        password    = Mockito.mock(Intent.class);
-        loginModel  = Mockito.mock(LoginHelper.class);
+        taskView    = Mockito.mock(LoginMVP.View.class);
+        taskModel   = Mockito.mock(LoginMVP.Model.class);
         handler     = Mockito.mock(Handler.class);
-        manager     = new LoginManager(taskScanViewOld, taskConnView);
-        manager.setLoginModel(loginModel);
+        password    = Mockito.mock(Intent.class);
+        dialog      = Mockito.mock(DialogInterface.class);
+
+        manager     = new LoginPresenter(taskView);
+        manager.setTaskModel(taskModel);
         manager.setHandler(handler);
     }
 
-    //= OnScanForIdentity() ========================================================================
+    //= OnScan() ========================================================================
     /**
-     * onScanForIdentity()
+     * onScan()
      *
      * 1. prompt user to key-in password if Model didn't throw any error
      * 2. display the error and resume scanning if Model throw Toast error
@@ -71,39 +71,37 @@ public class LoginManagerTest {
      */
     @Test
     public void testOnScanForIdentity_validId() throws Exception {
-        doNothing().when(loginModel).checkQrId("0123456");
+        doNothing().when(taskModel).checkQrId("012345");
 
         manager.onScan("012345");
 
-        verify(taskScanViewOld).securityPrompt(true);
-        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskView).securityPrompt(true);
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).resumeScanning();
     }
 
     @Test
     public void testOnScanForIdentity_InvalidId() throws Exception {
-        doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
-                .when(loginModel).checkQrId("xyz");
+        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
+        doThrow(err).when(taskModel).checkQrId("xyz");
 
         manager.onScan("xyz");
 
-        verify(taskScanViewOld, never()).securityPrompt(true);
-        verify(taskScanViewOld).displayError(any(ProcessException.class));
-        verify(taskScanViewOld).resumeScanning();
+        verify(taskView, never()).securityPrompt(true);
+        verify(taskView).displayError(err);
+        verify(taskView).resumeScanning();
     }
 
     @Test
     public void testOnScanForIdentity_SomeDialogError() throws Exception {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
-        doThrow(err).when(loginModel).checkQrId("xyz");
+        doThrow(err).when(taskModel).checkQrId("xyz");
 
-        assertNull(err.getListener(ProcessException.okayButton));
         manager.onScan("xyz");
 
-        verify(taskScanViewOld, never()).securityPrompt(true);
-        verify(taskScanViewOld).displayError(any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
-        assertNotNull(err.getListener(ProcessException.okayButton));
+        verify(taskView, never()).securityPrompt(true);
+        verify(taskView).displayError(err);
+        verify(taskView, never()).resumeScanning();
     }
 
     //= OnPasswordReceived() ========================================================================
@@ -114,53 +112,60 @@ public class LoginManagerTest {
      * 1. View notify user input password, pause the Scanning and request Model to verify
      * 2. View notify user input password, model complain with Toast, pause the scanning
      *    display the error and resume the scanning
-     * 3. View notify user input password, model complain with Dialog, pause the scanning
-     *    display the error, did not resume but set listener that will resume onClick
+     * 3. View notify user input password, model complain with Fatal, pause the scanning
+     *    display the error, did not resume
+     * 4. Do nothing when the result is RESULT_CANCELLED
      * @throws Exception
      */
     @Test
     public void testOnPasswordReceived_ModelDidNotComplain() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("123456");
-        doNothing().when(loginModel).matchStaffPw("123456");
+        doNothing().when(taskModel).matchStaffPw("123456");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanViewOld).pauseScanning();
-        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskView).pauseScanning();
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).resumeScanning();
     }
 
     @Test
     public void testOnPasswordReceived_ModelComplainWithToast() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("");
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1);
-        doThrow(err).when(loginModel).matchStaffPw("");
+        doThrow(err).when(taskModel).matchStaffPw("");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanViewOld).pauseScanning();
-        verify(taskScanViewOld).displayError(err);
-        verify(taskScanViewOld).resumeScanning();
+        verify(taskView).pauseScanning();
+        verify(taskView).displayError(err);
+        verify(taskView).resumeScanning();
     }
 
     @Test
-    public void testOnPasswordReceived_ModelComplainWithDialog() throws Exception {
+    public void testOnPasswordReceived_ModelComplainWithFatal() throws Exception {
         when(password.getStringExtra("Password")).thenReturn("");
-        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
-        doThrow(err).when(loginModel).matchStaffPw("");
-
-        assertNull(err.getListener(ProcessException.okayButton));
+        ProcessException err = new ProcessException("ERROR", ProcessException.FATAL_MESSAGE, 1);
+        doThrow(err).when(taskModel).matchStaffPw("");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskScanViewOld).pauseScanning();
-        verify(taskScanViewOld).displayError(err);
-        verify(taskScanViewOld, never()).resumeScanning();
-        assertNotNull(err.getListener(ProcessException.okayButton));
+        verify(taskView).pauseScanning();
+        verify(taskView).displayError(err);
+        verify(taskView, never()).resumeScanning();
     }
 
+    @Test
+    public void testOnPasswordReceived_ResultCancelled() throws Exception {
+        manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_CANCELED, password);
+
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView, never()).pauseScanning();
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).resumeScanning();
+    }
     //= OnPause() ==================================================================================
 
     /**
@@ -173,7 +178,7 @@ public class LoginManagerTest {
     @Test
     public void testOnPause() throws Exception {
         manager.onPause();
-        verify(taskScanViewOld).pauseScanning();
+        verify(taskView).pauseScanning();
     }
 
     //= OnResume() =================================================================================
@@ -197,7 +202,7 @@ public class LoginManagerTest {
         manager.onResume(errorManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
-        verify(taskScanViewOld).resumeScanning();
+        verify(taskView).resumeScanning();
     }
 
     //= OnChiefRespond() ================================================================
@@ -217,22 +222,22 @@ public class LoginManagerTest {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
-        doNothing().when(loginModel).checkLoginResult("Message");
-        doNothing().when(loginModel).checkDetail(anyString());
+        doNothing().when(taskModel).checkLoginResult("Message");
+        //doNothing().when(taskModel).checkDetail(anyString());
 
         //assertFalse(manager.isDlFlag());
 
         manager.onChiefRespond(errorManager, "Message");
         //assertTrue(manager.isDlFlag());
-        //verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
+        //verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
 
         //manager.onChiefRespond(errorManager, "Message");
         //assertFalse(manager.isDlFlag());
 
 
-        verify(taskScanViewOld).navigateActivity(TakeAttendanceActivity.class);
-        verify(taskScanViewOld, never()).displayError(any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskView).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).resumeScanning();
     }
 
     @Test
@@ -241,36 +246,118 @@ public class LoginManagerTest {
         ConnectionTask connectionTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
         doThrow(new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, 1))
-                .when(loginModel).checkLoginResult("Message");
+                .when(taskModel).checkLoginResult("Message");
 
         assertFalse(manager.isDlFlag());
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
 
-        verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
+        verify(taskView, never()).resumeScanning();
     }
 
     @Test
-    public void testOnChiefRespond_withDialogError() throws Exception {
+    public void testOnChiefRespond_withFatalError() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ConnectionTask connectionTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
 
-        ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 1);
-        doThrow(err).when(loginModel).checkLoginResult("Message");
-
-        assertNull(err.getListener(ProcessException.okayButton));
+        ProcessException err = new ProcessException("ERROR", ProcessException.FATAL_MESSAGE, 1);
+        doThrow(err).when(taskModel).checkLoginResult("Message");
 
         assertFalse(manager.isDlFlag());
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
-        verify(taskScanViewOld, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
-        verify(taskScanViewOld, never()).resumeScanning();
-        assertNotNull(err.getListener(ProcessException.okayButton));
+        verify(taskView, never()).resumeScanning();
+    }
+
+    //= OnClick(...) ===============================================================================
+    /**
+     * onClick(...)
+     *
+     * Whenever a message window pop out, the camera scanner at the back will be paused
+     * Test if the scanner is resumed, when button is clicked
+     */
+    @Test
+    public void testOnClickNeutralButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEUTRAL);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickNegativeButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEGATIVE);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickPositiveButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+    //= OnCancel(...) ==============================================================================
+    /**
+     * onCancel(...)
+     *
+     * Sometimes, a pop out window could be cancelled by pressing the back button
+     * of the phone
+     *
+     * Test if the scanner is resumed when the back button was pressed
+     */
+    @Test
+    public void testOnCancel() throws Exception {
+        manager.onCancel(dialog);
+
+        verify(dialog).cancel();
+        verify(taskView).resumeScanning();
+    }
+
+
+    //= OnTimesOut(...) ============================================================================
+    /**
+     * onTimesOut(...)
+     *
+     * When a message was sent to the chief to query something,
+     * a progress window will pop out and a timer will be started.
+     * If there is no respond from the chief for 5 second, onTimesOut(...)
+     * will be called.
+     *
+     * 1. When taskView is null, do nothing
+     * 2. When taskView is not null, close the progress window and display the error
+     *
+     */
+    @Test
+    public void testOnTimesOutWithNullView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+        CollectionPresenter manager   = new CollectionPresenter(null);
+
+        manager.onTimesOut(err);
+
+        verify(taskView, never()).closeProgressWindow();
+        verify(taskView, never()).pauseScanning();
+        verify(taskView, never()).displayError(err);
+    }
+
+    @Test
+    public void testOnTimesOutWithView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+
+        manager.onTimesOut(err);
+
+        verify(taskView).closeProgressWindow();
+        verify(taskView).pauseScanning();
+        verify(taskView).displayError(err);
     }
 }
