@@ -99,69 +99,7 @@ public class InfoGrabModelTest {
         assertEquals(-1, dayLeft.intValue());
     }
 
-    /**
-     * getDaysLeft()
-     *
-     * return -1 when the Date of the paper to be examine is already past
-     * even if the DAY_OF_MONTH is larger for the paperDate
-     *
-     * Note: 5 = June, not May
-     * As it start from 0, January is 0
-     */
-    @Test
-    public void testGetDaysLeft_PastExam_With_Different_in_MONTH() throws Exception {
-        Calendar paperDate = Calendar.getInstance();
-        paperDate.set(2016, 5, 29);
 
-        Integer dayLeft = InfoGrabModel.getDaysLeft(paperDate);
-
-        assertEquals(-1, dayLeft.intValue());
-    }
-
-    /**
-     * getDaysLeft()
-     *
-     * return 0 when the Date of the paper to be examine is the same day
-     */
-    @Test
-    public void testGetDaysLeft_PresentExam() throws Exception {
-        Calendar paperDate = Calendar.getInstance();
-
-        Integer dayLeft = InfoGrabModel.getDaysLeft(paperDate);
-
-        assertEquals(0, dayLeft.intValue());
-    }
-
-    /**
-     * getDaysLeft()
-     *
-     * return number of day left when the Date of the paper to be examine is not yet
-     */
-    @Test
-    public void testGetDaysLeft_FutureExam() throws Exception {
-        Calendar paperDate = Calendar.getInstance();
-        paperDate.add(Calendar.DAY_OF_MONTH, 4);
-
-        Integer dayLeft = InfoGrabModel.getDaysLeft(paperDate);
-
-        assertEquals(4, dayLeft.intValue());
-    }
-
-    /**
-     * getDaysLeft()
-     *
-     * return number of day left when the Date of the paper to be examine was having year different
-     * Although not realistic but it is a feature of the method to be correct
-     */
-    @Test
-    public void testGetDaysLeft_FutureExamWithYearOfDifferent() throws Exception {
-        Calendar paperDate = Calendar.getInstance();
-        paperDate.add(Calendar.DAY_OF_MONTH, 800);
-
-        Integer dayLeft = InfoGrabModel.getDaysLeft(paperDate);
-
-        assertEquals(799, dayLeft.intValue());
-    }
 
     //= Run() ======================================================================================
     /**

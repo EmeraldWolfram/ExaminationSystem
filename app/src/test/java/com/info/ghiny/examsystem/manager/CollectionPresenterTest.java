@@ -133,7 +133,6 @@ public class CollectionPresenterTest {
     }
 
     //= OnScanForCollection() ======================================================================
-
     /**
      * onScan()
      *

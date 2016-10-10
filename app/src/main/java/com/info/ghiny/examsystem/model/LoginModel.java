@@ -92,7 +92,6 @@ public class LoginModel implements LoginMVP.Model{
 
     @Override
     public void checkLoginResult(String msgFromChief) throws ProcessException{
-        ConnectionTask.setCompleteFlag(true);
         loginCount--;
         //String pw   = staff.getPassword();
 
@@ -110,23 +109,12 @@ public class LoginModel implements LoginMVP.Model{
         loginCount  = 3;
 
         //AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
-        //AssignModel.setAttdList(attdList);
+        //TakeAttdModel.setAttdList(attdList);
 
         //HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
         //Candidate.setPaperList(papers);
 
         //ExternalDbLoader.dlPaperList();
-    }
-
-    //This method should be removed. Should be placed in TakeAttendance
-    //This is temporary for demo purposes
-    @Override
-    public void checkDetail(String msgFromChief) throws ProcessException {
-        AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
-        AssignModel.setAttdList(attdList);
-
-        HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
-        Candidate.setPaperList(papers);
     }
 
 

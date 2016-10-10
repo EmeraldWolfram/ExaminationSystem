@@ -23,12 +23,12 @@ public class FragmentHelper {
     //= public Methods =============================================================================
     public void uploadAttdList() throws ProcessException{
         ConnectionTask.setCompleteFlag(false);
-        ExternalDbLoader.updateAttdList(AssignModel.getAttdList());
+        ExternalDbLoader.updateAttdList(TakeAttdModel.getAttdList());
     }
 
     public List<String> getTitleList(Status status){
         List<String> papers = new ArrayList<>();
-        AttendanceList attdList = AssignModel.getAttdList();
+        AttendanceList attdList = TakeAttdModel.getAttdList();
 
         HashMap<String, HashMap<String, HashMap<String, Candidate>>>
                 paperMap = attdList.getPaperList(status);
@@ -48,7 +48,7 @@ public class FragmentHelper {
         HashMap<String, Candidate> cddMap;
         HashMap<String, List<Candidate>> cddChild   = new HashMap<>();
 
-        AttendanceList attdList     = AssignModel.getAttdList();
+        AttendanceList attdList     = TakeAttdModel.getAttdList();
         List<String> paperHeader    = getTitleList(status);
 
         for(int i = 0; i < paperHeader.size(); i++){
@@ -74,7 +74,7 @@ public class FragmentHelper {
         assert tableNumber  != null;
         assert cddIndex     != null;
 
-        AttendanceList attdList = AssignModel.getAttdList();
+        AttendanceList attdList = TakeAttdModel.getAttdList();
         if(attdList == null){
             throw new ProcessException("FATAL ERROR: Attendance List not initialized",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -99,7 +99,7 @@ public class FragmentHelper {
     public void assignCandidate(String cddIndex) throws ProcessException{
         assert cddIndex != null;
 
-        AttendanceList attdList = AssignModel.getAttdList();
+        AttendanceList attdList = TakeAttdModel.getAttdList();
         if(attdList == null){
             throw new ProcessException("FATAL ERROR: Attendance List not initialized",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -126,8 +126,8 @@ public class FragmentHelper {
     }
 
     public static void resetCandidate(Integer table){
-        /*AttendanceList attdList = AssignModel.getAttdList();
-        HashMap<Integer, String> assgnList  = AssignModel.getAssgnList();
+        /*AttendanceList attdList = TakeAttdModel.getAttdList();
+        HashMap<Integer, String> assgnList  = TakeAttdModel.getAssgnList();
 
         if(table != null){
             Candidate cdd = attdList.getCandidate(assgnList.get(table));

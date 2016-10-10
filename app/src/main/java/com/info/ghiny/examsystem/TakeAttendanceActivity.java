@@ -1,8 +1,10 @@
 package com.info.ghiny.examsystem;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -11,11 +13,11 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.info.ghiny.examsystem.database.CheckListLoader;
-import com.info.ghiny.examsystem.interfacer.TaskScanViewOld;
-import com.info.ghiny.examsystem.interfacer.SetterView;
-import com.info.ghiny.examsystem.manager.AssignManager;
+import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
+import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -27,11 +29,14 @@ import java.util.List;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class TakeAttendanceActivity extends AppCompatActivity implements SetterView, TaskScanViewOld {
+public class TakeAttendanceActivity extends AppCompatActivity implements TakeAttdMVP.View{
     private static final String TAG = TakeAttendanceActivity.class.getSimpleName();
 
     //Required Tools
-    private AssignManager assignManager;
+    private TakeAttdMVP.VPresenter taskPresenter;
+    private ProgressDialog progDialog;
+
+    //private TakeAttdPresenter assignManager;
     private ErrorManager errManager;
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -39,7 +44,7 @@ public class TakeAttendanceActivity extends AppCompatActivity implements SetterV
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 barcodeView.setStatusText(result.getText());
-                assignManager.onScan(result.getText());
+                taskPresenter.onScan(result.getText());
             }
         }
         @Override
@@ -53,41 +58,52 @@ public class TakeAttendanceActivity extends AppCompatActivity implements SetterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assign_info);
 
-        CheckListLoader clLoader = new CheckListLoader(this);
-        assignManager   = new AssignManager(this, this, clLoader);
-        errManager      = new ErrorManager(this);
-
+        initMVP();
         //Set swiping gesture
         RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeBottom(){
-                assignManager.onSwipeBottom();
+                taskPresenter.onSwipeBottom();
             }
             @Override
             public void onSwipeLeft() {
-                assignManager.onSwipeLeft();
+                taskPresenter.onSwipeLeft();
             }
         });
 
+        taskPresenter.onCreate();
+
         //Barcode Viewer
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
         barcodeView.decodeContinuous(callback);
         assert barcodeView != null;
         barcodeView.setStatusText("Ready to take candidates attendance");
     }
 
+    private void initMVP(){
+        barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
+        errManager      = new ErrorManager(this);
+
+        CheckListLoader dbLoader    = new CheckListLoader(this);
+        TakeAttdPresenter presenter     = new TakeAttdPresenter(this);
+        TakeAttdModel model           = new TakeAttdModel(presenter, dbLoader);
+        presenter.setTaskModel(model);
+        presenter.setHandler(new Handler());
+
+        taskPresenter   = presenter;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        assignManager.onResume();
+        taskPresenter.onResume(errManager);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        assignManager.onPause();
+        taskPresenter.onPause();
     }
 
     @Override
@@ -98,17 +114,17 @@ public class TakeAttendanceActivity extends AppCompatActivity implements SetterV
     @Override
     protected void onRestart() {
         super.onRestart();
-        assignManager.onRestart();
+        taskPresenter.onRestart();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        assignManager.onPasswordReceived(requestCode, resultCode, data);
+        taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
 
     @Override
     public void onBackPressed() {
-        assignManager.onBackPressed();
+        taskPresenter.onBackPressed();
     }
 
     //= Interface Method ==========================================================================
@@ -170,5 +186,16 @@ public class TakeAttendanceActivity extends AppCompatActivity implements SetterV
     @Override
     public void pauseScanning() {
         barcodeView.pause();
+    }
+
+    @Override
+    public void openProgressWindow() {
+        progDialog  = ProgressDialog.show(this, "Initializing:", "Preparing Attendance List...");
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
     }
 }

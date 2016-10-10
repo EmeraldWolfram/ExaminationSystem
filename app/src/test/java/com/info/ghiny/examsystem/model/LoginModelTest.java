@@ -1,9 +1,11 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -273,10 +275,28 @@ public class LoginModelTest {
     public void test() throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(JsonHelper.KEY_TYPE_RETURN, true);
-        jsonObject.put(StaffIdentity.STAFF_NAME, "STAFF_NAME");
-        jsonObject.put(StaffIdentity.STAFF_ID_NO, "012345");
-        jsonObject.put(StaffIdentity.STAFF_VENUE, "M4");
-        jsonObject.put(StaffIdentity.STAFF_ROLE, "Invigilator");
+        //jsonObject.put(StaffIdentity.STAFF_NAME, "STAFF_NAME");
+        //jsonObject.put(StaffIdentity.STAFF_ID_NO, "012345");
+        //jsonObject.put(StaffIdentity.STAFF_VENUE, "M4");
+        //jsonObject.put(StaffIdentity.STAFF_ROLE, "Invigilator");
+        JSONArray arr = new JSONArray();
+        JSONObject subject1 = new JSONObject();
+        subject1.put(ExamSubject.PAPER_CODE, "BAME 0001");
+        subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
+        subject1.put(ExamSubject.PAPER_VENUE, "M4");
+        subject1.put(ExamSubject.PAPER_SESSION, "AM");
+        subject1.put(ExamSubject.PAPER_DATE, "10:10:2016");
+
+        JSONObject subject2 = new JSONObject();
+        subject2.put(ExamSubject.PAPER_CODE, "BAME 0002");
+        subject2.put(ExamSubject.PAPER_DESC, "SUBJECT 2");
+        subject2.put(ExamSubject.PAPER_VENUE, "M4");
+        subject2.put(ExamSubject.PAPER_SESSION, "AM");
+        subject2.put(ExamSubject.PAPER_DATE, "9:10:2016");
+        arr.put(subject1);
+        arr.put(subject2);
+
+        jsonObject.put(JsonHelper.PAPER_LIST, arr);
 
         System.out.printf("%s", jsonObject.toString());
 

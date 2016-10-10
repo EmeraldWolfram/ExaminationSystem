@@ -9,6 +9,7 @@ import com.info.ghiny.examsystem.TakeAttendanceActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -113,6 +114,7 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
         try {
             //if(!dlFlag){
             taskView.closeProgressWindow();
+            ConnectionTask.setCompleteFlag(true);
             taskModel.checkLoginResult(message);
             //    dlFlag = true;
             //} else {

@@ -68,6 +68,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case 4:
                 title="QUARANTINED";
+                break;
         }
 
         return title;

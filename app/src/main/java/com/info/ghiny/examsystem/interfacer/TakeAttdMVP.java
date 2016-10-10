@@ -10,7 +10,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface TakeAttdMVP {
-    interface View extends TaskScanPresenter, GeneralView {
+    interface View extends TaskScanView, TaskConnView, GeneralView {
         /**
          * setTableView(...)
          *
@@ -33,28 +33,33 @@ public interface TakeAttdMVP {
         void setCandidateView(String cddIndex, String cddRegNum, String cddPaper);
     }
 
-    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter {
-        void onBackPressed();
-        void onSwipeLeft();
-        void onSwipeBottom();
+    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {
+        void onCreate(); //Prepare Attendance List
+        void onBackPressed();   //Show dialog, prevent logout
+        void onSwipeLeft();     //to display
+        void onSwipeBottom();   //to info
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+        void startTimer();
+        void onTimesOut(ProcessException err);  //standard
         void displayTable(Integer tableNumber);
         void displayCandidate(Candidate cdd);
         void resetDisplay();
     }
 
-    interface Model {
-        void tryAssignScanValue(String scanStr) throws ProcessException;
-        void checkTable(String scanString);
-        void checkCandidate(String scanString) throws ProcessException;
-        boolean tryAssignCandidate() throws ProcessException;
-        void attemptReassign() throws ProcessException;
-        void attemptNotMatch() throws ProcessException;
-        void assignCandidate();
-        void updateNewCandidate();
-        void cancelNewAssign();
+    interface Model extends Runnable, DialogInterface.OnClickListener {
+
+        void initAttendance() throws ProcessException;  //prepare the Attd & papers (download or db)
+        void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
+        void saveAttendance();  //save before destroy
+        void updateAssignList() throws ProcessException;    //update the assigned list
+        //================================================================================
+        void tryAssignScanValue(String scanStr) throws ProcessException;    //assign scan value
+        void updateNewCandidate();  //when update pressed
+        void cancelNewAssign();     //when cancel pressed
+        //=================================================================================
+        void matchPassword(String password) throws ProcessException;
     }
 
 }

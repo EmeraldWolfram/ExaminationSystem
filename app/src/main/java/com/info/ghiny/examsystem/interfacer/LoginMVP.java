@@ -60,7 +60,6 @@ public interface LoginMVP {
         void checkQrId(String scanStr) throws ProcessException;
         void matchStaffPw(String inputPw) throws ProcessException;
         void checkLoginResult(String msgFromChief) throws ProcessException;
-        void checkDetail(String msgFromChief) throws ProcessException;
     }
 
 }

@@ -223,17 +223,8 @@ public class LoginPresenterTest {
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
         doNothing().when(taskModel).checkLoginResult("Message");
-        //doNothing().when(taskModel).checkDetail(anyString());
-
-        //assertFalse(manager.isDlFlag());
 
         manager.onChiefRespond(errorManager, "Message");
-        //assertTrue(manager.isDlFlag());
-        //verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
-
-        //manager.onChiefRespond(errorManager, "Message");
-        //assertFalse(manager.isDlFlag());
-
 
         verify(taskView).navigateActivity(TakeAttendanceActivity.class);
         verify(taskView, never()).displayError(any(ProcessException.class));
