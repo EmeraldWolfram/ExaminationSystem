@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.manager;
+package com.info.ghiny.examsystem.fragments;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 
@@ -68,9 +69,9 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         CheckBox checkBox       = (CheckBox) convertView.findViewById(R.id.uncheckPresent);
         TextView boxStatus      = (TextView) convertView.findViewById(R.id.checkboxStatus);
 
-        tableNumView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Chunkfive.otf"));
-        candidateView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf"));
-        cddPrgView.setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/DroidSerif-Regular.ttf"));
+        tableNumView.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
+        candidateView.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
+        cddPrgView.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
 
         tableNumView.setText(childCdd.getTableNumber().toString());
         candidateView.setText(childCdd.getExamIndex());
@@ -137,10 +138,10 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         TextView sizeOfList     = (TextView) convertView.findViewById(R.id.sizeOfCandidate);
 
         statusHeader.setTypeface(Typeface.createFromAsset(context.getAssets(),
-                "fonts/Oswald-Bold.ttf"));
+                ConfigManager.BOLD_FONT));
         statusHeader.setText(headerTitle);
         sizeOfList.setTypeface(Typeface.createFromAsset(context.getAssets(),
-                "fonts/DroidSerif-Regular.ttf"));
+                ConfigManager.DEFAULT_FONT));
         sizeOfList.setText(size);
 
         return convertView;

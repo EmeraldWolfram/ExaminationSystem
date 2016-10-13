@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
+import android.util.Base64;
+
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
@@ -7,7 +9,12 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -85,6 +92,9 @@ public class LoginModel implements LoginMVP.Model{
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             } else {
                 ConnectionTask.setCompleteFlag(false);
+
+                //Hash Code here please
+
                 ExternalDbLoader.tryLogin(this.qrStaffID, this.inputPW);
             }
         }
@@ -115,6 +125,23 @@ public class LoginModel implements LoginMVP.Model{
         //Candidate.setPaperList(papers);
 
         //ExternalDbLoader.dlPaperList();
+    }
+
+    String hmacSha(String password, String duelMessage) throws ProcessException{
+        String hash;
+        Mac shaHMAC;
+
+        try {
+            shaHMAC = Mac.getInstance("HmacSHA384");
+            SecretKeySpec secretKey = new SecretKeySpec(password.getBytes(), "HmacSHA384");
+            shaHMAC.init(secretKey);
+            hash = Base64.encodeToString(shaHMAC.doFinal(duelMessage.getBytes()), Base64.DEFAULT);
+        } catch (Exception err) {
+            throw new ProcessException("Encryption library not found\nPlease contact developer!",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+        return hash;
     }
 
 

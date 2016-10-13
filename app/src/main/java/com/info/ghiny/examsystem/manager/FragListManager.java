@@ -75,7 +75,7 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
                 cdd.setAlpha(clear);
                 prg.setAlpha(clear);
                 status.setText(R.string.checked);
-                //remove from list by MODEL
+                //remove from delete list by MODEL
             } else {
                 fragmentModel.unassignCandidate(table.getText().toString(), cdd.getText().toString());
                 table.setAlpha(chalky);

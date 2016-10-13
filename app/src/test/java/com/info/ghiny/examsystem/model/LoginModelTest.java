@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
+import android.util.Base64;
+
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -13,6 +15,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -321,5 +326,44 @@ public class LoginModelTest {
         ConnectionTask.setCompleteFlag(false);
         helper.run();
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
+    }
+
+    //= HmacSha(...) ============================================================================
+
+    /**
+     * hmacSha(...)
+     *
+     * This method use take two input String and encrypt the 2nd String using the 1st String
+     * and return a encrypted String
+     *
+     * Tests:
+     * 1. When the two input string is totally same, should provide the same HashCode
+     * 2. When null password detected during the process of encryption, throw FATAL_MESSAGE
+     * 3. When null message detected during the process of encryption, throw FATAL_MESSAGE
+     */
+
+    @Test
+    public void testHmacSha1_PositiveTest() throws Exception {
+        String hash         = helper.hmacSha("MyPassword", "7ABB8");
+        String sameHash     = helper.hmacSha("MyPassword", "7ABB8");
+        String diffHash1    = helper.hmacSha("MyPassword", "7aBB8"); //A -> a
+        String diffHash2    = helper.hmacSha("myPassword", "7ABB8"); //M -> m
+
+        assertTrue(hash.equals(sameHash));
+        assertFalse(hash.equals(diffHash1));
+        assertFalse(hash.equals(diffHash2));
+    }
+
+    @Test
+    public void testHmacSha3_NegativeTest() throws Exception {
+        try{
+            String hash         = helper.hmacSha("MyPassword", null);
+
+            fail("Expected FATAL_MESSAGE but none thrown!");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("Encryption library not found\n" +
+                    "Please contact developer!", err.getErrorMsg());
+        }
     }
 }

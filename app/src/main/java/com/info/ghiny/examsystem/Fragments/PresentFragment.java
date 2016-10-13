@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.manager.FragListAdapter;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.model.FragmentHelper;
