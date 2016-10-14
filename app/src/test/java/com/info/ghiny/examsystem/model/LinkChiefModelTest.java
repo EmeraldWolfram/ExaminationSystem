@@ -99,6 +99,8 @@ public class LinkChiefModelTest {
 
         assertFalse(model.tryConnectWithDatabase());
         assertNull(ExternalDbLoader.getConnectionTask());
+        verify(dbLoader, never()).clearDatabase();
+        verify(dbLoader, never()).clearUserDatabase();
     }
 
     @Test
@@ -108,10 +110,13 @@ public class LinkChiefModelTest {
         date.set(2016, 7, 18);
         connector.setDate(date);
         assertNull(ExternalDbLoader.getConnectionTask());
-
         when(dbLoader.queryConnector()).thenReturn(connector);
+
         assertFalse(model.tryConnectWithDatabase());
+
         assertNull(ExternalDbLoader.getConnectionTask());
+        verify(dbLoader).clearDatabase();
+        verify(dbLoader).clearUserDatabase();
     }
 
     @Test
@@ -122,6 +127,8 @@ public class LinkChiefModelTest {
 
         assertTrue(model.tryConnectWithDatabase());
         assertNotNull(ExternalDbLoader.getConnectionTask());
+        verify(dbLoader, never()).clearDatabase();
+        verify(dbLoader, never()).clearUserDatabase();
     }
 
     //= CloseConnection() ==========================================================================

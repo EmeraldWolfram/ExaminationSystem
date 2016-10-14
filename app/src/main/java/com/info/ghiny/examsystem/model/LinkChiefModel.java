@@ -57,8 +57,12 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
                 ExternalDbLoader.setConnectionTask(connect);
                 //Check on connection established is required
                 return true;
+            } else {
+                dbLoader.clearUserDatabase();
+                dbLoader.clearDatabase();
+                //Remove away previous database
+                return false;
             }
-            return false;
         }
     }
 
