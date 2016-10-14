@@ -13,7 +13,7 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class CheckListLoader {
-    private static final int DATABASE_VERSION       = 3;
+    private static final int DATABASE_VERSION       = 4;
     public static final String DATABASE_NAME        = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
@@ -33,7 +33,7 @@ public class CheckListLoader {
     private static final String SAVE_USER = "INSERT OR REPLACE INTO "  + USER_TABLE
             + " (" + Connector.CONNECT_IP       + ", " + Connector.CONNECT_PORT
             + ", " + Connector.CONNECT_DATE     + ", " + Connector.CONNECT_SESSION
-            + ") VALUES ('";
+            + ", " + Connector.CONNECT_MESSAGE  + ") VALUES ('";
 
     private static SQLiteDatabase database;
     private static CheckListOpenHelper openHelper;
@@ -116,7 +116,8 @@ public class CheckListLoader {
                 + connector.getIpAddress()          +   "', "
                 + connector.getPortNumber()         +   ", '"
                 + connector.getDateInString()       +   "', '"
-                + connector.getSession().toString() +   "')");
+                + connector.getSession().toString() +   "', '"
+                + connector.getDuelMessage()        +   "')");
     }
 
     //Retrieve an attendanceList from the database
@@ -172,7 +173,7 @@ public class CheckListLoader {
             String date         = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_DATE));
             String session      = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_SESSION));
 
-            connector   = new Connector(ipAddress, portNumber);
+            connector   = new Connector(ipAddress, portNumber, null);
             connector.setDate(connector.parseStringToDate(date));
             connector.setSession(Session.parseSession(session));
         }
@@ -180,6 +181,18 @@ public class CheckListLoader {
         ptr.close();
 
         return connector;
+    }
+
+    public String queryDuelMessage(){
+        String duelMessage = null;
+
+        Cursor ptr = database.rawQuery("SELECT * FROM "  + USER_TABLE, null);
+        if(ptr.moveToFirst()){
+            duelMessage = ptr.getString(ptr.getColumnIndex(Connector.CONNECT_MESSAGE));
+        }
+        ptr.close();
+
+        return duelMessage;
     }
 
 
@@ -264,7 +277,8 @@ public class CheckListLoader {
                     + Connector.CONNECT_IP      + " TEXT    NOT NULL, "
                     + Connector.CONNECT_PORT    + " INTEGER NOT NULL, "
                     + Connector.CONNECT_DATE    + " TEXT    NOT NULL, "
-                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL)");
+                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL, "
+                    + Connector.CONNECT_MESSAGE + " TEXT    NOT NULL)");
         }
 
         @Override

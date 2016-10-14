@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import android.util.Base64;
 
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -25,6 +26,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -35,6 +37,7 @@ public class LoginModelTest {
     private LoginModel helper;
     private StaffIdentity staffId;
     private LoginMVP.MPresenter taskPresenter;
+    private CheckListLoader dbLoader;
     private TCPClient tcpClient;
     private String MESSAGE_FROM_CHIEF;
 
@@ -42,6 +45,8 @@ public class LoginModelTest {
     public void setUp() throws Exception{
         TCPClient.setConnector(null);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
+
+        dbLoader        = Mockito.mock(CheckListLoader.class);
         taskPresenter   = Mockito.mock(LoginMVP.MPresenter.class);
         LoginModel.setStaff(null);
 
@@ -50,7 +55,7 @@ public class LoginModelTest {
 
         ExternalDbLoader.setConnectionTask(connectionTask);
         ExternalDbLoader.setTcpClient(tcpClient);
-        helper  = new LoginModel(taskPresenter);
+        helper  = new LoginModel(taskPresenter, dbLoader);
     }
 
     //= checkQrId() ================================================================================
@@ -169,6 +174,7 @@ public class LoginModelTest {
     public void testMatchStaffPw_Valid_PW_should_send_message() throws Exception{
         try{
             helper.setQrStaffID(staffId.getIdNo());
+            when(dbLoader.queryDuelMessage()).thenReturn("DUEL");
 
             helper.matchStaffPw("ABCD");
 

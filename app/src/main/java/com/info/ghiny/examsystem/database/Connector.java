@@ -17,15 +17,18 @@ public class Connector {
     public static final String CONNECT_PORT     = "Port";
     public static final String CONNECT_DATE     = "RegDate";
     public static final String CONNECT_SESSION  = "Session";
+    public static final String CONNECT_MESSAGE  = "DuelMsg";
 
     private String ipAddress;
     private Integer portNumber;
     private Calendar date;
     private Session session;
+    private String duelMessage;
 
-    public Connector(String ipAddress, Integer portNumber){
+    public Connector(String ipAddress, Integer portNumber, String duelMessage){
         this.ipAddress     = ipAddress;
         this.portNumber    = portNumber;
+        this.duelMessage   = duelMessage;
         this.date          = Calendar.getInstance();
 
         int hour            = this.date.get(Calendar.HOUR_OF_DAY);
@@ -46,10 +49,6 @@ public class Connector {
         return portNumber;
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
     public void setSession(Session session) {
         this.session = session;
     }
@@ -58,8 +57,20 @@ public class Connector {
         return session;
     }
 
+    public void setDate(Calendar date) {
+        this.date = date;
+    }
+
     public Calendar getDate() {
         return date;
+    }
+
+    public void setDuelMessage(String duelMessage) {
+        this.duelMessage = duelMessage;
+    }
+
+    public String getDuelMessage() {
+        return duelMessage;
     }
 
     public String getDateInString(){
@@ -93,6 +104,9 @@ public class Connector {
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "$CHIEF:" + ipAddress + ":" + portNumber + ":$");
+        return String.format(Locale.ENGLISH, "$CHIEF:"
+                + ipAddress     + ":"
+                + portNumber    + ":"
+                + duelMessage   + ":$");
     }
 }

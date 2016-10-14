@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.LoginPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -28,6 +29,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
 
     //private LoginPresenter loginManager;
     private LoginMVP.VPresenter taskPresenter;
+    private CheckListLoader dbLoader;
     private ErrorManager errorManager;
     private ProgressDialog progDialog;
 
@@ -61,9 +63,10 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     private void initMVP(){
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
         errorManager    = new ErrorManager(this);
+        dbLoader        = new CheckListLoader(this);
 
         LoginPresenter presenter  = new LoginPresenter(this);
-        LoginModel model       = new LoginModel(presenter);
+        LoginModel model       = new LoginModel(presenter, dbLoader);
         presenter.setHandler(new Handler());
         presenter.setTaskModel(model);
         taskPresenter           = presenter;

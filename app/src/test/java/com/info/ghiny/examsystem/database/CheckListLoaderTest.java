@@ -379,8 +379,8 @@ public class CheckListLoaderTest {
         CheckListLoader.setDatabase(db);
 
         assertTrue(dbLoader.emptyUserInDB());
-        db.execSQL("INSERT INTO ConnectionTable (IP, Port, RegDate, Session) " +
-                "VALUES ('192.168.0.90', 6666, '14:09:2016', 'AM')");
+        db.execSQL("INSERT INTO ConnectionTable (IP, Port, RegDate, Session, DuelMsg) " +
+                "VALUES ('192.168.0.90', 6666, '14:09:2016', 'AM', 'DUEL')");
         assertFalse(dbLoader.emptyUserInDB());
         dbLoader.clearUserDatabase();
         assertTrue(dbLoader.emptyUserInDB());
@@ -399,7 +399,7 @@ public class CheckListLoaderTest {
         CheckListLoader.setDatabase(db);
 
         assertTrue(dbLoader.emptyUserInDB());
-        Connector connector = new Connector("127.0.0.1", 6666);
+        Connector connector = new Connector("127.0.0.1", 6666, null);
         dbLoader.saveConnector(connector);
         assertFalse(dbLoader.emptyUserInDB());
 
@@ -410,4 +410,36 @@ public class CheckListLoaderTest {
         dbLoader.clearUserDatabase();
         db.close();
     }
+
+    //= QueryDuelMessage() =========================================================================
+    @Test
+    public void testQueryDuelMessage1_EmptyDatabaseReturnNull() throws Exception {
+        String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
+        File dbFile = new File(path);
+        assertTrue(dbFile.exists());
+        dbPath = dbFile.getAbsolutePath();
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+        CheckListLoader.setDatabase(db);
+
+        String duelMsg = dbLoader.queryDuelMessage();
+        assertNull(duelMsg);
+
+        db.close();
+    }
+
+    @Test
+    public void testQueryDuelMessage2_FilledDatabaseReturnMsg() throws Exception {
+        String path = getClass().getResource(FILLED_USER_PATH).toURI().getPath();
+        File dbFile = new File(path);
+        assertTrue(dbFile.exists());
+        dbPath = dbFile.getAbsolutePath();
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+        CheckListLoader.setDatabase(db);
+
+        String duelMsg = dbLoader.queryDuelMessage();
+        assertEquals("DUEL", duelMsg);
+
+        db.close();
+    }
+
 }

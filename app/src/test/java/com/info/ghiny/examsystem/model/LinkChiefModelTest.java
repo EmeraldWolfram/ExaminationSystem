@@ -55,7 +55,7 @@ public class LinkChiefModelTest {
             assertNull(TCPClient.connector);
             assertNull(ExternalDbLoader.getConnectionTask());
 
-            model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:$");
+            model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:$");
 
             verify(dbLoader).saveConnector(any(Connector.class));
             assertEquals("192.168.0.1", TCPClient.connector.getIpAddress());
@@ -72,7 +72,7 @@ public class LinkChiefModelTest {
             assertNull(TCPClient.connector);
             assertNull(ExternalDbLoader.getConnectionTask());
 
-            model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:");
+            model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:");
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
@@ -104,7 +104,7 @@ public class LinkChiefModelTest {
 
     @Test
     public void testTryConnectWithDatabase_withInvalidDb_return_false() throws Exception {
-        Connector connector         = new Connector("127.0.0.1", 6666);
+        Connector connector         = new Connector("127.0.0.1", 6666, "DUEL");
         Calendar date               = Calendar.getInstance();
         date.set(2016, 7, 18);
         connector.setDate(date);
@@ -117,7 +117,7 @@ public class LinkChiefModelTest {
 
     @Test
     public void testTryConnectWithDatabase_withValidDb_return_true() throws Exception {
-        Connector connector         = new Connector("127.0.0.1", 6666);
+        Connector connector         = new Connector("127.0.0.1", 6666, "DUEL");
         when(dbLoader.queryConnector()).thenReturn(connector);
         assertNull(ExternalDbLoader.getConnectionTask());
 

@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -28,12 +29,14 @@ public class LoginModel implements LoginMVP.Model{
     private static StaffIdentity staff;
     private int loginCount = 3;
     private LoginMVP.MPresenter taskPresenter;
+    private CheckListLoader dbLoader;
+
     private String qrStaffID;
     private String inputPW;
-    //This method take in an id and check if the id is an invigilator identity
 
-    public LoginModel(LoginMVP.MPresenter taskPresenter){
+    public LoginModel(LoginMVP.MPresenter taskPresenter, CheckListLoader dbLoader){
         this.taskPresenter  = taskPresenter;
+        this.dbLoader       = dbLoader;
     }
 
     //= Setter & Getter ============================================================================
@@ -44,24 +47,21 @@ public class LoginModel implements LoginMVP.Model{
         LoginModel.staff = staff;
     }
 
-    public int getLoginCount() {
+    int getLoginCount() {
         return loginCount;
     }
-    public void setLoginCount(int loginCount) {
+    void setLoginCount(int loginCount) {
         this.loginCount = loginCount;
     }
 
-    public String getInputPW() {
-        return inputPW;
-    }
-    public void setInputPW(String inputPW) {
+    void setInputPW(String inputPW) {
         this.inputPW = inputPW;
     }
 
-    public String getQrStaffID() {
+    String getQrStaffID() {
         return qrStaffID;
     }
-    public void setQrStaffID(String qrStaffID) {
+    void setQrStaffID(String qrStaffID) {
         this.qrStaffID = qrStaffID;
     }
 
@@ -93,9 +93,10 @@ public class LoginModel implements LoginMVP.Model{
             } else {
                 ConnectionTask.setCompleteFlag(false);
 
-                //Hash Code here please
+                String duelMsg  = dbLoader.queryDuelMessage();
+                String hashCode = hmacSha(this.inputPW, duelMsg);
 
-                ExternalDbLoader.tryLogin(this.qrStaffID, this.inputPW);
+                ExternalDbLoader.tryLogin(this.qrStaffID, hashCode);
             }
         }
     }

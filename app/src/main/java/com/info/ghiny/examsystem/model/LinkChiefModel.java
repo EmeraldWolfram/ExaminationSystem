@@ -25,7 +25,8 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     public void tryConnectWithQR(String scanStr) throws ProcessException{
         if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
             String[] chiefArr   = scanStr.split(":");
-            Connector connector     = new Connector(chiefArr[1], Integer.parseInt(chiefArr[2]));
+            Connector connector     = new Connector(chiefArr[1],
+                    Integer.parseInt(chiefArr[2]), chiefArr[3]);
 
             dbLoader.saveConnector(connector);
             TCPClient.setConnector(connector);
