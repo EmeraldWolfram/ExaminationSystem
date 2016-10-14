@@ -14,7 +14,7 @@ import com.info.ghiny.examsystem.manager.InfoDisplayPresenter;
 import com.info.ghiny.examsystem.model.InfoDisplayModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
-public class ExamListActivity extends AppCompatActivity implements InfoDisplayMVP.ViewFace {
+public class InfoDisplayActivity extends AppCompatActivity implements InfoDisplayMVP.ViewFace {
     private InfoDisplayMVP.Presenter taskPresenter;
     private DisplayListAdapter listAdapter;
 
@@ -89,6 +89,7 @@ public class ExamListActivity extends AppCompatActivity implements InfoDisplayMV
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
+    //==============================================================================================
     private class DisplayListAdapter extends BaseAdapter {
 
         @Override

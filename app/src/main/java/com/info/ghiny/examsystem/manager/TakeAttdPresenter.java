@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.FragmentListActivity;
+import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -47,6 +47,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onCreate() {
         try{
             taskModel.initAttendance();
+            taskView.openProgressWindow("Initializing:", "Preparing Attendance List...");
         } catch (ProcessException err) {
             taskView.displayError(err);
         }
@@ -137,7 +138,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     @Override
     public void onSwipeLeft(){
         navigationFlag  = true;
-        taskView.navigateActivity(FragmentListActivity.class);
+        taskView.navigateActivity(ReportAttdActivity.class);
     }
 
     @Override

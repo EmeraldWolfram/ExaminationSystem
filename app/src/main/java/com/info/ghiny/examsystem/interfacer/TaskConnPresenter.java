@@ -5,7 +5,7 @@ import com.info.ghiny.examsystem.manager.ErrorManager;
 /**
  * Created by GhinY on 02/09/2016.
  */
-public interface TaskConnPresenter {
+interface TaskConnPresenter {
     /**
      * onResume(...)
      *

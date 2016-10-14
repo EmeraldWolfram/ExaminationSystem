@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.FragmentListActivity;
+import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -67,7 +67,7 @@ public class TakeAttdPresenterTest {
     /**
      * onCreate()
      *
-     * When TakeAttendanceActivity was first created
+     * When TakeAttdActivity was first created
      * it require initialization of the attendance list and exam paper info
      * This method will call initialization.
      *
@@ -80,6 +80,7 @@ public class TakeAttdPresenterTest {
         manager.onCreate();
 
         verify(taskModel).initAttendance();
+        verify(taskView).openProgressWindow("Initializing:", "Preparing Attendance List...");
         verify(taskView, never()).displayError(any(ProcessException.class));
     }
 
@@ -91,6 +92,7 @@ public class TakeAttdPresenterTest {
         manager.onCreate();
 
         verify(taskModel).initAttendance();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskView).displayError(any(ProcessException.class));
     }
 
@@ -304,20 +306,20 @@ public class TakeAttdPresenterTest {
     /**
      * onSwipeLeft()
      *
-     * This method will be called when TakeAttendanceActivity was swiped from right to left
+     * This method will be called when TakeAttdActivity was swiped from right to left
      * this method should start the ReportActivity
      */
     @Test
     public void testOnSwipeLeft() throws Exception {
         manager.onSwipeLeft();
-        verify(taskView).navigateActivity(FragmentListActivity.class);
+        verify(taskView).navigateActivity(ReportAttdActivity.class);
     }
 
     //= onSwipeBottom() ============================================================================
     /**
      * onSwipeBottom()
      *
-     * This method will be called when TakeAttendanceActivity was swiped from top to bottom
+     * This method will be called when TakeAttdActivity was swiped from top to bottom
      * this method should start the InfoGrabActivity
      */
     @Test

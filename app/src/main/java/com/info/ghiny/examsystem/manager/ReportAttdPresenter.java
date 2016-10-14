@@ -29,7 +29,7 @@ import java.util.HashMap;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class FragListManager implements ReportAttdMVP.VPresenter, ReportAttdMVP.MPresenter {
+public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttdMVP.MPresenter {
     private ReportAttdMVP.View taskView;
     private ReportAttdMVP.Model taskModel;
     private HashMap<String, Fragment> fragmentHashMap;
@@ -37,7 +37,7 @@ public class FragListManager implements ReportAttdMVP.VPresenter, ReportAttdMVP.
     private Handler handler;
     private boolean uploadFlag = false;
 
-    public FragListManager(ReportAttdMVP.View taskView){
+    public ReportAttdPresenter(ReportAttdMVP.View taskView){
         this.taskView       = taskView;
         /*fragmentHashMap.put("PRESENT",      new PresentFragment());
         fragmentHashMap.put("ABSENT",       new AbsentFragment());
@@ -100,7 +100,7 @@ public class FragListManager implements ReportAttdMVP.VPresenter, ReportAttdMVP.
 
                 if(uploadFlag){
                     taskModel.uploadAttdList();
-                    taskView.openProgressWindow();
+                    taskView.openProgressWindow("Sending:", "Uploading Attendance List...");
                     handler.postDelayed(taskModel, 5000);
                 }
             } catch(ProcessException err){

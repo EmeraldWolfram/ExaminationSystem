@@ -14,8 +14,6 @@ import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
-import java.util.List;
-
 /**
  * Created by GhinY on 10/10/2016.
  */

@@ -100,7 +100,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
         try{
             taskView.pauseScanning();
             taskModel.bundleCollection(scanStr);
-            taskView.openProgressWindow();
+            taskView.openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
             handler.postDelayed(taskModel, 5000);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, this);

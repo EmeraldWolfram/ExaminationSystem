@@ -2,22 +2,16 @@ package com.info.ghiny.examsystem.fragments;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.manager.ConfigManager;
-import com.info.ghiny.examsystem.model.FragmentHelper;
-import com.info.ghiny.examsystem.model.OnSwipeListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +88,7 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         //assignResult.setOnTouchListener(new OnSwipeListener(context){
         //    @Override
         //    public void onSwipeRight() {
-        //        FragmentHelper.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
+        //        ReportAttdModel.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
         //        assignResult.setVisibility(View.GONE);
         //        notifyDataSetChanged();
         //    }

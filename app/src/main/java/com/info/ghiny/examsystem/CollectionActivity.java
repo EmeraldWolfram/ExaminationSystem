@@ -150,8 +150,9 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     }
 
     @Override
-    public void openProgressWindow() {
+    public void openProgressWindow(String title, String message) {
         progDialog  = ProgressDialog.show(this, "Notify Collection:", "Waiting for Acknowledgement...");
+        progDialog  = ProgressDialog.show(this, title, message);
     }
 
     @Override

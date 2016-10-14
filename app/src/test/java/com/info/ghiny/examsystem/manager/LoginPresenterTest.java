@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.TakeAttendanceActivity;
+import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
@@ -21,9 +21,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -125,6 +122,7 @@ public class LoginPresenterTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(taskView).pauseScanning();
+        verify(taskView).openProgressWindow("Verifying:", "Waiting for Chief Respond...");
         verify(taskView, never()).displayError(any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }
@@ -138,6 +136,7 @@ public class LoginPresenterTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskView).pauseScanning();
         verify(taskView).displayError(err);
         verify(taskView).resumeScanning();
@@ -152,6 +151,7 @@ public class LoginPresenterTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskView).pauseScanning();
         verify(taskView).displayError(err);
         verify(taskView, never()).resumeScanning();
@@ -162,6 +162,7 @@ public class LoginPresenterTest {
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_CANCELED, password);
 
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskView, never()).pauseScanning();
         verify(taskView, never()).displayError(any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
@@ -226,7 +227,7 @@ public class LoginPresenterTest {
 
         manager.onChiefRespond(errorManager, "Message");
 
-        verify(taskView).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView).navigateActivity(TakeAttdActivity.class);
         verify(taskView, never()).displayError(any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }
@@ -244,7 +245,7 @@ public class LoginPresenterTest {
         assertFalse(manager.isDlFlag());
 
 
-        verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }
@@ -262,7 +263,7 @@ public class LoginPresenterTest {
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
-        verify(taskView, never()).navigateActivity(TakeAttendanceActivity.class);
+        verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }

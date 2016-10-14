@@ -153,8 +153,8 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     }
 
     @Override
-    public void openProgressWindow() {
-        progDialog  = ProgressDialog.show(this, "Server Database Request", "Waiting for Respond...");
+    public void openProgressWindow(String title, String message) {
+        progDialog  = ProgressDialog.show(this, title, message);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 
 import org.junit.Before;
 import org.junit.Test;

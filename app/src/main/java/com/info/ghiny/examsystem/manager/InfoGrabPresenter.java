@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.ExamListActivity;
+import com.info.ghiny.examsystem.InfoDisplayActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
@@ -70,7 +70,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
             ConnectionTask.setCompleteFlag(true);
             boolean ack =   JsonHelper.parseBoolean(messageRx);
             studentSubjects = messageRx;
-            taskView.navigateActivity(ExamListActivity.class);
+            taskView.navigateActivity(InfoDisplayActivity.class);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, this);
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -88,7 +88,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
         try{
             taskView.pauseScanning();
             taskModel.reqCandidatePapers(scanStr);
-            taskView.openProgressWindow();
+            taskView.openProgressWindow("Server Database Request", "Waiting for Respond...");
             handler.postDelayed(taskModel, 5000);
         } catch (ProcessException err){
             err.setListener(ProcessException.okayButton, this);

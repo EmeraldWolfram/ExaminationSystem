@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -147,7 +148,7 @@ public class CollectionPresenterTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskView).pauseScanning();
-        verify(taskView).openProgressWindow();
+        verify(taskView).openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
 
         verify(taskView, never()).displayError(any(ProcessException.class));
@@ -163,7 +164,7 @@ public class CollectionPresenterTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskView).pauseScanning();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
 
         verify(taskView).displayError(err);
@@ -180,7 +181,7 @@ public class CollectionPresenterTest {
 
         verify(taskView).pauseScanning();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
 
         verify(taskView).displayError(err);
         verify(taskView, never()).resumeScanning();

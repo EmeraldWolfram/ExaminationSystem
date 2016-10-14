@@ -15,11 +15,11 @@ import java.util.List;
  * Created by GhinY on 24/06/2016.
  */
 
-public class FragmentHelper implements ReportAttdMVP.Model {
+public class ReportAttdModel implements ReportAttdMVP.Model {
     private HashMap<String, Integer> unassignedMap;
     private ReportAttdMVP.MPresenter taskPresenter;
 
-    public FragmentHelper(ReportAttdMVP.MPresenter taskPresenter){
+    public ReportAttdModel(ReportAttdMVP.MPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.unassignedMap  = new HashMap<>();
     }

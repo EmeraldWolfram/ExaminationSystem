@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 
 import org.junit.Before;
 import org.junit.Test;

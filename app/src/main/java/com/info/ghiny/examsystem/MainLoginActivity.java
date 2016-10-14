@@ -139,8 +139,8 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     }
 
     @Override
-    public void openProgressWindow() {
-        progDialog  = ProgressDialog.show(this, "Verifying:", "Waiting for Chief Respond...");
+    public void openProgressWindow(String title, String message) {
+        progDialog  = ProgressDialog.show(this, title, message);
     }
 
     @Override

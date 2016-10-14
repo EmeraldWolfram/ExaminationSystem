@@ -3,8 +3,6 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 
-import java.util.Calendar;
-
 /**
  * Created by GhinY on 01/07/2016.
  */

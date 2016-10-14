@@ -1,7 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
 
-
 import com.info.ghiny.examsystem.database.Connector;
 
 import java.io.BufferedReader;

@@ -15,23 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-import com.info.ghiny.examsystem.fragments.AbsentFragment;
-import com.info.ghiny.examsystem.fragments.BarredFragment;
-import com.info.ghiny.examsystem.fragments.ExemptedFragment;
-import com.info.ghiny.examsystem.fragments.PresentFragment;
-import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.manager.FragListManager;
+import com.info.ghiny.examsystem.manager.ReportAttdPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.model.FragmentHelper;
+import com.info.ghiny.examsystem.model.ReportAttdModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
  * Created by GhinY on 12/06/2016.
  */
-public class FragmentListActivity extends AppCompatActivity implements ReportAttdMVP.View {
+public class ReportAttdActivity extends AppCompatActivity implements ReportAttdMVP.View {
 
     private ErrorManager errorManager;
     private ProgressDialog progDialog;
@@ -63,8 +56,8 @@ public class FragmentListActivity extends AppCompatActivity implements ReportAtt
     private void initMVP(){
         errorManager    = new ErrorManager(this);
 
-        FragListManager presenter   = new FragListManager(this);
-        FragmentHelper model        = new FragmentHelper(presenter);
+        ReportAttdPresenter presenter   = new ReportAttdPresenter(this);
+        ReportAttdModel model        = new ReportAttdModel(presenter);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
         taskPresenter   = presenter;
@@ -137,8 +130,9 @@ public class FragmentListActivity extends AppCompatActivity implements ReportAtt
     }
 
     @Override
-    public void openProgressWindow() {
+    public void openProgressWindow(String title, String message) {
         progDialog  = ProgressDialog.show(this, "Sending:", "Uploading Attendance List...");
+        progDialog  = ProgressDialog.show(this, title, message);
     }
 
     @Override

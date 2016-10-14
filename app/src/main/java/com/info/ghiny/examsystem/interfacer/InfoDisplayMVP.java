@@ -8,7 +8,6 @@ import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by GhinY on 10/10/2016.

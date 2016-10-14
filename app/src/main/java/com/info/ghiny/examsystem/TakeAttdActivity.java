@@ -29,8 +29,8 @@ import java.util.List;
 /**
  * Created by GhinY on 13/05/2016.
  */
-public class TakeAttendanceActivity extends AppCompatActivity implements TakeAttdMVP.View{
-    private static final String TAG = TakeAttendanceActivity.class.getSimpleName();
+public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.View{
+    private static final String TAG = TakeAttdActivity.class.getSimpleName();
 
     //Required Tools
     private TakeAttdMVP.VPresenter taskPresenter;
@@ -189,8 +189,8 @@ public class TakeAttendanceActivity extends AppCompatActivity implements TakeAtt
     }
 
     @Override
-    public void openProgressWindow() {
-        progDialog  = ProgressDialog.show(this, "Initializing:", "Preparing Attendance List...");
+    public void openProgressWindow(String title, String message) {
+        progDialog  = ProgressDialog.show(this, title, message);
     }
 
     @Override

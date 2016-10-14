@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -71,7 +72,7 @@ public class InfoGrabPresenterTest {
         manager.onScan("15WAU00001");
 
         verify(taskView).pauseScanning();
-        verify(taskView).openProgressWindow();
+        verify(taskView).openProgressWindow("Server Database Request", "Waiting for Respond...");
         verify(taskModel).reqCandidatePapers("15WAU00001");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(taskView, never()).displayError(any(ProcessException.class));
@@ -86,7 +87,7 @@ public class InfoGrabPresenterTest {
         manager.onScan("33");
 
         verify(taskView).pauseScanning();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskView).displayError(err);
@@ -102,7 +103,7 @@ public class InfoGrabPresenterTest {
         manager.onScan("33");
 
         verify(taskView).pauseScanning();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(taskModel).reqCandidatePapers("33");
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskView).displayError(err);
@@ -193,7 +194,7 @@ public class InfoGrabPresenterTest {
     /**
      * onChiefRespond()
      *
-     * 1. When respond is positive, navigate to ExamListActivity
+     * 1. When respond is positive, navigate to InfoDisplayActivity
      * 2. When respond is negative, publish the error
      *
      */

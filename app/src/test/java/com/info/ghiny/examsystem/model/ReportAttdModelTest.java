@@ -6,7 +6,6 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
-import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +29,11 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class FragmentHelperTest {
+public class ReportAttdModelTest {
 
     private AttendanceList attdList;
 
-    private FragmentHelper helper;
+    private ReportAttdModel helper;
     private ReportAttdMVP.MPresenter taskPresenter;
 
 
@@ -67,7 +66,7 @@ public class FragmentHelperTest {
         cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", Status.EXEMPTED);
 
         taskPresenter = Mockito.mock(ReportAttdMVP.MPresenter.class);
-        helper = new FragmentHelper(taskPresenter);
+        helper = new ReportAttdModel(taskPresenter);
 
     }
 

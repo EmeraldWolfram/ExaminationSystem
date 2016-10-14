@@ -43,11 +43,11 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class FragListManagerTest {
+public class ReportAttdPresenterTest {
     private ReportAttdMVP.View taskView;
     private ReportAttdMVP.Model taskModel;
     private Handler handler;
-    private FragListManager manager;
+    private ReportAttdPresenter manager;
     private View view;
     private TextView dummyView;
     private CheckBox dummyBox;
@@ -62,7 +62,7 @@ public class FragListManagerTest {
         taskModel   = Mockito.mock(ReportAttdMVP.Model.class);
         handler     = Mockito.mock(Handler.class);
 
-        manager     = new FragListManager(taskView);
+        manager     = new ReportAttdPresenter(taskView);
         manager.setTaskModel(taskModel);
         manager.setHandler(handler);
 
@@ -108,7 +108,7 @@ public class FragListManagerTest {
 
         verify(taskModel).matchPassword("123456");
         verify(taskModel).uploadAttdList();
-        verify(taskView).openProgressWindow();
+        verify(taskView).openProgressWindow("Sending:", "Uploading Attendance List...");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(taskView, never()).displayError(any(ProcessException.class));
     }
@@ -127,7 +127,7 @@ public class FragListManagerTest {
 
         verify(taskModel).matchPassword("abcdef");
         verify(taskModel, never()).uploadAttdList();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskView).displayError(err);
     }
@@ -144,7 +144,7 @@ public class FragListManagerTest {
 
         verify(taskModel).matchPassword("123456");
         verify(taskModel, never()).uploadAttdList();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskView, never()).displayError(any(ProcessException.class));
     }
@@ -162,7 +162,7 @@ public class FragListManagerTest {
 
         verify(taskModel).matchPassword("abcdef");
         verify(taskModel, never()).uploadAttdList();
-        verify(taskView, never()).openProgressWindow();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
         verify(taskView).displayError(err);
     }

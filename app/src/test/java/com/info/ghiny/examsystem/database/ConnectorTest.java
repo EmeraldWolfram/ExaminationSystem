@@ -2,7 +2,6 @@ package com.info.ghiny.examsystem.database;
 
 import org.junit.Test;
 
-import java.net.ConnectException;
 import java.util.Calendar;
 import java.util.Locale;
 

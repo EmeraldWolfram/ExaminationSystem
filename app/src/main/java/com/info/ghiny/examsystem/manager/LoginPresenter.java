@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.TakeAttendanceActivity;
+import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
@@ -99,7 +99,7 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
             String password = intent.getStringExtra("Password");
             try{
                 taskModel.matchStaffPw(password);
-                taskView.openProgressWindow();
+                taskView.openProgressWindow("Verifying:", "Waiting for Chief Respond...");
                 handler.postDelayed(taskModel, 5000);
             } catch(ProcessException err){
                 taskView.displayError(err);
@@ -120,7 +120,7 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
             //} else {
             //    loginModel.checkDetail(message);
             //    dlFlag = false;
-            taskView.navigateActivity(TakeAttendanceActivity.class);
+            taskView.navigateActivity(TakeAttdActivity.class);
             //}
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errorManager, err);

@@ -12,7 +12,6 @@ import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
-import com.info.ghiny.examsystem.model.FragmentHelper;
 
 import java.util.HashMap;
 import java.util.List;

@@ -29,10 +29,10 @@
             android:name=".InfoGrabActivity"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".TakeAttendanceActivity"
+            android:name=".TakeAttdActivity"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".FragmentListActivity"
+            android:name=".ReportAttdActivity"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".HomeOptionActivity"
@@ -44,7 +44,7 @@
         <activity
             android:name=".CollectionActivity"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".ExamListActivity"></activity>
+        <activity android:name=".InfoDisplayActivity"></activity>
     </application>
 
 </manifest>

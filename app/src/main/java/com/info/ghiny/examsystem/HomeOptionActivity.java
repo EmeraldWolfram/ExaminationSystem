@@ -18,7 +18,7 @@ public class HomeOptionActivity extends AppCompatActivity{
     }
 
     public void onAssign(View view){
-        Intent assignIntent = new Intent(this, TakeAttendanceActivity.class);
+        Intent assignIntent = new Intent(this, TakeAttdActivity.class);
         startActivity(assignIntent);
     }
 
@@ -28,7 +28,7 @@ public class HomeOptionActivity extends AppCompatActivity{
     }
 
     public void onSubmission(View view){
-        Intent submitIntent = new Intent(this, FragmentListActivity.class);
+        Intent submitIntent = new Intent(this, ReportAttdActivity.class);
         startActivity(submitIntent);
     }
 
