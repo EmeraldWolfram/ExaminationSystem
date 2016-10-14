@@ -30,7 +30,7 @@ public interface ReportAttdMVP {
         void onTimesOut(ProcessException err);
     }
 
-    interface Model extends Runnable {
+    interface Model extends Runnable, TaskSecureModel {
         void uploadAttdList() throws ProcessException;
         void unassignCandidate(String tableNumber, String cddIndex) throws ProcessException;
         void assignCandidate(String cddIndex) throws ProcessException;

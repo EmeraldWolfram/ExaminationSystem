@@ -43,28 +43,10 @@ public class InfoGrabModel implements InfoGrabMVP.Model{
         }
     }
 
-
-    //Check Carefully, This method should belong somewhere else
-    public static Integer getDaysLeft(Calendar paperDate) {
-        Calendar today = Calendar.getInstance();
-        Integer numberOfDay;
-
-        numberOfDay = paperDate.get(Calendar.DAY_OF_YEAR) - today.get(Calendar.DAY_OF_YEAR);
-
-        if(numberOfDay == 0 && paperDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)){
-            numberOfDay = 0;
-        } else if(today.after(paperDate)){
-            numberOfDay = -1;
-        } else {
-            if(today.get(Calendar.YEAR) < paperDate.get(Calendar.YEAR)){
-                int yearDiff = paperDate.get(Calendar.YEAR) - today.get(Calendar.YEAR);
-                numberOfDay = paperDate.get(Calendar.DAY_OF_YEAR)
-                        + (int)(yearDiff * 365.25) - today.get(Calendar.DAY_OF_YEAR);
-            } else {
-                numberOfDay = paperDate.get(Calendar.DAY_OF_YEAR) - today.get(Calendar.DAY_OF_YEAR);
-            }
-        }
-        return numberOfDay;
+    @Override
+    public void matchPassword(String password) throws ProcessException {
+        if(!LoginModel.getStaff().matchPassword(password))
+            throw new ProcessException("Access denied. Incorrect Password",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
-
 }

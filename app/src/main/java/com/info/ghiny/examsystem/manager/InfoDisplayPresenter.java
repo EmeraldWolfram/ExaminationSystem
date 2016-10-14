@@ -11,9 +11,7 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.List;
@@ -56,9 +54,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
             String password = data.getStringExtra("Password");
             try{
-                if(!LoginModel.getStaff().matchPassword(password))
-                    throw new ProcessException("Access denied. Incorrect Password",
-                            ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+                taskModel.matchPassword(password);
             } catch(ProcessException err){
                 taskView.displayError(err);
                 taskView.securityPrompt(false);

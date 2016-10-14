@@ -27,7 +27,7 @@ public interface InfoDisplayMVP {
         ExamSubject getItem(int position);
     }
 
-    interface Model {
+    interface Model extends TaskSecureModel {
         void updateSubjects(String messageRx) throws ProcessException;
         int getNumberOfSubject();
         ExamSubject getSubjectAt(int position);

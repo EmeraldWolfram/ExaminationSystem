@@ -135,6 +135,13 @@ public class FragmentHelper implements ReportAttdMVP.Model {
     }
 
     @Override
+    public void matchPassword(String password) throws ProcessException {
+        if(!LoginModel.getStaff().matchPassword(password))
+            throw new ProcessException("Access denied. Incorrect Password",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+    }
+
+    @Override
     public void run() {
         try{
             if(!ConnectionTask.isComplete()){

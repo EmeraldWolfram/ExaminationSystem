@@ -7,10 +7,8 @@ import android.os.Handler;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -240,15 +238,13 @@ public class InfoGrabPresenterTest {
      */
     @Test
     public void testOnPasswordReceived_1() throws Exception {
-        StaffIdentity staffIdentity = new StaffIdentity();
-        staffIdentity.setPassword("CORRECT");
-        LoginModel.setStaff(staffIdentity);
-
         Intent popUpLoginAct = Mockito.mock(Intent.class);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("CORRECT");
+        doNothing().when(taskModel).matchPassword("CORRECT");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
+        verify(taskModel).matchPassword("CORRECT");
         verify(taskView).pauseScanning();
         verify(taskView).resumeScanning();
         verify(taskView, never()).displayError(any(ProcessException.class));
@@ -257,18 +253,17 @@ public class InfoGrabPresenterTest {
 
     @Test
     public void testOnPasswordReceived_2() throws Exception {
-        StaffIdentity staffIdentity = new StaffIdentity();
-        staffIdentity.setPassword("CORRECT");
-        LoginModel.setStaff(staffIdentity);
-
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
         Intent popUpLoginAct = Mockito.mock(Intent.class);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("INCORRECT");
+        doThrow(err).when(taskModel).matchPassword("INCORRECT");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
+        verify(taskModel).matchPassword("INCORRECT");
         verify(taskView).pauseScanning();
         verify(taskView, never()).resumeScanning();
-        verify(taskView).displayError(any(ProcessException.class));
+        verify(taskView).displayError(err);
         verify(taskView).securityPrompt(false);
     }
 

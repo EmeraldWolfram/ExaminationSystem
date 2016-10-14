@@ -49,7 +49,7 @@ public interface InfoGrabMVP {
         void onTimesOut(ProcessException err);
     }
 
-    interface Model extends Runnable {
+    interface Model extends Runnable, TaskSecureModel {
         /**
          * Runnable interface
          * run() was used by Handler to handle what to happen when the

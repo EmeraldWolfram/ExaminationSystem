@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.interfacer;
 
-import android.app.ActivityManager;
 import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -50,7 +49,7 @@ public interface CollectionMVP {
         void onTimesOut(ProcessException err);
     }
 
-    interface Model extends Runnable{
+    interface Model extends Runnable, TaskSecureModel{
         /**
          * Runnable interface
          * run() was used by Handler to handle what to happen when the

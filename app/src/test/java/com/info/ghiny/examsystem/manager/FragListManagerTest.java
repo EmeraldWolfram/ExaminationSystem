@@ -11,11 +11,8 @@ import android.widget.TextView;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -27,7 +24,6 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -105,10 +101,12 @@ public class FragListManagerTest {
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
         doNothing().when(taskView).securityPrompt(true);
+        doNothing().when(taskModel).matchPassword("123456");
         manager.signToUpload();
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
+        verify(taskModel).matchPassword("123456");
         verify(taskModel).uploadAttdList();
         verify(taskView).openProgressWindow();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
@@ -118,17 +116,20 @@ public class FragListManagerTest {
     @Test
     public void testOnReceivePassword_IncorrectPassword() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
 
         doNothing().when(taskView).securityPrompt(true);
+        doThrow(err).when(taskModel).matchPassword("abcdef");
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
         manager.signToUpload();
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
+        verify(taskModel).matchPassword("abcdef");
         verify(taskModel, never()).uploadAttdList();
         verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskView).displayError(any(ProcessException.class));
+        verify(taskView).displayError(err);
     }
 
     @Test
@@ -137,9 +138,11 @@ public class FragListManagerTest {
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
         doNothing().when(taskView).securityPrompt(true);
+        doNothing().when(taskModel).matchPassword("123456");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
+        verify(taskModel).matchPassword("123456");
         verify(taskModel, never()).uploadAttdList();
         verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
@@ -149,16 +152,19 @@ public class FragListManagerTest {
     @Test
     public void testOnReceivePassword_IncorrectPassword_PromptOnInactivity() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
 
         doNothing().when(taskView).securityPrompt(true);
+        doThrow(err).when(taskModel).matchPassword("abcdef");
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
+        verify(taskModel).matchPassword("abcdef");
         verify(taskModel, never()).uploadAttdList();
         verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskView).displayError(any(ProcessException.class));
+        verify(taskView).displayError(err);
     }
 
     //= OnResume() =================================================================================

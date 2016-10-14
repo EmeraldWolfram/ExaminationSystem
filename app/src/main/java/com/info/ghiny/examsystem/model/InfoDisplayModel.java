@@ -62,4 +62,11 @@ public class InfoDisplayModel implements InfoDisplayMVP.Model {
     public int getNumberOfSubject() {
         return papers.size();
     }
+
+    @Override
+    public void matchPassword(String password) throws ProcessException {
+        if(!LoginModel.getStaff().matchPassword(password))
+            throw new ProcessException("Access denied. Incorrect Password",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+    }
 }

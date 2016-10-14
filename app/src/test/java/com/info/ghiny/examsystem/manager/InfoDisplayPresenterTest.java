@@ -10,10 +10,8 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
-import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
@@ -23,13 +21,12 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -153,31 +150,28 @@ public class InfoDisplayPresenterTest {
      */
     @Test
     public void testOnPasswordReceived_1() throws Exception {
-        StaffIdentity staffIdentity = new StaffIdentity();
-        staffIdentity.setPassword("CORRECT");
-        LoginModel.setStaff(staffIdentity);
-
         Intent popUpLoginAct = Mockito.mock(Intent.class);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("CORRECT");
+        doNothing().when(taskModel).matchPassword("CORRECT");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
+        verify(taskModel).matchPassword("CORRECT");
         verify(taskView, never()).displayError(any(ProcessException.class));
         verify(taskView, never()).securityPrompt(false);
     }
 
     @Test
     public void testOnPasswordReceived_2() throws Exception {
-        StaffIdentity staffIdentity = new StaffIdentity();
-        staffIdentity.setPassword("CORRECT");
-        LoginModel.setStaff(staffIdentity);
-
         Intent popUpLoginAct = Mockito.mock(Intent.class);
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
         when(popUpLoginAct.getStringExtra("Password")).thenReturn("INCORRECT");
+        doThrow(err).when(taskModel).matchPassword("INCORRECT");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, popUpLoginAct);
 
-        verify(taskView).displayError(any(ProcessException.class));
+        verify(taskModel).matchPassword("INCORRECT");
+        verify(taskView).displayError(err);
         verify(taskView).securityPrompt(false);
     }
 

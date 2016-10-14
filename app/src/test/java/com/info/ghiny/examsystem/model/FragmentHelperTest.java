@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
@@ -477,5 +478,39 @@ public class FragmentHelperTest {
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
+    //= MatchPassword(...) =========================================================================
+    /**
+     * matchPassword(...)
+     *
+     * This method is used after the user had logged in but inactive for sometime
+     * Prompt for password and match it when the user try to activate the phone again
+     *
+     * Tests:
+     * 1. When input password is CORRECT, do nothing
+     * 2. When input password is INCORRECT, throw MESSAGE_TOAST Exception
+     *
+     */
+    @Test
+    public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
+        LoginModel.setStaff(new StaffIdentity());
+        LoginModel.getStaff().setPassword("CORRECT");
+        try{
+            helper.matchPassword("CORRECT");
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- not expected!");
+        }
+    }
+
+    @Test
+    public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
+        LoginModel.setStaff(new StaffIdentity());
+        LoginModel.getStaff().setPassword("CORRECT");
+        try{
+            helper.matchPassword("INCORRECT");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Access denied. Incorrect Password", err.getErrorMsg());
+        }
+    }
 
 }

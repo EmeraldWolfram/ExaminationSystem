@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Session;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 
 import org.junit.Before;
@@ -81,25 +82,6 @@ public class InfoGrabModelTest {
         }
     }
 
-    //= GetDaysLeft ================================================================================
-    /**
-     * getDaysLeft()
-     *
-     * return -1 when the Date of the paper to be examine is already past
-     *
-     * 1st of July --> today
-     */
-    @Test
-    public void testGetDaysLeft_PastExam() throws Exception {
-        Calendar paperDate = Calendar.getInstance();
-        paperDate.set(2016, 6, 1);
-
-        Integer dayLeft = InfoGrabModel.getDaysLeft(paperDate);
-
-        assertEquals(-1, dayLeft.intValue());
-    }
-
-
 
     //= Run() ======================================================================================
     /**
@@ -120,5 +102,40 @@ public class InfoGrabModelTest {
         ConnectionTask.setCompleteFlag(false);
         model.run();
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
+    }
+
+    //= MatchPassword(...) =========================================================================
+    /**
+     * matchPassword(...)
+     *
+     * This method is used after the user had logged in but inactive for sometime
+     * Prompt for password and match it when the user try to activate the phone again
+     *
+     * Tests:
+     * 1. When input password is CORRECT, do nothing
+     * 2. When input password is INCORRECT, throw MESSAGE_TOAST Exception
+     *
+     */
+    @Test
+    public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
+        LoginModel.setStaff(new StaffIdentity());
+        LoginModel.getStaff().setPassword("CORRECT");
+        try{
+            model.matchPassword("CORRECT");
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- not expected!");
+        }
+    }
+
+    @Test
+    public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
+        LoginModel.setStaff(new StaffIdentity());
+        LoginModel.getStaff().setPassword("CORRECT");
+        try{
+            model.matchPassword("INCORRECT");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Access denied. Incorrect Password", err.getErrorMsg());
+        }
     }
 }

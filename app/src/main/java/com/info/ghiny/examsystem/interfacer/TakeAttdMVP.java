@@ -48,7 +48,7 @@ public interface TakeAttdMVP {
         void resetDisplay();
     }
 
-    interface Model extends Runnable, DialogInterface.OnClickListener {
+    interface Model extends Runnable, DialogInterface.OnClickListener, TaskSecureModel {
 
         void initAttendance() throws ProcessException;  //prepare the Attd & papers (download or db)
         void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
@@ -58,8 +58,6 @@ public interface TakeAttdMVP {
         void tryAssignScanValue(String scanStr) throws ProcessException;    //assign scan value
         void updateNewCandidate();  //when update pressed
         void cancelNewAssign();     //when cancel pressed
-        //=================================================================================
-        void matchPassword(String password) throws ProcessException;
     }
 
 }
