@@ -38,7 +38,7 @@ public class ErrorManager {
         }
     }
 
-    public void showToastMessage(ProcessException err){
+    private void showToastMessage(ProcessException err){
         CustomToast message = new CustomToast(act);
         message.showCustomMessage(err.getErrorMsg(), err.getErrorIcon());
     }
@@ -47,7 +47,7 @@ public class ErrorManager {
     //    Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
     //}
 
-    public void showReassignDialog(final ProcessException err){
+    private void showReassignDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(false);
@@ -60,7 +60,7 @@ public class ErrorManager {
         alert.show();
     }
 
-    public void showMessageDialog(final ProcessException err){
+    private void showMessageDialog(final ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
@@ -72,7 +72,7 @@ public class ErrorManager {
         alert.show();
     }
 
-    public void showFatalError(ProcessException err){
+    private void showFatalError(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
@@ -89,7 +89,7 @@ public class ErrorManager {
         alert.show();
     }
 
-    public void showYesNoDialog(ProcessException err){
+    private void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);

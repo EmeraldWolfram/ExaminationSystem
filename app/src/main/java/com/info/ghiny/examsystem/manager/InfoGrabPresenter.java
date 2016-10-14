@@ -72,7 +72,6 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
             studentSubjects = messageRx;
             taskView.navigateActivity(InfoDisplayActivity.class);
         } catch (ProcessException err) {
-            err.setListener(ProcessException.okayButton, this);
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
     }

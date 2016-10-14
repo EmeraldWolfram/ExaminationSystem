@@ -75,7 +75,6 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
             ConnectionTask.setCompleteFlag(true);
             boolean ack = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err) {
-            err.setListener(ProcessException.okayButton, this);
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
     }
