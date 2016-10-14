@@ -2,22 +2,33 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by GhinY on 24/06/2016.
  */
+
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class FragmentHelperTest {
 
     private AttendanceList attdList;
@@ -26,12 +37,10 @@ public class FragmentHelperTest {
     private ReportAttdMVP.MPresenter taskPresenter;
 
 
-    private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList1;
     private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
     private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList3;
 
     private HashMap<String, HashMap<String, Candidate>> prgList2;
-    private HashMap<String, HashMap<String, Candidate>> prgList3;
 
     private Candidate cdd1;
     private Candidate cdd2;
@@ -49,7 +58,6 @@ public class FragmentHelperTest {
         paperList2.put("BAME 1001", new HashMap<String, HashMap<String, Candidate>>());
 
         prgList2 = new HashMap<>();
-        prgList3 = new HashMap<>();
 
         cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
         cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
@@ -62,7 +70,7 @@ public class FragmentHelperTest {
 
     }
 
-    //= GET TITLE LIST =============================================================================
+    //= GetTitleList(...) =============================================================================
     /*****************************************************************************
      * getTitleList(Status)
      * return a List<String> of paperCode that is not empty in the Status List
@@ -73,7 +81,7 @@ public class FragmentHelperTest {
      * The method should return List with BAME 0001 and BAME 0002.
      *****************************************************************************/
     @Test
-    public void testGetTitleList() throws Exception{
+    public void testGetTitleList_2subjectWithAbsentCandidate() throws Exception{
         cdd4 = new Candidate(0, "RMB3", "TS 1", "15WAU10004", "BAME 0002", Status.ABSENT);
         cdd5 = new Candidate(0, "RSF3", "TS 2", "15WAU10005", "BAME 0002", Status.ABSENT);
 
@@ -144,9 +152,9 @@ public class FragmentHelperTest {
         assertEquals("BAME 0003", list.get(2));
     }
 
-    //= GET CHILD LIST =============================================================================
+    //= GetChildList() =============================================================================
     /**
-     * getChildList()
+     * getChildList(...)
      * should return a HashMap<PaperCode, List<Candidate>>
      * @PaperCode       the paper examined (the title reference)
      * @List<Candidate> Candidates that sit for the particular paper (the expandable body List)
@@ -246,52 +254,6 @@ public class FragmentHelperTest {
 
         testList = map.get("BAME 0003");
         assertEquals(0, testList.size());
-    }
-
-    //= resetNewAssign() ===========================================================================
-    /**
-     * resetNewAssign()
-     *
-     * 1. do nothing when no table assign before
-     * 2. remove the last assigned table if exist
-     */
-    @Test
-    public void testResetNewAssign_doNothingWhenNoAssignBefore() throws Exception {
-        //FragmentHelper.resetCandidate(null);
-        //TakeAttdModel.setAttdList(attdList);
-
-        //assertEquals(0, TakeAttdModel.getAssgnList().size());
-        //assertEquals(attdList, TakeAttdModel.getAttdList());
-    }
-
-    @Test
-    public void testResetNewAssign_removePreviouslyAssignedValue() throws Exception {
-        //TakeAttdModel assgnHelper = new TakeAttdModel(manager);
-        //attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        //HashMap<String, ExamSubject> paperList   = new HashMap<>();
-        //ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,
-        //        Calendar.getInstance(), 20, "H1", Session.AM);
-        //ExamSubject subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30,
-        /*        Calendar.getInstance(), 20, "H2", Session.PM);
-        ExamSubject subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50,
-                Calendar.getInstance(), 20, "H3", Session.VM);
-        paperList.put(subject1.getPaperCode(), subject1);
-        paperList.put(subject2.getPaperCode(), subject2);
-        paperList.put(subject3.getPaperCode(), subject3);
-
-        TakeAttdModel.setAttdList(attdList);
-        Candidate.setPaperList(paperList);
-
-        assgnHelper.checkCandidate("15WAU00001");
-        assgnHelper.checkTable("12");
-        assertTrue(assgnHelper.tryAssignCandidate());
-        assertEquals(1, TakeAttdModel.getAssgnList().size());
-        assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00001").getStatus());
-
-        FragmentHelper.resetCandidate(12);
-
-        assertEquals(0, TakeAttdModel.getAssgnList().size());
-        assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());*/
     }
 
     //= UnassignCandidate() ==========================================================================
@@ -472,6 +434,47 @@ public class FragmentHelperTest {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("FATAL ERROR: Attendance List not initialized", err.getErrorMsg());
         }
+    }
+
+    //= UploadAttendance() =========================================================================
+    /**
+     * uploadAttendance()
+     *
+     * Check if helper send out attendance list
+     *
+     */
+    @Test
+    public void testUploadAttendance() throws Exception {
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+        TCPClient tcpClient = Mockito.mock(TCPClient.class);
+
+        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setConnectionTask(task);
+        TakeAttdModel.setAttdList(attdList);
+
+        helper.uploadAttdList();
+        verify(tcpClient).sendMessage(anyString());
+    }
+
+    //= Run() ======================================================================================
+    /**
+     * run()
+     *
+     * 1. When ConnectionTask is complete, do nothing
+     * 2. When ConnectionTask is not complete, throw an error and the presenter shall handle
+     */
+    @Test
+    public void testRun_ChiefDoRespond() throws Exception {
+        ConnectionTask.setCompleteFlag(true);
+        helper.run();
+        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+    }
+
+    @Test
+    public void testRun_ChiefNoRespond() throws Exception {
+        ConnectionTask.setCompleteFlag(false);
+        helper.run();
+        verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
 

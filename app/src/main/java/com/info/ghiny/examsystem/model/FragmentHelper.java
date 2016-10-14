@@ -14,11 +14,10 @@ import java.util.List;
 /**
  * Created by GhinY on 24/06/2016.
  */
+
 public class FragmentHelper implements ReportAttdMVP.Model {
     private HashMap<String, Integer> unassignedMap;
     private ReportAttdMVP.MPresenter taskPresenter;
-
-    public FragmentHelper(){}
 
     public FragmentHelper(ReportAttdMVP.MPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
@@ -26,11 +25,13 @@ public class FragmentHelper implements ReportAttdMVP.Model {
     }
 
     //= public Methods =============================================================================
+    @Override
     public void uploadAttdList() throws ProcessException{
         ConnectionTask.setCompleteFlag(false);
         ExternalDbLoader.updateAttdList(TakeAttdModel.getAttdList());
     }
 
+    @Override
     public List<String> getTitleList(Status status){
         List<String> papers = new ArrayList<>();
         AttendanceList attdList = TakeAttdModel.getAttdList();
@@ -48,6 +49,7 @@ public class FragmentHelper implements ReportAttdMVP.Model {
         return papers;
     }
 
+    @Override
     public HashMap<String, List<Candidate>> getChildList(Status status){
         HashMap<String, HashMap<String, Candidate>> prgList;
         HashMap<String, Candidate> cddMap;
@@ -75,6 +77,7 @@ public class FragmentHelper implements ReportAttdMVP.Model {
         return cddChild;
     }
 
+    @Override
     public void unassignCandidate(String tableNumber, String cddIndex) throws ProcessException{
         assert tableNumber  != null;
         assert cddIndex     != null;
@@ -101,6 +104,7 @@ public class FragmentHelper implements ReportAttdMVP.Model {
                 targetCdd.getStatus(), targetCdd.getProgramme());
     }
 
+    @Override
     public void assignCandidate(String cddIndex) throws ProcessException{
         assert cddIndex != null;
 

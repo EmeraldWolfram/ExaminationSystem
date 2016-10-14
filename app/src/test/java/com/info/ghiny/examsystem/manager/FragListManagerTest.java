@@ -82,7 +82,6 @@ public class FragListManagerTest {
      *
      * navigate the View to prompt user for password when called
      *
-     * @throws Exception
      */
     @Test
     public void testSignToUpload() throws Exception {
@@ -99,8 +98,6 @@ public class FragListManagerTest {
      * 2. Model notify a Negative Result, display the error thrown by Model
      * 3. Extended: Receive Correct Password, prompt because of inactivity
      * 4. Extended: Receive Wrong Password, prompt because of inactivity
-     *
-     * @throws Exception
      */
     @Test
     public void testOnReceivePassword_CorrectPassword() throws Exception {
@@ -169,8 +166,6 @@ public class FragListManagerTest {
      * onResume()
      *
      * Set the listener of the running TCPClient object when called
-     *
-     * @throws Exception
      */
     @Test
     public void testOnResume() throws Exception {
@@ -188,7 +183,6 @@ public class FragListManagerTest {
      * onRestart()
      *
      * verify if security prompt is called whenever onRestart was called
-     *
      */
     @Test
     public void testOnRestart() throws Exception {
@@ -205,7 +199,6 @@ public class FragListManagerTest {
      *
      * Stop the timer that was started after message sent to Chief if the Activity was destroy
      *
-     * @throws Exception
      */
     @Test
     public void testOnDestroy() throws Exception {
