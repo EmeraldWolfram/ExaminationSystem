@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +14,15 @@ import java.util.List;
 /**
  * Created by GhinY on 24/06/2016.
  */
-public class FragmentHelper {
+public class FragmentHelper implements ReportAttdMVP.Model {
     private HashMap<String, Integer> unassignedMap;
+    private ReportAttdMVP.MPresenter taskPresenter;
 
-    public FragmentHelper(){
-        unassignedMap   = new HashMap<>();
+    public FragmentHelper(){}
+
+    public FragmentHelper(ReportAttdMVP.MPresenter taskPresenter){
+        this.taskPresenter  = taskPresenter;
+        this.unassignedMap  = new HashMap<>();
     }
 
     //= public Methods =============================================================================
@@ -125,18 +130,19 @@ public class FragmentHelper {
         unassignedMap.remove(cdd.getRegNum());
     }
 
-    public static void resetCandidate(Integer table){
-        /*AttendanceList attdList = TakeAttdModel.getAttdList();
-        HashMap<Integer, String> assgnList  = TakeAttdModel.getAssgnList();
-
-        if(table != null){
-            Candidate cdd = attdList.getCandidate(assgnList.get(table));
-            attdList.removeCandidate(cdd.getRegNum());
-            cdd.setTableNumber(0);
-            cdd.setStatus(Status.ABSENT);
-            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-            assgnList.remove(table);
-        }*/
+    @Override
+    public void run() {
+        try{
+            if(!ConnectionTask.isComplete()){
+                ProcessException err = new ProcessException(
+                        "Server busy. Upload times out.\nPlease try again later.",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, taskPresenter);
+                err.setBackPressListener(taskPresenter);
+                throw err;
+            }
+        } catch (ProcessException err) {
+            taskPresenter.onTimesOut(err);
+        }
     }
-
 }

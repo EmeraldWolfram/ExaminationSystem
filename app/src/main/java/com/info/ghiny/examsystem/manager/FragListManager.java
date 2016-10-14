@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -12,93 +13,79 @@ import android.widget.TextView;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.interfacer.AttendanceListPresenter;
-import com.info.ghiny.examsystem.interfacer.GeneralView;
-import com.info.ghiny.examsystem.interfacer.TaskConnPresenter;
-import com.info.ghiny.examsystem.interfacer.TaskConnView;
-import com.info.ghiny.examsystem.interfacer.TaskSecurePresenter;
+import com.info.ghiny.examsystem.fragments.AbsentFragment;
+import com.info.ghiny.examsystem.fragments.BarredFragment;
+import com.info.ghiny.examsystem.fragments.ExemptedFragment;
+import com.info.ghiny.examsystem.fragments.PresentFragment;
+import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
+import java.util.HashMap;
+
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class FragListManager implements AttendanceListPresenter, TaskConnPresenter, TaskSecurePresenter {
+public class FragListManager implements ReportAttdMVP.VPresenter, ReportAttdMVP.MPresenter {
+    private ReportAttdMVP.View taskView;
+    private ReportAttdMVP.Model taskModel;
+    private HashMap<String, Fragment> fragmentHashMap;
+
     private Handler handler;
-    private GeneralView generalView;
-    private TaskConnView taskConnView;
-    private FragmentHelper fragmentModel;
     private boolean uploadFlag = false;
 
-    public FragListManager(GeneralView generalView, TaskConnView taskConnView){
-        this.generalView    = generalView;
-        this.taskConnView   = taskConnView;
-        this.fragmentModel  = new FragmentHelper();
-        this.handler        = new Handler();
+    public FragListManager(ReportAttdMVP.View taskView){
+        this.taskView       = taskView;
+        /*fragmentHashMap.put("PRESENT",      new PresentFragment());
+        fragmentHashMap.put("ABSENT",       new AbsentFragment());
+        fragmentHashMap.put("BARRED",       new BarredFragment());
+        fragmentHashMap.put("EXEMPTED",     new ExemptedFragment());
+        fragmentHashMap.put("QUARANTINED",  new QuarantinedFragment());*/
     }
 
-    public void setFragmentModel(FragmentHelper fragmentModel) {
-        this.fragmentModel = fragmentModel;
+    public void setTaskModel(ReportAttdMVP.Model taskModel) {
+        this.taskModel = taskModel;
     }
 
     public void setHandler(Handler handler) {
         this.handler = handler;
     }
 
-    @Override
-    public void signToUpload(){
-        uploadFlag = true;
-        generalView.securityPrompt(true);
+    public boolean isUploadFlag(){
+        return uploadFlag;
     }
 
     @Override
-    public void toggleUnassign(View view){
-        float clear     = 1.0f;
-        float chalky    = 0.1f;
-
-        ViewGroup parent = (ViewGroup) view.getParent();
-
-        TextView table  = (TextView) parent.findViewById(R.id.assignedTableText);
-        TextView cdd    = (TextView) parent.findViewById(R.id.assignedCddText);
-        TextView prg    = (TextView) parent.findViewById(R.id.assignedPrgText);
-        CheckBox bt     = (CheckBox) parent.findViewById(R.id.uncheckPresent);
-        TextView status = (TextView) parent.findViewById(R.id.checkboxStatus);
-        try{
-            if(bt.isChecked()){
-                fragmentModel.assignCandidate(cdd.getText().toString());
-                table.setAlpha(clear);
-                cdd.setAlpha(clear);
-                prg.setAlpha(clear);
-                status.setText(R.string.checked);
-                //remove from delete list by MODEL
-            } else {
-                fragmentModel.unassignCandidate(table.getText().toString(), cdd.getText().toString());
-                table.setAlpha(chalky);
-                cdd.setAlpha(chalky);
-                prg.setAlpha(chalky);
-                status.setText(R.string.unchecked);
-                //add to delete list by MODEL
+    public void onResume(final ErrorManager errorManager){
+        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+            @Override
+            public void messageReceived(String message) {
+                onChiefRespond(errorManager, message);
             }
-        } catch (ProcessException err) {
-            generalView.displayError(err);
-        }
+        });
     }
 
     @Override
     public void onRestart() {
         uploadFlag = false;
-        generalView.securityPrompt(false);
+        taskView.securityPrompt(false);
+    }
+
+    @Override
+    public void onDestroy(){
+        taskView.closeProgressWindow();
+        handler.removeCallbacks(taskModel);
     }
 
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            taskConnView.closeProgressWindow();
+            taskView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
             boolean uploaded = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err){
@@ -116,51 +103,135 @@ public class FragListManager implements AttendanceListPresenter, TaskConnPresent
                             ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
 
                 if(uploadFlag){
-                    fragmentModel.uploadAttdList();
-                    taskConnView.openProgressWindow();
-                    handler.postDelayed(timer, 5000);
+                    taskModel.uploadAttdList();
+                    taskView.openProgressWindow();
+                    handler.postDelayed(taskModel, 5000);
                 }
             } catch(ProcessException err){
-                generalView.displayError(err);
-                generalView.securityPrompt(uploadFlag);
+                taskView.displayError(err);
+                taskView.securityPrompt(uploadFlag);
             }
         }
     }
 
     @Override
-    public void onResume(final ErrorManager errorManager){
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            @Override
-            public void messageReceived(String message) {
-                onChiefRespond(errorManager, message);
-            }
-        });
+    public CharSequence getPageTitle(int position) {
+        String title = "";
+        switch (position){
+            case 0:
+                title="PRESENT";
+                break;
+            case 1:
+                title="ABSENT";
+                break;
+            case 2:
+                title="BARRED";
+                break;
+            case 3:
+                title="EXEMPTED";
+                break;
+            case 4:
+                title="QUARANTINED";
+                break;
+        }
+
+        return title;
     }
 
     @Override
-    public void onDestroy(){
-        taskConnView.closeProgressWindow();
-        handler.removeCallbacks(timer);
+    public Fragment getItem(int index) {
+        Fragment fragment = null;
+
+        switch (index) {
+            case 0:
+                PresentFragment preFragment = new PresentFragment();
+                preFragment.setTaskModel(taskModel);
+                fragment = preFragment;
+                break;
+            case 1:
+                AbsentFragment absfragment  = new AbsentFragment();
+                absfragment.setTaskModel(taskModel);
+                fragment = absfragment;
+                break;
+            case 2:
+                BarredFragment barfragment  = new BarredFragment();
+                barfragment.setTaskModel(taskModel);
+                fragment = barfragment;
+                break;
+            case 3:
+                ExemptedFragment exfragment = new ExemptedFragment();
+                exfragment.setTaskModel(taskModel);
+                fragment = exfragment;
+                break;
+            case 4:
+                QuarantinedFragment qfragment = new QuarantinedFragment();
+                qfragment.setTaskModel(taskModel);
+                fragment = qfragment;
+                break;
+        }
+
+        return fragment;
     }
 
-    private Runnable timer = new Runnable() {
-        @Override
-        public void run() {
-            if(!ConnectionTask.isComplete()){
-                taskConnView.closeProgressWindow();
-                ProcessException err = new ProcessException(
-                        "Server busy. Upload times out.\nPlease try again later.",
-                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                err.setListener(ProcessException.okayButton, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                if(generalView != null){
-                    generalView.displayError(err);
-                }
+    @Override
+    public int getCount() {
+        return 5;
+    }
+
+    @Override
+    public void signToUpload(){
+        uploadFlag = true;
+        taskView.securityPrompt(true);
+    }
+
+    @Override
+    public void toggleUnassign(View view){
+        float clear     = 1.0f;
+        float chalky    = 0.1f;
+
+        ViewGroup parent = (ViewGroup) view.getParent();
+
+        TextView table  = (TextView) parent.findViewById(R.id.assignedTableText);
+        TextView cdd    = (TextView) parent.findViewById(R.id.assignedCddText);
+        TextView prg    = (TextView) parent.findViewById(R.id.assignedPrgText);
+        CheckBox bt     = (CheckBox) parent.findViewById(R.id.uncheckPresent);
+        TextView status = (TextView) parent.findViewById(R.id.checkboxStatus);
+        try{
+            if(bt.isChecked()){
+                taskModel.assignCandidate(cdd.getText().toString());
+                table.setAlpha(clear);
+                cdd.setAlpha(clear);
+                prg.setAlpha(clear);
+                status.setText(R.string.checked);
+                //remove from delete list by MODEL
+            } else {
+                taskModel.unassignCandidate(table.getText().toString(), cdd.getText().toString());
+                table.setAlpha(chalky);
+                cdd.setAlpha(chalky);
+                prg.setAlpha(chalky);
+                status.setText(R.string.unchecked);
+                //add to delete list by MODEL
             }
+        } catch (ProcessException err) {
+            taskView.displayError(err);
         }
-    };
+    }
+
+    @Override
+    public void onTimesOut(ProcessException err) {
+        if(taskView != null){
+            taskView.closeProgressWindow();
+            taskView.displayError(err);
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        dialog.cancel();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        dialog.cancel();
+    }
 }

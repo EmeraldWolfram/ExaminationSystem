@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.FragmentHelper;
@@ -47,11 +48,10 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
 public class FragListManagerTest {
-    private FragmentHelper fragModel;
-    private FragListManager manager;
-    private GeneralView generalView;
-    private TaskConnView taskConnView;
+    private ReportAttdMVP.View taskView;
+    private ReportAttdMVP.Model taskModel;
     private Handler handler;
+    private FragListManager manager;
     private View view;
     private TextView dummyView;
     private CheckBox dummyBox;
@@ -62,13 +62,12 @@ public class FragListManagerTest {
         id.setPassword("123456");
         LoginModel.setStaff(id);
 
-        generalView = Mockito.mock(GeneralView.class);
-        taskConnView= Mockito.mock(TaskConnView.class);
-        fragModel   = Mockito.mock(FragmentHelper.class);
+        taskView    = Mockito.mock(ReportAttdMVP.View.class);
+        taskModel   = Mockito.mock(ReportAttdMVP.Model.class);
         handler     = Mockito.mock(Handler.class);
 
-        manager     = new FragListManager(generalView, taskConnView);
-        manager.setFragmentModel(fragModel);
+        manager     = new FragListManager(taskView);
+        manager.setTaskModel(taskModel);
         manager.setHandler(handler);
 
         view        = Mockito.mock(View.class);
@@ -88,11 +87,11 @@ public class FragListManagerTest {
     @Test
     public void testSignToUpload() throws Exception {
         manager.signToUpload();
-        verify(generalView).securityPrompt(true);
+        assertTrue(manager.isUploadFlag());
+        verify(taskView).securityPrompt(true);
     }
 
     //= OnPasswordReceived() ========================================================================
-
     /**
      * onPasswordReceived()
      *
@@ -103,37 +102,36 @@ public class FragListManagerTest {
      *
      * @throws Exception
      */
-
     @Test
     public void testOnReceivePassword_CorrectPassword() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
-        doNothing().when(generalView).securityPrompt(true);
+        doNothing().when(taskView).securityPrompt(true);
         manager.signToUpload();
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(fragModel).uploadAttdList();
-        verify(taskConnView).openProgressWindow();
+        verify(taskModel).uploadAttdList();
+        verify(taskView).openProgressWindow();
         verify(handler).postDelayed(any(Runnable.class), anyInt());
-        verify(generalView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).displayError(any(ProcessException.class));
     }
 
     @Test
     public void testOnReceivePassword_IncorrectPassword() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
 
-        doNothing().when(generalView).securityPrompt(true);
+        doNothing().when(taskView).securityPrompt(true);
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
         manager.signToUpload();
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(fragModel, never()).uploadAttdList();
-        verify(taskConnView, never()).openProgressWindow();
+        verify(taskModel, never()).uploadAttdList();
+        verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(generalView).displayError(any(ProcessException.class));
+        verify(taskView).displayError(any(ProcessException.class));
     }
 
     @Test
@@ -141,29 +139,29 @@ public class FragListManagerTest {
         Intent pw = Mockito.mock(Intent.class);
 
         when(pw.getStringExtra("Password")).thenReturn("123456");
-        doNothing().when(generalView).securityPrompt(true);
+        doNothing().when(taskView).securityPrompt(true);
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(fragModel, never()).uploadAttdList();
-        verify(taskConnView, never()).openProgressWindow();
+        verify(taskModel, never()).uploadAttdList();
+        verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(generalView, never()).displayError(any(ProcessException.class));
+        verify(taskView, never()).displayError(any(ProcessException.class));
     }
 
     @Test
     public void testOnReceivePassword_IncorrectPassword_PromptOnInactivity() throws Exception {
         Intent pw = Mockito.mock(Intent.class);
 
-        doNothing().when(generalView).securityPrompt(true);
+        doNothing().when(taskView).securityPrompt(true);
         when(pw.getStringExtra("Password")).thenReturn("abcdef");
 
         manager.onPasswordReceived(PopUpLogin.PASSWORD_REQ_CODE, Activity.RESULT_OK, pw);
 
-        verify(fragModel, never()).uploadAttdList();
-        verify(taskConnView, never()).openProgressWindow();
+        verify(taskModel, never()).uploadAttdList();
+        verify(taskView, never()).openProgressWindow();
         verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(generalView).displayError(any(ProcessException.class));
+        verify(taskView).displayError(any(ProcessException.class));
     }
 
     //= OnResume() =================================================================================
@@ -195,7 +193,9 @@ public class FragListManagerTest {
     @Test
     public void testOnRestart() throws Exception {
         manager.onRestart();
-        verify(generalView).securityPrompt(false);
+
+        assertFalse(manager.isUploadFlag());
+        verify(taskView).securityPrompt(false);
     }
 
 
@@ -210,8 +210,8 @@ public class FragListManagerTest {
     @Test
     public void testOnDestroy() throws Exception {
         manager.onDestroy();
-        verify(taskConnView).closeProgressWindow();
-        verify(handler).removeCallbacks(any(Runnable.class));
+        verify(taskView).closeProgressWindow();
+        verify(handler).removeCallbacks(taskModel);
     }
 
     //= ToggleUnassign() ===========================================================================
@@ -224,7 +224,6 @@ public class FragListManagerTest {
      * 1. set status to unassign, set text to chalky and call unassign function in Model
      * 2. display error when unassign function in model throw an error
      */
-
     @Test
     public void testToggleUnassign_Assigned_1_PositiveTest() throws Exception {
         ViewGroup parent  = Mockito.mock(ViewGroup.class);
@@ -233,14 +232,14 @@ public class FragListManagerTest {
                 .thenReturn(dummyView).thenReturn(dummyView)
                 .thenReturn(dummyBox).thenReturn(dummyView);
         when(dummyView.getText()).thenReturn("Testing");
-        doNothing().when(fragModel).unassignCandidate(anyString(), anyString());
+        doNothing().when(taskModel).unassignCandidate(anyString(), anyString());
 
         manager.toggleUnassign(view);
 
         verify(dummyView, times(3)).setAlpha(0.1f);
-        verify(fragModel).unassignCandidate(anyString(), anyString());
-        verify(fragModel, never()).assignCandidate(anyString());
-        verify(generalView, never()).displayError(any(ProcessException.class));
+        verify(taskModel).unassignCandidate(anyString(), anyString());
+        verify(taskModel, never()).assignCandidate(anyString());
+        verify(taskView, never()).displayError(any(ProcessException.class));
     }
 
     @Test
@@ -253,14 +252,14 @@ public class FragListManagerTest {
         when(dummyView.getText()).thenReturn("Testing");
 
         ProcessException err = new ProcessException(ProcessException.FATAL_MESSAGE);
-        doThrow(err).when(fragModel).unassignCandidate(anyString(), anyString());
+        doThrow(err).when(taskModel).unassignCandidate(anyString(), anyString());
 
         manager.toggleUnassign(view);
 
         verify(dummyView, never()).setAlpha(anyFloat());
-        verify(fragModel).unassignCandidate(anyString(), anyString());
-        verify(fragModel, never()).assignCandidate(anyString());
-        verify(generalView).displayError(err);
+        verify(taskModel).unassignCandidate(anyString(), anyString());
+        verify(taskModel, never()).assignCandidate(anyString());
+        verify(taskView).displayError(err);
     }
 
     /**
@@ -281,14 +280,14 @@ public class FragListManagerTest {
                 .thenReturn(dummyBox).thenReturn(dummyView);
         when(dummyView.getText()).thenReturn("Testing");
         when(dummyBox.isChecked()).thenReturn(true);
-        doNothing().when(fragModel).assignCandidate(anyString());
+        doNothing().when(taskModel).assignCandidate(anyString());
 
         manager.toggleUnassign(view);
 
         verify(dummyView, times(3)).setAlpha(1.0f);
-        verify(fragModel, never()).unassignCandidate(anyString(), anyString());
-        verify(fragModel).assignCandidate(anyString());
-        verify(generalView, never()).displayError(any(ProcessException.class));
+        verify(taskModel, never()).unassignCandidate(anyString(), anyString());
+        verify(taskModel).assignCandidate(anyString());
+        verify(taskView, never()).displayError(any(ProcessException.class));
     }
 
     @Test
@@ -301,14 +300,14 @@ public class FragListManagerTest {
         when(dummyView.getText()).thenReturn("Testing");
         when(dummyBox.isChecked()).thenReturn(true);
         ProcessException err = new ProcessException(ProcessException.FATAL_MESSAGE);
-        doThrow(err).when(fragModel).assignCandidate(anyString());
+        doThrow(err).when(taskModel).assignCandidate(anyString());
 
         manager.toggleUnassign(view);
 
         verify(dummyView, never()).setAlpha(1.0f);
-        verify(fragModel, never()).unassignCandidate(anyString(), anyString());
-        verify(fragModel).assignCandidate(anyString());
-        verify(generalView).displayError(err);
+        verify(taskModel, never()).unassignCandidate(anyString(), anyString());
+        verify(taskModel).assignCandidate(anyString());
+        verify(taskView).displayError(err);
     }
 
     //= OnChiefRespond() ===========================================================================
@@ -331,7 +330,7 @@ public class FragListManagerTest {
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);
 
-        verify(taskConnView).closeProgressWindow();
+        verify(taskView).closeProgressWindow();
         assertTrue(ConnectionTask.isComplete());
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
@@ -347,8 +346,43 @@ public class FragListManagerTest {
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);
 
-        verify(taskConnView).closeProgressWindow();
+        verify(taskView).closeProgressWindow();
         assertTrue(ConnectionTask.isComplete());
         verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
+
+    //= OnTimesOut(...) ============================================================================
+    /**
+     * onTimesOut(...)
+     *
+     * When a message was sent to the chief to query something,
+     * a progress window will pop out and a timer will be started.
+     * If there is no respond from the chief for 5 second, onTimesOut(...)
+     * will be called.
+     *
+     * 1. When taskView is null, do nothing
+     * 2. When taskView is not null, close the progress window and display the error
+     *
+     */
+    @Test
+    public void testOnTimesOutWithNullView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+        CollectionPresenter manager   = new CollectionPresenter(null);
+
+        manager.onTimesOut(err);
+
+        verify(taskView, never()).closeProgressWindow();
+        verify(taskView, never()).displayError(err);
+    }
+
+    @Test
+    public void testOnTimesOutWithView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+
+        manager.onTimesOut(err);
+
+        verify(taskView).closeProgressWindow();
+        verify(taskView).displayError(err);
+    }
+
 }

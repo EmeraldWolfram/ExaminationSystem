@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 
 import org.junit.Before;
@@ -19,23 +20,24 @@ import static org.junit.Assert.*;
  */
 public class FragmentHelperTest {
 
-    AttendanceList attdList;
+    private AttendanceList attdList;
 
-    FragmentHelper helper;
-    TakeAttdPresenter manager;
+    private FragmentHelper helper;
+    private ReportAttdMVP.MPresenter taskPresenter;
 
-    HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList1;
-    HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
-    HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList3;
 
-    HashMap<String, HashMap<String, Candidate>> prgList2;
-    HashMap<String, HashMap<String, Candidate>> prgList3;
+    private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList1;
+    private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList2;
+    private HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperList3;
 
-    Candidate cdd1;
-    Candidate cdd2;
-    Candidate cdd3;
-    Candidate cdd4;
-    Candidate cdd5;
+    private HashMap<String, HashMap<String, Candidate>> prgList2;
+    private HashMap<String, HashMap<String, Candidate>> prgList3;
+
+    private Candidate cdd1;
+    private Candidate cdd2;
+    private Candidate cdd3;
+    private Candidate cdd4;
+    private Candidate cdd5;
 
 
     @Before
@@ -55,9 +57,9 @@ public class FragmentHelperTest {
         cdd4 = new Candidate(1, "RMB3", "YZL", "15WAU00004", "BAME 0002", Status.BARRED);
         cdd5 = new Candidate(1, "RMB3", "SYL", "15WAU00005", "BAME 0003", Status.EXEMPTED);
 
-        helper = new FragmentHelper();
+        taskPresenter = Mockito.mock(ReportAttdMVP.MPresenter.class);
+        helper = new FragmentHelper(taskPresenter);
 
-        manager = Mockito.mock(TakeAttdPresenter.class);
     }
 
     //= GET TITLE LIST =============================================================================

@@ -4,6 +4,7 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,26 +21,32 @@ import com.info.ghiny.examsystem.fragments.ExemptedFragment;
 import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.interfacer.TaskConnView;
 import com.info.ghiny.examsystem.manager.FragListManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.FragmentHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
  * Created by GhinY on 12/06/2016.
  */
-public class FragmentListActivity extends AppCompatActivity implements GeneralView, TaskConnView {
+public class FragmentListActivity extends AppCompatActivity implements ReportAttdMVP.View {
 
     private ErrorManager errorManager;
-    private FragListManager fragListManager;
     private ProgressDialog progDialog;
+    private ReportAttdMVP.VPresenter taskPresenter;
 
     //==============================================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_list);
+        initMVP();
+        initView();
+    }
 
+    private void initView(){
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -47,33 +54,38 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        assert viewPager != null;
-        assert tabLayout != null;
-
-        errorManager    = new ErrorManager(this);
-        fragListManager = new FragListManager(this, this);
-
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setTabsFromPagerAdapter(pagerAdapter);
     }
 
+    private void initMVP(){
+        errorManager    = new ErrorManager(this);
+
+        FragListManager presenter   = new FragListManager(this);
+        FragmentHelper model        = new FragmentHelper(presenter);
+        presenter.setTaskModel(model);
+        presenter.setHandler(new Handler());
+        taskPresenter   = presenter;
+
+    }
+
     @Override
     protected void onResume() {
-        fragListManager.onResume(errorManager);
+        taskPresenter.onResume(errorManager);
         super.onResume();
     }
 
     @Override
     protected void onRestart() {
-        fragListManager.onRestart();
+        taskPresenter.onRestart();
         super.onRestart();
     }
 
     @Override
     protected void onDestroy() {
-        fragListManager.onDestroy();
+        taskPresenter.onDestroy();
         super.onDestroy();
     }
 
@@ -88,17 +100,17 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
     }
 
     public void onUncheck(View view) {
-        fragListManager.toggleUnassign(view);
+        taskPresenter.toggleUnassign(view);
     }
 
     //==============================================================================================
     public void onUpload(View view){
-        fragListManager.signToUpload();
+        taskPresenter.signToUpload();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        fragListManager.onPasswordReceived(requestCode, resultCode, data);
+        taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
 
     @Override
@@ -138,65 +150,25 @@ public class FragmentListActivity extends AppCompatActivity implements GeneralVi
     /**
      * Created by GhinY on 12/06/2016.
      */
-    public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
+    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-        public ViewPagerAdapter(FragmentManager fm) {
+        ViewPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int index) {
-            Fragment fragment = null;
-
-            switch (index) {
-                case 0:
-                    fragment = new PresentFragment();
-                    break;
-                case 1:
-                    fragment = new AbsentFragment();
-                    break;
-                case 2:
-                    fragment = new BarredFragment();
-                    break;
-                case 3:
-                    fragment = new ExemptedFragment();
-                    break;
-                case 4:
-                    fragment = new QuarantinedFragment();
-                    break;
-            }
-
-            return fragment;
+            return taskPresenter.getItem(index);
         }
 
         @Override
         public int getCount() {
-            // get item count - equal to number of tabs
-            return 5;
+            return taskPresenter.getCount();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            String title = "";
-            switch (position){
-                case 0:
-                    title="PRESENT";
-                    break;
-                case 1:
-                    title="ABSENT";
-                    break;
-                case 2:
-                    title="BARRED";
-                    break;
-                case 3:
-                    title="EXEMPTED";
-                    break;
-                case 4:
-                    title="QUARANTINED";
-                    break;
-            }
-
-            return title;
+            return taskPresenter.getPageTitle(position);
         }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 
 import java.util.HashMap;
@@ -22,18 +23,21 @@ import java.util.List;
  */
 public class AbsentFragment extends Fragment {
 
+    private ReportAttdMVP.Model taskModel;
 
     public AbsentFragment() {}
+
+    public void setTaskModel(ReportAttdMVP.Model taskModel){
+        this.taskModel  = taskModel;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view   = inflater.inflate(R.layout.fragment_absent, null);
 
-        FragmentHelper helper   = new FragmentHelper();
-
-        List<String> header = helper.getTitleList(Status.ABSENT);
-        HashMap<String, List<Candidate>> child = helper.getChildList(Status.ABSENT);
+        List<String> header = taskModel.getTitleList(Status.ABSENT);
+        HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.ABSENT);
 
         ExpandableListView absentList = (ExpandableListView)view.findViewById(R.id.absentList);
         absentList.setAdapter(new FragListAdapter(getContext(), header, child));

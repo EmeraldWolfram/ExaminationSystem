@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.model.FragmentHelper;
 
 import java.util.HashMap;
@@ -22,21 +23,22 @@ import java.util.List;
  */
 public class QuarantinedFragment extends Fragment {
 
+    private ReportAttdMVP.Model taskModel;
 
-    public QuarantinedFragment() {
-        // Required empty public constructor
+    public QuarantinedFragment() {}
+
+    public void setTaskModel(ReportAttdMVP.Model taskModel) {
+        this.taskModel = taskModel;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_quarantined, container, false);
-        FragmentHelper helper = new FragmentHelper();
 
-        List<String> header = helper.getTitleList(Status.QUARANTINED);
-        HashMap<String, List<Candidate>> child = helper.getChildList(Status.QUARANTINED);
+        List<String> header = taskModel.getTitleList(Status.QUARANTINED);
+        HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.QUARANTINED);
 
         ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.quarantizedList);
         barredList.setAdapter(new FragListAdapter(getContext(), header, child));
