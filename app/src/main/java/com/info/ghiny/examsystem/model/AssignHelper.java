@@ -54,7 +54,7 @@ public class AssignHelper {
     //    if(dBLoader.emptyAttdInDB()){
     //        dBLoader.saveAttendanceList(attdList); //Suppose to query external DB
 
-            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
+            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttendanceList());*/
     //    }
     //    if(dBLoader.emptyPapersInDB()) {
     //        dBLoader.savePaperList(Candidate.getPaperList()); //Suppose to query external DB
@@ -71,7 +71,7 @@ public class AssignHelper {
         if(dBLoader.emptyAttdInDB()){
             dBLoader.saveAttendanceList(attdList); //Suppose to query external DB
 
-            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttdList());*/
+            /*dBLoader.saveAttendanceList(ExternalDbLoader.dlAttendanceList());*/
         }
         if(dBLoader.emptyPapersInDB()) {
             dBLoader.savePaperList(Candidate.getPaperList()); //Suppose to query external DB

@@ -43,7 +43,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void initAttendance() throws ProcessException {
         if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
-            ExternalDbLoader.dlAttdList();
+            ExternalDbLoader.dlAttendanceList();
             taskPresenter.startTimer();
         } else {
             attdList    = dbLoader.queryAttendanceList();

@@ -32,10 +32,19 @@ public class ExternalDbLoader {
 
     //= Public Methods =============================================================================
 
-    public static void tryLogin(String staffId, String staffPw) throws ProcessException{
-        String str = JsonHelper.formatPassword(staffId, staffPw);
+    public static void requestDuelMessage() throws ProcessException {
+        if (tcpClient != null) {
+            String str  = JsonHelper.formatString(Connector.CONNECT_MESSAGE, "");
+            tcpClient.sendMessage(str);
+        } else {
+            throw new ProcessException("FATAL: Fail to request duel message!\n" +
+                    "Please consult developer", ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+    }
 
-        if(str != null && tcpClient != null){
+    public static void tryLogin(String staffId, String staffPw) throws ProcessException{
+        if(tcpClient != null && staffId != null && staffPw != null){
+            String str = JsonHelper.formatPassword(staffId, staffPw);
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
@@ -43,12 +52,10 @@ public class ExternalDbLoader {
         }
     }
 
-    public static void dlAttdList() throws ProcessException {
-
-        String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST,
-                LoginModel.getStaff().getVenueHandling());
-
-        if (tcpClient != null) {
+    public static void dlAttendanceList() throws ProcessException {
+        StaffIdentity id = LoginModel.getStaff();
+        if (tcpClient != null && id != null) {
+            String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, id.getVenueHandling());
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("FATAL: Fail to request attendance list!\n" +
@@ -68,9 +75,8 @@ public class ExternalDbLoader {
     }
 
     public static void getPapersExamineByCdd(String scanRegNum) throws ProcessException{
-        String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
-
-        if(tcpClient != null){
+        if(tcpClient != null && scanRegNum != null){
+            String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
@@ -79,8 +85,8 @@ public class ExternalDbLoader {
     }
 
     public static void updateAttdList(AttendanceList attdList) throws ProcessException{
-        String str = JsonHelper.formatAttdList(attdList);
-        if(tcpClient != null){
+        if(tcpClient != null && attdList != null){
+            String str = JsonHelper.formatAttdList(attdList);
             tcpClient.sendMessage(str);
         }   else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
@@ -89,8 +95,8 @@ public class ExternalDbLoader {
     }
 
     public static void acknowledgeCollection(String scanBundleCode) throws ProcessException{
-        String str = JsonHelper.formatCollection(scanBundleCode);
-        if(tcpClient != null){
+        if(tcpClient != null && scanBundleCode != null){
+            String str = JsonHelper.formatCollection(scanBundleCode);
             tcpClient.sendMessage(str);
         }else {
             throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",

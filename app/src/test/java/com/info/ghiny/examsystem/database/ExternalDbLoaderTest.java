@@ -1,7 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -9,153 +8,224 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 
 import java.util.Calendar;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by GhinY on 10/07/2016.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JsonHelper.class, ConnectionTask.class, TCPClient.class})
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class ExternalDbLoaderTest {
-    StaffIdentity staff;
-    TCPClient tcpClient;
+    private StaffIdentity staff;
+    private TCPClient tcpClient;
 
     @Before
     public void setUp() throws Exception {
-        PowerMockito.mockStatic(JsonHelper.class);
-        PowerMockito.mockStatic(ConnectionTask.class);
-        tcpClient = PowerMockito.mock(TCPClient.class);
+        tcpClient           = Mockito.mock(TCPClient.class);
+        ConnectionTask task = Mockito.mock(ConnectionTask.class);
+
         ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setConnectionTask(task);
         staff   = new StaffIdentity("246800", true, "Dr. TDD", "H3");
     }
 
-    //= GetStaffIdentity() =========================================================================
-
+    //= requestDuelMessage() =======================================================================
     /**
-     * getStaffIdentity(String scanId)
+     * requestDuelMessage()
      *
-     * send out Id Number scanned through socket
-     * wait for a JSON file
-     * parse the JSON file to a StaffIdentity object
+     * This method is used when the connection of the android is dropped
+     * In order to reconnect, a duel message is needed
+     * Therefore, this method send out a request to the Chief for a Duel Message
      *
-     * return as a StaffIdentity
-     * return null if anything goes wrong
-     *
-     * @param scanId    the Id Number scanned
-     */
-    /*@Test
-    public void testGetStaffIdentity() throws Exception {
-        when(JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800")).thenReturn("Json Id");
-        doNothing().when(tcpClient).sendMessage("Json Id");
-        when(ConnectionTask.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
-        when(ConnectionTask.getMsgReceived()).thenReturn("Staff in Json");
-        when(JsonHelper.parseStaffIdentity("Staff in Json")).thenReturn(staff);
-
-        StaffIdentity id = ExternalDbLoader.getStaffIdentity("246800");
-
-        assertEquals(staff, id);
-    }
-
-    @Test
-    public void testGetStaffIdentity_returnNullWhenParserReturnNull() throws Exception {
-        when(JsonHelper.formatString(JsonHelper.TYPE_Q_IDENTITY, "246800")).thenReturn("Json Id");
-        doNothing().when(tcpClient).sendMessage("Json Id");
-        when(ConnectionTask.isMsgReadyFlag()).thenReturn(false).thenReturn(true);
-        when(ConnectionTask.getMsgReceived()).thenReturn("Something Wrong");
-        when(JsonHelper.parseStaffIdentity("Something Wrong")).thenReturn(null);
-
-        StaffIdentity id = ExternalDbLoader.getStaffIdentity("246800");
-
-        assertNull(id);
-    }*/
-    //= TryLogin() =========================================================================
-
-    /**
-     * tryLogin(String id, String pw)
-     *
-     * send out staff Id Number and the input password through socket
-     * wait for a JSON file
-     * parse the JSON file to true or false
-     *
-     * return the parse result
-     *
-     * @param id    The id number of the staff
-     * @param pw    The password entered by the staff
+     * Tests:
+     * 1. the tcpClient is not null, send out the input
+     * 2. the tcpClient is null, throw error
      */
     @Test
-    public void testTryLogin() throws Exception {
+    public void testRequestDuelMessage1_TcpNotNull() throws Exception {
         try{
-            when(JsonHelper.formatPassword("246800", "0123")).thenReturn("Json Id & Password");
-            doNothing().when(tcpClient).sendMessage("Json Id & Password");
-            ExternalDbLoader.tryLogin("246800", "0123");
+            ExternalDbLoader.requestDuelMessage();
+
+            verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     @Test
-    public void testTryLogin_NullTCPShouldThrowFatalMessage() throws Exception {
+    public void testRequestDuelMessage2_TcpNull() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-            when(JsonHelper.formatPassword("246800", "0123")).thenReturn("Json Id & Password");
-            doNothing().when(tcpClient).sendMessage("Json Id & Password");
-            ExternalDbLoader.tryLogin("246800", "0123");
+            ExternalDbLoader.requestDuelMessage();
+
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("FATAL: Fail to request duel message!" +
+                    "\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
         }
     }
 
-    //= DlAttdList() ===============================================================================
 
+    //= TryLogin() =================================================================================
     /**
-     * dlAttdList(String venue)
+     * tryLogin(String id, String pw)
      *
-     * format venue into JSON Object
-     * Send out the JSON Object
-     * Wait for JSON Object
-     * Parse to AttendanceList format
-     * return as AttendanceList
+     * send out staff Id Number and the input password through socket
      *
-     * @param venue     Venue of the staff handling in String. Eg. "H3"
+     * Tests:
+     * 1. the tcpClient is not null, send out the input
+     * 2. the tcpClient is null, throw error
+     * 3. null input, throw error
      */
     @Test
-    public void testDlAttdList() throws Exception {
-/*        LoginModel.setStaff(staff);    //To set the venue to H3
-        AttendanceList attdList = new AttendanceList();
+    public void testTryLogin1_TCPNotNull() throws Exception {
+        try{
+            ExternalDbLoader.tryLogin("246800", "0123");
 
-        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
-        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
-        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
-        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
-        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
-
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
-        attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
-        attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
-        attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
-
-        when(JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, "H3")).thenReturn("Json H3");
-        doNothing().when(tcpClient).sendMessage("Json H3");
-
-        ExternalDbLoader.dlAttdList();
-*/
+            verify(tcpClient).sendMessage(anyString());
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
     }
-    //= DlPaperList() ===============================================================================
 
+    @Test
+    public void testTryLogin2_NullTCPShouldThrowFatalMessage() throws Exception {
+        try{
+            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.tryLogin("246800", "0123");
+
+        } catch (ProcessException err){
+            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testTryLogin3_NullInputParamThrowFatalMessage() throws Exception {
+        try{
+            ExternalDbLoader.tryLogin(null, "0123");
+
+        } catch (ProcessException err){
+            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    //= DlAttendanceList() =========================================================================
+    /**
+     * dlAttendanceList(String venue)
+     *
+     * format venue into JSON Object together as to request the Attendance List
+     * Send out the JSON Object
+     *
+     * Tests:
+     * 1. the tcpClient is not null, send out the input
+     * 2. the tcpClient is null, throw error
+     * 3. staff is not register (null), throw error - Actually Not possible to happen
+     */
+    @Test
+    public void testDlAttendanceList1_TcpNotNull() throws Exception {
+        try{
+
+            LoginModel.setStaff(staff);    //To set the venue to H3
+            AttendanceList attdList = new AttendanceList();
+
+            Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+            Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+            Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+            Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+            Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+            Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
+
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+            attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+            attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
+            attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+            attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+
+            ExternalDbLoader.dlAttendanceList();
+
+            verify(tcpClient).sendMessage(anyString());
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testDlAttendanceList2_TcpIsNull() throws Exception {
+        try{
+            ExternalDbLoader.setTcpClient(null);
+            LoginModel.setStaff(staff);    //To set the venue to H3
+            AttendanceList attdList = new AttendanceList();
+
+            Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+            Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+            Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+            Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+            Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+            Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
+
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+            attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+            attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
+            attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+            attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+
+            ExternalDbLoader.dlAttendanceList();
+
+        } catch (ProcessException err){
+            assertEquals("FATAL: Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testDlAttendanceList3_IdIsNull() throws Exception {
+        try{
+            LoginModel.setStaff(null);
+            AttendanceList attdList = new AttendanceList();
+
+            Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
+            Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+            Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+            Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+            Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+            Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
+
+            attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+            attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+            attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+            attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
+            attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
+            attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+
+            ExternalDbLoader.dlAttendanceList();
+
+        } catch (ProcessException err){
+            assertEquals("FATAL: Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    //= DlPaperList() ===============================================================================
     /**
      * dlPaperList(String venue)
      *
@@ -165,7 +235,6 @@ public class ExternalDbLoaderTest {
      * Parse to HashMap<String, ExamSubject> format
      * return as HashMap<String, ExamSubject>
      *
-     * @param venue     Venue of the staff handling in String. Eg. "H3"
      */
     @Test
     public void testDlPaperList() throws Exception {
@@ -182,130 +251,152 @@ public class ExternalDbLoaderTest {
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        when(JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE, "H3")).thenReturn("Json H3");
-        doNothing().when(tcpClient).sendMessage("Json H3");
-
         ExternalDbLoader.dlPaperList();
     }
 
     //= GetPapersExamineByCdd() ====================================================================
-
     /**
      *  getPapersExamnineByCdd(String regNum)
      *
-     *  format venue
+     *  By sending out the id of the student together with request
+     *  message, the id is send out to request for paper
      *
-     *  @param regNum   Register Number of the Candidate
+     *  Tests:
+     *  1. the tcpClient is not null, send out the input
+     *  2. the tcpClient is null, throw error
+     *  3. input param is null, throw error
+     *
      */
     @Test
-    public void testGetPapersExamineByCdd() throws Exception {
+    public void testGetPapersExamineByCdd1_PositiveTest() throws Exception {
         try{
-            when(JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, "15WAU00001")).thenReturn("Json Cdd");
-            doNothing().when(tcpClient).sendMessage("Json Cdd");
-
             ExternalDbLoader.getPapersExamineByCdd("15WAU00001");
+
+            verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     @Test
-    public void testGetPapersExamineByCdd_NullTCPShouldThrowFatalError() throws Exception {
+    public void testGetPapersExamineByCdd2_NullTCPShouldThrowFatalError() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-
-            when(JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, "15WAU00001")).thenReturn("Json Cdd");
-            doNothing().when(tcpClient).sendMessage("Json Cdd");
-
             ExternalDbLoader.getPapersExamineByCdd("15WAU00001");
         } catch (ProcessException err){
             assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testGetPapersExamineByCdd3_NullInputThrowFatalError() throws Exception {
+        try{
+            ExternalDbLoader.getPapersExamineByCdd(null);
+        } catch (ProcessException err){
+            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
         }
     }
 
     //= UpdateAttdList() ===========================================================================
-
     /**
      * updateAttdList(AttendanceList attdList)
      *
      * format the updated attdList into a JSONObject containing a JSON Array of Candidates
      * send out the JSON Object in string format
      *
-     * return true when the chief acknowledge the receive
-     * return false when the chief found error or times out
+     *  Tests:
+     *  1. the tcpClient is not null, send out the attendance list
+     *  2. the tcpClient is null, throw error
+     *  3. input param is null, throw error
      *
-     * @param attdList  the updated AttendanceList to be send out
      */
     @Test
-    public void testUpdateAttdList() throws Exception {
+    public void testUpdateAttdList1_TcpNotNull() throws Exception {
         try{
-            AttendanceList attdList = new AttendanceList();
+            ExternalDbLoader.updateAttdList(new AttendanceList());
 
-            when(JsonHelper.formatAttdList(attdList)).thenReturn("Json AttdList");
-            doNothing().when(tcpClient).sendMessage("Json AttdList");
-
-            ExternalDbLoader.updateAttdList(attdList);
+            verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err) {
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     @Test
-    public void testUpdateAttdList_Null_TCP_Should_throw_FATAL_Exception() throws Exception {
+    public void testUpdateAttdList2_NullTcpThrowFATAL() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-            AttendanceList attdList = new AttendanceList();
-
-            when(JsonHelper.formatAttdList(attdList)).thenReturn("Json AttdList");
-            doNothing().when(tcpClient).sendMessage("Json AttdList");
-
-            ExternalDbLoader.updateAttdList(attdList);
+            ExternalDbLoader.updateAttdList(new AttendanceList());
         } catch (ProcessException err) {
             assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testUpdateAttdList3_NullInputThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.updateAttdList(null);
+        } catch (ProcessException err) {
+            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
         }
     }
 
     //= AcknowledgeCollection() ====================================================================
-
     /**
      *  acknowledgeCollection(String bundle)
      *
      *  Send out the bundle and collector id in JSON Format
-     *  wait for Acknowledgement from Chief
+     *  this is to acknowledge the collection of bundle
      *
-     *  return true when the Chief acknowledge updated
-     *  return false when the Chief found error or times out
+     *  Tests:
+     *  1. the tcpClient is not null, send out the attendance list
+     *  2. the tcpClient is null, throw error
+     *  3. input param is null, throw error
      *
-     *  @param bundle   The QR code on the bundle
      */
-
     @Test
-    public void testAcknowledgeCollection() throws Exception {
+    public void testAcknowledgeCollection1_TcpNotNull() throws Exception {
         try{
             String bundle = "BAME 0001 Subject 1 -----";
-
-            when(JsonHelper.formatCollection(bundle)).thenReturn("Json Bundle");
-            doNothing().when(tcpClient).sendMessage("Json Bundle");
             ExternalDbLoader.acknowledgeCollection(bundle);
+
+            verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     @Test
-    public void testAcknowledgeCollection_Null_TCP_Should_throw_FATAL_Exception() throws Exception {
+    public void testAcknowledgeCollection2_NullTcpShouldThrowFATAL() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
             String bundle = "BAME 0001 Subject 1 -----";
 
-            when(JsonHelper.formatCollection(bundle)).thenReturn("Json Bundle");
-            doNothing().when(tcpClient).sendMessage("Json Bundle");
             ExternalDbLoader.acknowledgeCollection(bundle);
+
         } catch (ProcessException err) {
             assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testAcknowledgeCollection3_NullInputShouldThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.acknowledgeCollection(null);
+
+        } catch (ProcessException err) {
+            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
         }
     }
 }
