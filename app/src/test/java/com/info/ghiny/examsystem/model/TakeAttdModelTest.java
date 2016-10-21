@@ -315,7 +315,7 @@ public class TakeAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but non were thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Attendance List is not initialize", err.getErrorMsg());
+            assertEquals("Attendance List is not initialize", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
 
         }

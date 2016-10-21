@@ -75,7 +75,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch(Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -96,7 +96,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch(Exception err) {
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
@@ -119,7 +119,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch(Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         return status;
@@ -139,7 +139,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch (Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -158,7 +158,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch (Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -182,7 +182,7 @@ public class LocalDbLoader {
                 }
             }
         } catch (Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         return attdList;
@@ -204,7 +204,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         } catch (Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -234,7 +234,7 @@ public class LocalDbLoader {
             stmt.close();
             con.close();
         }catch (Exception err){
-            throw new ProcessException("FATAL: " + err.getMessage() + "\nPlease Consult Developer",
+            throw new ProcessException(err.getMessage() + "\nPlease Consult Developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 

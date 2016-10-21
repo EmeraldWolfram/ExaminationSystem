@@ -300,7 +300,7 @@ public class ReportAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but no error was thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
@@ -317,7 +317,7 @@ public class ReportAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but no error was thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
@@ -334,7 +334,7 @@ public class ReportAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but no error was thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
@@ -348,7 +348,7 @@ public class ReportAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but no error was thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
@@ -361,7 +361,7 @@ public class ReportAttdModelTest {
 
             fail("Expected FATAL_MESSAGE but no error was thrown");
         } catch (ProcessException err) {
-            assertEquals("FATAL ERROR: Attendance List not initialized", err.getErrorMsg());
+            assertEquals("Attendance List not initialized", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
@@ -407,7 +407,7 @@ public class ReportAttdModelTest {
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL ERROR: Candidate is never assign before", err.getErrorMsg());
+            assertEquals("Candidate is never assign before", err.getErrorMsg());
         }
     }
 
@@ -420,7 +420,7 @@ public class ReportAttdModelTest {
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL ERROR: Candidate Info Corrupted", err.getErrorMsg());
+            assertEquals("Candidate Info Corrupted", err.getErrorMsg());
         }
     }
 
@@ -432,7 +432,7 @@ public class ReportAttdModelTest {
             fail("Expected FATAL_MESSAGE but none were thrown");
         } catch (ProcessException err) {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("FATAL ERROR: Attendance List not initialized", err.getErrorMsg());
+            assertEquals("Attendance List not initialized", err.getErrorMsg());
         }
     }
 

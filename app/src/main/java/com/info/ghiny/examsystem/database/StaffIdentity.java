@@ -73,7 +73,7 @@ public class StaffIdentity {
 
     public boolean matchPassword(String password) throws ProcessException{
         if(this.password == null)
-            throw new ProcessException("FATAL: Unknown error", ProcessException.FATAL_MESSAGE,
+            throw new ProcessException("Password Null Exception", ProcessException.FATAL_MESSAGE,
                     IconManager.WARNING);
         return this.password.equals(password);
     }

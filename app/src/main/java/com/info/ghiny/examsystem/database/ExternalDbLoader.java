@@ -37,8 +37,8 @@ public class ExternalDbLoader {
             String str  = JsonHelper.formatString(Connector.CONNECT_MESSAGE, "");
             tcpClient.sendMessage(str);
         } else {
-            throw new ProcessException("FATAL: Fail to request duel message!\n" +
-                    "Please consult developer", ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Fail to request duel message!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 
@@ -47,7 +47,7 @@ public class ExternalDbLoader {
             String str = JsonHelper.formatPassword(staffId, staffPw);
             tcpClient.sendMessage(str);
         } else {
-            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+            throw new ProcessException("Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -58,8 +58,8 @@ public class ExternalDbLoader {
             String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, id.getVenueHandling());
             tcpClient.sendMessage(str);
         } else {
-            throw new ProcessException("FATAL: Fail to request attendance list!\n" +
-                    "Please consult developer", ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Fail to request attendance list!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 
@@ -69,8 +69,8 @@ public class ExternalDbLoader {
         if (tcpClient != null){
             tcpClient.sendMessage(str);
         } else {
-            throw new ProcessException("FATAL: Fail to request attendance list!\n" +
-                    "Please consult developer", ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Fail to request attendance list!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 
@@ -79,7 +79,7 @@ public class ExternalDbLoader {
             String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_CDD, scanRegNum);
             tcpClient.sendMessage(str);
         } else {
-            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+            throw new ProcessException("Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -89,7 +89,7 @@ public class ExternalDbLoader {
             String str = JsonHelper.formatAttdList(attdList);
             tcpClient.sendMessage(str);
         }   else {
-            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+            throw new ProcessException("Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
@@ -99,7 +99,7 @@ public class ExternalDbLoader {
             String str = JsonHelper.formatCollection(scanBundleCode);
             tcpClient.sendMessage(str);
         }else {
-            throw new ProcessException("FATAL: Fail to send out request!\nPlease consult developer",
+            throw new ProcessException("Fail to send out request!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }

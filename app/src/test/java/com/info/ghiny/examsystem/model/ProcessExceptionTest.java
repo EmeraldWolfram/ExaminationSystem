@@ -13,19 +13,19 @@ import static org.junit.Assert.*;
  * Created by GhinY on 15/06/2016.
  */
 public class ProcessExceptionTest {
-    public void foo() throws ProcessException {
+    private void foo() throws ProcessException {
         throw new ProcessException("Error Message", ProcessException.MESSAGE_TOAST,
                 IconManager.WARNING);
     }
 
-    public void foo1() throws ProcessException {
+    private void foo1() throws ProcessException {
         throw new ProcessException(null, ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    DialogInterface.OnClickListener testListener1;
-    DialogInterface.OnClickListener testListener2;
-    DialogInterface.OnClickListener testListener3;
-    DialogInterface.OnClickListener testListener4;
+    private DialogInterface.OnClickListener testListener1;
+    private DialogInterface.OnClickListener testListener2;
+    private DialogInterface.OnClickListener testListener3;
+    private DialogInterface.OnClickListener testListener4;
 
     @Before
     public void setUp() throws Exception{

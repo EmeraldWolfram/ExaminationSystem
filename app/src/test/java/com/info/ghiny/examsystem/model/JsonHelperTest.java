@@ -360,8 +360,7 @@ public class JsonHelperTest {
             List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
         } catch (ProcessException err) {
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
-            assertEquals("FATAL: Data from Chief corrupted\nPlease Consult Developer",
-                    err.getErrorMsg());
+            assertEquals("Data from Chief corrupted\nPlease Consult Developer", err.getErrorMsg());
         }
     }
 

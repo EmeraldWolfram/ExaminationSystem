@@ -79,7 +79,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
         if(attdList == null){
             if(initialized)
-                throw new ProcessException("FATAL ERROR: Attendance List is not initialize",
+                throw new ProcessException("Attendance List is not initialize",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         } else {
             List<String> cddList    = attdList.getAllCandidateRegNumList();

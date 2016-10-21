@@ -70,7 +70,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.requestDuelMessage();
 
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to request duel message!" +
+            assertEquals("Fail to request duel message!" +
                     "\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
@@ -107,7 +107,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.tryLogin("246800", "0123");
 
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -119,7 +119,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.tryLogin(null, "0123");
 
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -190,7 +190,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.dlAttendanceList();
 
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -219,7 +219,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.dlAttendanceList();
 
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -284,7 +284,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.setTcpClient(null);
             ExternalDbLoader.getPapersExamineByCdd("15WAU00001");
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -295,7 +295,7 @@ public class ExternalDbLoaderTest {
         try{
             ExternalDbLoader.getPapersExamineByCdd(null);
         } catch (ProcessException err){
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -331,7 +331,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.setTcpClient(null);
             ExternalDbLoader.updateAttdList(new AttendanceList());
         } catch (ProcessException err) {
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -342,7 +342,7 @@ public class ExternalDbLoaderTest {
         try{
             ExternalDbLoader.updateAttdList(null);
         } catch (ProcessException err) {
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -382,7 +382,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.acknowledgeCollection(bundle);
 
         } catch (ProcessException err) {
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }
@@ -394,7 +394,7 @@ public class ExternalDbLoaderTest {
             ExternalDbLoader.acknowledgeCollection(null);
 
         } catch (ProcessException err) {
-            assertEquals("FATAL: Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             verify(tcpClient, never()).sendMessage(anyString());
         }

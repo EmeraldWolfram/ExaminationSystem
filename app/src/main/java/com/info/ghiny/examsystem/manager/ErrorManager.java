@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DialogTitle;
 
 import com.info.ghiny.examsystem.model.CustomToast;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -47,8 +48,9 @@ public class ErrorManager {
     //    Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
     //}
 
-    private void showReassignDialog(final ProcessException err){
+    private void showReassignDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
+        dialog.setTitle("REASSIGN OCCUR");
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(false);
         dialog.setPositiveButton(ProcessException.updateButton,
@@ -60,8 +62,9 @@ public class ErrorManager {
         alert.show();
     }
 
-    private void showMessageDialog(final ProcessException err){
+    private void showMessageDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
+        dialog.setTitle("ERROR");
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());
@@ -74,6 +77,7 @@ public class ErrorManager {
 
     private void showFatalError(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
+        dialog.setTitle("FATAL ERROR");
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());
@@ -91,6 +95,7 @@ public class ErrorManager {
 
     private void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
+        dialog.setTitle("MESSAGE");
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());

@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
+import com.info.ghiny.examsystem.model.ProcessException;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -33,5 +35,17 @@ public class StaffIdentityTest {
 
         boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);
+    }
+
+    @Test
+    public void testMatchPasswordGivenNullStorageThrowFatalError() throws Exception {
+        try{
+            StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
+            assertFalse(actualId.matchPassword(null));
+
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("Password Null Exception", err.getErrorMsg());
+        }
     }
 }

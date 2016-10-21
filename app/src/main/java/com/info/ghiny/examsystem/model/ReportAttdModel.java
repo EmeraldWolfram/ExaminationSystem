@@ -84,14 +84,14 @@ public class ReportAttdModel implements ReportAttdMVP.Model {
 
         AttendanceList attdList = TakeAttdModel.getAttdList();
         if(attdList == null){
-            throw new ProcessException("FATAL ERROR: Attendance List not initialized",
+            throw new ProcessException("Attendance List not initialized",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
         Candidate targetCdd   = attdList.getCandidateUsingExamIndex(cddIndex);
 
         if(targetCdd == null || targetCdd.getStatus() != Status.PRESENT){
-            throw new ProcessException("FATAL ERROR: Candidate Info Corrupted",
+            throw new ProcessException("Candidate Info Corrupted",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
@@ -110,20 +110,20 @@ public class ReportAttdModel implements ReportAttdMVP.Model {
 
         AttendanceList attdList = TakeAttdModel.getAttdList();
         if(attdList == null){
-            throw new ProcessException("FATAL ERROR: Attendance List not initialized",
+            throw new ProcessException("Attendance List not initialized",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
         Candidate cdd   = attdList.getCandidateUsingExamIndex(cddIndex);
 
         if(cdd == null || cdd.getStatus() != Status.ABSENT){
-            throw new ProcessException("FATAL ERROR: Candidate Info Corrupted",
+            throw new ProcessException("Candidate Info Corrupted",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
         Integer table   = unassignedMap.get(cdd.getRegNum());
         if(table == null){
-            throw new ProcessException("FATAL ERROR: Candidate is never assign before",
+            throw new ProcessException("Candidate is never assign before",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 

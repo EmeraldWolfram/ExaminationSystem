@@ -123,13 +123,13 @@ public class Candidate {
     @Nullable
     private static ExamSubject getExamSubject(String paperCode) throws ProcessException {
         if(paperCode == null){
-            throw new ProcessException("FATAL: Candidate don't have paper",
+            throw new ProcessException("Candidate don't have paper",
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
 
         if(paperList == null){
             throw new ProcessException("Paper List haven initialize",
-                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         return paperList.get(paperCode);
     }

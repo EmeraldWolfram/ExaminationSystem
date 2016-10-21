@@ -14,8 +14,8 @@ import static org.junit.Assert.*;
  */
 public class CandidateTest {
 
-    ExamSubject testPaper1 = new ExamSubject();
-    ExamSubject testPaper2 = new ExamSubject();
+    private ExamSubject testPaper1 = new ExamSubject();
+    private ExamSubject testPaper2 = new ExamSubject();
 
     @Before
     public void setUp() throws Exception {
@@ -91,7 +91,7 @@ public class CandidateTest {
             fail("Expected MESSAGE_TOAST but none thrown");
         }catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("FATAL: Candidate don't have paper", err.getErrorMsg());
+            assertEquals("Candidate don't have paper", err.getErrorMsg());
         }
     }
 
@@ -105,7 +105,7 @@ public class CandidateTest {
             assertEquals(testPaper2, getSubject);
             fail("Expected MESSAGE_DIALOG but none thrown");
         }catch (ProcessException err){
-            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("Paper List haven initialize", err.getErrorMsg());
         }
     }

@@ -246,7 +246,7 @@ public class JsonHelper {
                         ProcessException.MESSAGE_TOAST, IconManager.WARNING);
             }
         } catch (JSONException err) {
-            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease Consult Developer",
+            throw new ProcessException("Data from Chief corrupted\nPlease Consult Developer",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
     }
