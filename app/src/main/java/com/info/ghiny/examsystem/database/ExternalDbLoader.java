@@ -32,9 +32,9 @@ public class ExternalDbLoader {
 
     //= Public Methods =============================================================================
 
-    public static void requestDuelMessage() throws ProcessException {
+    public static void requestDuelMessage(String idNo) throws ProcessException {
         if (tcpClient != null) {
-            String str  = JsonHelper.formatString(Connector.CONNECT_MESSAGE, "");
+            String str  = JsonHelper.formatString(Connector.CONNECT_MESSAGE, idNo);
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("Fail to request duel message!\nPlease consult developer",
@@ -55,7 +55,8 @@ public class ExternalDbLoader {
     public static void dlAttendanceList() throws ProcessException {
         StaffIdentity id = LoginModel.getStaff();
         if (tcpClient != null && id != null) {
-            String str = JsonHelper.formatString(JsonHelper.TYPE_ATTD_LIST, id.getVenueHandling());
+            String str = JsonHelper.formatString(JsonHelper.TYPE_INFORMATION,
+                    id.getVenueHandling());
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("Fail to request attendance list!\nPlease consult developer",

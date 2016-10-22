@@ -3,10 +3,13 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
+import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -15,6 +18,7 @@ import java.util.Calendar;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,18 +30,23 @@ import static org.mockito.Mockito.when;
 @Config(manifest= Config.NONE)
 public class LinkChiefModelTest {
     private CheckListLoader dbLoader;
+    private LinkChiefMVP.MPresenter taskPresenter;
     private LinkChiefModel model;
+    private ConnectionTask task;
+    private TCPClient tcpClient;
 
     @Before
     public void setUp() throws Exception {
-        dbLoader    = Mockito.mock(CheckListLoader.class);
-        model       = new LinkChiefModel(dbLoader);
+        dbLoader        = Mockito.mock(CheckListLoader.class);
+        taskPresenter   = Mockito.mock(LinkChiefMVP.MPresenter.class);
+
+        model           = new LinkChiefModel(dbLoader, taskPresenter);
 
         TCPClient.setConnector(null);
         ExternalDbLoader.setConnectionTask(null);
     }
 
-//= TryConnectWithQR() ==============================================================================
+    //= TryConnectWithQR() =========================================================================
     /**
      *  tryConnectWithQR()
      *
@@ -51,14 +60,14 @@ public class LinkChiefModelTest {
     @Test
     public void testTryConnectWithQR_If_correct_String_format() throws Exception{
         try{
-            assertNull(TCPClient.connector);
+            assertNull(TCPClient.getConnector());
             assertNull(ExternalDbLoader.getConnectionTask());
 
             model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:$");
 
             verify(dbLoader).saveConnector(any(Connector.class));
-            assertEquals("192.168.0.1", TCPClient.connector.getIpAddress());
-            assertEquals(Integer.valueOf(5000), TCPClient.connector.getPortNumber());
+            assertEquals("192.168.0.1", TCPClient.getConnector().getIpAddress());
+            assertEquals(Integer.valueOf(5000), TCPClient.getConnector().getPortNumber());
             assertNotNull(ExternalDbLoader.getConnectionTask());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -68,14 +77,14 @@ public class LinkChiefModelTest {
     @Test
     public void testTryConnectWithQR_If_wrong_String_format() throws Exception{
         try{
-            assertNull(TCPClient.connector);
+            assertNull(TCPClient.getConnector());
             assertNull(ExternalDbLoader.getConnectionTask());
 
             model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:");
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
-            assertNull(TCPClient.connector);
+            assertNull(TCPClient.getConnector());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a chief address", err.getErrorMsg());
             verify(dbLoader, never()).saveConnector(any(Connector.class));
@@ -132,7 +141,6 @@ public class LinkChiefModelTest {
     }
 
     //= CloseConnection() ==========================================================================
-
     /**
      * closeConnection()
      *
@@ -195,6 +203,95 @@ public class LinkChiefModelTest {
         verify(client).sendMessage("Termination");
         verify(task).cancel(true);
         assertNull(ExternalDbLoader.getConnectionTask());
+    }
+
+    //= OnChallengeMessageReceived(...) ============================================================
+    /**
+     * onChallengeMessageReceived(...)
+     *
+     * parse the Chief Message and set the ChallengeMessage of the connector
+     *
+     * Tests:
+     * 1. Correct format, set the challenge message
+     * 2. Wrong format, throw error and did not set the message
+     */
+    @Test
+    public void testOnChallengeMessage1_PositiveTest() throws Exception {
+        try{
+            tcpClient = Mockito.mock(TCPClient.class);
+            task = Mockito.mock(ConnectionTask.class);
+            Connector connector = Mockito.mock(Connector.class);
+            ExternalDbLoader.setConnectionTask(task);
+            ExternalDbLoader.setTcpClient(tcpClient);
+            TCPClient.setConnector(connector);
+
+            model.onChallengeMessageReceived("{\"Result\":true, \"DuelMsg\":\"AxPS9a0dvwde\"}");
+
+            verify(connector).setDuelMessage("AxPS9a0dvwde");
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testOnChallengeMessage2_NegativeTest() throws Exception {
+        task = Mockito.mock(ConnectionTask.class);
+        tcpClient = Mockito.mock(TCPClient.class);
+        Connector connector = Mockito.mock(Connector.class);
+        ExternalDbLoader.setConnectionTask(task);
+        ExternalDbLoader.setTcpClient(tcpClient);
+        TCPClient.setConnector(connector);
+
+        try{
+            model.onChallengeMessageReceived("{\"Result\":true}");
+            fail("Expected MESSAGE_DIALOG but none thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("Failed to read data from Chief\n" +
+                    "Please consult developer!", err.getErrorMsg());
+            verify(connector, never()).setDuelMessage(anyString());
+        }
+    }
+
+    //= Reconnect() ================================================================================
+
+    /**
+     * reconnect()
+     *
+     * Check if the request of challenge message was sent to the Chief
+     *
+     */
+    @Test
+    public void testReconnect() throws Exception {
+        task = Mockito.mock(ConnectionTask.class);
+        tcpClient = Mockito.mock(TCPClient.class);
+        ExternalDbLoader.setConnectionTask(task);
+        ExternalDbLoader.setTcpClient(tcpClient);
+
+        model.reconnect();
+
+        verify(tcpClient).sendMessage(anyString());
+    }
+
+    //= Run() ======================================================================================
+    /**
+     * run()
+     *
+     * 1. When ConnectionTask is complete, do nothing
+     * 2. When ConnectionTask is not complete, throw an error and the presenter shall handle
+     */
+    @Test
+    public void testRun_ChiefDoRespond() throws Exception {
+        ConnectionTask.setCompleteFlag(true);
+        model.run();
+        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+    }
+
+    @Test
+    public void testRun_ChiefNoRespond() throws Exception {
+        ConnectionTask.setCompleteFlag(false);
+        model.run();
+        verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
 }

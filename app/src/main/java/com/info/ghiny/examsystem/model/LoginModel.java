@@ -26,6 +26,7 @@ public class LoginModel implements LoginMVP.Model{
 
     private String qrStaffID;
     private String inputPW;
+    private String hashCode;
 
     public LoginModel(LoginMVP.MPresenter taskPresenter, CheckListLoader dbLoader){
         this.taskPresenter  = taskPresenter;
@@ -86,8 +87,9 @@ public class LoginModel implements LoginMVP.Model{
             } else {
                 ConnectionTask.setCompleteFlag(false);
 
-                String duelMsg  = dbLoader.queryDuelMessage();
-                String hashCode = hmacSha(this.inputPW, duelMsg);
+                String duelMsg  = TCPClient.getConnector().getDuelMessage();
+                StaffIdentity staffIdentity = new StaffIdentity();
+                this.hashCode   = staffIdentity.hmacSha(this.inputPW, duelMsg);
 
                 ExternalDbLoader.tryLogin(this.qrStaffID, hashCode);
             }
@@ -107,8 +109,12 @@ public class LoginModel implements LoginMVP.Model{
                         ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
         }
+
         staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
         staff.setPassword(this.inputPW);
+        staff.setHashPass(this.hashCode);
+
+        dbLoader.saveUser(staff);
 
         loginCount  = 3;
 
@@ -121,13 +127,13 @@ public class LoginModel implements LoginMVP.Model{
         //ExternalDbLoader.dlPaperList();
     }
 
-    String hmacSha(String password, String duelMessage) throws ProcessException{
+    /*String hmacSha(String password, String duelMessage) throws ProcessException{
         String hash;
         Mac shaHMAC;
 
         try {
-            shaHMAC = Mac.getInstance("HmacSHA384");
-            SecretKeySpec secretKey = new SecretKeySpec(password.getBytes(), "HmacSHA384");
+            shaHMAC = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(password.getBytes(), "HmacSHA256");
             shaHMAC.init(secretKey);
             hash = Base64.encodeToString(shaHMAC.doFinal(duelMessage.getBytes()), Base64.DEFAULT);
         } catch (Exception err) {
@@ -136,7 +142,7 @@ public class LoginModel implements LoginMVP.Model{
         }
 
         return hash;
-    }
+    }*/
 
 
     @Override

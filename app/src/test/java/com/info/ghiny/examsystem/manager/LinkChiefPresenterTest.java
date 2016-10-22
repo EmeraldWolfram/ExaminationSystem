@@ -1,9 +1,17 @@
 package com.info.ghiny.examsystem.manager;
 
+import android.content.DialogInterface;
+import android.os.Handler;
+
 import com.info.ghiny.examsystem.MainLoginActivity;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
+import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +20,10 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -29,14 +41,28 @@ public class LinkChiefPresenterTest {
     private LinkChiefMVP.ViewFace genView;
     private LinkChiefMVP.ModelFace genModel;
     private ProcessException err;
+    private Handler handler;
+
+    private TCPClient tcpClient;
+    private ConnectionTask task;
+    private DialogInterface dialog;
 
     @Before
     public void setUp() throws Exception {
         err = new ProcessException("ERROR", ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         genView     = Mockito.mock(LinkChiefMVP.ViewFace.class);
         genModel    = Mockito.mock(LinkChiefMVP.ModelFace.class);
+        handler     = Mockito.mock(Handler.class);
+        tcpClient   = Mockito.mock(TCPClient.class);
+        task        = Mockito.mock(ConnectionTask.class);
+        dialog      = Mockito.mock(DialogInterface.class);
+
+        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setConnectionTask(task);
+
         manager     = new LinkChiefPresenter(genView);
         manager.setTaskModel(genModel);
+        manager.setHandler(handler);
     }
 
     //= OnScan() ==============================================================================
@@ -76,32 +102,34 @@ public class LinkChiefPresenterTest {
     }
 
     //= OnCreate() ==========================================================================
-
     /**
      * onCreate()
      *
      * try to setup a connection using the previous connected ip and port
      * 1. When database have valid connector, establish the connection using the connector in db
-     * 2. When database have no valid connector, do nothing
+     *    and set the reconnect flag to true
+     * 2. When database have no valid connector, do nothing and remain the flag as false
      *
      * @throws Exception
      */
     @Test
     public void testOnCreate_DbHaveConnectionEntry() throws Exception {
         when(genModel.tryConnectWithDatabase()).thenReturn(true);
+        assertFalse(manager.isReconnect());
 
         manager.onCreate();
 
-        verify(genView).navigateActivity(MainLoginActivity.class);
+        assertTrue(manager.isReconnect());
     }
 
     @Test
     public void testOnCreate_DbNoConnectionEntry() throws Exception {
         when(genModel.tryConnectWithDatabase()).thenReturn(false);
+        assertFalse(manager.isReconnect());
 
         manager.onCreate();
 
-        verify(genView, never()).navigateActivity(MainLoginActivity.class);
+        assertFalse(manager.isReconnect());
     }
 
     //= OnDestroy() ==========================================================================
@@ -109,6 +137,7 @@ public class LinkChiefPresenterTest {
      * onDestroy()
      *
      * call close connection to terminate the connection
+     * At the same time, remove the timer if started and close progress window if started
      */
     @Test
     public void testOnDestroy() throws Exception {
@@ -117,6 +146,8 @@ public class LinkChiefPresenterTest {
         manager.onDestroy();
 
         verify(genModel).closeConnection();
+        verify(handler).removeCallbacks(genModel);
+        verify(genView).closeProgressWindow();
     }
 
     //= OnPause() ==========================================================================
@@ -134,19 +165,188 @@ public class LinkChiefPresenterTest {
         verify(genView).pauseScanning();
     }
 
-    //= OnResume() ==========================================================================
+    //= OnResume(...) ==========================================================================
     /**
-     * onResume()
+     * onResume(...)
      *
-     * call resume to resume the QR scanner
+     * Used to setup the MessageListener for the ChiefRespond and request
+     * the challenge message from the chief for reconnection purposes
+     * and start timer
+     * if and only if the connection is reconnect type.
+     *
+     * At any case, call resume to resume the QR scanner
+     *
+     * Tests:
+     * 1. Reconnection is true, set listener, start timer, request message and resume the scanner
+     * 2. Reconnection is false, resume the scanner only
+     *
      */
     @Test
-    public void testOnResume() throws Exception {
-        doNothing().when(genView).resumeScanning();
+    public void testOnResume1_ReconnectUsingDatabase() throws Exception {
+        ErrorManager errManager = Mockito.mock(ErrorManager.class);
+        manager.setReconnect(true);
 
-        manager.onResume();
+        manager.onResume(errManager);
 
+        verify(genView).openProgressWindow(anyString(), anyString());
+        verify(handler).postDelayed(genModel, 5000);
+        verify(genModel).reconnect();
         verify(genView).resumeScanning();
+    }
+
+    @Test
+    public void testOnResume2_ConnectThroughQR() throws Exception {
+        ErrorManager errManager = Mockito.mock(ErrorManager.class);
+        manager.setReconnect(false);
+
+        manager.onResume(errManager);
+
+        verify(genView, never()).openProgressWindow(anyString(), anyString());
+        verify(handler, never()).postDelayed(genModel, 5000);
+        verify(genModel, never()).reconnect();
+        verify(genView).resumeScanning();
+    }
+
+    //= OnChiefRespond() ================================================================
+
+    /**
+     * onChiefRespond()
+     *
+     * 1. control View to navigate to Login when the message is positive
+     * 2. control View to display error and resume the scanning when the message is negative
+     * 3. control View to display dialog and resume scanning after dialog ended when message
+     *    is negative
+     */
+    @Test
+    public void testOnChiefRespond1_withPositiveResult() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        manager.setReconnect(true);
+
+        manager.onChiefRespond(errorManager, "Message");
+
+        assertFalse(manager.isReconnect());
+        verify(genView).closeProgressWindow();
+        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genView).navigateActivity(MainLoginActivity.class);
+        verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(genView, never()).resumeScanning();
+    }
+
+    @Test
+    public void testOnChiefRespond2_withToastError() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        manager.setReconnect(true);
+        err = new ProcessException(ProcessException.MESSAGE_TOAST);
+        doThrow(err).when(genModel).onChallengeMessageReceived("Message");
+
+        manager.onChiefRespond(errorManager, "Message");
+
+        assertTrue(manager.isReconnect());
+        verify(genView).closeProgressWindow();
+        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genView, never()).navigateActivity(MainLoginActivity.class);
+        verify(task).publishError(errorManager, err);
+    }
+
+    @Test
+    public void testOnChiefRespond3_withFatalError() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        manager.setReconnect(true);
+        err = new ProcessException(ProcessException.FATAL_MESSAGE);
+        doThrow(err).when(genModel).onChallengeMessageReceived("Message");
+
+        manager.onChiefRespond(errorManager, "Message");
+
+        assertTrue(manager.isReconnect());
+        verify(genView).closeProgressWindow();
+        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genView, never()).navigateActivity(MainLoginActivity.class);
+        verify(task).publishError(errorManager, err);
+    }
+
+    //= OnClick(...) ===============================================================================
+    /**
+     * onClick(...)
+     *
+     * Whenever a message window pop out, the camera scanner at the back will be paused
+     * Test if the scanner is resumed, when button is clicked
+     */
+    @Test
+    public void testOnClickNeutralButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEUTRAL);
+
+        verify(dialog).cancel();
+        verify(genView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickNegativeButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_NEGATIVE);
+
+        verify(dialog).cancel();
+        verify(genView).resumeScanning();
+    }
+
+    @Test
+    public void testOnClickPositiveButton() throws Exception {
+        manager.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        verify(dialog).cancel();
+        verify(genView).resumeScanning();
+    }
+
+    //= OnCancel(...) ==============================================================================
+    /**
+     * onCancel(...)
+     *
+     * Sometimes, a pop out window could be cancelled by pressing the back button
+     * of the phone
+     *
+     * Test if the scanner is resumed when the back button was pressed
+     */
+    @Test
+    public void testOnCancel() throws Exception {
+        manager.onCancel(dialog);
+
+        verify(dialog).cancel();
+        verify(genView).resumeScanning();
+    }
+
+
+    //= OnTimesOut(...) ============================================================================
+    /**
+     * onTimesOut(...)
+     *
+     * When a message was sent to the chief to query something,
+     * a progress window will pop out and a timer will be started.
+     * If there is no respond from the chief for 5 second, onTimesOut(...)
+     * will be called.
+     *
+     * 1. When taskView is null, do nothing
+     * 2. When taskView is not null, close the progress window and display the error
+     *
+     */
+    @Test
+    public void testOnTimesOutWithNullView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+        CollectionPresenter manager   = new CollectionPresenter(null);
+
+        manager.onTimesOut(err);
+
+        verify(genView, never()).closeProgressWindow();
+        verify(genView, never()).pauseScanning();
+        verify(genView, never()).displayError(err);
+    }
+
+    @Test
+    public void testOnTimesOutWithView() throws Exception {
+        ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
+
+        manager.onTimesOut(err);
+
+        verify(genView).closeProgressWindow();
+        verify(genView).pauseScanning();
+        verify(genView).displayError(err);
     }
 
 }

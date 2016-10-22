@@ -21,7 +21,7 @@ public class TCPClient implements Runnable{
      * */
     //public static String SERVERIP = "192.168.0.112"; // your computer IP address
     //public static int SERVERPORT = 5657;
-    public static Connector connector;
+    private static Connector connector;
     private OnMessageReceived mMessageListener = null;
     private boolean mRun = false;
 
@@ -44,6 +44,10 @@ public class TCPClient implements Runnable{
 
     public static void setConnector(Connector connector) {
         TCPClient.connector = connector;
+    }
+
+    public static Connector getConnector() {
+        return connector;
     }
 
     public void setMessageListener(OnMessageReceived mMessageListener) {

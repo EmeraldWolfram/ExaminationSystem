@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 
 import java.util.Calendar;
@@ -14,11 +15,12 @@ import java.util.Calendar;
  */
 
 public class LinkChiefModel implements LinkChiefMVP.ModelFace {
-
+    private LinkChiefMVP.MPresenter taskPresenter;
     private CheckListLoader dbLoader;
 
-    public LinkChiefModel(CheckListLoader dbLoader){
-        this.dbLoader   = dbLoader;
+    public LinkChiefModel(CheckListLoader dbLoader, LinkChiefMVP.MPresenter taskPresenter){
+        this.dbLoader       = dbLoader;
+        this.taskPresenter  = taskPresenter;
     }
 
     @Override
@@ -40,10 +42,10 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     }
 
     @Override
-    public boolean tryConnectWithDatabase(){
+    public boolean tryConnectWithDatabase() {
         Connector connector = dbLoader.queryConnector();
-
         Calendar now    = Calendar.getInstance();
+
         if(connector == null){
             return false;
         } else {
@@ -55,7 +57,6 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
                 ConnectionTask connect   = new ConnectionTask();
                 connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 ExternalDbLoader.setConnectionTask(connect);
-                //Check on connection established is required
                 return true;
             } else {
                 dbLoader.clearUserDatabase();
@@ -67,6 +68,12 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     }
 
     @Override
+    public void onChallengeMessageReceived(String messageRx) throws ProcessException {
+        String challengeMsg = JsonHelper.parseChallengeMessage(messageRx);
+        TCPClient.getConnector().setDuelMessage(challengeMsg);
+    }
+
+    @Override
     public void closeConnection() throws Exception{
         if(ExternalDbLoader.getTcpClient() != null){
             ExternalDbLoader.getTcpClient().sendMessage("Termination");
@@ -75,6 +82,34 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
         if(ExternalDbLoader.getConnectionTask() != null){
             ExternalDbLoader.getConnectionTask().cancel(true);
             ExternalDbLoader.setConnectionTask(null);
+        }
+    }
+
+    @Override
+    public void reconnect() throws ProcessException {
+        if(!dbLoader.emptyUserInDB()){
+            StaffIdentity prevStaff = dbLoader.queryUser();
+            ConnectionTask.setCompleteFlag(false);
+            ExternalDbLoader.requestDuelMessage(prevStaff.getIdNo());
+        } else {
+            throw new ProcessException("Failed to reconnect, no reference of staff in database",
+                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+        }
+    }
+
+    @Override
+    public void run() {
+        try{
+            if(!ConnectionTask.isComplete()) {
+                ProcessException err = new ProcessException(
+                        "Reconnection times out. Find Chief and connect with QR code",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, taskPresenter);
+                err.setBackPressListener(taskPresenter);
+                throw err;
+            }
+        } catch (ProcessException err){
+            taskPresenter.onTimesOut(err);
         }
     }
 }

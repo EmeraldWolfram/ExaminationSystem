@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.interfacer;
 
+import android.content.DialogInterface;
+
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -7,9 +9,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface LinkChiefMVP {
-    interface ViewFace extends TaskScanView, GeneralView {}
+    interface ViewFace extends TaskScanView, GeneralView, TaskConnView {}
 
-    interface PresenterFace extends TaskScanPresenter {
+    interface PresenterFace extends TaskScanPresenter, TaskConnPresenter {
         /**
          * The objective of this method is to
          * 1. Check if there is a valid connector in database
@@ -19,13 +21,17 @@ public interface LinkChiefMVP {
         void onCreate();
 
         /**
+         * onDestroy()
          * This method is a cleaning method that use to close the
          * connection between the user (this Android) and the Chief (PC)
          */
-        void onDestroy();
     }
 
-    interface ModelFace {
+    interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+        void onTimesOut(ProcessException err);
+    }
+
+    interface ModelFace extends Runnable{
         /**
          * tryConnectWithQR(...)
          *
@@ -59,6 +65,12 @@ public interface LinkChiefMVP {
         boolean tryConnectWithDatabase();
 
         /**
+         * onChallengeMessageReceived(...)
+         *
+         */
+        void onChallengeMessageReceived(String messageRx) throws ProcessException;
+
+        /**
          * closeConnection()
          *
          * This method used to terminate the connection with the Chief
@@ -66,5 +78,15 @@ public interface LinkChiefMVP {
          * @throws Exception
          */
         void closeConnection() throws Exception;
+
+        /**
+         * reconnect()
+         *
+         * This method is used to reconnect to the Chief
+         * by sending a request to the Chief
+         * the Chief will reply with the Challenge Message
+         *
+         */
+        void reconnect() throws ProcessException;
     }
 }

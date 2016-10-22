@@ -228,8 +228,6 @@ public class LoginPresenterTest {
         manager.onChiefRespond(errorManager, "Message");
 
         verify(taskView).navigateActivity(TakeAttdActivity.class);
-        verify(taskView, never()).displayError(any(ProcessException.class));
-        verify(taskView, never()).resumeScanning();
     }
 
     @Test

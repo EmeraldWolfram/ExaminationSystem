@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -168,7 +169,7 @@ public class LoginModelTest {
     public void testMatchStaffPw_Valid_PW_should_send_message() throws Exception{
         try{
             helper.setQrStaffID(staffId.getIdNo());
-            when(dbLoader.queryDuelMessage()).thenReturn("DUEL");
+            TCPClient.setConnector(new Connector("Address", 7032, "DUEL"));
 
             helper.matchStaffPw("ABCD");
 
@@ -204,6 +205,7 @@ public class LoginModelTest {
 
             helper.checkLoginResult(MESSAGE_FROM_CHIEF);
 
+            verify(dbLoader).saveUser(LoginModel.getStaff());
             assertEquals(3, helper.getLoginCount());
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
@@ -227,6 +229,7 @@ public class LoginModelTest {
 
             helper.checkLoginResult(MESSAGE_FROM_CHIEF);
 
+            verify(dbLoader).saveUser(LoginModel.getStaff());
             assertEquals(3, helper.getLoginCount());
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
@@ -254,6 +257,7 @@ public class LoginModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Incorrect Login Id or Password\n2 attempt left", err.getErrorMsg());
             assertNull(LoginModel.getStaff());
+            verify(dbLoader, never()).saveUser(LoginModel.getStaff());
         }
     }
 
@@ -273,6 +277,7 @@ public class LoginModelTest {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("You have failed to login!", err.getErrorMsg());
             assertNull(LoginModel.getStaff());
+            verify(dbLoader, never()).saveUser(LoginModel.getStaff());
         }
     }
 
@@ -341,13 +346,15 @@ public class LoginModelTest {
      * 2. When null password detected during the process of encryption, throw FATAL_MESSAGE
      * 3. When null message detected during the process of encryption, throw FATAL_MESSAGE
      */
-
+    /*
     @Test
     public void testHmacSha1_PositiveTest() throws Exception {
         String hash         = helper.hmacSha("MyPassword", "7ABB8");
         String sameHash     = helper.hmacSha("MyPassword", "7ABB8");
         String diffHash1    = helper.hmacSha("MyPassword", "7aBB8"); //A -> a
         String diffHash2    = helper.hmacSha("myPassword", "7ABB8"); //M -> m
+
+        System.out.print(hash);
 
         assertTrue(hash.equals(sameHash));
         assertFalse(hash.equals(diffHash1));
@@ -365,5 +372,5 @@ public class LoginModelTest {
             assertEquals("Encryption library not found\n" +
                     "Please contact developer!", err.getErrorMsg());
         }
-    }
+    }*/
 }

@@ -9,7 +9,6 @@ import java.util.Calendar;
  * Created by GhinY on 07/05/2016.
  */
 public class ExamSubject {
-
     public static final String PAPER_DB_ID      = "_id";
     public static final String PAPER_CODE       = "PaperCode";
     public static final String PAPER_DESC       = "PaperDesc";

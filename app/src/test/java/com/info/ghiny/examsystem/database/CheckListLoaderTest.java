@@ -28,7 +28,6 @@ public class CheckListLoaderTest {
     private static final String EMPTY_USER_PATH     = "/database/EmptyUserDb.db";
     private static final String FILLED_USER_PATH    = "/database/FilledUserDb.db";
 
-
     private String dbPath;
     private CheckListLoader dbLoader;
 
@@ -300,10 +299,10 @@ public class CheckListLoaderTest {
     }
 
     //= EXTENSION: USER DATABASE TEST ==+++++=======================================================
-    //= emptyUserDatabase() ========================================================================
+    //= emptyUserInDB() and emptyConnectorInDB =====================================================
 
     @Test
-    public void testEmptyUserInDB_withEmptyUserDatabase() throws Exception{
+    public void testEmptyUserInDB_withEmptyConnectorDatabase() throws Exception{
         String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
         File dbFile = new File(path);
         assertTrue(dbFile.exists());
@@ -311,6 +310,7 @@ public class CheckListLoaderTest {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
         CheckListLoader.setDatabase(db);
 
+        assertTrue(dbLoader.emptyConnectorInDB());
         assertTrue(dbLoader.emptyUserInDB());
 
         db.close();
@@ -325,8 +325,52 @@ public class CheckListLoaderTest {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
         CheckListLoader.setDatabase(db);
 
+        assertFalse(dbLoader.emptyConnectorInDB());
         assertFalse(dbLoader.emptyUserInDB());
 
+        db.close();
+    }
+
+    //= ClearUserDatabase() ========================================================================
+    @Test
+    public void testClearUserDatabase1_EntryOfConnector() throws Exception {
+        String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
+        File dbFile = new File(path);
+        assertTrue(dbFile.exists());
+        dbPath = dbFile.getAbsolutePath();
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+        CheckListLoader.setDatabase(db);
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        assertTrue(dbLoader.emptyConnectorInDB());
+        db.execSQL("INSERT INTO ConnectionTable (IP, Port, RegDate, Session) " +
+                "VALUES ('192.168.0.90', 6666, '14:09:2016', 'AM')");
+        assertFalse(dbLoader.emptyConnectorInDB());
+
+        dbLoader.clearUserDatabase();
+
+        assertTrue(dbLoader.emptyConnectorInDB());
+        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        db.close();
+    }
+
+    @Test
+    public void testClearUserDatabase2_EntryOfStaff() throws Exception {
+        String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
+        File dbFile = new File(path);
+        assertTrue(dbFile.exists());
+        dbPath = dbFile.getAbsolutePath();
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+        CheckListLoader.setDatabase(db);
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        assertTrue(dbLoader.emptyUserInDB());
+        db.execSQL("INSERT INTO StaffTable (IdNo, HashPass, Name, Venue, Status) " +
+                "VALUES ('158888', 'aXlespfeaasSD', 'Staff1', 'M1', 'In-Charge')");
+        assertFalse(dbLoader.emptyUserInDB());
+
+        dbLoader.clearUserDatabase();
+
+        assertTrue(dbLoader.emptyUserInDB());
+        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         db.close();
     }
 
@@ -368,26 +412,6 @@ public class CheckListLoaderTest {
         db.close();
     }
 
-    //= ClearUserDatabase() ========================================================================
-    @Test
-    public void testClearUserDatabase() throws Exception {
-        String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
-        File dbFile = new File(path);
-        assertTrue(dbFile.exists());
-        dbPath = dbFile.getAbsolutePath();
-        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
-
-        assertTrue(dbLoader.emptyUserInDB());
-        db.execSQL("INSERT INTO ConnectionTable (IP, Port, RegDate, Session, DuelMsg) " +
-                "VALUES ('192.168.0.90', 6666, '14:09:2016', 'AM', 'DUEL')");
-        assertFalse(dbLoader.emptyUserInDB());
-        dbLoader.clearUserDatabase();
-        assertTrue(dbLoader.emptyUserInDB());
-
-        db.close();
-    }
-
     //= SaveConnector() ============================================================================
     @Test
     public void testSaveConnector() throws Exception {
@@ -398,10 +422,10 @@ public class CheckListLoaderTest {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
         CheckListLoader.setDatabase(db);
 
-        assertTrue(dbLoader.emptyUserInDB());
+        assertTrue(dbLoader.emptyConnectorInDB());
         Connector connector = new Connector("127.0.0.1", 6666, null);
         dbLoader.saveConnector(connector);
-        assertFalse(dbLoader.emptyUserInDB());
+        assertFalse(dbLoader.emptyConnectorInDB());
 
         assertNotNull(dbLoader.queryConnector());
         assertEquals("127.0.0.1", dbLoader.queryConnector().getIpAddress());
@@ -411,9 +435,9 @@ public class CheckListLoaderTest {
         db.close();
     }
 
-    //= QueryDuelMessage() =========================================================================
+    //= QueryUser() ================================================================================
     @Test
-    public void testQueryDuelMessage1_EmptyDatabaseReturnNull() throws Exception {
+    public void testQueryUser_withEmptyDb() throws Exception{
         String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
         File dbFile = new File(path);
         assertTrue(dbFile.exists());
@@ -421,14 +445,14 @@ public class CheckListLoaderTest {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
         CheckListLoader.setDatabase(db);
 
-        String duelMsg = dbLoader.queryDuelMessage();
-        assertNull(duelMsg);
+        StaffIdentity id = dbLoader.queryUser();
+        assertNull(id);
 
         db.close();
     }
 
     @Test
-    public void testQueryDuelMessage2_FilledDatabaseReturnMsg() throws Exception {
+    public void testQueryUser_withFilledDb() throws Exception{
         String path = getClass().getResource(FILLED_USER_PATH).toURI().getPath();
         File dbFile = new File(path);
         assertTrue(dbFile.exists());
@@ -436,9 +460,41 @@ public class CheckListLoaderTest {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
         CheckListLoader.setDatabase(db);
 
-        String duelMsg = dbLoader.queryDuelMessage();
-        assertEquals("DUEL", duelMsg);
+        StaffIdentity id = dbLoader.queryUser();
 
+        assertNotNull(id);
+        assertEquals("158888", id.getIdNo());
+        assertEquals("aXsjPaeQ9=O9s!lks+", id.getHashPass());
+        assertEquals("Staff1", id.getName());
+        assertEquals("M1", id.getVenueHandling());
+        assertEquals("In-Charge", id.getRole().get(0));
+
+        db.close();
+    }
+
+    //= SaveUser() =================================================================================
+    @Test
+    public void testSaveUser() throws Exception {
+        String path = getClass().getResource(EMPTY_USER_PATH).toURI().getPath();
+        File dbFile = new File(path);
+        assertTrue(dbFile.exists());
+        dbPath = dbFile.getAbsolutePath();
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+        CheckListLoader.setDatabase(db);
+
+        assertTrue(dbLoader.emptyUserInDB());
+        StaffIdentity id    = new StaffIdentity("156666", true, "Staff2", "M2");
+        id.setHashPass("feiKs9/wfSnn0dE2");
+        id.addRole("In-Charge");
+
+        dbLoader.saveUser(id);
+
+        assertFalse(dbLoader.emptyUserInDB());
+        assertNotNull(dbLoader.queryUser());
+        assertEquals("156666", dbLoader.queryUser().getIdNo());
+        assertEquals("feiKs9/wfSnn0dE2", dbLoader.queryUser().getHashPass());
+
+        dbLoader.clearUserDatabase();
         db.close();
     }
 

@@ -55,7 +55,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testRequestDuelMessage1_TcpNotNull() throws Exception {
         try{
-            ExternalDbLoader.requestDuelMessage();
+            ExternalDbLoader.requestDuelMessage("Staff ID");
 
             verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
@@ -67,7 +67,7 @@ public class ExternalDbLoaderTest {
     public void testRequestDuelMessage2_TcpNull() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-            ExternalDbLoader.requestDuelMessage();
+            ExternalDbLoader.requestDuelMessage("Staff ID");
 
         } catch (ProcessException err){
             assertEquals("Fail to request duel message!" +

@@ -1,8 +1,10 @@
 package com.info.ghiny.examsystem;
 
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
@@ -31,6 +33,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     private ErrorManager errorManager;
     private BeepManager beepManager;
     private LinkChiefMVP.PresenterFace taskPresenter;
+    private ProgressDialog progDialog;
 
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -62,10 +65,11 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     private void initMVP(){
         barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
 
+        LinkChiefPresenter presenter= new LinkChiefPresenter(this);
         CheckListLoader dbLoader    = new CheckListLoader(this);
-        LinkChiefModel model       = new LinkChiefModel(dbLoader);
-        LinkChiefPresenter presenter = new LinkChiefPresenter(this);
+        LinkChiefModel model        = new LinkChiefModel(dbLoader, presenter);
         presenter.setTaskModel(model);
+        presenter.setHandler(new Handler());
         taskPresenter               = presenter;
 
         errorManager                = new ErrorManager(this);
@@ -82,8 +86,8 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     protected void onResume() {
-        taskPresenter.onResume();
         super.onResume();
+        taskPresenter.onResume(errorManager);
     }
 
     @Override
@@ -148,4 +152,15 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public void securityPrompt(boolean cancellable) {}
+
+    @Override
+    public void openProgressWindow(String title, String message) {
+        progDialog  = ProgressDialog.show(this, title, message);
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
+    }
 }

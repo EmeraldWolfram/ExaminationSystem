@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -24,17 +25,18 @@ public class JsonHelper {
     public static final String KEY_TYPE_CHECKIN     = "CheckIn";
     public static final String KEY_VALUE            = "Value";
 
-    public static final String TYPE_LOGIN           = "Identity";
+    public static final String TYPE_IDENTITY        = "Identity";
+    public static final String TYPE_INFORMATION     = "AttendanceInfo";
     public static final String TYPE_PAPERS_VENUE    = "Papers";
     public static final String TYPE_PAPERS_CDD      = "CddPapers";
-    public static final String TYPE_ATTD_LIST       = "AttdList";
+    public static final String TYPE_ATTD_LIST       = "AttendanceList";
     public static final String TYPE_COLLECT         = "Collection";
     //public static final
 
+    public static final String CANDIDATES   = "CddList";
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
     public static final String LIST_INVI    = "In-Charge";
-    public static final String LIST_LIST    = "CddList";
     public static final String PAPER_MAP    = "PaperMap";
     public static final String PAPER_LIST   = "PaperList";
     public static final String COLLECTOR    = "Collector";
@@ -54,7 +56,7 @@ public class JsonHelper {
     public static String formatPassword(String id, String password){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_CHECKIN, TYPE_LOGIN);
+            object.put(KEY_TYPE_CHECKIN, JsonHelper.TYPE_IDENTITY);
             object.put(StaffIdentity.STAFF_ID_NO, id);
             object.put(StaffIdentity.STAFF_PASS, password);
 
@@ -86,7 +88,7 @@ public class JsonHelper {
                     cddList.put(cddObj);
                 }
             }
-            list.put(LIST_LIST, cddList);
+            list.put(CANDIDATES, cddList);
             list.put(LIST_SIZE, cddList.length());
             return list.toString();
         } catch(Exception err){
@@ -106,6 +108,8 @@ public class JsonHelper {
             return null;
         }
     }
+
+    //==============================================================================================
 
     public static StaffIdentity parseStaffIdentity(String inStr, int attp) throws ProcessException{
         StaffIdentity staffId   = new StaffIdentity();
@@ -163,7 +167,7 @@ public class JsonHelper {
         try{
             JSONObject obj  = new JSONObject(inStr);
             if(obj.getBoolean(KEY_TYPE_RETURN)){
-                JSONArray cddArr    = obj.getJSONArray(LIST_LIST);
+                JSONArray cddArr    = obj.getJSONArray(CANDIDATES);
                 for(int i = 0; i < cddArr.length(); i++){
                     JSONObject jsonCdd  = cddArr.getJSONObject(i);
                     Candidate cdd       = new Candidate();
@@ -247,6 +251,25 @@ public class JsonHelper {
             }
         } catch (JSONException err) {
             throw new ProcessException("Data from Chief corrupted\nPlease Consult Developer",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
+    }
+
+    public static String parseChallengeMessage(String inStr) throws ProcessException {
+        String challengeMsg;
+
+        try{
+            JSONObject challengeObj = new JSONObject(inStr);
+            if(challengeObj.getBoolean(KEY_TYPE_RETURN)){
+                challengeMsg    = challengeObj.getString(Connector.CONNECT_MESSAGE);
+                return challengeMsg;
+            } else {
+                throw new ProcessException("Chief denied reconnection." +
+                        "\nPlease connect to chief with QR first",
+                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+            }
+        } catch (JSONException err) {
+            throw new ProcessException("Failed to read data from Chief\nPlease consult developer!",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
     }

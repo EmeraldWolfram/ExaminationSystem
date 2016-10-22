@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
+import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.manager.InfoGrabPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -135,7 +136,7 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     @Override
     public void navigateActivity(Class<?> cls) {
         Intent displayList = new Intent(this, cls);
-        displayList.putExtra(JsonHelper.LIST_LIST, taskPresenter.getStudentSubjects());
+        displayList.putExtra(JsonHelper.CANDIDATES, taskPresenter.getStudentSubjects());
         startActivity(displayList);
     }
 

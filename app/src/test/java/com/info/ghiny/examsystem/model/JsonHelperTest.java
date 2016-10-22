@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
@@ -32,8 +33,6 @@ public class JsonHelperTest {
      *
      *  this method create a JSON Object and return the JSON Object in the format of String
      *
-     *  @param type         The type of query message to be send. Eg. TYPE_IDENTITY
-     *  @param valueStr     The value to be send across
      */
     @Test
     public void testFormatString() throws Exception {
@@ -41,7 +40,7 @@ public class JsonHelperTest {
 
         JSONObject obj = new JSONObject(str);
         assertTrue(obj.has("CheckIn"));
-        assertEquals("AttdList", obj.getString("CheckIn"));
+        assertEquals("AttendanceList", obj.getString("CheckIn"));
         assertEquals("H4", obj.getString("Value"));
     }
 
@@ -51,7 +50,6 @@ public class JsonHelperTest {
      * formatAttdList(AttdList)
      *
      * Send out the whole AttendanceList
-     * @param attdList  The updated attendance list that have the candidates attendance taken
      */
     @Test
     public void testFormatAttdList() throws Exception {
@@ -75,7 +73,7 @@ public class JsonHelperTest {
         String str = JsonHelper.formatAttdList(attdList);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("AttdList", obj.getString("CheckIn"));
+        assertEquals("AttendanceList", obj.getString("CheckIn"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
         assertEquals(4, obj.getInt("Size"));
@@ -88,7 +86,6 @@ public class JsonHelperTest {
      *  formatCollection(scanBundleStr)
      *
      *  return a JSON Object in string to acknowledge the collection of the bundle
-     *  @param scanBundleStr    The QR code on top of the bundle that represent the bundle
      */
     @Test
     public void testFormatCollection() throws Exception {
@@ -108,7 +105,6 @@ public class JsonHelperTest {
      *  2. If Result is true, return a Staff Identity Object
      *  3. If Result is false, throw MESSAGE_DIALOG
      *
-     *  @param str  The input message received from sockets
      */
 
     @Test
@@ -160,7 +156,6 @@ public class JsonHelperTest {
      * 1. If result true, transform JSON into an AttendanceList and return it
      * 2. If result false, throw FATAL
      * 3. If JSON format wrong, throw FATAL
-     * @param inStr     JSON formatted AttendanceList in a String
      */
     @Test
     public void testParseAttdList() throws Exception {
@@ -185,7 +180,7 @@ public class JsonHelperTest {
         jAttdList.put(jCdd2);
 
         jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
-        jObject.put(JsonHelper.LIST_LIST, jAttdList);
+        jObject.put(JsonHelper.CANDIDATES, jAttdList);
 
         AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
 
@@ -221,7 +216,7 @@ public class JsonHelperTest {
             jAttdList.put(jCdd2);
 
             jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
-            jObject.put(JsonHelper.LIST_LIST, jAttdList);
+            jObject.put(JsonHelper.CANDIDATES, jAttdList);
 
             AttendanceList attd = JsonHelper.parseAttdList(jObject.toString());
 
@@ -337,7 +332,6 @@ public class JsonHelperTest {
      *  2. If Result is true, return List<ExamSubject> which will be examined
      *  3. If Result is false, throw MESSAGE_TOAST
      *
-     *  @param regNum   Register Number of the candidate that want to check for subjects examine
      */
     @Test
     public void testParsePaperList_Wrong_Format_throw_MESSAGE_DIALOG() throws Exception {
@@ -415,8 +409,6 @@ public class JsonHelperTest {
      *  this method create a JSON Object of id and password
      *  then return the JSON Object in the format of String
      *
-     *  @param id         The idNo of the staff scanned
-     *  @param password   The password entered
      */
     @Test
     public void testFormatPassword() throws Exception {
@@ -440,7 +432,6 @@ public class JsonHelperTest {
      *  2. If the result is false, throw MESSAGE_DIALOG
      *  3. If the result have wrong format, throw FATAL
      *
-     *  @param str  The input message received from sockets
      */
     @Test
     public void testParseBoolean_withTrueAcknowledgement() throws Exception {
@@ -467,4 +458,56 @@ public class JsonHelperTest {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
         }
     }
+
+    //= ParseChallengeMessage(...) =================================================================
+
+    /**
+     * parseChallengeMessage(...)
+     *
+     *  parse str to get a boolean of true or false
+     *
+     *  Tests:
+     *  1. If the result is true, return true
+     *  2. If the result is false, throw MESSAGE_DIALOG
+     *  3. If the result have wrong format, throw FATAL
+     *
+     */
+
+    @Test
+    public void testParseChallengeMessage1_TrueResult() throws Exception {
+        try{
+            String test = JsonHelper.parseChallengeMessage(
+                    "{\"Result\":true, \"DuelMsg\":\"xAsdfgF4560~l\"}");
+
+            assertEquals("xAsdfgF4560~l", test);
+
+        } catch (ProcessException err){
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testParseChallengeMessage2_FalseResult() throws Exception {
+        try{
+            JsonHelper.parseChallengeMessage("{\"Result\":false}");
+        } catch (ProcessException err){
+            assertEquals("Chief denied reconnection.\n" +
+                    "Please connect to chief with QR first", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+        }
+    }
+
+    @Test
+    public void testParseChallengeMessage3_UnreadableResult() throws Exception {
+        try{
+            JsonHelper.parseChallengeMessage("{\"Result\":true}");
+        } catch (ProcessException err){
+            assertEquals("Failed to read data from Chief\n" +
+                    "Please consult developer!", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+        }
+    }
+
+
+
 }
