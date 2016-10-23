@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Session;
@@ -27,6 +28,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +43,7 @@ public class TakeAttdModelTest {
     private CheckListLoader dBLoader;
     private TakeAttdModel model;
     private TakeAttdMVP.MPresenter taskPresenter;
+    private StaffIdentity staff;
 
     private ConnectionTask connectionTask;
     private TCPClient tcpClient;
@@ -62,7 +65,9 @@ public class TakeAttdModelTest {
 
     @Before
     public void setUp() throws Exception{
-        LoginModel.setStaff(new StaffIdentity("id", true, "name", "M4"));
+        staff           = new StaffIdentity("id", true, "name", "M4");
+        LoginModel.setStaff(staff);
+        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
         connectionTask  = Mockito.mock(ConnectionTask.class);
         tcpClient       = Mockito.mock(TCPClient.class);
         dialog          = Mockito.mock(DialogInterface.class);
@@ -176,7 +181,10 @@ public class TakeAttdModelTest {
      */
     @Test
     public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
+
         try{
             model.matchPassword("CORRECT");
         } catch (ProcessException err) {
@@ -186,7 +194,10 @@ public class TakeAttdModelTest {
 
     @Test
     public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
+
         try{
             model.matchPassword("INCORRECT");
         } catch (ProcessException err) {

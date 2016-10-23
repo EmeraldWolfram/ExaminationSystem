@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -183,7 +184,20 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         taskView.pauseScanning();
         taskView.setTableView("");
         taskView.setCandidateView("","","");
+        taskView.setAssignBackgroundColor(R.color.colorDarkGreen);
         onResume();
+    }
+
+    @Override
+    public void signalReassign(int whichReassigned) {
+        switch(whichReassigned){
+            case TakeAttdMVP.TABLE_REASSIGN:
+                taskView.setAssignBackgroundColor(R.color.colorDarkRed);
+                break;
+            case TakeAttdMVP.CANDIDATE_REASSIGN:
+                taskView.setAssignBackgroundColor(R.color.colorDarkRed);
+                break;
+        }
     }
 
     @Override

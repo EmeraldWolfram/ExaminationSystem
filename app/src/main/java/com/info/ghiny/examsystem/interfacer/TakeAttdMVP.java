@@ -10,6 +10,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface TakeAttdMVP {
+    byte TABLE_REASSIGN      = 0;
+    byte CANDIDATE_REASSIGN  = 1;
+
     interface View extends TaskScanView, TaskConnView, GeneralView {
         /**
          * setTableView(...)
@@ -31,6 +34,8 @@ public interface TakeAttdMVP {
          * @param cddPaper      Candidate Info: the exam paper of the candidate in String
          */
         void setCandidateView(String cddIndex, String cddRegNum, String cddPaper);
+
+        void setAssignBackgroundColor(int color);
     }
 
     interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {
@@ -46,6 +51,7 @@ public interface TakeAttdMVP {
         void displayTable(Integer tableNumber);
         void displayCandidate(Candidate cdd);
         void resetDisplay();
+        void signalReassign(int whichReassigned);   //true means table, false mean cdd
     }
 
     interface Model extends Runnable, DialogInterface.OnClickListener, TaskSecureModel {

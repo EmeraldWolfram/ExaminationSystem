@@ -74,7 +74,9 @@ public class StaffIdentity {
         return role;
     }
 
-    public void setPassword(String newPassword){    this.password = newPassword;}
+    public void setPassword(String newPassword){
+        this.password = newPassword;
+    }
     public String getPassword(){ return this.password;}
 
     public void setIdNo(String newRegNum){    this.idNo = newRegNum;}

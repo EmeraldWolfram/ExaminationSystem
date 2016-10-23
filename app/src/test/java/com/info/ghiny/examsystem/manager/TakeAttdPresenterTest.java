@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -449,6 +450,7 @@ public class TakeAttdPresenterTest {
 
         verify(taskView).setTableView("");
         verify(taskView).setCandidateView("", "", "");
+        verify(taskView).setAssignBackgroundColor(R.color.colorDarkGreen);
         verify(taskModel).updateAssignList();
         verify(taskView).resumeScanning();
     }
@@ -557,4 +559,34 @@ public class TakeAttdPresenterTest {
         verify(taskView).displayError(err);
     }
 
+    //= SignalReassign(...) ========================================================================
+    /**
+     * signalReassign(...)
+     *
+     * Tests:
+     * 1. Input byte is not listed, do nothing
+     * 2. Input byte is TABLE_REASSIGN, setAssignBackgroundColor(...)
+     * 3. Input byte is CANDIDATE_REASSIGN, setAssignBackgroundColor(...)
+     *
+     */
+    @Test
+    public void testSignalReassign1_NotListedInput() throws Exception{
+        manager.signalReassign(10);
+
+        verify(taskView, never()).setAssignBackgroundColor(R.color.colorDarkRed);
+    }
+
+    @Test
+    public void testSignalReassign2_TableReassign() throws Exception{
+        manager.signalReassign(TakeAttdMVP.TABLE_REASSIGN);
+
+        verify(taskView).setAssignBackgroundColor(R.color.colorDarkRed);
+    }
+
+    @Test
+    public void testSignalReassign3_CandidateReassign() throws Exception{
+        manager.signalReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
+
+        verify(taskView).setAssignBackgroundColor(R.color.colorDarkRed);
+    }
 }

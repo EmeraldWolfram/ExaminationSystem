@@ -2,15 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorDarkGreen">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/tableInfoLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/colorDarkGreen">
         <TextView
             android:id="@+id/tableNumberText"
             android:layout_width="64dp"
@@ -27,12 +28,14 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/canddAssignText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"/>
+
             <TextView
                 android:id="@+id/regNumAssignText"
                 android:layout_width="match_parent"

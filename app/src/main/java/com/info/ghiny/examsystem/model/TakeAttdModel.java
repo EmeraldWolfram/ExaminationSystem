@@ -8,6 +8,7 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
+import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -113,10 +114,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     public void tryAssignScanValue(String scanStr) throws ProcessException{
         if(scanStr.length() < 4 && scanStr.length() > 0){
             checkTable(scanStr);
-            taskPresenter.displayTable(tempTable);
         } else if(scanStr.length() == 10){
             checkCandidate(scanStr);
-            taskPresenter.displayCandidate(tempCdd);
         } else {
             throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
                     IconManager.MESSAGE);
@@ -259,7 +258,11 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             }
         }
 
-        tempTable = Integer.parseInt(scanString);
+        this.tempTable = Integer.parseInt(scanString);
+        this.taskPresenter.displayTable(tempTable);
+        if(this.assgnList.containsKey(this.tempTable)){
+            this.taskPresenter.signalReassign(TakeAttdMVP.TABLE_REASSIGN);
+        }
     }
 
     /**
@@ -310,7 +313,11 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             }
         }
 
-        tempCdd = candidate;
+        this.tempCdd = candidate;
+        this.taskPresenter.displayCandidate(tempCdd);
+        if(this.assgnList.containsValue(this.tempCdd.getRegNum())){
+            this.taskPresenter.signalReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
+        }
     }
 
     /**
@@ -341,16 +348,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     void attemptReassign() throws ProcessException{
         ProcessException err;
         if(assgnList.containsKey(tempTable)){
-            err = new ProcessException("Previous: Table " + tempTable + " assigned to "
-                    + attdList.getCandidate(assgnList.get(tempTable)).getExamIndex()
-                    + "\nNew: Table " + tempTable + " assign to " + tempCdd.getExamIndex(),
-                    ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
-            err.setListener(ProcessException.updateButton, this);
-            err.setListener(ProcessException.cancelButton, this);
-            throw err;
-        }
-
-        if(assgnList.containsValue(tempCdd.getRegNum())){
+            if(!assgnList.get(tempTable).equals(tempCdd.getRegNum())) {
+                err = new ProcessException("Previous: Table " + tempTable + " assigned to "
+                        + attdList.getCandidate(assgnList.get(tempTable)).getExamIndex()
+                        + "\nNew: Table " + tempTable + " assign to " + tempCdd.getExamIndex(),
+                        ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
+                err.setListener(ProcessException.updateButton, this);
+                err.setListener(ProcessException.cancelButton, this);
+                throw err;
+            }
+        } else if(assgnList.containsValue(tempCdd.getRegNum())){
             err = new ProcessException("Previous: " + tempCdd.getExamIndex()
                     + " assigned to Table "
                     + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()

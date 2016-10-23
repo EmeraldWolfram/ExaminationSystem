@@ -2,12 +2,15 @@ package com.info.ghiny.examsystem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,10 +37,16 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     //Required Tools
     private TakeAttdMVP.VPresenter taskPresenter;
-    private ProgressDialog progDialog;
-
-    //private TakeAttdPresenter assignManager;
     private ErrorManager errManager;
+
+    private ProgressDialog progDialog;
+    private TextView tableView;
+    private LinearLayout cddLayout;
+    private TextView cddView;
+    private TextView regNumView;
+    private TextView paperView;
+    private RelativeLayout thisLayout;
+
     private CompoundBarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -59,8 +68,24 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         setContentView(R.layout.activity_assign_info);
 
         initMVP();
-        //Set swiping gesture
-        RelativeLayout thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
+        initView();
+
+        taskPresenter.onCreate();
+
+        //Barcode Viewer
+        barcodeView.decodeContinuous(callback);
+        assert barcodeView != null;
+        barcodeView.setStatusText("Ready to take candidates attendance");
+    }
+
+    private void initView(){
+        thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
+        cddLayout  = (LinearLayout)findViewById(R.id.tableInfoLayout);
+        cddView    = (TextView)findViewById(R.id.canddAssignText);
+        regNumView = (TextView)findViewById(R.id.regNumAssignText);
+        paperView  = (TextView)findViewById(R.id.paperAssignText);
+        tableView  = (TextView)findViewById(R.id.tableNumberText);
+
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
@@ -72,13 +97,6 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
                 taskPresenter.onSwipeLeft();
             }
         });
-
-        taskPresenter.onCreate();
-
-        //Barcode Viewer
-        barcodeView.decodeContinuous(callback);
-        assert barcodeView != null;
-        barcodeView.setStatusText("Ready to take candidates attendance");
     }
 
     private void initMVP(){
@@ -127,22 +145,15 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         taskPresenter.onBackPressed();
     }
 
-    //= Interface Method ==========================================================================
+    //= MVP Interface Method =======================================================================
     @Override
     public void setTableView(String tableNum) {
-        TextView tableView  = (TextView)findViewById(R.id.tableNumberText);
-        assert tableView != null;
         tableView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.THICK_FONT));
         tableView.setText(tableNum);
     }
 
     @Override
     public void setCandidateView(String cddIndex, String cddRegNum, String cddPaper) {
-        TextView cddView    = (TextView)findViewById(R.id.canddAssignText);
-        TextView regNumView = (TextView)findViewById(R.id.regNumAssignText);
-        TextView paperView  = (TextView)findViewById(R.id.paperAssignText);
-        assert cddView     != null; assert regNumView   != null;    assert paperView   != null;
-
         cddView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.BOLD_FONT));
         regNumView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
         paperView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.DEFAULT_FONT));
@@ -197,5 +208,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     public void closeProgressWindow() {
         if(progDialog != null)
             progDialog.dismiss();
+    }
+
+    @Override
+    public void setAssignBackgroundColor(int color) {
+        cddLayout.getBackground().setColorFilter(color, PorterDuff.Mode.DARKEN);
     }
 }
