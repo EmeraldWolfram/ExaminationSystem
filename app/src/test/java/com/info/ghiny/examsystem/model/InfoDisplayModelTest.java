@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -24,6 +25,7 @@ import static org.junit.Assert.*;
 public class InfoDisplayModelTest {
     private InfoDisplayModel model;
     private String MESSAGE_FROM_CHIEF;
+    private StaffIdentity staff;
 
     private List<ExamSubject> subjects;
     private ExamSubject subject1;
@@ -32,6 +34,10 @@ public class InfoDisplayModelTest {
 
     @Before
     public void setUp() throws Exception {
+        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        staff           = new StaffIdentity("id", true, "name", "M4");
+        LoginModel.setStaff(staff);
+
         model   = new InfoDisplayModel();
         subjects    = new ArrayList<>();
         model.setPapers(subjects);
@@ -173,8 +179,9 @@ public class InfoDisplayModelTest {
      */
     @Test
     public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             model.matchPassword("CORRECT");
         } catch (ProcessException err) {
@@ -184,8 +191,9 @@ public class InfoDisplayModelTest {
 
     @Test
     public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             model.matchPassword("INCORRECT");
         } catch (ProcessException err) {

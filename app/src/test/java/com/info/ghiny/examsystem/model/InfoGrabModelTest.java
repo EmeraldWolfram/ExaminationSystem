@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
@@ -27,9 +28,14 @@ public class InfoGrabModelTest {
     private InfoGrabMVP.MPresenter taskPresenter;
     private InfoGrabModel model;
     private TCPClient tcpClient;
+    private StaffIdentity staff;
 
     @Before
     public void setUp() throws Exception {
+        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        staff           = new StaffIdentity("id", true, "name", "M4");
+        LoginModel.setStaff(staff);
+
         tcpClient = Mockito.mock(TCPClient.class);
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
@@ -111,8 +117,9 @@ public class InfoGrabModelTest {
      */
     @Test
     public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             model.matchPassword("CORRECT");
         } catch (ProcessException err) {
@@ -122,8 +129,9 @@ public class InfoGrabModelTest {
 
     @Test
     public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             model.matchPassword("INCORRECT");
         } catch (ProcessException err) {

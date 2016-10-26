@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
@@ -48,9 +49,14 @@ public class ReportAttdModelTest {
     private Candidate cdd4;
     private Candidate cdd5;
 
+    private StaffIdentity staff;
 
     @Before
     public void setUp() throws Exception{
+        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        staff           = new StaffIdentity("id", true, "name", "M4");
+        LoginModel.setStaff(staff);
+
         attdList = new AttendanceList();
 
         paperList2 = new HashMap<>();
@@ -491,8 +497,9 @@ public class ReportAttdModelTest {
      */
     @Test
     public void testMatchPassword1_CorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             helper.matchPassword("CORRECT");
         } catch (ProcessException err) {
@@ -502,8 +509,9 @@ public class ReportAttdModelTest {
 
     @Test
     public void testMatchPassword2_IncorrectPasswordReceived() throws Exception {
-        LoginModel.setStaff(new StaffIdentity());
-        LoginModel.getStaff().setPassword("CORRECT");
+        staff.setPassword("CORRECT");
+        String hashPass = staff.hmacSha("CORRECT", "DUEL");
+        staff.setHashPass(hashPass);
         try{
             helper.matchPassword("INCORRECT");
         } catch (ProcessException err) {

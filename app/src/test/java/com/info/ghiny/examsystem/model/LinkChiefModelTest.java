@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 
@@ -34,11 +35,14 @@ public class LinkChiefModelTest {
     private LinkChiefModel model;
     private ConnectionTask task;
     private TCPClient tcpClient;
+    private StaffIdentity staff;
 
     @Before
     public void setUp() throws Exception {
         dbLoader        = Mockito.mock(CheckListLoader.class);
         taskPresenter   = Mockito.mock(LinkChiefMVP.MPresenter.class);
+        staff           = new StaffIdentity("id", true, "name", "M4");
+        LoginModel.setStaff(staff);
 
         model           = new LinkChiefModel(dbLoader, taskPresenter);
 
@@ -267,6 +271,7 @@ public class LinkChiefModelTest {
         tcpClient = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setConnectionTask(task);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(dbLoader.queryUser()).thenReturn(staff);
 
         model.reconnect();
 
