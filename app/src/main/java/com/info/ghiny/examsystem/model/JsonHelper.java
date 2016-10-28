@@ -21,15 +21,15 @@ import java.util.Locale;
  * Created by GhinY on 06/06/2016.
  */
 public class JsonHelper {
-    public static final String KEY_TYPE_RETURN      = "Result";
-    public static final String KEY_TYPE_CHECKIN     = "CheckIn";
+    public static final String KEY_TYPE_RX          = "Result";
+    public static final String KEY_TYPE_TX          = "CheckIn";
     public static final String KEY_VALUE            = "Value";
 
     public static final String TYPE_IDENTITY        = "Identity";
-    public static final String TYPE_INFORMATION     = "AttendanceInfo";
+    public static final String TYPE_INFORMATION     = "VenueInfo";
     public static final String TYPE_PAPERS_VENUE    = "Papers";
-    public static final String TYPE_PAPERS_CDD      = "CddPapers";
-    public static final String TYPE_ATTD_LIST       = "AttendanceList";
+    public static final String TYPE_PAPERS_CDD      = "CandidateInfo";
+    public static final String TYPE_ATTD_LIST       = "Submission";
     public static final String TYPE_COLLECT         = "Collection";
     //public static final
 
@@ -45,7 +45,7 @@ public class JsonHelper {
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_CHECKIN, type);
+            object.put(KEY_TYPE_TX, type);
             object.put(KEY_VALUE, valueStr);
             return object.toString();
         } catch(Exception err){
@@ -56,7 +56,7 @@ public class JsonHelper {
     public static String formatPassword(String id, String password){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_CHECKIN, JsonHelper.TYPE_IDENTITY);
+            object.put(KEY_TYPE_TX, JsonHelper.TYPE_IDENTITY);
             object.put(StaffIdentity.STAFF_ID_NO, id);
             object.put(StaffIdentity.STAFF_PASS, password);
 
@@ -73,7 +73,7 @@ public class JsonHelper {
         List<String> regNumList = attdList.getAllCandidateRegNumList();
 
         try{
-            list.put(KEY_TYPE_CHECKIN, TYPE_ATTD_LIST);
+            list.put(KEY_TYPE_TX, TYPE_ATTD_LIST);
             list.put(LIST_INVI, LoginModel.getStaff().getIdNo());
             list.put(LIST_VENUE, LoginModel.getStaff().getVenueHandling());
 
@@ -99,7 +99,7 @@ public class JsonHelper {
     public static String formatCollection(String bundleStr){
         JSONObject object   = new JSONObject();
         try{
-            object.put(KEY_TYPE_CHECKIN, TYPE_COLLECT);
+            object.put(KEY_TYPE_TX, TYPE_COLLECT);
             object.put(COLLECTOR, LoginModel.getStaff().getIdNo());
             object.put(COLLECTED, bundleStr);
 
@@ -116,7 +116,7 @@ public class JsonHelper {
 
         try{
             JSONObject staff = new JSONObject(inStr);
-            if(staff.getBoolean(KEY_TYPE_RETURN)){
+            if(staff.getBoolean(KEY_TYPE_RX)){
                 //set staff
                 String name     = staff.getString(StaffIdentity.STAFF_NAME);
                 String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
@@ -150,7 +150,7 @@ public class JsonHelper {
     public static boolean parseBoolean(String inStr) throws ProcessException {
         try {
             JSONObject obj = new JSONObject(inStr);
-            if(obj.getBoolean(KEY_TYPE_RETURN)){
+            if(obj.getBoolean(KEY_TYPE_RX)){
                 return true;
             } else {
                 throw new ProcessException("Request Failed", ProcessException.MESSAGE_DIALOG,
@@ -166,7 +166,7 @@ public class JsonHelper {
         AttendanceList attdList = new AttendanceList();
         try{
             JSONObject obj  = new JSONObject(inStr);
-            if(obj.getBoolean(KEY_TYPE_RETURN)){
+            if(obj.getBoolean(KEY_TYPE_RX)){
                 JSONArray cddArr    = obj.getJSONArray(CANDIDATES);
                 for(int i = 0; i < cddArr.length(); i++){
                     JSONObject jsonCdd  = cddArr.getJSONObject(i);
@@ -199,7 +199,7 @@ public class JsonHelper {
         HashMap<String, ExamSubject> map = new HashMap<>();
         try{
             JSONObject object   = new JSONObject(inStr);
-            if(object.getBoolean(KEY_TYPE_RETURN)){
+            if(object.getBoolean(KEY_TYPE_RX)){
                 JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
                 for(int i = 0; i < subjectArr.length(); i++){
                     JSONObject jSubject = subjectArr.getJSONObject(i);
@@ -228,7 +228,7 @@ public class JsonHelper {
         try{
 
             JSONObject jObj         = new JSONObject(inStr);
-            if(jObj.getBoolean(KEY_TYPE_RETURN)){
+            if(jObj.getBoolean(KEY_TYPE_RX)){
                 JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
                 for(int i = 0; i < subjectArr.length(); i++){
                     JSONObject jSubject = subjectArr.getJSONObject(i);
@@ -260,7 +260,7 @@ public class JsonHelper {
 
         try{
             JSONObject challengeObj = new JSONObject(inStr);
-            if(challengeObj.getBoolean(KEY_TYPE_RETURN)){
+            if(challengeObj.getBoolean(KEY_TYPE_RX)){
                 challengeMsg    = challengeObj.getString(Connector.CONNECT_MESSAGE);
                 return challengeMsg;
             } else {

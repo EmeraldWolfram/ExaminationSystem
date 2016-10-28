@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
@@ -40,7 +39,7 @@ public class JsonHelperTest {
 
         JSONObject obj = new JSONObject(str);
         assertTrue(obj.has("CheckIn"));
-        assertEquals("AttendanceList", obj.getString("CheckIn"));
+        assertEquals("Submission", obj.getString("CheckIn"));
         assertEquals("H4", obj.getString("Value"));
     }
 
@@ -73,7 +72,7 @@ public class JsonHelperTest {
         String str = JsonHelper.formatAttdList(attdList);
 
         JSONObject obj = new JSONObject(str);
-        assertEquals("AttendanceList", obj.getString("CheckIn"));
+        assertEquals("Submission", obj.getString("CheckIn"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
         assertEquals(4, obj.getInt("Size"));
@@ -179,7 +178,7 @@ public class JsonHelperTest {
         jAttdList.put(jCdd1);
         jAttdList.put(jCdd2);
 
-        jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
+        jObject.put(JsonHelper.KEY_TYPE_RX, true);
         jObject.put(JsonHelper.CANDIDATES, jAttdList);
 
         AttendanceList attdList = JsonHelper.parseAttdList(jObject.toString());
@@ -215,7 +214,7 @@ public class JsonHelperTest {
             jAttdList.put(jCdd1);
             jAttdList.put(jCdd2);
 
-            jObject.put(JsonHelper.KEY_TYPE_RETURN, true);
+            jObject.put(JsonHelper.KEY_TYPE_RX, true);
             jObject.put(JsonHelper.CANDIDATES, jAttdList);
 
             AttendanceList attd = JsonHelper.parseAttdList(jObject.toString());
@@ -297,7 +296,7 @@ public class JsonHelperTest {
         array.put(subject1);
         array.put(subject2);
 
-        object.put(JsonHelper.KEY_TYPE_RETURN, true);
+        object.put(JsonHelper.KEY_TYPE_RX, true);
         object.put(JsonHelper.PAPER_MAP, array);
 
         HashMap<String, ExamSubject> paperMap = JsonHelper.parsePaperMap(object.toString());
@@ -378,7 +377,7 @@ public class JsonHelperTest {
         array.put(subject1);
         array.put(subject2);
 
-        object.put(JsonHelper.KEY_TYPE_RETURN, true);
+        object.put(JsonHelper.KEY_TYPE_RX, true);
         object.put(JsonHelper.PAPER_LIST, array);
         List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
 

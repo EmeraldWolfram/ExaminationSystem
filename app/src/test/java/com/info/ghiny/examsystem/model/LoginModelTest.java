@@ -21,7 +21,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 15/06/2016.
@@ -284,7 +283,7 @@ public class LoginModelTest {
     @Test
     public void test() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(JsonHelper.KEY_TYPE_RETURN, true);
+        jsonObject.put(JsonHelper.KEY_TYPE_RX, true);
         //jsonObject.put(StaffIdentity.STAFF_NAME, "STAFF_NAME");
         //jsonObject.put(StaffIdentity.STAFF_ID_NO, "012345");
         //jsonObject.put(StaffIdentity.STAFF_VENUE, "M4");

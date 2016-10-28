@@ -38,6 +38,7 @@ public class StaffIdentityTest {
      * 1. When the two input string is totally same, should provide the same HashCode
      * 2. When null password detected during the process of encryption, throw FATAL_MESSAGE
      * 3. When null message detected during the process of encryption, throw FATAL_MESSAGE
+     * 4. Encrypted data provided by Server program, to check if the function provide same hash code
      */
 
     @Test
@@ -78,6 +79,13 @@ public class StaffIdentityTest {
             assertEquals("Encryption library not found\n" +
                     "Please contact developer!", err.getErrorMsg());
         }
+    }
+
+    @Test
+    public void testHmacSha4_BinderTest() throws Exception {
+        String hash = id.hmacSha("exam", "123456");
+
+        assertEquals("JHKKVtD1VGX+G1Is2MSVl3KyNtM06rbgzIE9lHNn0lU=\n", hash);
     }
 
     //= MatchPassword(...) =========================================================================
