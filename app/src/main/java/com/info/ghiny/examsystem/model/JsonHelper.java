@@ -21,44 +21,54 @@ import java.util.Locale;
  * Created by GhinY on 06/06/2016.
  */
 public class JsonHelper {
-    public static final String KEY_TYPE_RX          = "Result";
-    public static final String KEY_TYPE_TX          = "CheckIn";
-    public static final String KEY_VALUE            = "Value";
+    public static final String MAJOR_KEY_TYPE_RX    = "Result";
+    public static final String MAJOR_KEY_TYPE_TX    = "Type";
+    public static final String MAJOR_KEY_ERROR      = "Error";
 
-    public static final String TYPE_IDENTITY        = "Identity";
-    public static final String TYPE_INFORMATION     = "VenueInfo";
+    public static final String TYPE_RECONNECTION    = "Reconnection";
+    public static final String TYPE_IDENTIFICATION  = "Identification";
+    public static final String TYPE_COLLECTION      = "Collection";
+    public static final String TYPE_VENUE_INFO      = "VenueInfo";
+    public static final String TYPE_CANDIDATE_INFO  = "CandidateInfo";
+    public static final String TYPE_SUBMISSION      = "Submission";
+    //============================================
     public static final String TYPE_PAPERS_VENUE    = "Papers";
-    public static final String TYPE_PAPERS_CDD      = "CandidateInfo";
-    public static final String TYPE_ATTD_LIST       = "Submission";
-    public static final String TYPE_COLLECT         = "Collection";
     //public static final
 
-    public static final String CANDIDATES   = "CddList";
+    //Client to Host
+    public static final String MINOR_KEY_VALUE      = "Value";
+    public static final String MINOR_KEY_ID_NO      = "IdNo";
+    public static final String MINOR_KEY_HASH_CODE  = "HashPass";
+    public static final String MINOR_KEY_COLLECTOR  = "Collector";
+    public static final String MINOR_KEY_BUNDLE     = "Bundle";
+
+    //Host to Client
+    public static final String MINOR_KEY_CANDIDATES = "AttendanceList";
+    public static final String MINOR_KEY_PAPER_MAP  = "PaperMap";
+    public static final String MINOR_KEY_PAPER_LIST = "PaperList";
+
+    //To be determine
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
     public static final String LIST_INVI    = "In-Charge";
-    public static final String PAPER_MAP    = "PaperMap";
-    public static final String PAPER_LIST   = "PaperList";
-    public static final String COLLECTOR    = "Collector";
-    public static final String COLLECTED    = "Bundle";
 
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_TX, type);
-            object.put(KEY_VALUE, valueStr);
+            object.put(MAJOR_KEY_TYPE_TX, type);
+            object.put(MINOR_KEY_VALUE, valueStr);
             return object.toString();
         } catch(Exception err){
             return null;
         }
     }
 
-    public static String formatPassword(String id, String password){
+    public static String formatStaff(String idNo, String hashCode){
         JSONObject object = new JSONObject();
         try{
-            object.put(KEY_TYPE_TX, JsonHelper.TYPE_IDENTITY);
-            object.put(StaffIdentity.STAFF_ID_NO, id);
-            object.put(StaffIdentity.STAFF_PASS, password);
+            object.put(MAJOR_KEY_TYPE_TX, JsonHelper.TYPE_IDENTIFICATION);
+            object.put(MINOR_KEY_ID_NO, idNo);
+            object.put(MINOR_KEY_HASH_CODE, hashCode);
 
             return object.toString();
         } catch (Exception err){
@@ -66,14 +76,14 @@ public class JsonHelper {
         }
     }
 
-    public static String formatAttdList(AttendanceList attdList){
+    public static String formatAttendanceList(AttendanceList attdList){
         JSONObject list     = new JSONObject();
         JSONArray cddList   = new JSONArray();
         JSONObject cddObj;
         List<String> regNumList = attdList.getAllCandidateRegNumList();
 
         try{
-            list.put(KEY_TYPE_TX, TYPE_ATTD_LIST);
+            list.put(MAJOR_KEY_TYPE_TX, TYPE_SUBMISSION);
             list.put(LIST_INVI, LoginModel.getStaff().getIdNo());
             list.put(LIST_VENUE, LoginModel.getStaff().getVenueHandling());
 
@@ -88,7 +98,7 @@ public class JsonHelper {
                     cddList.put(cddObj);
                 }
             }
-            list.put(CANDIDATES, cddList);
+            list.put(MINOR_KEY_CANDIDATES, cddList);
             list.put(LIST_SIZE, cddList.length());
             return list.toString();
         } catch(Exception err){
@@ -99,9 +109,9 @@ public class JsonHelper {
     public static String formatCollection(String bundleStr){
         JSONObject object   = new JSONObject();
         try{
-            object.put(KEY_TYPE_TX, TYPE_COLLECT);
-            object.put(COLLECTOR, LoginModel.getStaff().getIdNo());
-            object.put(COLLECTED, bundleStr);
+            object.put(MAJOR_KEY_TYPE_TX, TYPE_COLLECTION);
+            object.put(MINOR_KEY_COLLECTOR, LoginModel.getStaff().getIdNo());
+            object.put(MINOR_KEY_BUNDLE, bundleStr);
 
             return object.toString();
         } catch(Exception err){
@@ -116,7 +126,7 @@ public class JsonHelper {
 
         try{
             JSONObject staff = new JSONObject(inStr);
-            if(staff.getBoolean(KEY_TYPE_RX)){
+            if(staff.getBoolean(MAJOR_KEY_TYPE_RX)){
                 //set staff
                 String name     = staff.getString(StaffIdentity.STAFF_NAME);
                 String venue    = staff.getString(StaffIdentity.STAFF_VENUE);
@@ -150,7 +160,7 @@ public class JsonHelper {
     public static boolean parseBoolean(String inStr) throws ProcessException {
         try {
             JSONObject obj = new JSONObject(inStr);
-            if(obj.getBoolean(KEY_TYPE_RX)){
+            if(obj.getBoolean(MAJOR_KEY_TYPE_RX)){
                 return true;
             } else {
                 throw new ProcessException("Request Failed", ProcessException.MESSAGE_DIALOG,
@@ -166,8 +176,8 @@ public class JsonHelper {
         AttendanceList attdList = new AttendanceList();
         try{
             JSONObject obj  = new JSONObject(inStr);
-            if(obj.getBoolean(KEY_TYPE_RX)){
-                JSONArray cddArr    = obj.getJSONArray(CANDIDATES);
+            if(obj.getBoolean(MAJOR_KEY_TYPE_RX)){
+                JSONArray cddArr    = obj.getJSONArray(MINOR_KEY_CANDIDATES);
                 for(int i = 0; i < cddArr.length(); i++){
                     JSONObject jsonCdd  = cddArr.getJSONObject(i);
                     Candidate cdd       = new Candidate();
@@ -199,8 +209,8 @@ public class JsonHelper {
         HashMap<String, ExamSubject> map = new HashMap<>();
         try{
             JSONObject object   = new JSONObject(inStr);
-            if(object.getBoolean(KEY_TYPE_RX)){
-                JSONArray subjectArr  = object.getJSONArray(PAPER_MAP);
+            if(object.getBoolean(MAJOR_KEY_TYPE_RX)){
+                JSONArray subjectArr  = object.getJSONArray(MINOR_KEY_PAPER_MAP);
                 for(int i = 0; i < subjectArr.length(); i++){
                     JSONObject jSubject = subjectArr.getJSONObject(i);
                     ExamSubject subject = new ExamSubject();
@@ -228,8 +238,8 @@ public class JsonHelper {
         try{
 
             JSONObject jObj         = new JSONObject(inStr);
-            if(jObj.getBoolean(KEY_TYPE_RX)){
-                JSONArray subjectArr    = jObj.getJSONArray(PAPER_LIST);
+            if(jObj.getBoolean(MAJOR_KEY_TYPE_RX)){
+                JSONArray subjectArr    = jObj.getJSONArray(MINOR_KEY_PAPER_LIST);
                 for(int i = 0; i < subjectArr.length(); i++){
                     JSONObject jSubject = subjectArr.getJSONObject(i);
                     ExamSubject subject = new ExamSubject();
@@ -260,7 +270,7 @@ public class JsonHelper {
 
         try{
             JSONObject challengeObj = new JSONObject(inStr);
-            if(challengeObj.getBoolean(KEY_TYPE_RX)){
+            if(challengeObj.getBoolean(MAJOR_KEY_TYPE_RX)){
                 challengeMsg    = challengeObj.getString(Connector.CONNECT_MESSAGE);
                 return challengeMsg;
             } else {

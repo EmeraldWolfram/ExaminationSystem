@@ -65,10 +65,10 @@ public class InfoDisplayModelTest {
     public void updateSubjects() throws Exception {
         assertEquals(0, subjects.size());
         MESSAGE_FROM_CHIEF = "{\"Result\":true,\"PaperList\":[" +
-                "{\"PaperDesc\":\"SUBJECT 1\",\"Venue\":\"M4\",\"PaperCode\":\"BAME 0001\"," +
-                                                "\"Date\":\"10:10:2016\",\"Session\":\"AM\"}," +
-                "{\"PaperDesc\":\"SUBJECT 2\",\"Venue\":\"M4\",\"PaperCode\":\"BAME 0002\"," +
-                                                "\"Date\":\"9:10:2016\",\"Session\":\"AM\"}]}";
+                "{\"PaperDesc\":\"SUBJECT 1\",\"PaperVenue\":\"M4\",\"PaperCode\":\"BAME 0001\"," +
+                                                "\"PaperDate\":\"10:10:2016\",\"PaperSession\":\"AM\"}," +
+                "{\"PaperDesc\":\"SUBJECT 2\",\"PaperVenue\":\"M4\",\"PaperCode\":\"BAME 0002\"," +
+                                                "\"PaperDate\":\"9:10:2016\",\"PaperSession\":\"AM\"}]}";
 
         model.updateSubjects(MESSAGE_FROM_CHIEF);
 

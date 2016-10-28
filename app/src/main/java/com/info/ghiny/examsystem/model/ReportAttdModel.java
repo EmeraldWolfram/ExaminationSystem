@@ -28,7 +28,7 @@ public class ReportAttdModel implements ReportAttdMVP.Model {
     @Override
     public void uploadAttdList() throws ProcessException{
         ConnectionTask.setCompleteFlag(false);
-        ExternalDbLoader.updateAttdList(TakeAttdModel.getAttdList());
+        ExternalDbLoader.updateAttendanceList(TakeAttdModel.getAttdList());
     }
 
     @Override

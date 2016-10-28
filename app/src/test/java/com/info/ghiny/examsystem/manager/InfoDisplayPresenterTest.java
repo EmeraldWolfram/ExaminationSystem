@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
@@ -89,7 +88,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate1_PositiveTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
 
         manager.onCreate(intent);
 
@@ -103,7 +102,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate2_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
         doThrow(new ProcessException(ProcessException.MESSAGE_TOAST))
                 .when(taskModel).updateSubjects(MESSAGE_FROM_CHIEF);
 
@@ -118,7 +117,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate3_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        doThrow(new NullPointerException()).when(intent).getStringExtra(JsonHelper.CANDIDATES);
+        doThrow(new NullPointerException()).when(intent).getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
 
         manager.onCreate(intent);
 

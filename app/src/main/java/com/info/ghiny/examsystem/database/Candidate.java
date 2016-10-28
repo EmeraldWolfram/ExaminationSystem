@@ -18,7 +18,7 @@ public class Candidate {
     public static final String CDD_ATTENDAND    = "Attendance";
     public static final String CDD_PROG         = "Programme";
     public static final String CDD_TABLE        = "TableNo";
-    public static final String CDD_PAPER        = "Code";
+    public static final String CDD_PAPER        = "PaperCode";
     public static final String CDD_DB_ID        = "_id";
 
     private Integer tableNumber;

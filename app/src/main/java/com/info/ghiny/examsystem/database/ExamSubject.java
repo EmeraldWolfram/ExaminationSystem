@@ -14,9 +14,9 @@ public class ExamSubject {
     public static final String PAPER_DESC       = "PaperDesc";
     public static final String PAPER_START_NO   = "PaperStartNo";
     public static final String PAPER_TOTAL_CDD  = "PaperTotalCdd";
-    public static final String PAPER_SESSION    = "Session";
-    public static final String PAPER_VENUE      = "Venue";
-    public static final String PAPER_DATE       = "Date";
+    public static final String PAPER_SESSION    = "PaperSession";
+    public static final String PAPER_VENUE      = "PaperVenue";
+    public static final String PAPER_DATE       = "PaperDate";
 
     private String paperCode;
     private String paperDesc;

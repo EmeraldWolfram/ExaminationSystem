@@ -303,7 +303,7 @@ public class ExternalDbLoaderTest {
 
     //= UpdateAttdList() ===========================================================================
     /**
-     * updateAttdList(AttendanceList attdList)
+     * updateAttendanceList(AttendanceList attdList)
      *
      * format the updated attdList into a JSONObject containing a JSON Array of Candidates
      * send out the JSON Object in string format
@@ -317,7 +317,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testUpdateAttdList1_TcpNotNull() throws Exception {
         try{
-            ExternalDbLoader.updateAttdList(new AttendanceList());
+            ExternalDbLoader.updateAttendanceList(new AttendanceList());
 
             verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err) {
@@ -329,7 +329,7 @@ public class ExternalDbLoaderTest {
     public void testUpdateAttdList2_NullTcpThrowFATAL() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-            ExternalDbLoader.updateAttdList(new AttendanceList());
+            ExternalDbLoader.updateAttendanceList(new AttendanceList());
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
@@ -340,7 +340,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testUpdateAttdList3_NullInputThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.updateAttdList(null);
+            ExternalDbLoader.updateAttendanceList(null);
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());

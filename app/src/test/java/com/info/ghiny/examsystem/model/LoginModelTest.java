@@ -283,7 +283,7 @@ public class LoginModelTest {
     @Test
     public void test() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(JsonHelper.KEY_TYPE_RX, true);
+        jsonObject.put(JsonHelper.MAJOR_KEY_TYPE_RX, true);
         //jsonObject.put(StaffIdentity.STAFF_NAME, "STAFF_NAME");
         //jsonObject.put(StaffIdentity.STAFF_ID_NO, "012345");
         //jsonObject.put(StaffIdentity.STAFF_VENUE, "M4");
@@ -305,7 +305,7 @@ public class LoginModelTest {
         arr.put(subject1);
         arr.put(subject2);
 
-        jsonObject.put(JsonHelper.PAPER_LIST, arr);
+        jsonObject.put(JsonHelper.MINOR_KEY_PAPER_LIST, arr);
 
         System.out.printf("%s", jsonObject.toString());
 

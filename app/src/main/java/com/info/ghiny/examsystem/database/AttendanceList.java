@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by GhinY on 25/05/2016.
  */
 public class AttendanceList {
+
     private HashMap<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>>
             attendanceList;
 

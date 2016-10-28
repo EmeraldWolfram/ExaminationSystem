@@ -433,6 +433,7 @@ public class ReportAttdModelTest {
     @Test
     public void testAssignCandidate_4_NegativeTest_AttdListIsNull() throws Exception {
         try{
+            TakeAttdModel.setAttdList(null);
             helper.assignCandidate(cdd1.getExamIndex());
 
             fail("Expected FATAL_MESSAGE but none were thrown");

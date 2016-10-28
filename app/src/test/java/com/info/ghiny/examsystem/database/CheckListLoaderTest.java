@@ -32,7 +32,7 @@ public class CheckListLoaderTest {
     private CheckListLoader dbLoader;
 
     private String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
-            "(ExamIndex, RegNum, TableNo, Status, Code, Programme) VALUES (";
+            "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme) VALUES (";
 
     @Before
     public void setUp() throws Exception {

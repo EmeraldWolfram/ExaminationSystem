@@ -356,7 +356,7 @@ public class AttendanceListTest {
         assertEquals(test, testList);
     }
 
-    //= GET NUMBER OF CANDIDATES ===================================================================
+    //= GET NUMBER OF MINOR_KEY_CANDIDATES ===================================================================
     /**
      * getTotalNumberOfCandidate() method should return the total number of
      * candidate to be examine WITHOUT considering the status

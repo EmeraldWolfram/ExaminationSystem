@@ -221,12 +221,12 @@ public class TakeAttdModelTest {
      */
     @Test
     public void testCheckDownloadResult1_PositiveRespondFromChief() throws Exception {
-        MESSAGE_FROM_CHIEF = "{\"CddList\":[" +
-                "{\"ExamIndex\":\"W0001AAAA\",\"Status\":\"LEGAL\",\"Code\":\"MPU3123\",\"RegNum\":\"15WAR00001\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0002AAAA\",\"Status\":\"LEGAL\",\"Code\":\"MPU3123\",\"RegNum\":\"15WAR00002\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0003AAAA\",\"Status\":\"LEGAL\",\"Code\":\"MPU3123\",\"RegNum\":\"15WAR00003\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0004AAAA\",\"Status\":\"BARRED\",\"Code\":\"MPU3123\",\"RegNum\":\"15WAR00004\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0005AAAA\",\"Status\":\"EXEMPTED\",\"Code\":\"MPU3123\",\"RegNum\":\"15WAR00005\",\"Programme\":\"RMB3\"}]," +
+        MESSAGE_FROM_CHIEF = "{\"AttendanceList\":[" +
+                "{\"ExamIndex\":\"W0001AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00001\",\"Programme\":\"RMB3\"}," +
+                "{\"ExamIndex\":\"W0002AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00002\",\"Programme\":\"RMB3\"}," +
+                "{\"ExamIndex\":\"W0003AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00003\",\"Programme\":\"RMB3\"}," +
+                "{\"ExamIndex\":\"W0004AAAA\",\"Status\":\"BARRED\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00004\",\"Programme\":\"RMB3\"}," +
+                "{\"ExamIndex\":\"W0005AAAA\",\"Status\":\"EXEMPTED\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00005\",\"Programme\":\"RMB3\"}]," +
                 "\"PaperMap\":[" +
                 "{\"PaperStartNo\":45,\"PaperDesc\":\"Mathematic\",\"PaperCode\":\"BABE2203\",\"PaperTotalCdd\":4}," +
                 "{\"PaperStartNo\":32,\"PaperDesc\":\"Hubungan Etnik\",\"PaperCode\":\"MPU3123\",\"PaperTotalCdd\":9}]," +

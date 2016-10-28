@@ -34,7 +34,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     @Override
     public void onCreate(Intent intent){
         try{
-            String message  = intent.getStringExtra(JsonHelper.CANDIDATES);
+            String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
             taskModel.updateSubjects(message);
             taskView.notifyDataSetChanged();
         } catch (Exception err) {
