@@ -28,10 +28,15 @@ public class PopUpLogin extends Activity {
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);
         TextView entView  = (TextView)findViewById(R.id.enterPasswordText);
-        nameView.setText(LoginModel.getStaff().getName());
-        nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
-        regNView.setText(LoginModel.getStaff().getIdNo());
-        regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+
+        if(LoginModel.getStaff() != null){
+            nameView.setText(LoginModel.getStaff().getName());
+            nameView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+
+            regNView.setText(LoginModel.getStaff().getIdNo());
+            regNView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.THICK_FONT));
+        }
+
         entView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         DisplayMetrics displayMetrics = new DisplayMetrics();

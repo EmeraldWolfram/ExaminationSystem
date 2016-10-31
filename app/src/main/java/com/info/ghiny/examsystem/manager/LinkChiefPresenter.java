@@ -34,35 +34,17 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         this.handler = handler;
     }
 
-    public void setReconnect(boolean reconnect) {
+    void setReconnect(boolean reconnect) {
         this.reconnect = reconnect;
     }
 
-    public boolean isReconnect() {
+    boolean isReconnect() {
         return reconnect;
-    }
-
-    @Override
-    public void onScan(String scanStr){
-        try{
-            taskView.pauseScanning();
-            taskView.beep();
-            taskModel.tryConnectWithQR(scanStr);
-            taskView.navigateActivity(MainLoginActivity.class);
-        } catch (ProcessException err) {
-            taskView.displayError(err);
-            taskView.resumeScanning();
-        }
     }
 
     @Override
     public void onCreate(){
         reconnect = taskModel.tryConnectWithDatabase();
-    }
-
-    @Override
-    public void onResume() {
-        taskView.resumeScanning();
     }
 
     @Override
@@ -87,6 +69,24 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             });
         }
         this.onResume();
+    }
+
+    @Override
+    public void onResume() {
+        taskView.resumeScanning();
+    }
+
+    @Override
+    public void onScan(String scanStr){
+        try{
+            taskView.pauseScanning();
+            taskView.beep();
+            taskModel.tryConnectWithQR(scanStr);
+            taskView.navigateActivity(MainLoginActivity.class);
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+            taskView.resumeScanning();
+        }
     }
 
     @Override

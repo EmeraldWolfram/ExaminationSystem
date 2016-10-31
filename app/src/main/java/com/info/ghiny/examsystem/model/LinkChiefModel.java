@@ -9,6 +9,7 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by GhinY on 05/10/2016.
@@ -25,8 +26,8 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
 
     @Override
     public void tryConnectWithQR(String scanStr) throws ProcessException{
-        if(scanStr.contains("CHIEF:") && scanStr.endsWith("$") && scanStr.startsWith("$")){
-            String[] chiefArr   = scanStr.split(":");
+        String[] chiefArr   = scanStr.split(":");
+        if(chiefArr.length == 4 && scanStr.endsWith("$") && scanStr.startsWith("$")){
             Connector connector     = new Connector(chiefArr[1],
                     Integer.parseInt(chiefArr[2]), chiefArr[3]);
 

@@ -30,11 +30,12 @@ import java.util.List;
 
 public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP.ViewFace {
     public static final String TAG = LinkChiefActivity.class.getSimpleName();
+    //Presenter and Manager
     private ErrorManager errorManager;
     private BeepManager beepManager;
     private LinkChiefMVP.PresenterFace taskPresenter;
+    //View Objects
     private ProgressDialog progDialog;
-
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -56,26 +57,28 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
         }
         setContentView(R.layout.activity_link_chief);
 
+        initView();
         initMVP();
 
         taskPresenter.onCreate();
         barcodeView.decodeContinuous(callback);
     }
 
-    private void initMVP(){
-        barcodeView  = (BarcodeView) findViewById(R.id.ipScanner);
+    private void initView(){
+        barcodeView                 = (BarcodeView) findViewById(R.id.ipScanner);
+        errorManager                = new ErrorManager(this);
+        beepManager                 = new BeepManager(this);
+        beepManager.setBeepEnabled(true);
+        beepManager.setVibrateEnabled(true);
+    }
 
+    private void initMVP(){
         LinkChiefPresenter presenter= new LinkChiefPresenter(this);
         CheckListLoader dbLoader    = new CheckListLoader(this);
         LinkChiefModel model        = new LinkChiefModel(dbLoader, presenter);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
         taskPresenter               = presenter;
-
-        errorManager                = new ErrorManager(this);
-        beepManager                 = new BeepManager(this);
-        beepManager.setBeepEnabled(true);
-        beepManager.setVibrateEnabled(true);
     }
 
     @Override

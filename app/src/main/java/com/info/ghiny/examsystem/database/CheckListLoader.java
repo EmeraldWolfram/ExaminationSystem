@@ -15,7 +15,7 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class CheckListLoader {
-    private static final int DATABASE_VERSION       = 4;
+    private static final int DATABASE_VERSION       = 5;
     private static final String DATABASE_NAME       = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
@@ -315,8 +315,7 @@ public class CheckListLoader {
                     + Connector.CONNECT_IP      + " TEXT    NOT NULL, "
                     + Connector.CONNECT_PORT    + " INTEGER NOT NULL, "
                     + Connector.CONNECT_DATE    + " TEXT    NOT NULL, "
-                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL, "
-                    + Connector.CONNECT_MESSAGE + " TEXT    NOT NULL)");
+                    + Connector.CONNECT_SESSION + " TEXT    NOT NULL)");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + USER_TABLE + "( "
                     + StaffIdentity.STAFF_DB_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "

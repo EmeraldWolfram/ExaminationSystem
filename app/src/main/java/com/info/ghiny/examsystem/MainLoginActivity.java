@@ -52,6 +52,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_login);
 
+        initView();
         initMVP();
 
         TextView idView = (TextView)findViewById(R.id.identityText);    assert idView  != null;
@@ -60,11 +61,13 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
         barcodeView.decodeContinuous(callback);
     }
 
-    private void initMVP(){
+    private void initView(){
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
         errorManager    = new ErrorManager(this);
-        dbLoader        = new CheckListLoader(this);
+    }
 
+    private void initMVP(){
+        dbLoader        = new CheckListLoader(this);
         LoginPresenter presenter  = new LoginPresenter(this);
         LoginModel model       = new LoginModel(presenter, dbLoader);
         presenter.setHandler(new Handler());
