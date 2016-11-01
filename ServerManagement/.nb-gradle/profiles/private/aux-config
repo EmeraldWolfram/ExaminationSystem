@@ -5,23 +5,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
       <group>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/ChiefData.java</file>
         <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/MessageListener.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/ConnectDB.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/MainServer.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/test/java/Testing/Package/test.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/querylist/CandidateAttendance.java</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/build.gradle</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/querylist/CddPaper.java</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/examdatabase/ExamDatabase.java</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/examdatabase/ExamDataControl.java</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/examdatabase/ExamDataGUI.java</file>
       </group>
     </open-files>
     <editor-bookmarks lastBookmarkId="0" xmlns="http://www.netbeans.org/ns/editor-bookmarks/2"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
       <group>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/ChiefData.java</file>
         <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/MessageListener.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/ConnectDB.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/mainserver/MainServer.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/test/java/Testing/Package/test.java</file>
-        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/querylist/CandidateAttendance.java</file>
+        <file>file:/C:/Users/Krissy/Documents/NetBeansProjects/ServerManagement/src/main/java/querylist/CddPaper.java</file>
       </group>
     </open-files>
   </auxiliary>

@@ -38,6 +38,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
     compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
     
+    // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-all
+    compile group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.4'
+
     // You can read more about how to add dependency here:
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     testCompile group: 'junit', name: 'junit', version: '4.10'

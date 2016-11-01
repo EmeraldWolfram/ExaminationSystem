@@ -32,11 +32,13 @@ public class test {
    
    
    @Test
-   public void testGetChiefInfoList(){
+   public void testVerifyStaff(){
        
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
+       String status = null;
+       
         try {
-            chief.getChiefInfo();
+            chief.getStatus("staff1","123456");
 //            json = new JSONObject(chief.jooqtest1());
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -45,17 +47,17 @@ public class test {
         }
       
         
-        assertEquals("CHIEF", chief.getStatus());
+        assertEquals("CHIEF", status);
        
    }
    
    @Test
    public void testGetInvigilatorList(){
 //       when(chief.getSession_id()).thenReturn(2);
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<Invigilator> invList = new ArrayList<>();
         try {
-            invList = chief.getInvigilatorList();
+            invList = chief.getInvigilatorList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -68,10 +70,10 @@ public class test {
    @Test
    public void testGetPaperInfoList(){
 //       when(chief.getSession_id()).thenReturn(2);
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<PaperInfo> paperInfoList = new ArrayList<>();
         try {
-            paperInfoList = chief.getPaperInfoList();
+            paperInfoList = chief.getPaperInfoList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -83,10 +85,10 @@ public class test {
    
    @Test
    public void testGetPaperList(){
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<Paper> paperList = new ArrayList<>();
         try {
-            paperList = chief.getPaperList();
+            paperList = chief.getPaperList("M", 1);
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -99,10 +101,10 @@ public class test {
    
    @Test
    public void testCddAttdList(){
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<CandidateAttendance> paperList = new ArrayList<>();
         try {
-            paperList = chief.getCddAttdList();
+            paperList = chief.getCddAttdList("M",1);
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -113,10 +115,10 @@ public class test {
    @Test
    public void testGetCddInfoList(){
        
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<CandidateInfo> cddList = new ArrayList<>();
         try {
-            cddList = chief.getCddInfoList();
+            cddList = chief.getCddInfoList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex) {
@@ -129,10 +131,10 @@ public class test {
    @Test
    public void testGetInvList(){
        
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<Invigilator> invList = new ArrayList<>();
         try {
-            invList = chief.getInvigilatorList();
+            invList = chief.getInvigilatorList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex) {
@@ -145,7 +147,7 @@ public class test {
    @Test
    public void testProgrammeList(){
        
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<Programme> programmeList = new ArrayList<>();
         try {
             programmeList = chief.getProgrammeList();
@@ -162,10 +164,10 @@ public class test {
    @Test
    public void testGetStaffInfoList(){
        
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<StaffInfo> staffInfoList = new ArrayList<>();
         try {
-            staffInfoList = chief.getStaffInfoList();
+            staffInfoList = chief.getStaffInfoList("M", 1);
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex) {
@@ -178,11 +180,11 @@ public class test {
    @Test
    public void testGetVenuesList(){
       
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<Venue> venueList = new ArrayList<>();
 
         try {
-            venueList = chief.getVenueList();
+            venueList = chief.getVenueList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex) {
@@ -195,11 +197,11 @@ public class test {
    @Test
    public void testChAndReList(){
       
-       chief = new ChiefData("Staff3","M");
+       chief = new ChiefData();
        ArrayList<ChiefAndRelief> chAndReList = new ArrayList<>();
 
         try {
-            chAndReList = chief.getChAndReList();
+            chAndReList = chief.getChAndReList("M");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex) {
@@ -211,23 +213,23 @@ public class test {
    
    @Test
    public void testExamDataList(){
-        chief = new ChiefData("Staff3","M");
+        chief = new ChiefData();
         try {
             ExamDataList examDataList = new ExamDataList(
-                    chief.getCddAttdList(),
-                    chief.getCddInfoList(),
-                    chief.getChAndReList(),
-                    chief.getInvigilatorList(),
-                    chief.getPaperList(),
-                    chief.getPaperInfoList(),
+                    chief.getCddAttdList("M",1),
+                    chief.getCddInfoList("M"),
+                    chief.getChAndReList("M"),
+                    chief.getInvigilatorList("M"),
+                    chief.getPaperList("M",1),
+                    chief.getPaperInfoList("M"),
                     chief.getProgrammeList(),
-                    chief.getStaffInfoList(),
-                    chief.getVenueList()
+                    chief.getStaffInfoList("M",1),
+                    chief.getVenueList("M")
             );
             
             ObjectMapper mapper = new ObjectMapper();
             String jsonInString = mapper.writeValueAsString(examDataList);
-            System.out.println(jsonInString);
+            //System.out.println(jsonInString);
             
             ExamDataList test = mapper.readValue(jsonInString, ExamDataList.class);
         } catch (SQLException | IOException ex) {
@@ -236,6 +238,19 @@ public class test {
         
         
 
+   }
+   
+   @Test
+   public void testGetCddPaperList(){
+       ChiefData chief = new ChiefData();
+        try {
+            ArrayList<CddPaper> cddPaperList = chief.getCddPaperList("16WAR25342");
+//            System.out.
+        } catch (SQLException ex) {
+            Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
    }
    
 }

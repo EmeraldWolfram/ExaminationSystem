@@ -74,7 +74,7 @@ public class ServerComm extends Thread implements Runnable{
 
 //        System.out.println("Connecting to " + serverName +
 //		 " on port " + port);
-         socket = new Socket("localhost", 5006);
+//         socket = new Socket("localhost", 5006);
 //         System.out.println("Just connected to " 
 //		 + socket.getRemoteSocketAddress());
         
@@ -176,7 +176,10 @@ public class ServerComm extends Thread implements Runnable{
                                     updateDB(json.getJSONObject("Values").toString());
                                     break;
                                     
-                case "Identity":   putQueue(json.getLong("ThreadId"), message);
+                case "Identity":    putQueue(json.getLong("ThreadId"), message);
+                                    break;
+                
+                case "CddPapers":   putQueue(json.getLong("ThreadId"), message);
                                     break;
                                     
             }

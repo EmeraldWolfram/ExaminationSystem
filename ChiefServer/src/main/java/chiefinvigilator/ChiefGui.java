@@ -17,14 +17,16 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
-import qrgen.Screen;
+import qrgen.QRgen;
 import chiefinvigilator.InfoData;
 import java.awt.BorderLayout;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.TableRowSorter;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -34,27 +36,18 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
  */
 public class ChiefGui extends javax.swing.JFrame {
 //    Staff staff = new Staff();
-    static DefaultTableModel staffInfoTableModel = new DefaultTableModel();
+    DefaultTableModel staffInfoTableModel = new DefaultTableModel();
     DefaultTableModel candidateTableModel = new DefaultTableModel();
     DefaultComboBoxModel  venueBoxModel = new DefaultComboBoxModel();
     DefaultComboBoxModel  statusBoxModel = new DefaultComboBoxModel();
     
-    static Screen s = new Screen();
     JLabel qrLabel = new JLabel("Scan the QR Code to sign in.");
-    static ChiefServer chief = new ChiefServer();
-    ServerComm serverComm;
-    
+
     /**
      * Creates new form ChiefGui
      */
     public ChiefGui() {
-        try {
-            serverComm = new ServerComm();
-        } catch (IOException ex) {
-            Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         initComponents();
         prepareComboBox();
         candidateTableModel = (DefaultTableModel) candidateTable.getModel();
@@ -102,7 +95,7 @@ public class ChiefGui extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        candSearch = new javax.swing.JButton();
         regNumTextField = new javax.swing.JTextField();
         venueComboBox = new javax.swing.JComboBox<>();
         statusComboBox = new javax.swing.JComboBox<>();
@@ -110,24 +103,6 @@ public class ChiefGui extends javax.swing.JFrame {
         tableNumTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        chiefTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chiefTabbedPaneStateChanged(evt);
-            }
-        });
-        chiefTabbedPane.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                chiefTabbedPaneMouseClicked(evt);
-            }
-        });
-
-        signInButton.setText("Sign In");
-        signInButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                signInButtonActionPerformed(evt);
-            }
-        });
 
         staffInfoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -158,23 +133,11 @@ public class ChiefGui extends javax.swing.JFrame {
             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
         );
 
-        idTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                idTextFieldActionPerformed(evt);
-            }
-        });
-
         jLabel1.setText("ID:");
 
         jLabel2.setText("Password:");
 
         jLabel8.setText("Block:");
-
-        blockTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                blockTextFieldActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -283,16 +246,11 @@ public class ChiefGui extends javax.swing.JFrame {
 
         jLabel7.setText("Table Number:");
 
-        jButton1.setText("Search");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        candSearch.setText("Search");
 
         venueComboBox.setModel(venueBoxModel);
 
-        statusComboBox.setModel(statusBoxModel);
+        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "ABSENT", "PRESENT", "EXEMPTED", "BARRED" }));
 
         attendanceComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "ABSENT", "PRESENT" }));
 
@@ -323,7 +281,7 @@ public class ChiefGui extends javax.swing.JFrame {
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
                         .addComponent(tableNumTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1))
+                    .addComponent(candSearch))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -344,7 +302,7 @@ public class ChiefGui extends javax.swing.JFrame {
                         .addComponent(jLabel6)
                         .addComponent(regNumTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(attendanceComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1))
+                    .addComponent(candSearch))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -402,104 +360,27 @@ public class ChiefGui extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void signInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInButtonActionPerformed
-
-                
-        try {
-            serverComm.loginToServer(idTextField.getText(), new String(passwordField.getPassword()), blockTextField.getText());
-            
-        
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        
-
-        
-    }//GEN-LAST:event_signInButtonActionPerformed
-
-    private void idTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_idTextFieldActionPerformed
-
-    private void chiefTabbedPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chiefTabbedPaneMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_chiefTabbedPaneMouseClicked
-
-    private void chiefTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chiefTabbedPaneStateChanged
-        // TODO add your handling code here:
-        if(chiefTabbedPane.getSelectedIndex()== 1){
-            
-            try {
-                chief.setPort();
-            } catch (IOException ex) {
-                Logger.getLogger(ChiefGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            generateQRInterface(chief.getServerSocket());
-
-            timer.start();
-        }
-        else
-            timer.stop();
-        
-    }//GEN-LAST:event_chiefTabbedPaneStateChanged
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        InfoData data = new InfoData();
-        
-        ArrayList<InfoData> cddList = new ArrayList<>();
-        
-        try {
-            cddList = data.getDataFromTable();
-        } catch (CustomException ex) {
-            System.out.println(ex.getMessage());
-        }
-        
-        candidateTableModel.setRowCount(0);
-        
-        for(int i = 0; i<cddList.size(); i++){
-                candidateTableModel.addRow(new Object[]{cddList.get(i).venueName, cddList.get(i).regNum, cddList.get(i).status,
-                cddList.get(i).attendance, cddList.get(i).tableNum
-            });
-            }
-        
-        try {
-            totalCddLabel.setText("Total Candidate: "+ data.getCountTotalCdd());
-            preCddLabel.setText("Present Candidate: "+ data.getCountAttdCdd("PRESENT"));
-            absCddLabel.setText("Absent Candidate: "+ data.getCountAttdCdd("ABSENT"));
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void blockTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blockTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_blockTextFieldActionPerformed
-
+    public void addSignInButtonListener(ActionListener al){
+        this.signInButton.addActionListener(al);
+    }
     
-    public void generateQRInterface(ServerSocket socket){
+    public void addChiefTabbedListener(ChangeListener cl){
+        this.chiefTabbedPane.addChangeListener(cl);
+    }
+
+    public void addCandSearchListener(MouseListener al){
+        this.candSearch.addMouseListener(al);
+    }
+    
+    public void addQRPanel(QRgen s){
         qrGenPanel.removeAll();
-        s = new Screen(socket, serverComm);
-        s.setPreferredSize(new Dimension(500,500));
         qrGenPanel.add(s);
         qrGenPanel.revalidate(); 
         qrGenPanel.repaint();
-        
-    }
-    
-    public static void regenerateQRInterface(){
-        try {
-                chief.setPort();
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        s.regenerateQR(chief.getServerSocket());
     }
     
     
-    public static void addStaffInfoToRow(Staff staff){
+    public void addStaffInfoToRow(Staff staff){
         staffInfoTableModel = (DefaultTableModel) staffInfoTable.getModel();
         staffInfoTableModel.addRow(new Object[]{staff.getID(),staff.getName(),
                                                 staff.getVenue(),staff.getStatus()});
@@ -507,7 +388,7 @@ public class ChiefGui extends javax.swing.JFrame {
 
     }
     
-    public static void removeStaffInfoFromRow(Staff staff) {
+    public void removeStaffInfoFromRow(Staff staff) {
     for (int i = staffInfoTableModel.getRowCount() - 1; i >= 0; --i) {
  
             if (staffInfoTableModel.getValueAt(i, 0).equals(staff.getID())) {
@@ -532,32 +413,87 @@ public class ChiefGui extends javax.swing.JFrame {
        for(int i = 0; i<list.size(); i++){
            venueBoxModel.addElement(list.get(i));
        }
-       AutoCompleteDecorator.decorate(venueComboBox);
+//       AutoCompleteDecorator.decorate(venueComboBox);
        
        statusBoxModel.addElement("");
        for(int i = 0; i<list.size(); i++){
-           statusBoxModel.addElement(list.get(i));
+//           statusBoxModel.addElement(list.get(i));
        }
-       AutoCompleteDecorator.decorate(statusComboBox);
+//       AutoCompleteDecorator.decorate(statusComboBox);
     }
     
-    class TimerActionListener implements ActionListener{
-      public void actionPerformed(ActionEvent e) {
-          regenerateQRInterface();
-            
-      }
+    /**
+     * @brief   set the candidate table row number
+     * @param num 
+     */
+    public void setCandidateTableModelRow(Integer num){
+        candidateTableModel.setRowCount(num);
     }
-
-    Timer timer = new Timer(10000, new TimerActionListener());
-
+    
+    /**
+     * @brief   add new object to candidate table
+     * @param object 
+     */
+    public void addCandidateTableModelRow(Object[] object){
+        candidateTableModel.addRow(object);
+    }
+    
+    /**
+     * @brief   set or update the number in the summary panel
+     * @param totalCdd
+     * @param presentCdd
+     * @param absentCdd 
+     */
+    public void setSummaryPanel(Integer totalCdd, Integer presentCdd, Integer absentCdd){
+        totalCddLabel.setText("Total Candidate: "+ totalCdd);
+        preCddLabel.setText("Present Candidate: "+ presentCdd);
+        absCddLabel.setText("Absent Candidate: "+ absentCdd);
+    }
+    
+    public Integer getTabbedNumber(){
+        return chiefTabbedPane.getSelectedIndex();
+    }
+    
+    public String getIdField(){
+        return this.idTextField.getText();
+    }
+    
+    public String getPsField(){
+        return new String(passwordField.getPassword());
+    }
+    
+    public String getBlockField(){
+        return blockTextField.getText();
+    }
+    
+    public String getVenueComboBox(){
+        return venueComboBox.getSelectedItem().toString();
+    }
+    
+    public String getRegNumCandidiate(){
+        return regNumTextField.getText();
+    }
+    
+    public String getStatusComboBox(){
+        return statusComboBox.getSelectedItem().toString();
+    }
+    
+    public String getAttendanceComboBox(){
+        return attendanceComboBox.getSelectedItem().toString();
+    }
+    
+    public String getTableNumber(){
+        return tableNumTextField.getText();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel absCddLabel;
     private javax.swing.JComboBox<String> attendanceComboBox;
     private javax.swing.JTextField blockTextField;
+    private javax.swing.JButton candSearch;
     private static javax.swing.JTable candidateTable;
     public static javax.swing.JTabbedPane chiefTabbedPane;
     private javax.swing.JTextField idTextField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

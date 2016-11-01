@@ -441,7 +441,7 @@
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
                                               <Component id="tableNumTextField" min="-2" pref="85" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="candSearch" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace pref="23" max="32767" attributes="0"/>
                                   </Group>
@@ -467,7 +467,7 @@
                                               <Component id="regNumTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="attendanceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="jButton1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="candSearch" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
@@ -500,12 +500,12 @@
                                 <Property name="text" type="java.lang.String" value="Table Number:"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JButton" name="jButton1">
+                            <Component class="javax.swing.JButton" name="candSearch">
                               <Properties>
                                 <Property name="text" type="java.lang.String" value="Search"/>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="candSearchActionPerformed"/>
                               </Events>
                             </Component>
                             <Component class="javax.swing.JTextField" name="regNumTextField">
@@ -522,8 +522,14 @@
                             </Component>
                             <Component class="javax.swing.JComboBox" name="statusComboBox">
                               <Properties>
-                                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                                  <Connection code="statusBoxModel" type="code"/>
+                                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                                  <StringArray count="5">
+                                    <StringItem index="0" value=""/>
+                                    <StringItem index="1" value="ABSENT"/>
+                                    <StringItem index="2" value="PRESENT"/>
+                                    <StringItem index="3" value="EXEMPTED"/>
+                                    <StringItem index="4" value="BARRED"/>
+                                  </StringArray>
                                 </Property>
                               </Properties>
                               <AuxValues>

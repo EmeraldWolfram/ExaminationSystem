@@ -17,49 +17,49 @@ import java.util.Iterator;
  */
 public class InfoData {
     
-    public String type = "";
-    public String data = "";
+    private String type = "";
+    private String data = "";
     
     //CandidateInfo
-    public String ic = ""; 
-    public String name = ""; 
-    public String regNum = "";
+    private String ic = ""; 
+    private String name = ""; 
+    private String regNum = "";
     
     //CandidateAttendance
-    public String status = ""; 
-    public String attendance = ""; 
-    public String tableNum = "";
+    private String status = ""; 
+    private String attendance = ""; 
+    private String tableNum = "";
     
     //Programme
-    public String progName = "";
-    public String faculty = "";
+    private String progName = "";
+    private String faculty = "";
     
     //Paper
-    public String date = "";
-    public String session = "";
+    private String date = "";
+    private String session = "";
     
     //PaperInfo
-    public String paperCode = "";
-    public String paperDesc = "";
+    private String paperCode = "";
+    private String paperDesc = "";
     
     //Venue
-    public String venueName = "";
-    public String venueSize = "";
+    private String venueName = "";
+    private String venueSize = "";
    
     //Invigilator And Assistant
-    public String invStatus = "";
-    public String invAttendnce = "";
+    private String invStatus = "";
+    private String invAttendnce = "";
     
     //StaffInfo
-    public String staffID = "";
-    public String staffName = "";
-    public String staffFaculty = "";
+    private String staffID = "";
+    private String staffName = "";
+    private String staffFaculty = "";
     
     //StudentMark
-    public Integer coursework;
-    public Integer practical;
+    private Integer coursework;
+    private Integer practical;
     
-    int day; int month; int year;
+    private int day; private int month; private int year;
     
     public InfoData(){
         
@@ -144,7 +144,12 @@ public class InfoData {
                 + " LEFT OUTER JOIN Programme ON CandidateInfo.Programme_id = Programme.Programme_id "
                 + " LEFT OUTER JOIN Paper ON CandidateAttendance.Paper_id = Paper.Paper_id "
                 + " LEFT OUTER JOIN PaperInfo ON Paper.PI_id = PaperInfo.PI_id "
-                + " LEFT OUTER JOIN Venue ON Paper.Venue_id = Venue.Venue_id "          
+                + " LEFT OUTER JOIN Venue ON Paper.Venue_id = Venue.Venue_id "
+                + " WHERE CandidateAttendance.Status " + checkInput(this.status)
+                + " AND CandidateAttendance.Attendance " + checkInput(this.attendance)
+                + " AND CandidateInfo.RegNum "+ checkInput(this.regNum)
+                + " AND Venue.Name "+ checkInput(this.venueName)
+                + " AND CandidateAttendance.TableNumber "+ checkInput(this.tableNum)
                 ;
 
         InfoData info;
@@ -207,13 +212,13 @@ public class InfoData {
                 + " LEFT OUTER JOIN Paper ON CandidateAttendance.Paper_id = Paper.Paper_id "
                 + " LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = StudentMark.PI_id "
                 + " LEFT OUTER JOIN Venue ON Paper.Venue_id = Venue.Venue_id "
-                + " WHERE CandidateInfo.IC " + checkInput(this.ic)
-                + " AND CandidateInfo.Name " + checkInput(this.name)
-                + " AND CandidateInfo.RegNum "+ checkInput(this.regNum)
-                + " AND ProgName "+ checkInput(this.progName)
-                + " AND Programme.Faculty "+ checkInput(this.faculty)
-                + " AND Paper.Date "+ checkInput(this.date)
-                + " AND PaperInfo.PaperCode "+ checkInput(this.paperCode)  
+                + " WHERE CandidateInfo.IC " + checkInput(this.getIc())
+                + " AND CandidateInfo.Name " + checkInput(this.getName())
+                + " AND CandidateInfo.RegNum "+ checkInput(this.getRegNum())
+                + " AND ProgName "+ checkInput(this.getProgName())
+                + " AND Programme.Faculty "+ checkInput(this.getFaculty())
+                + " AND Paper.Date "+ checkInput(this.getDate())
+                + " AND PaperInfo.PaperCode "+ checkInput(this.getPaperCode())  
                 ;
 
         InfoData info;
@@ -316,6 +321,370 @@ public class InfoData {
             ps.close();
             conn.close();
         return count;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the data
+     */
+    public String getData() {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    /**
+     * @return the ic
+     */
+    public String getIc() {
+        return ic;
+    }
+
+    /**
+     * @param ic the ic to set
+     */
+    public void setIc(String ic) {
+        this.ic = ic;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the regNum
+     */
+    public String getRegNum() {
+        return regNum;
+    }
+
+    /**
+     * @param regNum the regNum to set
+     */
+    public void setRegNum(String regNum) {
+        this.regNum = regNum;
+    }
+
+    /**
+     * @return the status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * @return the attendance
+     */
+    public String getAttendance() {
+        return attendance;
+    }
+
+    /**
+     * @param attendance the attendance to set
+     */
+    public void setAttendance(String attendance) {
+        this.attendance = attendance;
+    }
+
+    /**
+     * @return the tableNum
+     */
+    public String getTableNum() {
+        return tableNum;
+    }
+
+    /**
+     * @param tableNum the tableNum to set
+     */
+    public void setTableNum(String tableNum) {
+        this.tableNum = tableNum;
+    }
+
+    /**
+     * @return the progName
+     */
+    public String getProgName() {
+        return progName;
+    }
+
+    /**
+     * @param progName the progName to set
+     */
+    public void setProgName(String progName) {
+        this.progName = progName;
+    }
+
+    /**
+     * @return the faculty
+     */
+    public String getFaculty() {
+        return faculty;
+    }
+
+    /**
+     * @param faculty the faculty to set
+     */
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
+    /**
+     * @return the date
+     */
+    public String getDate() {
+        return date;
+    }
+
+    /**
+     * @param date the date to set
+     */
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    /**
+     * @return the session
+     */
+    public String getSession() {
+        return session;
+    }
+
+    /**
+     * @param session the session to set
+     */
+    public void setSession(String session) {
+        this.session = session;
+    }
+
+    /**
+     * @return the paperCode
+     */
+    public String getPaperCode() {
+        return paperCode;
+    }
+
+    /**
+     * @param paperCode the paperCode to set
+     */
+    public void setPaperCode(String paperCode) {
+        this.paperCode = paperCode;
+    }
+
+    /**
+     * @return the paperDesc
+     */
+    public String getPaperDesc() {
+        return paperDesc;
+    }
+
+    /**
+     * @param paperDesc the paperDesc to set
+     */
+    public void setPaperDesc(String paperDesc) {
+        this.paperDesc = paperDesc;
+    }
+
+    /**
+     * @return the venueName
+     */
+    public String getVenueName() {
+        return venueName;
+    }
+
+    /**
+     * @param venueName the venueName to set
+     */
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
+    }
+
+    /**
+     * @return the venueSize
+     */
+    public String getVenueSize() {
+        return venueSize;
+    }
+
+    /**
+     * @param venueSize the venueSize to set
+     */
+    public void setVenueSize(String venueSize) {
+        this.venueSize = venueSize;
+    }
+
+    /**
+     * @return the invStatus
+     */
+    public String getInvStatus() {
+        return invStatus;
+    }
+
+    /**
+     * @param invStatus the invStatus to set
+     */
+    public void setInvStatus(String invStatus) {
+        this.invStatus = invStatus;
+    }
+
+    /**
+     * @return the invAttendnce
+     */
+    public String getInvAttendnce() {
+        return invAttendnce;
+    }
+
+    /**
+     * @param invAttendnce the invAttendnce to set
+     */
+    public void setInvAttendnce(String invAttendnce) {
+        this.invAttendnce = invAttendnce;
+    }
+
+    /**
+     * @return the staffID
+     */
+    public String getStaffID() {
+        return staffID;
+    }
+
+    /**
+     * @param staffID the staffID to set
+     */
+    public void setStaffID(String staffID) {
+        this.staffID = staffID;
+    }
+
+    /**
+     * @return the staffName
+     */
+    public String getStaffName() {
+        return staffName;
+    }
+
+    /**
+     * @param staffName the staffName to set
+     */
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    /**
+     * @return the staffFaculty
+     */
+    public String getStaffFaculty() {
+        return staffFaculty;
+    }
+
+    /**
+     * @param staffFaculty the staffFaculty to set
+     */
+    public void setStaffFaculty(String staffFaculty) {
+        this.staffFaculty = staffFaculty;
+    }
+
+    /**
+     * @return the coursework
+     */
+    public Integer getCoursework() {
+        return coursework;
+    }
+
+    /**
+     * @param coursework the coursework to set
+     */
+    public void setCoursework(Integer coursework) {
+        this.coursework = coursework;
+    }
+
+    /**
+     * @return the practical
+     */
+    public Integer getPractical() {
+        return practical;
+    }
+
+    /**
+     * @param practical the practical to set
+     */
+    public void setPractical(Integer practical) {
+        this.practical = practical;
+    }
+
+    /**
+     * @return the day
+     */
+    public int getDay() {
+        return day;
+    }
+
+    /**
+     * @param day the day to set
+     */
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    /**
+     * @return the month
+     */
+    public int getMonth() {
+        return month;
+    }
+
+    /**
+     * @param month the month to set
+     */
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    /**
+     * @return the year
+     */
+    public int getYear() {
+        return year;
+    }
+
+    /**
+     * @param year the year to set
+     */
+    public void setYear(int year) {
+        this.year = year;
     }
  
 }

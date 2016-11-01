@@ -33,57 +33,72 @@ import org.jooq.impl.DSL;
 import org.jooq.Field;
 import static org.jooq.impl.DSL.*;
 import org.json.JSONObject;
+import querylist.CddPaper;
 
 /**
  *
  * @author Krissy
  */
 public class ChiefData {
-    String id;
-    String password;
-    String block;
-    String date;
-    String time;
-    String status = "";
+//    String id;
+//    String password;
+//    String block;
+//    String date;
+//    String time;
+//    String status = "";
     
-    boolean valid = false;
+    //boolean valid = false;
     StaffInfo chiefStaff;
-//    ChiefAndRelief chief;
     
     public ChiefData(){}
     
-    public ChiefData(   String id,
-                        String block
-                        ){
-        this.id = id;
-        this.block = block;
-    }
-    
-    public ChiefData(   String id,
-                        String password,
-                        String block
-                        ) throws SQLException, Exception{
-        this.id = id;
-        this.password = password;
-        this.block = block;
-        this.valid = staffVerify();
-        
-    }
+//    public ChiefData(   String id,
+//                        String block
+//                        ){
+//        this.id = id;
+//        this.block = block;
+//    }
+//    
+//    public ChiefData(   String id,
+//                        String password,
+//                        String block
+//                        ) throws SQLException, Exception{
+//        this.id = id;
+//        this.password = password;
+//        this.block = block;
+//        
+//    }
     
     public Integer getSession_id(){
         Integer session_id = null;
         return 1;
     }
     
-    public String getStatus(){
-        return this.status;
+    public String getStatus(String id, String block) throws SQLException{
+        String status = null;
+        Connection conn = new ConnectDB().connect();
+        
+        String sql = "SELECT * FROM ChiefAndRelief "
+                + "LEFT OUTER JOIN StaffInfo ON StaffInfo.SI_id = ChiefAndRelief.SI_id "
+                + "WHERE StaffID = ? AND Block = ?";
+                
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, id);
+        ps.setString(2, block);
+        ResultSet result = ps.executeQuery();
+        
+        while ( result.next() ){
+            status = result.getString("Status");
+        }
+        
+        return status;
     }
     
     /**
      * @Brief   To get the chief info base on the id
      * @throws SQLException 
      */
-    public void getChief_id() throws SQLException{
+/*    public void getChief_id() throws SQLException{
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT * FROM StaffInfo WHERE StaffID = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -102,7 +117,7 @@ public class ChiefData {
         result.close();
         ps.close();
         conn.close();
-    }
+    }*/
     
     /**
      * @brief   To check the id and the password of the staff from database
@@ -111,9 +126,8 @@ public class ChiefData {
      * @return match        The result of the checking ,true is correct while false is incorrect
      * @throws SQLException 
      */
-    public boolean staffVerify() throws SQLException, Exception {
+    public boolean verifyStaff(String id, String password) throws SQLException, Exception {
         boolean match = false;
-        
         
         Connection conn = new ConnectDB("StaffDatabase.db").connect();
         String sql = "SELECT Username, Password FROM User where Username=? and Password=?";
@@ -130,23 +144,23 @@ public class ChiefData {
         ps.close();
         conn.close();
             
-        getChiefInfo();
         return match;
     }
     
     
     /**
+     * @param block
      * @Brief   To get the status of there staff check whether is chief or not
      * @throws SQLException 
      */
-    public void getChiefInfo() throws SQLException{
+/*    public void setChiefInfo(String block) throws SQLException{
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT * FROM ChiefAndRelief "
                 + "WHERE SI_id = 3 "//(SELECT SI_id FROM StaffInfo WHERE StaffID = ?) "
                 + "AND Block = ? AND Status = 'CHIEF' ";
         PreparedStatement ps = conn.prepareStatement(sql);
 //        ps.setString(1, this.id);
-        ps.setString(1, this.block);
+        ps.setString(1, block);
 
         ResultSet result = ps.executeQuery();
         
@@ -167,15 +181,20 @@ public class ChiefData {
         ps.close();
         conn.close();
         
-    } 
+    } */
 
-    public ArrayList<Venue> getVenueList() throws SQLException{
+    /**
+     * @Brief   To get the venue list from database
+     * @return Arraylist of Venue object
+     * @throws SQLException 
+     */
+    public ArrayList<Venue> getVenueList(String block) throws SQLException{
         ArrayList<Venue> venueList = new ArrayList<>();
         
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT * FROM Venue WHERE Block = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
+        ps.setString(1, block);
 
         ResultSet result = ps.executeQuery();
         
@@ -195,10 +214,11 @@ public class ChiefData {
     }
     
     /**
-     * @Brief   To get the paper database base on the session id and block
+     * @Brief   To get the paper from database
+     * @return Arraylist of Paper object
      * @throws SQLException 
      */
-    public ArrayList<Paper> getPaperList() throws SQLException{
+    public ArrayList<Paper> getPaperList(String block, Integer sessionId) throws SQLException{
         ArrayList<Paper> paperList = new ArrayList<>();
         
         Connection conn = new ConnectDB().connect();
@@ -207,8 +227,8 @@ public class ChiefData {
                 + " WHERE Block = ?"
                 + " AND Session_id = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
-        ps.setInt(2, getSession_id());
+        ps.setString(1, block);
+        ps.setInt(2, sessionId);
 
         ResultSet result = ps.executeQuery();
         
@@ -230,8 +250,12 @@ public class ChiefData {
         return paperList;
     }
     
-    
-    public ArrayList<CandidateAttendance> getCddAttdList() throws SQLException{
+    /**
+     * @Brief   To get the list of CandidateAttendance list from database
+     * @return Arraylist of CandidateAttendance object
+     * @throws SQLException 
+     */
+    public ArrayList<CandidateAttendance> getCddAttdList(String block, Integer sessionId) throws SQLException{
         ArrayList<CandidateAttendance> cddAttdList = new ArrayList<>();
 
         Connection conn = new ConnectDB().connect();
@@ -242,8 +266,8 @@ public class ChiefData {
                 + "WHERE Block = ? AND Session_id = ?";
         
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
-        ps.setInt(2, getSession_id());
+        ps.setString(1, block);
+        ps.setInt(2, sessionId);
 
         ResultSet result = ps.executeQuery();
         
@@ -265,7 +289,7 @@ public class ChiefData {
         return cddAttdList;
     }
     
-    public ArrayList<CandidateInfo> getCddInfoList() throws SQLException{
+    public ArrayList<CandidateInfo> getCddInfoList(String block) throws SQLException{
         ArrayList<CandidateInfo> cddInfoList = new ArrayList<>();
 
         Connection conn = new ConnectDB().connect();
@@ -281,7 +305,7 @@ public class ChiefData {
 //                + ")";
         
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
+        ps.setString(1, block);
         ps.setInt(2, getSession_id());
 
         ResultSet result = ps.executeQuery();
@@ -305,14 +329,14 @@ public class ChiefData {
     }
     
     
-    public ArrayList<ChiefAndRelief> getChAndReList() throws SQLException{
+    public ArrayList<ChiefAndRelief> getChAndReList(String block) throws SQLException{
         ArrayList<ChiefAndRelief> chAndReList = new ArrayList<>();
         
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT * FROM ChiefAndRelief WHERE Session_id = ? AND Block = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, getSession_id());
-        ps.setString(2, this.block);
+        ps.setString(2, block);
 
         ResultSet result = ps.executeQuery();
         
@@ -341,7 +365,7 @@ public class ChiefData {
         return collectorList;
     }
     
-    public ArrayList<Invigilator> getInvigilatorList() throws SQLException{
+    public ArrayList<Invigilator> getInvigilatorList(String block) throws SQLException{
         ArrayList<Invigilator> invigilatorList = new ArrayList<>();
 
         Connection conn = new ConnectDB().connect();
@@ -350,7 +374,7 @@ public class ChiefData {
                 + "WHERE Session_id = ? AND Block = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, getSession_id());
-        ps.setString(2, this.block);
+        ps.setString(2, block);
 
         ResultSet result = ps.executeQuery();
         
@@ -372,7 +396,7 @@ public class ChiefData {
         return invigilatorList;
     }
     
-    public ArrayList<PaperInfo> getPaperInfoList() throws SQLException{
+    public ArrayList<PaperInfo> getPaperInfoList(String block) throws SQLException{
         ArrayList<PaperInfo> paperInfoList = new ArrayList<>();
 
         Connection conn = new ConnectDB().connect();
@@ -381,7 +405,7 @@ public class ChiefData {
                 + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
                 + "WHERE Block = ? AND Session_id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
+        ps.setString(1, block);
         ps.setInt(2, getSession_id());
 
         ResultSet result = ps.executeQuery();
@@ -431,7 +455,7 @@ public class ChiefData {
         return programmeList;
     }
     
-    public ArrayList<StaffInfo> getStaffInfoList() throws SQLException{
+    public ArrayList<StaffInfo> getStaffInfoList(String block, Integer sessionId) throws SQLException{
         ArrayList<StaffInfo> staffInfoList = new ArrayList<>();
         
         Connection conn = new ConnectDB().connect();
@@ -443,10 +467,10 @@ public class ChiefData {
                 + "OR (ChiefAndRelief.Block = ? AND ChiefAndRelief.Session_id = ?) ";
         
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.block);
-        ps.setInt(2, getSession_id());
-        ps.setString(3, this.block);
-        ps.setInt(4, getSession_id());
+        ps.setString(1, block);
+        ps.setInt(2, sessionId);
+        ps.setString(3, block);
+        ps.setInt(4, sessionId);
 
         ResultSet result = ps.executeQuery();
         
@@ -483,8 +507,6 @@ public class ChiefData {
             ps.close();
             conn.close();
             
-            getChiefInfo();
-            
         } catch (SQLException ex) {
             Logger.getLogger(ChiefData.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -492,9 +514,40 @@ public class ChiefData {
         return match;
     }
     
-    public String jooqtest(){
-        Field lol;
-//        lol.
+    public ArrayList<CddPaper> getCddPaperList(String regNum) throws SQLException{
+        ArrayList<CddPaper> cddPaperList = new ArrayList<>();
+        Connection conn = new ConnectDB().connect();
+        String sql = "SELECT Venue.Name AS VenueName "
+                + ",* FROM CandidateInfo "
+                + "LEFT OUTER JOIN CandidateAttendance ON CandidateAttendance.CandidateInfoIC = CandidateInfo.IC "
+                + "LEFT OUTER JOIN Paper ON Paper.Paper_id = CandidateAttendance.Paper_id "
+                + "LEFT OUTER JOIN PaperInfo ON PaperInfo.PI_id = Paper.PI_id "
+                + "LEFT OUTER JOIN Venue ON Venue.Venue_id = Paper.Venue_id "
+                + "LEFT OUTER JOIN SessionAndDate ON SessionAndDate.Session_id = Paper.Session_id "
+                + "WHERE RegNum = ? ";
+        
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1,regNum);
+        ResultSet result = ps.executeQuery();
+        
+        while ( result.next() ){
+            cddPaperList.add(new CddPaper(    result.getString("PaperCode"),
+                                              result.getString("PaperDescription"),
+                                              result.getString("Date"),
+                                              result.getString("Session"),
+                                              result.getString("VenueName")
+                                              ));
+            System.out.println(result.getString("PaperCode"));
+        }
+        
+        return cddPaperList;
+    }
+    
+    public Integer getSessionId(){
+        return 1;
+    }
+    
+    public String jooqtest(String block){
         Connection conn = new ConnectDB().connect();
         DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
         String result = create.select()
@@ -504,11 +557,11 @@ public class ChiefData {
                 .where(field("Block").equal("M"))
                 .and(field("Session_id").equal(getSession_id()))
                 .fetch().formatJSON();
-        System.out.println(this.block);
+        System.out.println(block);
         return result;
     }
     
-    public String jooqtest1() throws Exception{
+    public String jooqtest1(String block) throws Exception{
 
         Connection conn = new ConnectDB().connect();
         DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
@@ -540,7 +593,7 @@ public class ChiefData {
 //                .and(field("Session_id").equal(getSession_id()))
                 .fetch().formatJSON();
         
-        System.out.println(this.block);
+        System.out.println(block);
         return result;
     }
     

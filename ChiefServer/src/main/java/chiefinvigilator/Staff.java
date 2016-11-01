@@ -6,6 +6,8 @@
 package chiefinvigilator;
 
 import errormessage.ErrorMessage;
+import globalvariable.CheckInType;
+import globalvariable.InfoType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -280,14 +282,25 @@ public class Staff {
         return paperList;
     }
     
-    public JSONObject prepareInvExamList() throws Exception{
-        JSONObject json = this.toJson(true);
-        JSONArray papers = papersToJson(getPapers(this.getVenue()));
-        JSONArray attdList = cddListToJson(getCddList(this.getVenue()));
+    public JSONObject prepareInvExamList(String venue){
+        JSONObject json = new JSONObject();
+        JSONArray papers;
         
-//        json.put("CheckIn", "Papers");
-        json.put("CddList", attdList);
-        json.put("PaperMap", papers);
+        try {
+            papers = papersToJson(getPapers(venue));
+            JSONArray attdList = cddListToJson(getCddList(venue));
+            
+            json.put(InfoType.CANDIDATE_LIST, attdList);
+            json.put(InfoType.PAPER_LIST, papers);
+            json.put(InfoType.RESULT, true);
+            json.put(InfoType.TYPE, CheckInType.EXAM_INFO_LIST);
+            
+        } catch (Exception ex) {
+            json.put(InfoType.RESULT, false);
+            json.put(InfoType.TYPE, CheckInType.EXAM_INFO_LIST);
+            
+        }
+ 
         return json;
     }
     

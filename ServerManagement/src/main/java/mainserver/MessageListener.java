@@ -14,11 +14,13 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
+import querylist.CddPaper;
 import querylist.ExamDataList;
 
 /**
@@ -80,14 +82,18 @@ public class MessageListener extends Thread{
             JSONObject json = new JSONObject(message);
             System.out.println(json.getString("CheckIn"));
             switch(json.getString("CheckIn")){
-                case "ChiefSignIn": chief = new ChiefData(json.getString("IdNo"),
-                                                            json.getString("Password"),
-                                                            json.getString("Block"));
-                                    System.out.println(chief.staffVerify()+chief.getStatus());                 
-                                    if((chief.staffVerify())&&(chief.getStatus().equals("CHIEF"))){
+                case "ChiefSignIn": String id = json.getString("IdNo");
+                                    String ps = json.getString("Password");
+                                    String block = json.getString("Block");
+                                    
+                                    chief = new ChiefData();
+                                    
+                                    System.out.println(chief.verifyStaff(id, ps) + chief.getStatus(id, block));  
+                                    
+                                    if((chief.verifyStaff(id, ps))&&(chief.getStatus(id, block).equals("CHIEF"))){ // if id is valid staff and status is CHIEF
                                         sendMessage(booleanToJson(true,"ChiefSignIn").toString());
-                                        sendMessage(dbToJson());
-                                      }
+                                        sendMessage(dbToJson(id, block));    //send the desired semester database
+                                    }
                                     else
                                         sendMessage(booleanToJson(false,"ChiefSignIn").toString());
                                     
@@ -102,7 +108,7 @@ public class MessageListener extends Thread{
                                     sendMessage(jsonIdentity.toString());
                                     break;
                                     
-                case "CddPapers":   //sendMessage(prepareCddPapers(json.getString("Value")).toString());
+                case "CddPapers":   sendMessage(cddPaperListToJson(json.getString("Value")));
                                     break;
             }
         } catch (Exception ex) {
@@ -127,34 +133,70 @@ public class MessageListener extends Thread{
         return bool;
     }
     
-    private String dbToJson(){
-        String message = null;
+    private String dbToJson(String id, String block){
+        String jsonString = null;
         ObjectMapper mapper = new ObjectMapper();
         JSONObject json = new JSONObject();
         try {
             ExamDataList examDataList = new ExamDataList(
-                    chief.getCddAttdList(),
-                    chief.getCddInfoList(),
-                    chief.getChAndReList(),
-                    chief.getInvigilatorList(),
-                    chief.getPaperList(),
-                    chief.getPaperInfoList(),
+                    chief.getCddAttdList(block, chief.getSessionId()),
+                    chief.getCddInfoList(block),
+                    chief.getChAndReList(block),
+                    chief.getInvigilatorList(block),
+                    chief.getPaperList(block, chief.getSessionId()),
+                    chief.getPaperInfoList(block),
                     chief.getProgrammeList(),
-                    chief.getStaffInfoList(),
-                    chief.getVenueList()
+                    chief.getStaffInfoList(block,chief.getSessionId()),
+                    chief.getVenueList(block)
             );
-            System.out.println(chief.getCddAttdList().get(0).getCa_id());
-            message = mapper.writeValueAsString(examDataList);
-            JSONObject jsonData = new JSONObject(message);
+            //System.out.println(chief.getCddAttdList().get(0).getCa_id());
+            jsonString = mapper.writeValueAsString(examDataList);
+            JSONObject jsonData = new JSONObject(jsonString);
             json.put("CheckIn", "ExamData");
             json.put("Values", jsonData);
         } catch (SQLException | IOException ex) {
             Logger.getLogger(MessageListener.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
-        
 //        System.out.println(json.toString());
         return json.toString();
     }
+    
+    /**
+     *  JSON: { "Result":true               or            "Result":false
+     *          "Type":"CddPapers"                        "Type": "CddPapers"
+     *          "PaperList":[{
+     *              "PaperCode"
+     *              "PaperDesc"
+     *              "Date"
+     *              "Session"
+     *              "Venue"}...]
+     *          }
+     * 
+     * @param regNum
+     * @return
+     * @throws IOException 
+     */
+    private String cddPaperListToJson(String regNum) throws IOException{
+        
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject json = new JSONObject();
+        
+        ArrayList<CddPaper> cddPaperList;
+        try {
+            String jsonString = null;
+            
+            cddPaperList = chief.getCddPaperList(regNum);
+            jsonString = mapper.writeValueAsString(cddPaperList);
+            JSONObject jsonData = new JSONObject(jsonString);
+            json.put("Result", true);
+            json.put("Values", jsonData);
+        } catch (SQLException ex) {
+            json.put("Result", false);
+        }
+        
+        json.put("CheckIn", "CddPapers");
+        return json.toString();
+    }
+    
 }
