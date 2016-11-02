@@ -41,6 +41,8 @@ public class Connector {
         }
     }
 
+
+
     public String getIpAddress() {
         return ipAddress;
     }
@@ -89,11 +91,11 @@ public class Connector {
             if(strArr.length == 3){
                 dbDate = Calendar.getInstance();
 
-                int day     = Integer.parseInt(strArr[2]);
+                int day     = Integer.parseInt(strArr[0]);
                 int month   = Integer.parseInt(strArr[1]) - 1;
-                int year    = Integer.parseInt(strArr[0]);
+                int year    = Integer.parseInt(strArr[2]);
 
-                dbDate.set(day, month, year);
+                dbDate.set(year, month, day);
             }
         } catch (Exception err) {
             dbDate = null;

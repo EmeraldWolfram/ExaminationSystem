@@ -112,4 +112,29 @@ public class ExamSubjectTest {
         assertEquals(Session.VM, vm);
 
     }
+
+    //= ParseStringToDate(...) =====================================================================
+
+    @Test
+    public void testParseStringToDate_PositiveTest() throws Exception {
+        Calendar date   = ExamSubject.parseStringToDate("5/9/2016");
+
+        assertEquals(5, date.get(Calendar.DAY_OF_MONTH));
+        assertEquals(8, date.get(Calendar.MONTH));
+        assertEquals(2016, date.get(Calendar.YEAR));
+    }
+
+    @Test
+    public void testParseStringToDate1_NoSlashNegativeTest() throws Exception {
+        Calendar date   = ExamSubject.parseStringToDate("592016");
+
+        assertNull(date);
+    }
+
+    @Test
+    public void testParseStringToDate2_NonDigitNegativeTest() throws Exception {
+        Calendar date   = ExamSubject.parseStringToDate("6/8A/2016");
+
+        assertNull(date);
+    }
 }

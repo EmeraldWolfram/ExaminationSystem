@@ -23,7 +23,7 @@ public class PopUpLogin extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pop_up_window);
+        setContentView(R.layout.pop_up_password_prompt);
 
         TextView nameView = (TextView)findViewById(R.id.popUpExaminerName);
         TextView regNView = (TextView)findViewById(R.id.popUpExaminerRegNum);

@@ -20,4 +20,12 @@
     <string name="unchecked">UNASSIGNED\nUNDO?</string>
     <string name="checked">ASSIGNED\nUNASSIGN?</string>
 
+    <string name="total">TOTAL:</string>
+    <string name="exempted">EXEMPTED:</string>
+    <string name="barred">BARRED:</string>
+    <string name="absent">ABSENT:</string>
+    <string name="room">ROOM:</string>
+    <string name="present">PRESENT:</string>
+    <string name="in_charge">IN_CHARGE:</string>
+
 </resources>

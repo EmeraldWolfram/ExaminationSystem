@@ -53,9 +53,11 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             while(ExternalDbLoader.getTcpClient() == null){}
 
             try{
-                taskModel.reconnect();
-                taskView.openProgressWindow("RECONNECTION", "Authenticating...");
-                handler.postDelayed(taskModel, 5000);
+                if(taskModel.reconnect()){
+                    taskView.openProgressWindow("RECONNECTION", "Authenticating...");
+                    handler.postDelayed(taskModel, 5000);
+                }
+                reconnect = false;
             } catch (ProcessException err) {
                 taskView.displayError(err);
             }
@@ -110,10 +112,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         try {
             taskView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
-
             taskModel.onChallengeMessageReceived(messageRx);
-
-            reconnect   = false;
             taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);

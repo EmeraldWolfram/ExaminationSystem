@@ -87,6 +87,6 @@ public interface LinkChiefMVP {
          * the Chief will reply with the Challenge Message
          *
          */
-        void reconnect() throws ProcessException;
+        boolean reconnect() throws ProcessException;
     }
 }

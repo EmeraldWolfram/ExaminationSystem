@@ -41,10 +41,12 @@ public class LinkChiefModelTest {
     public void setUp() throws Exception {
         dbLoader        = Mockito.mock(CheckListLoader.class);
         taskPresenter   = Mockito.mock(LinkChiefMVP.MPresenter.class);
+        task            = Mockito.mock(ConnectionTask.class);
         staff           = new StaffIdentity("id", true, "name", "M4");
         LoginModel.setStaff(staff);
 
         model           = new LinkChiefModel(dbLoader, taskPresenter);
+        model.setTask(task);
 
         TCPClient.setConnector(null);
         ExternalDbLoader.setConnectionTask(null);
@@ -264,18 +266,36 @@ public class LinkChiefModelTest {
      *
      * Check if the request of challenge message was sent to the Chief
      *
+     * Tests:
+     * 1. Return true when there is a user in the database
+     * 2. Return false when there is no user in the database
+     *
      */
     @Test
-    public void testReconnect() throws Exception {
+    public void testReconnect1_PositiveTest() throws Exception {
         task = Mockito.mock(ConnectionTask.class);
         tcpClient = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setConnectionTask(task);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(dbLoader.emptyUserInDB()).thenReturn(false);
         when(dbLoader.queryUser()).thenReturn(staff);
 
-        model.reconnect();
+        assertTrue(model.reconnect());
 
         verify(tcpClient).sendMessage(anyString());
+    }
+
+    @Test
+    public void testReconnect2_NegativeTest() throws Exception {
+        task = Mockito.mock(ConnectionTask.class);
+        tcpClient = Mockito.mock(TCPClient.class);
+        ExternalDbLoader.setConnectionTask(task);
+        ExternalDbLoader.setTcpClient(tcpClient);
+        when(dbLoader.emptyUserInDB()).thenReturn(true);
+
+        assertFalse(model.reconnect());
+
+        verify(tcpClient, never()).sendMessage(anyString());
     }
 
     //= Run() ======================================================================================

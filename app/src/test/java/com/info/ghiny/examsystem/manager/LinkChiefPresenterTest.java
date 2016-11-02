@@ -184,6 +184,8 @@ public class LinkChiefPresenterTest {
     @Test
     public void testOnResume1_ReconnectUsingDatabase() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
+        when(genModel.reconnect()).thenReturn(true);
+
         manager.setReconnect(true);
 
         manager.onResume(errManager);
@@ -224,7 +226,6 @@ public class LinkChiefPresenterTest {
 
         manager.onChiefRespond(errorManager, "Message");
 
-        assertFalse(manager.isReconnect());
         verify(genView).closeProgressWindow();
         verify(genModel).onChallengeMessageReceived("Message");
         verify(genView).navigateActivity(MainLoginActivity.class);

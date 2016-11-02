@@ -49,6 +49,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         try{
             taskModel.initAttendance();
             taskView.openProgressWindow("Initializing:", "Preparing Attendance List...");
+            handler.postDelayed(taskModel, 5000);
         } catch (ProcessException err) {
             taskView.displayError(err);
         }

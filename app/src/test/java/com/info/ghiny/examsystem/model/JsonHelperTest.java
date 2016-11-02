@@ -368,11 +368,13 @@ public class JsonHelperTest {
         subject1.put(ExamSubject.PAPER_DESC, "SUBJECT 1");
         subject1.put(ExamSubject.PAPER_SESSION, "AM");
         subject1.put(ExamSubject.PAPER_VENUE, "H3");
+        subject1.put(ExamSubject.PAPER_DATE, "11/2/2016");
 
         subject2.put(ExamSubject.PAPER_CODE, "BAME 0002");
         subject2.put(ExamSubject.PAPER_DESC, "SUBJECT 2");
         subject2.put(ExamSubject.PAPER_SESSION, "AM");
         subject2.put(ExamSubject.PAPER_VENUE, "H4");
+        subject2.put(ExamSubject.PAPER_DATE, "11/2/2016");
 
         array.put(subject1);
         array.put(subject2);

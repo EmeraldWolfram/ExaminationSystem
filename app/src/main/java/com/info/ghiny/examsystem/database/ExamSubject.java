@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.IconManager;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by GhinY on 07/05/2016.
@@ -27,7 +28,7 @@ public class ExamSubject {
     private String examVenue;
 
     public ExamSubject(){
-        date = Calendar.getInstance();
+        date            = Calendar.getInstance();
         paperSession    = Session.AM;
         examVenue       = null;
         startTableNum   = 0;
@@ -98,6 +99,26 @@ public class ExamSubject {
 
     public String getPaperDesc() {
         return paperDesc;
+    }
+
+    public static Calendar parseStringToDate(String date){
+        Calendar calendar = null;
+        String[] strArr = date.split("/");
+        int year, month, day;
+
+        try{
+            if(strArr.length == 3){
+                day     = Integer.parseInt(strArr[0]);
+                month   = Integer.parseInt(strArr[1]) - 1;
+                year    = Integer.parseInt(strArr[2]);
+                calendar    = Calendar.getInstance();
+                calendar.set(year, month, day);
+            }
+        } catch (Exception err) {
+            calendar    = null;
+        }
+
+        return calendar;
     }
 
     public boolean isValidTable(Integer tableNumber) throws ProcessException {

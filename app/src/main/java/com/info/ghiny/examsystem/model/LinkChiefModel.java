@@ -18,24 +18,29 @@ import java.util.Locale;
 public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     private LinkChiefMVP.MPresenter taskPresenter;
     private CheckListLoader dbLoader;
+    private ConnectionTask task;
 
     public LinkChiefModel(CheckListLoader dbLoader, LinkChiefMVP.MPresenter taskPresenter){
         this.dbLoader       = dbLoader;
         this.taskPresenter  = taskPresenter;
     }
 
+    public void setTask(ConnectionTask task) {
+        this.task = task;
+    }
+
     @Override
     public void tryConnectWithQR(String scanStr) throws ProcessException{
         String[] chiefArr   = scanStr.split(":");
-        if(chiefArr.length == 4 && scanStr.endsWith("$") && scanStr.startsWith("$")){
+        if(chiefArr.length == 5 && scanStr.endsWith("$") && scanStr.startsWith("$")){
             Connector connector     = new Connector(chiefArr[1],
                     Integer.parseInt(chiefArr[2]), chiefArr[3]);
 
             dbLoader.saveConnector(connector);
             TCPClient.setConnector(connector);
-            ConnectionTask connect   = new ConnectionTask();
-            connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ExternalDbLoader.setConnectionTask(connect);
+            task    = new ConnectionTask();
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            ExternalDbLoader.setConnectionTask(task);
         } else {
             throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
@@ -55,9 +60,9 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
                     && now.get(Calendar.DAY_OF_MONTH) == connector.getDate().get(Calendar.DAY_OF_MONTH)){
 
                 TCPClient.setConnector(connector);
-                ConnectionTask connect   = new ConnectionTask();
-                connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                ExternalDbLoader.setConnectionTask(connect);
+                task    = new ConnectionTask();
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                ExternalDbLoader.setConnectionTask(task);
                 return true;
             } else {
                 dbLoader.clearUserDatabase();
@@ -87,15 +92,17 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     }
 
     @Override
-    public void reconnect() throws ProcessException {
+    public boolean reconnect() throws ProcessException {
         if(!dbLoader.emptyUserInDB()){
             StaffIdentity prevStaff = dbLoader.queryUser();
             ConnectionTask.setCompleteFlag(false);
             ExternalDbLoader.requestDuelMessage(prevStaff.getIdNo());
-        } else {
-            throw new ProcessException("Failed to reconnect, no reference of staff in database",
-                    ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-        }
+            return true;
+        } //else {
+            //throw new ProcessException("Failed to reconnect, no reference of staff in database",
+              //      ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+        //}
+        return false;
     }
 
     @Override

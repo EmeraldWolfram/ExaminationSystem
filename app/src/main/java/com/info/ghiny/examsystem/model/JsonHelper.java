@@ -246,10 +246,13 @@ public class JsonHelper {
 
                     subject.setPaperCode(jSubject.getString(ExamSubject.PAPER_CODE));
                     subject.setPaperDesc(jSubject.getString(ExamSubject.PAPER_DESC));
+                    subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
 
                     String session  = jSubject.getString(ExamSubject.PAPER_SESSION);
                     subject.setPaperSession(Session.parseSession(session));
-                    subject.setExamVenue(jSubject.getString(ExamSubject.PAPER_VENUE));
+
+                    String date     = jSubject.getString(ExamSubject.PAPER_DATE);
+                    subject.setDate(ExamSubject.parseStringToDate(date));
 
                     subjects.add(subject);
                 }
