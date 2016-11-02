@@ -32,7 +32,6 @@ public class ChiefControl {
     ChiefModel chiefModel;
     ServerComm serverComm;
     ChiefServer chief;
-    Timer timer = new Timer(3000, new TimerActionListener());
     QRgen qrgen;
     
     HashMap invMap = new HashMap();
@@ -115,9 +114,13 @@ public class ChiefControl {
         
         if(tabNum == 1){
             ServerSocket socket = new ServerSocket();
+            
             String randomString = this.generateRandomString();
             chief.setPort();
-            generateQRInterface(this.chief.getServerSocket(), randomString); ///need to remove this
+            socket = this.chief.getServerSocket();
+            System.out.println(randomString);
+            generateQRInterface(socket, randomString); ///need to remove this
+            System.out.println("new clientComm created");
             (new ClientComm(socket, this.serverComm, this.invMap, this.chief, this.qrgen)).start();
 //            timer.start();
         }
@@ -126,19 +129,13 @@ public class ChiefControl {
     }
     
     public void generateQRInterface(ServerSocket socket, String randomString){
-        this.qrgen = new QRgen(socket, serverComm, randomString);
+        this.qrgen = new QRgen();
         this.qrgen.setPreferredSize(new Dimension(500,500));
       
         chiefGui.addQRPanel(qrgen);
     }
     
-    public void regenerateQRInterface() throws Exception{
-        String randomString = generateRandomString();
-        
-        qrgen.regenerateQR(chief.getServerSocket(), randomString);
-        
-    }
-    
+
     public void candSearch(){
         InfoData data = new InfoData();
         
@@ -170,16 +167,6 @@ public class ChiefControl {
         }
     }
     
-    class TimerActionListener implements ActionListener{
-      public void actionPerformed(ActionEvent e) {
-          try {
-              regenerateQRInterface();
-          } catch (Exception ex) {
-              System.out.println("Error TimerActionListener->actionPerformed");
-          }
-            
-      }
-    }
     
     protected String generateRandomString() {
         String seed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"+Long.toString(System.nanoTime());

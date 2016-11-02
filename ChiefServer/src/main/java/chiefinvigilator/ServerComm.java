@@ -5,6 +5,8 @@
  */
 package chiefinvigilator;
 
+import globalvariable.CheckInType;
+import globalvariable.InfoType;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -46,12 +48,12 @@ public class ServerComm extends Thread implements Runnable{
     Queue serverQueue;
     HashMap clientQueueList;
     
-    Thread t = new Thread(new Runnable() {
+    Thread queueThread = new Thread(new Runnable() {
          public void run()
          {
             while(true){
             System.out.println("Check");
-            invSignIn();// Insert some method call here.
+            invSignIn();
             }
          }
         });
@@ -74,7 +76,7 @@ public class ServerComm extends Thread implements Runnable{
 
 //        System.out.println("Connecting to " + serverName +
 //		 " on port " + port);
-//         socket = new Socket("localhost", 5006);
+        socket = new Socket("localhost", 5006);
 //         System.out.println("Just connected to " 
 //		 + socket.getRemoteSocketAddress());
         
@@ -82,10 +84,10 @@ public class ServerComm extends Thread implements Runnable{
     
     @Override
     public void run(){
-        t.start();
+        this.queueThread.start();
         try {
             
-            while(socket.isClosed() != true){
+            while(this.socket.isClosed() != true){
             
             System.out.println("\n connected to "+ socket.getRemoteSocketAddress());
             String message = receiveMessage();
@@ -93,7 +95,7 @@ public class ServerComm extends Thread implements Runnable{
             response(message);
             
             }
-            System.out.println("End?");
+            
         } catch (IOException ex) {
             Logger.getLogger(ServerComm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -163,23 +165,24 @@ public class ServerComm extends Thread implements Runnable{
     public void response(String message){
         try {
             JSONObject json = new JSONObject(message);
-            System.out.println("ServerComm: " +json.getString("CheckIn"));
+            System.out.println("ServerComm: " +json.getString(InfoType.TYPE));
             
-            switch(json.getString("CheckIn")){
-                case "ChiefSignIn": if(json.getBoolean("Result"))
+            switch(json.getString(InfoType.TYPE)){
+                case CheckInType.CHIEF_LOGIN: if(json.getBoolean(InfoType.RESULT))
                                         this.signIn = true;
                                     else
                                         ChiefGui.showSignInErrorMsg();
                                     break;
                                     
-                case "ExamData":    System.out.println(json.getJSONObject("Values").toString());
-                                    updateDB(json.getJSONObject("Values").toString());
+                case CheckInType.EXAM_SESSION_DATA:    
+                                    System.out.println(json.getJSONObject(InfoType.VALUE).toString());
+                                    updateDB(json.getJSONObject(InfoType.VALUE).toString());
                                     break;
                                     
-                case "Identity":    putQueue(json.getLong("ThreadId"), message);
+                case CheckInType.STAFF_LOGIN:    putQueue(json.getLong(InfoType.THREAD_ID), message);
                                     break;
                 
-                case "CddPapers":   putQueue(json.getLong("ThreadId"), message);
+                case CheckInType.CDDPAPERS:   putQueue(json.getLong(InfoType.THREAD_ID), message);
                                     break;
                                     
             }
@@ -227,8 +230,5 @@ public class ServerComm extends Thread implements Runnable{
         chief.updateVenue(examDataList.getVenue());
     }
     
-    public static void createQueue(String threadId){
-        
-    }
-    
+
 }

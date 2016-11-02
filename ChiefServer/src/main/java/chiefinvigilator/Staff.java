@@ -40,7 +40,7 @@ public class Staff {
     
     public Staff(String id) throws Exception{
         this.id = id;
-        getInvInfo();
+        setInvInfo();
     }
     
     public Staff(String id, String password){
@@ -167,7 +167,7 @@ public class Staff {
      * @return  staff       contains info of the staff
      * @throws SQLException 
      */
-    public void getInvInfo() throws Exception{
+    public void setInvInfo() throws Exception{
         
         Connection conn = new ConnectDB().connect();
           String sql = "SELECT Venue.Name AS VenueName, InvigilatorAndAssistant.StaffID AS Staff_id, "

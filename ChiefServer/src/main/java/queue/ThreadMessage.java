@@ -5,6 +5,7 @@
  */
 package queue;
 
+import globalvariable.InfoType;
 import org.json.JSONObject;
 
 /**
@@ -14,12 +15,19 @@ import org.json.JSONObject;
 public class ThreadMessage {
     private long threadId;
     private String message;
+    private String challengeMsg;
     
     public ThreadMessage(){}
     
     public ThreadMessage(long threadId, String message){
         this.threadId = threadId;
         this.message = message;
+    }
+    
+    public ThreadMessage(long threadId, String message, String challengeMsg){
+        this.threadId = threadId;
+        this.message = message;
+        this.challengeMsg = challengeMsg;
     }
 
     /**
@@ -52,7 +60,8 @@ public class ThreadMessage {
     
     public String toJsonString(){
         JSONObject json = new JSONObject(this.message);
-        json.put("ThreadId", threadId);
+        json.put(InfoType.THREAD_ID, this.threadId);
+        json.put(InfoType.RANDOM_MSG, this.challengeMsg);
 //        json.put("ThreadId", threadId);
 //        json.put("Message", new JSONObject(this.message));
         

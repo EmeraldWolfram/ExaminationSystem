@@ -126,25 +126,41 @@ public class ChiefData {
      * @return match        The result of the checking ,true is correct while false is incorrect
      * @throws SQLException 
      */
-    public boolean verifyStaff(String id, String password) throws SQLException, Exception {
+    public String getStaffPassword(String id) throws SQLException, Exception {
         boolean match = false;
-        
+        String password = null;
         Connection conn = new ConnectDB("StaffDatabase.db").connect();
-        String sql = "SELECT Username, Password FROM User where Username=? and Password=?";
+        String sql = "SELECT Username, Password FROM User where Username=? ";
 
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1,id);
-        ps.setString(2,password);
+//        ps.setString(2,password);
         ResultSet result = ps.executeQuery();
 
-        match = result.next(); 
+//        match = result.next(); 
+        if(result.next()){
+            password = result.getString("Password");
+        }
         
         System.out.println(id+password+match);
         result.close();
         ps.close();
         conn.close();
             
-        return match;
+        return password;
+    }
+    
+    public boolean verifyStaff(String id, String hashPass, String randomMsg) throws Exception{
+        
+        String password = getStaffPassword(id);
+        
+        Hmac hmac = new Hmac();
+        String encodedPassword = hmac.encode(password, randomMsg);
+        System.out.println("hashPass: "+hashPass);
+        System.out.println("encodedPassword: "+encodedPassword);
+        System.out.println("randomMsg: "+randomMsg);
+        return hashPass.equals(encodedPassword);
+        
     }
     
     

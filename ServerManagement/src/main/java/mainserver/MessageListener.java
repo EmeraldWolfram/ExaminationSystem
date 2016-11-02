@@ -5,6 +5,8 @@
  */
 package mainserver;
 
+import globalvariable.CheckInType;
+import globalvariable.InfoType;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -80,35 +82,32 @@ public class MessageListener extends Thread{
         
         try {
             JSONObject json = new JSONObject(message);
-            System.out.println(json.getString("CheckIn"));
-            switch(json.getString("CheckIn")){
-                case "ChiefSignIn": String id = json.getString("IdNo");
-                                    String ps = json.getString("Password");
-                                    String block = json.getString("Block");
+            System.out.println(json.getString(InfoType.TYPE));
+            
+            switch(json.getString(InfoType.TYPE)){
+                
+                case CheckInType.CHIEF_LOGIN: String id = json.getString(InfoType.ID_NO);
+                                    String ps = json.getString(InfoType.PASSWORD);
+                                    String block = json.getString(InfoType.BLOCK);
+                                    String randomMsg = json.getString(InfoType.RANDOM_MSG);
                                     
                                     chief = new ChiefData();
                                     
-                                    System.out.println(chief.verifyStaff(id, ps) + chief.getStatus(id, block));  
+                                    System.out.println(chief.verifyStaff(id, ps, randomMsg) + chief.getStatus(id, block));  
                                     
-                                    if((chief.verifyStaff(id, ps))&&(chief.getStatus(id, block).equals("CHIEF"))){ // if id is valid staff and status is CHIEF
-                                        sendMessage(booleanToJson(true,"ChiefSignIn").toString());
+                                    if((chief.verifyStaff(id, ps, randomMsg))&&(chief.getStatus(id, block).equals("CHIEF"))){ // if id is valid staff and status is CHIEF
+                                        sendMessage(booleanToJson(true,CheckInType.CHIEF_LOGIN).toString());
                                         sendMessage(dbToJson(id, block));    //send the desired semester database
                                     }
                                     else
-                                        sendMessage(booleanToJson(false,"ChiefSignIn").toString());
+                                        sendMessage(booleanToJson(false,CheckInType.CHIEF_LOGIN).toString());
                                     
-                case "Identity":    JSONObject jsonIdentity;
-                                    if(new ChiefData().invVerify(json.getString("IdNo"), json.getString("Password")))
-                                        jsonIdentity = booleanToJson(true,"Identity");
-                                    else
-                                        jsonIdentity = booleanToJson(false,"Identity");
-//                                    System.out.println(jsonIdentity);
-                                    jsonIdentity.put("ThreadId", json.getInt("ThreadId"));
-                                    jsonIdentity.put("IdNo", json.getString("IdNo"));
+                case CheckInType.STAFF_LOGIN:    
+                                    JSONObject jsonIdentity = loginReply(json);
                                     sendMessage(jsonIdentity.toString());
                                     break;
                                     
-                case "CddPapers":   sendMessage(cddPaperListToJson(json.getString("Value")));
+                case CheckInType.CDDPAPERS:   sendMessage(cddPaperListToJson(json.getString(InfoType.VALUE)));
                                     break;
             }
         } catch (Exception ex) {
@@ -126,11 +125,32 @@ public class MessageListener extends Thread{
     */
     private JSONObject booleanToJson(boolean b, String type) throws JSONException{
         JSONObject bool = new JSONObject();
-        bool.put("Type", "ACK");
-        bool.put("Result", b);
-        bool.put("CheckIn", type);
+        bool.put(InfoType.TYPE, "ACK");
+        bool.put(InfoType.RESULT, b);
         
         return bool;
+    }
+    
+    private JSONObject loginReply(JSONObject jsonReceived){
+        JSONObject json = new JSONObject();
+        
+        try {
+            System.out.println(jsonReceived.toString());
+            if(new ChiefData().verifyStaff(jsonReceived.getString(InfoType.ID_NO), jsonReceived.getString(InfoType.PASSWORD), jsonReceived.getString(InfoType.RANDOM_MSG))){
+                json.put(InfoType.RESULT, true);
+                System.out.println("checkasas");
+            }
+            else
+                json.put(InfoType.RESULT, false);
+            
+            json.put(InfoType.THREAD_ID, jsonReceived.getInt(InfoType.THREAD_ID));
+            json.put(InfoType.TYPE, jsonReceived.getString(InfoType.TYPE));
+            json.put(InfoType.ID_NO, jsonReceived.getString(InfoType.ID_NO));
+            
+                    } catch (Exception ex) {
+            Logger.getLogger(MessageListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return json;
     }
     
     private String dbToJson(String id, String block){
@@ -181,11 +201,10 @@ public class MessageListener extends Thread{
         
         ObjectMapper mapper = new ObjectMapper();
         JSONObject json = new JSONObject();
-        
         ArrayList<CddPaper> cddPaperList;
+        
         try {
             String jsonString = null;
-            
             cddPaperList = chief.getCddPaperList(regNum);
             jsonString = mapper.writeValueAsString(cddPaperList);
             JSONObject jsonData = new JSONObject(jsonString);

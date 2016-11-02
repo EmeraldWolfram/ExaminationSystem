@@ -49,7 +49,7 @@ import queue.ThreadMessage;
  * @author Krissy
  */
 public class ClientComm extends Thread {
-    Timer timer = new Timer(3000, new TimerActionListener());
+    Timer timer = new Timer(5000, new TimerActionListener());
     private boolean signIn = false;
     private ServerSocket socket;
     private Socket client;
@@ -79,7 +79,7 @@ public class ClientComm extends Thread {
     }
     
     public ClientComm(ServerSocket socket, ServerComm serverComm,
-            HashMap invMap, ChiefServer chiefServer, QRgen qrGen){
+            HashMap invMap, ChiefServer chiefServer, QRgen qrGen) throws IOException{
         this.socket= socket; 
         this.serverComm = serverComm;
         this.threadId = Thread.currentThread().getId();
@@ -102,9 +102,15 @@ public class ClientComm extends Thread {
             public void run()
             {
                 try {
-                    this.socket.setSoTimeout(3000);
+                    this.socket.setSoTimeout(30000);
+                    
+                    regenerateQRInterface();
+                    
                     setClient(this.socket.accept());
-                    queueThread.start();
+                    
+                    timer.stop(); //stop generate QRcode
+                    
+                    queueThread.start(); // create a queue with the serverComm
                     System.out.println("connected to "+ getClient().getRemoteSocketAddress());
                     while(getClient().isClosed() != true){
                         System.out.println("ClientComm Ready to receive message");
@@ -112,6 +118,7 @@ public class ClientComm extends Thread {
                         System.out.println("ClientComm Received: " + message);
                         response(message);
                     }
+                    
                     
                 } catch (SocketTimeoutException ex) {
                     System.out.println("\nSocket timed out!:"+this.socket.getLocalSocketAddress());
@@ -151,20 +158,21 @@ public class ClientComm extends Thread {
             
             
             switch(checkIn){
-                case CheckInType.STAFF_LOGIN :   
-                                    if(hmacVerify(json.getString(InfoType.HASHCODE), this.challengeMsg)){
-                                        this.setStaff(new Staff(json.getString(JSONKey.ID_NO)));
-                                        this.getStaff().getInvInfo();
-                                        this.getServerComm().getSendQueue(new ThreadMessage(this.getThreadId(),message)); // send to main server
-                                    }
-                                    else
-                                        sendMessage(booleanToJson(false).toString());
+                case CheckInType.STAFF_LOGIN : 
+                                    this.setStaff(new Staff(json.getString(JSONKey.ID_NO)));
+                                    this.getStaff().setInvInfo();
+                                    this.getServerComm().getSendQueue(new ThreadMessage(this.getThreadId(),message,this.challengeMsg)); // send to main server
                                     break;
                                     
-                case CheckInType.EXAM_INFO_LIST :   this.staff.prepareInvExamList(json.getString(JSONKey.VENUE));
+                case CheckInType.EXAM_INFO_LIST :  
+                                    this.staff.prepareInvExamList(json.getString(JSONKey.VENUE));
                                     break;
                                     
-                case CheckInType.COLLECTION : break;
+                case CheckInType.STAFF_RECONNECT:   
+                                    
+                                    
+                case CheckInType.COLLECTION : 
+                                    break;
                     
                 case CheckInType.CDDPAPERS : 
                                     this.getServerComm().getSendQueue(new ThreadMessage(this.getThreadId(),message)); //
@@ -203,10 +211,11 @@ public class ClientComm extends Thread {
             System.out.println("Staff sign in : " + tm.getMessage());
             json = new JSONObject(tm.getMessage());
             
-            String type = json.getString("Type");
+            String type = json.getString(InfoType.TYPE);
             switch(type){
-                case "IdNo":        if(json.getBoolean("Result")){
-                                        this.setStaff(new Staff(json.getString("IdNo")));
+                case CheckInType.STAFF_LOGIN:        
+                                    if(json.getBoolean(InfoType.RESULT)){
+                                        this.setStaff(new Staff(json.getString(InfoType.ID_NO)));
                                         this.setSignIn(tm.getResultKey());
                                         message = this.getStaff().toJson(true).toString();
                                     }
@@ -214,7 +223,8 @@ public class ClientComm extends Thread {
                                         message = json.toString();
                                     break;
                 
-                case "CddPapers":   message = json.toString();
+                case CheckInType.CDDPAPERS:   
+                                    message = json.toString();
                     
             }
             
@@ -228,34 +238,13 @@ public class ClientComm extends Thread {
     }
     
     /**
-     * @Brief   To verify a given encode hascode with a challengeMsg
-     * @param hCode
-     * @param challengeMsg
-     * @return 
-     */
-    public boolean hmacVerify(String hCode, String challengeMsg){
-        Hmac hmac = new Hmac();
-        
-        try {
-            if(hmac.encode("exam", challengeMsg).equals(hCode))
-                return true;
-            else
-                return false;
-        } catch (Exception ex) {
-            System.out.println("Error: hmacVerify failed");
-        }
-        return false;
-    }
-
-    
-    /**
      * 
      * @param venue     contains the name of venue
      * @return attendance list of the venue 
      */
     public ArrayList<Candidate> getCddList(String venue) throws SQLException{
         ArrayList<Candidate> cddList = new ArrayList<>();
-        AttdList attd;
+        
         Connection conn = new ConnectDB().connect();
         String sql = "SELECT CandidateInfo.Name AS CandidateName, CandidateAttendance.Status AS CandidateStatus, "
                 + "Venue.Name AS VenueName, CandidateAttendance.Attendance AS CandAttd ,"
@@ -459,8 +448,8 @@ public class ClientComm extends Thread {
     private JSONObject booleanToJson(boolean b) throws JSONException{
         JSONObject bool = new JSONObject();
         
-        bool.put("Result", b);
-        bool.put("Type", "Ack");
+        bool.put(InfoType.RESULT, b);
+        bool.put(InfoType.TYPE, "Ack");
         
         return bool;
     }
@@ -562,14 +551,14 @@ public class ClientComm extends Thread {
     }
     
     public void setChallengeMsg(String challengeMsg){
+        System.out.println(challengeMsg);
         this.challengeMsg = challengeMsg;
     }
     
     public void regenerateQRInterface() throws Exception{
         String randomString = generateRandomString();
         setChallengeMsg(randomString);
-        this.qrGen.regenerateQR(this.chiefServer.getServerSocket(), randomString);
-        System.out.print("checcccccccccccccccck");
+        this.qrGen.regenerateQR(this.chiefServer.getServerSocket(), this.serverComm, randomString);
     }
     
     protected String generateRandomString() {

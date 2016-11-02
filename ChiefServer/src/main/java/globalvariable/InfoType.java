@@ -16,6 +16,10 @@ public class InfoType {
     public static final String TYPE = "Type";
     public static final String CHECK_IN = "CheckIn";
     public static final String HASHCODE = "HashPass";
+    public static final String RANDOM_MSG = "RandomMessage";
+    public static final String THREAD_ID = "ThreadId";
+    public static final String VALUE = "Value";
+    public static final String ID_NO = "IdNo";
     
     
 }
