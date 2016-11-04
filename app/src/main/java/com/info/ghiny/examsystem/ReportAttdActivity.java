@@ -10,9 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
@@ -98,7 +100,7 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
 
     //==============================================================================================
     public void onUpload(View view){
-        taskPresenter.signToUpload();
+        taskPresenter.onUpload();
     }
 
     @Override
@@ -131,7 +133,6 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, "Sending:", "Uploading Attendance List...");
         progDialog  = ProgressDialog.show(this, title, message);
     }
 
@@ -141,6 +142,36 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
             progDialog.dismiss();
     }
 
+    @Override
+    public void displayReportWindow(String inCharge, String venue, String[] statusNo, String total) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("ATTENDANCE SUBMISSION");
+        View view = this.getLayoutInflater().inflate(R.layout.pop_up_report_submission, null);
+        dialog.setView(view);
+
+        TextView inChargeV  = (TextView) view.findViewById(R.id.reportRowName);
+        TextView venueV     = (TextView) view.findViewById(R.id.reportRowVenue);
+        TextView presentV   = (TextView) view.findViewById(R.id.reportRowPresent);
+        TextView absentV    = (TextView) view.findViewById(R.id.reportRowAbsent);
+        TextView barredV    = (TextView) view.findViewById(R.id.reportRowBarred);
+        TextView exemptedV  = (TextView) view.findViewById(R.id.reportRowExempted);
+        TextView totalV     = (TextView) view.findViewById(R.id.reportRowTotal);
+
+        inChargeV.setText(inCharge);
+        venueV.setText(venue);
+        presentV.setText(statusNo[0]);
+        absentV.setText(statusNo[1]);
+        barredV.setText(statusNo[2]);
+        exemptedV.setText(statusNo[3]);
+        totalV.setText(total);
+
+        dialog.setCancelable(true);
+        dialog.setPositiveButton(ProcessException.submitButton, taskPresenter);
+        dialog.setNegativeButton(ProcessException.cancelButton, taskPresenter);
+
+        AlertDialog alert = dialog.create();
+        alert.show();
+    }
     /**
      * Created by GhinY on 12/06/2016.
      */

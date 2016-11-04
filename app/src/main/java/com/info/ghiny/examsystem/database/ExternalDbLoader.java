@@ -56,7 +56,7 @@ public class ExternalDbLoader {
         StaffIdentity id = LoginModel.getStaff();
         if (tcpClient != null && id != null) {
             String str = JsonHelper.formatString(JsonHelper.TYPE_VENUE_INFO,
-                    id.getVenueHandling());
+                    id.getExamVenue());
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("Fail to request attendance list!\nPlease consult developer",
@@ -66,7 +66,7 @@ public class ExternalDbLoader {
 
     public static void dlPaperList() throws ProcessException {
         String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
-                LoginModel.getStaff().getVenueHandling());
+                LoginModel.getStaff().getExamVenue());
         if (tcpClient != null){
             tcpClient.sendMessage(str);
         } else {

@@ -16,17 +16,22 @@ import java.util.List;
 
 public interface ReportAttdMVP {
 
-    interface View extends GeneralView, TaskConnView {}
+    interface View extends GeneralView, TaskConnView {
+        void displayReportWindow(String inCharge, String venue, String[] statusNo, String total);
+    }
 
-    interface VPresenter extends TaskConnPresenter, TaskSecurePresenter {
+    interface VPresenter extends TaskConnPresenter, TaskSecurePresenter, DialogInterface.OnClickListener {
         Fragment getItem(int index);
         int getCount();
         CharSequence getPageTitle(int position);
         void toggleUnassign(android.view.View view);
         void signToUpload();
+        void onUpload();
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener{
+        void setSent(boolean sent);
+        boolean isSent();
         void onTimesOut(ProcessException err);
     }
 

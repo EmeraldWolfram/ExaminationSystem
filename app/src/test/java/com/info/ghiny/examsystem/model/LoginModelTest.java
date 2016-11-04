@@ -209,7 +209,7 @@ public class LoginModelTest {
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
             assertEquals("Invigilator", LoginModel.getStaff().getRole().get(0));
-            assertEquals("M4",          LoginModel.getStaff().getVenueHandling());
+            assertEquals("M4",          LoginModel.getStaff().getExamVenue());
             assertEquals("Password",    LoginModel.getStaff().getPassword());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -233,7 +233,7 @@ public class LoginModelTest {
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
             assertEquals("Invigilator", LoginModel.getStaff().getRole().get(0));
-            assertEquals("M4",          LoginModel.getStaff().getVenueHandling());
+            assertEquals("M4",          LoginModel.getStaff().getExamVenue());
             assertEquals("Password",    LoginModel.getStaff().getPassword());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());

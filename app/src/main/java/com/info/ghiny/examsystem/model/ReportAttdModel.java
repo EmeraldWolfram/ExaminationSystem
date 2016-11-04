@@ -27,7 +27,7 @@ public class ReportAttdModel implements ReportAttdMVP.Model {
     //= public Methods =============================================================================
     @Override
     public void uploadAttdList() throws ProcessException{
-        ConnectionTask.setCompleteFlag(false);
+        taskPresenter.setSent(false);
         ExternalDbLoader.updateAttendanceList(TakeAttdModel.getAttdList());
     }
 
@@ -144,7 +144,7 @@ public class ReportAttdModel implements ReportAttdMVP.Model {
     @Override
     public void run() {
         try{
-            if(!ConnectionTask.isComplete()){
+            if(!taskPresenter.isSent()){
                 ProcessException err = new ProcessException(
                         "Server busy. Upload times out.\nPlease try again later.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

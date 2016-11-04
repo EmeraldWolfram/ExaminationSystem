@@ -466,7 +466,7 @@ public class CheckListLoaderTest {
         assertEquals("158888", id.getIdNo());
         assertEquals("aXsjPaeQ9=O9s!lks+", id.getHashPass());
         assertEquals("Staff1", id.getName());
-        assertEquals("M1", id.getVenueHandling());
+        assertEquals("M1", id.getExamVenue());
         assertEquals("In-Charge", id.getRole().get(0));
 
         db.close();

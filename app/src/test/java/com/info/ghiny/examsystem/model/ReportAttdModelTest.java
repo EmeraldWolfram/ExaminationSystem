@@ -23,6 +23,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 24/06/2016.
@@ -472,14 +473,14 @@ public class ReportAttdModelTest {
      */
     @Test
     public void testRun_ChiefDoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(true);
+        when(taskPresenter.isSent()).thenReturn(true);
         helper.run();
         verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
     }
 
     @Test
     public void testRun_ChiefNoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(false);
+        when(taskPresenter.isSent()).thenReturn(false);
         helper.run();
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }

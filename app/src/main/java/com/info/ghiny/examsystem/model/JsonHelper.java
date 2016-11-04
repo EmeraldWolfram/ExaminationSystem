@@ -85,7 +85,7 @@ public class JsonHelper {
         try{
             list.put(MAJOR_KEY_TYPE_TX, TYPE_SUBMISSION);
             list.put(LIST_INVI, LoginModel.getStaff().getIdNo());
-            list.put(LIST_VENUE, LoginModel.getStaff().getVenueHandling());
+            list.put(LIST_VENUE, LoginModel.getStaff().getExamVenue());
 
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
@@ -136,7 +136,7 @@ public class JsonHelper {
 
                 staffId.setName(name);
                 staffId.setIdNo(idNo);
-                staffId.setVenueHandling(venue);
+                staffId.setExamVenue(venue);
                 staffId.addRole(role);
                 //JSONArray roles = staff.getJSONArray(StaffIdentity.STAFF_ROLE);
 

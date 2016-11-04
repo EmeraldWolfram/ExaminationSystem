@@ -51,11 +51,11 @@ public class StaffIdentity {
     //Setter and getter, TO DO: Remove setIdentity as this is for testing purpose
 
 
-    public String getVenueHandling() {
+    public String getExamVenue() {
         return venueHandling;
     }
 
-    public void setVenueHandling(String venueHandling) {
+    public void setExamVenue(String venueHandling) {
         this.venueHandling = venueHandling;
     }
 

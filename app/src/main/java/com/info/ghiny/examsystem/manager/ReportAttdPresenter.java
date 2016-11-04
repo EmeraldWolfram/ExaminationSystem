@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.fragments.AbsentFragment;
 import com.info.ghiny.examsystem.fragments.BarredFragment;
 import com.info.ghiny.examsystem.fragments.ExemptedFragment;
@@ -21,8 +24,10 @@ import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JsonHelper;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 import java.util.HashMap;
 
@@ -32,6 +37,7 @@ import java.util.HashMap;
 public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttdMVP.MPresenter {
     private ReportAttdMVP.View taskView;
     private ReportAttdMVP.Model taskModel;
+    private boolean sent;
     private HashMap<String, Fragment> fragmentHashMap;
 
     private Handler handler;
@@ -44,6 +50,16 @@ public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttd
         fragmentHashMap.put("BARRED",       new BarredFragment());
         fragmentHashMap.put("EXEMPTED",     new ExemptedFragment());
         fragmentHashMap.put("QUARANTINED",  new QuarantinedFragment());*/
+    }
+
+    @Override
+    public boolean isSent() {
+        return sent;
+    }
+
+    @Override
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 
     public void setTaskModel(ReportAttdMVP.Model taskModel) {
@@ -81,10 +97,28 @@ public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttd
     }
 
     @Override
+    public void onUpload() {
+        StaffIdentity staff = LoginModel.getStaff();
+        AttendanceList list = TakeAttdModel.getAttdList();
+
+        Integer presentSize = list.getNumberOfCandidates(Status.PRESENT);
+        Integer absentSize  = list.getNumberOfCandidates(Status.ABSENT);
+        Integer barredSize  = list.getNumberOfCandidates(Status.BARRED);
+        Integer exemptedSize= list.getNumberOfCandidates(Status.EXEMPTED);
+        Integer total       = presentSize + absentSize + barredSize + exemptedSize;
+
+        String[] statusSize = new String[]{presentSize.toString(), absentSize.toString(),
+                barredSize.toString(), exemptedSize.toString()};
+        String totalSize    = total.toString();
+
+        taskView.displayReportWindow(staff.getName(), staff.getExamVenue(), statusSize, totalSize);
+    }
+
+    @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
             taskView.closeProgressWindow();
-            ConnectionTask.setCompleteFlag(true);
+            this.setSent(true);
             boolean uploaded = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err){
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -223,7 +257,15 @@ public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttd
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        dialog.cancel();
+        switch(which){
+            case DialogInterface.BUTTON_POSITIVE:
+                uploadFlag = true;
+                taskView.securityPrompt(true);
+                dialog.cancel();
+                break;
+            default:
+                dialog.cancel();
+        }
     }
 
     @Override

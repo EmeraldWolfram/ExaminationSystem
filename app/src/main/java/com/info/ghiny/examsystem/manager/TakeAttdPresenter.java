@@ -25,6 +25,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.View taskView;
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
+    private boolean initComplete;
     private Handler handler;
 
     public TakeAttdPresenter(TakeAttdMVP.View taskView){
@@ -45,14 +46,13 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void onCreate() {
-        try{
-            taskModel.initAttendance();
-            taskView.openProgressWindow("Initializing:", "Preparing Attendance List...");
-            handler.postDelayed(taskModel, 5000);
-        } catch (ProcessException err) {
-            taskView.displayError(err);
-        }
+    public void setInitComplete(boolean initComplete) {
+        this.initComplete = initComplete;
+    }
+
+    @Override
+    public boolean isInitComplete() {
+        return initComplete;
     }
 
     @Override
@@ -75,6 +75,15 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 onChiefRespond(errManager, message);
             }
         });
+        if(!taskModel.isInitialized()){
+            try{
+                taskModel.initAttendance();
+                taskView.openProgressWindow("Initializing:", "Preparing Attendance List...");
+                handler.postDelayed(taskModel, 5000);
+            } catch (ProcessException err) {
+                taskView.displayError(err);
+            }
+        }
         onResume();
     }
 
@@ -153,7 +162,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
             taskView.closeProgressWindow();//Might Change
-            ConnectionTask.setCompleteFlag(true);
+            this.initComplete = true;
             taskModel.checkDownloadResult(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -231,6 +240,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
             taskView.closeProgressWindow();
             taskView.pauseScanning();
             taskView.displayError(err);
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST){
+                taskView.resumeScanning();
+            }
         }
     }
 }

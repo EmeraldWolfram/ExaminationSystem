@@ -39,13 +39,14 @@ public interface TakeAttdMVP {
     }
 
     interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {
-        void onCreate(); //Prepare Attendance List
         void onBackPressed();   //Show dialog, prevent logout
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+        void setInitComplete(boolean initComplete);
+        boolean isInitComplete();
         void startTimer();
         void onTimesOut(ProcessException err);  //standard
         void displayTable(Integer tableNumber);
@@ -55,7 +56,7 @@ public interface TakeAttdMVP {
     }
 
     interface Model extends Runnable, DialogInterface.OnClickListener, TaskSecureModel {
-
+        boolean isInitialized();
         void initAttendance() throws ProcessException;  //prepare the Attd & papers (download or db)
         void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
         void saveAttendance();  //save before destroy

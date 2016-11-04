@@ -326,11 +326,11 @@ public class ReportAttdPresenterTest {
         ExternalDbLoader.setConnectionTask(conTask);
         String message = "{\"Result\":true}";
 
-        assertFalse(ConnectionTask.isComplete());
+        assertFalse(manager.isSent());
         manager.onChiefRespond(errManager, message);
 
         verify(taskView).closeProgressWindow();
-        assertTrue(ConnectionTask.isComplete());
+        assertTrue(manager.isSent());
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -342,11 +342,11 @@ public class ReportAttdPresenterTest {
         ExternalDbLoader.setConnectionTask(conTask);
         String message = "{\"Result\":false}";
 
-        assertFalse(ConnectionTask.isComplete());
+        assertFalse(manager.isSent());
         manager.onChiefRespond(errManager, message);
 
         verify(taskView).closeProgressWindow();
-        assertTrue(ConnectionTask.isComplete());
+        assertTrue(manager.isSent());
         verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 

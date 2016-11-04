@@ -471,7 +471,7 @@ public class TakeAttdModelTest {
     public void testRun_ChiefDoRespond() throws Exception {
         ConnectionTask.setCompleteFlag(true);
         model.run();
-        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+        verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
     @Test

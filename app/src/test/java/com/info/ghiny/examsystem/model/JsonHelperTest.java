@@ -130,7 +130,7 @@ public class JsonHelperTest {
                         "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}", 3);
         assertNotNull(staff);
         assertEquals("TESTER 1", staff.getName());
-        assertEquals("M5", staff.getVenueHandling());
+        assertEquals("M5", staff.getExamVenue());
         assertEquals("246810", staff.getIdNo());
     }
 

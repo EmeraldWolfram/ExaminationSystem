@@ -22,7 +22,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private TakeAttdMVP.MPresenter taskPresenter;
     private CheckListLoader dbLoader;
 
-    private boolean initialized;
+    private boolean initialized = false;
     private Candidate tempCdd    = null;
     private Integer tempTable    = null;
 
@@ -37,15 +37,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         this.initialized    = initialized;
     }
 
-    boolean isInitialized() {
+    @Override
+    public boolean isInitialized() {
         return initialized;
     }
 
     @Override
     public void initAttendance() throws ProcessException {
         if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
+            taskPresenter.setInitComplete(false);
             ExternalDbLoader.dlAttendanceList();
-            taskPresenter.startTimer();
         } else {
             attdList    = dbLoader.queryAttendanceList();
             Candidate.setPaperList(dbLoader.queryPapers());
@@ -81,7 +82,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         if(attdList == null){
             if(initialized)
                 throw new ProcessException("Attendance List is not initialize",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         } else {
             List<String> cddList    = attdList.getAllCandidateRegNumList();
 
@@ -136,13 +137,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void run() {
         try{
-            if(!ConnectionTask.isComplete()) {
+            if(!taskPresenter.isInitComplete()) {
                 ProcessException err = new ProcessException(
-                        "Identity verification times out.",
+                        "Initialization failed. Response times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                 err.setListener(ProcessException.okayButton, taskPresenter);
                 err.setBackPressListener(taskPresenter);
                 throw err;
+            } else if(initialized) {
+                throw new ProcessException("Initialization completed!",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             }
         } catch (ProcessException err){
             taskPresenter.onTimesOut(err);

@@ -4,8 +4,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.info.ghiny.examsystem.model.TCPClient;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -144,7 +142,7 @@ public class CheckListLoader {
                 + staffIdentity.getIdNo()           + "', '"
                 + staffIdentity.getHashPass()       + "', '"
                 + staffIdentity.getName()           + "', '"
-                + staffIdentity.getVenueHandling()  + "', '"
+                + staffIdentity.getExamVenue()  + "', '"
                 + staffIdentity.getRole().get(0)    + "')");
     }
 

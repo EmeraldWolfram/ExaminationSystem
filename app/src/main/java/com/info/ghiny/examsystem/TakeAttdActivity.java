@@ -69,9 +69,6 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
         initMVP();
         initView();
-
-        taskPresenter.onCreate();
-
         //Barcode Viewer
         barcodeView.decodeContinuous(callback);
         assert barcodeView != null;

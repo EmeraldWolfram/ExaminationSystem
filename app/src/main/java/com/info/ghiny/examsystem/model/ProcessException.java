@@ -20,6 +20,7 @@ public class ProcessException extends Exception {
     public static final String okayButton   = "OKAY";
     public static final String yesButton    = "YES";
     public static final String noButton     = "NO";
+    public static final String submitButton = "SUBMIT";
 
     private HashMap<String, DialogInterface.OnClickListener> buttonMap;
     private DialogInterface.OnCancelListener backPressListener;
