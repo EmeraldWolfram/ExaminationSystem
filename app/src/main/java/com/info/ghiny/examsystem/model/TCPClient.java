@@ -1,15 +1,21 @@
 package com.info.ghiny.examsystem.model;
 
 
+import android.util.Log;
+
+import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 /**
  * Created by GhinY on 08/07/2016.
@@ -77,10 +83,22 @@ public class TCPClient implements Runnable{
             //here you must put your computer's IP address.
             //InetAddress serverAddr = InetAddress.getByName(SERVERIP);
             InetAddress serverAddr = InetAddress.getByName(connector.getIpAddress());
+            SocketAddress address   = new InetSocketAddress(serverAddr, connector.getPortNumber());
 
             //create a socket to make the connection with the server
             //Socket socket = new Socket(serverAddr, SERVERPORT);
-            Socket socket = new Socket(serverAddr, connector.getPortNumber());
+            //Socket socket = new Socket(serverAddr, connector.getPortNumber());
+            Socket socket = new Socket();
+            try {
+                socket.connect(address, 5000);
+
+                Log.d(LinkChiefActivity.TAG, String.format("%s", socket.getRemoteSocketAddress().toString()));
+            } catch (Exception err){
+                Log.d(LinkChiefActivity.TAG, err.getMessage());
+            }
+
+
+            Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
             try {
                 //out = sender
                 //out = new PrintWriter(new BufferedWriter(
@@ -115,7 +133,7 @@ public class TCPClient implements Runnable{
     //Declare the interface. The method messageReceived(String message) will must be implemented in the MyActivity
     //class at on asynckTask doInBackground
     public interface OnMessageReceived {
-        public void messageReceived(String message);
+        void messageReceived(String message);
     }
 
 }

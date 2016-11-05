@@ -68,6 +68,10 @@ public class LoginModel implements LoginMVP.Model{
         }
 
         this.qrStaffID  = scanStr;
+
+        if(staff != null){
+            staff = staff.getIdNo().equals(scanStr) ? staff : null;
+        }
         //StaffIdentity staff = new StaffIdentity();
         //staff.setIdNo(scanStr);
         //LoginModel.setStaff(staff);

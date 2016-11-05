@@ -3,14 +3,20 @@ package com.info.ghiny.examsystem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
+import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.LoginPresenter;
@@ -31,7 +37,12 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     private LoginMVP.VPresenter taskPresenter;
     private CheckListLoader dbLoader;
     private ErrorManager errorManager;
+    private BeepManager beepManager;
     private ProgressDialog progDialog;
+
+    private int mode;
+    private ImageView crossHairView;
+    private FloatingActionButton scanInitiater;
 
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -58,17 +69,22 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
         TextView idView = (TextView)findViewById(R.id.identityText);    assert idView  != null;
         idView.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
+        taskPresenter.loadSetting();
         barcodeView.decodeContinuous(callback);
     }
 
     private void initView(){
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
+        scanInitiater   = (FloatingActionButton) findViewById(R.id.loginScanButton);
+        crossHairView   = (ImageView) findViewById(R.id.loginCrossHair);
         errorManager    = new ErrorManager(this);
+        beepManager     = new BeepManager(this);
     }
 
     private void initMVP(){
         dbLoader        = new CheckListLoader(this);
-        LoginPresenter presenter  = new LoginPresenter(this);
+        SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
+        LoginPresenter presenter  = new LoginPresenter(this, preferences);
         LoginModel model       = new LoginModel(presenter, dbLoader);
         presenter.setHandler(new Handler());
         presenter.setTaskModel(model);
@@ -90,6 +106,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     @Override
     protected void onDestroy() {
         taskPresenter.onDestroy();
+        beepManager.close();
         super.onDestroy();
     }
 
@@ -97,6 +114,11 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event)
                 || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onInitiateScan(View view) {
+        barcodeView.resume();
     }
 
     //==============================================================================================
@@ -129,7 +151,9 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     }
 
     @Override
-    public void beep() {}
+    public void beep() {
+        beepManager.playBeepSoundAndVibrate();
+    }
 
     @Override
     public void pauseScanning() {
@@ -138,7 +162,17 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
 
     @Override
     public void resumeScanning() {
-        barcodeView.resume();
+        switch (mode){
+            case 2:
+                barcodeView.postDelayed(this, 500);
+                break;
+            case 3:
+                barcodeView.postDelayed(this, 1000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 2000);
+                break;
+        }
     }
 
     @Override
@@ -150,5 +184,27 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     public void closeProgressWindow() {
         if(progDialog != null)
             progDialog.dismiss();
+    }
+
+    @Override
+    public void changeScannerSetting(boolean crossHair, boolean beep, boolean vibrate, int mode) {
+        if(crossHair){
+            this.crossHairView.setVisibility(View.VISIBLE);
+        } else {
+            this.crossHairView.setVisibility(View.INVISIBLE);
+        }
+        this.beepManager.setBeepEnabled(beep);
+        this.beepManager.setVibrateEnabled(vibrate);
+        this.mode   = mode;
+        if(mode == 1){
+            scanInitiater.setVisibility(View.VISIBLE);
+        } else {
+            scanInitiater.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void run() {
+        barcodeView.resume();
     }
 }

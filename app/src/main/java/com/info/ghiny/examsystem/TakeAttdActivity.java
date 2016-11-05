@@ -2,14 +2,19 @@ package com.info.ghiny.examsystem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,6 +30,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.List;
@@ -47,12 +53,14 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private TextView paperView;
     private RelativeLayout thisLayout;
 
-    private CompoundBarcodeView barcodeView;
+    private int mode;
+    private ImageView crossHairView;
+    private FloatingActionButton scanInitiater;
+    private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.setStatusText(result.getText());
                 taskPresenter.onScan(result.getText());
             }
         }
@@ -70,18 +78,23 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         initMVP();
         initView();
         //Barcode Viewer
+        taskPresenter.loadSetting();
         barcodeView.decodeContinuous(callback);
         assert barcodeView != null;
-        barcodeView.setStatusText("Ready to take candidates attendance");
     }
 
     private void initView(){
+        barcodeView     = (BarcodeView) findViewById(R.id.assignScanner);
+        errManager      = new ErrorManager(this);
         thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
         cddLayout  = (LinearLayout)findViewById(R.id.tableInfoLayout);
         cddView    = (TextView)findViewById(R.id.canddAssignText);
         regNumView = (TextView)findViewById(R.id.regNumAssignText);
         paperView  = (TextView)findViewById(R.id.paperAssignText);
         tableView  = (TextView)findViewById(R.id.tableNumberText);
+
+        scanInitiater               = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
+        crossHairView               = (ImageView) findViewById(R.id.takeAttdCrossHair);
 
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
@@ -97,12 +110,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     private void initMVP(){
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.assignScanner);
-        errManager      = new ErrorManager(this);
-
-        CheckListLoader dbLoader    = new CheckListLoader(this);
-        TakeAttdPresenter presenter     = new TakeAttdPresenter(this);
-        TakeAttdModel model           = new TakeAttdModel(presenter, dbLoader);
+        SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
+        CheckListLoader dbLoader        = new CheckListLoader(this);
+        TakeAttdPresenter presenter     = new TakeAttdPresenter(this, preferences);
+        TakeAttdModel model             = new TakeAttdModel(presenter, dbLoader);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
 
@@ -140,6 +151,11 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     public void onBackPressed() {
         taskPresenter.onBackPressed();
+    }
+
+    @Override
+    public void onInitiateScan(View view) {
+        barcodeView.resume();
     }
 
     //= MVP Interface Method =======================================================================
@@ -188,12 +204,38 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     @Override
     public void resumeScanning() {
-        barcodeView.resume();
+        switch (mode){
+            case 2:
+                barcodeView.postDelayed(this, 500);
+                break;
+            case 3:
+                barcodeView.postDelayed(this, 1000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 2000);
+                break;
+        }
     }
 
     @Override
     public void pauseScanning() {
         barcodeView.pause();
+    }
+
+    @Override
+    public void changeScannerSetting(boolean crossHair, boolean beep, boolean vibrate, int mode) {
+        if(crossHair){
+            this.crossHairView.setVisibility(View.VISIBLE);
+        } else {
+            this.crossHairView.setVisibility(View.INVISIBLE);
+        }
+
+        this.mode   = mode;
+        if(mode == 1){
+            scanInitiater.setVisibility(View.VISIBLE);
+        } else {
+            scanInitiater.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -210,5 +252,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     public void setAssignBackgroundColor(int color) {
         cddLayout.getBackground().setColorFilter(color, PorterDuff.Mode.DARKEN);
+    }
+
+    @Override
+    public void run() {
+        barcodeView.resume();
     }
 }

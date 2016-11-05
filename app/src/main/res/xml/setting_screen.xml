@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Scanner Setting" android:key="scanner">
+        <CheckBoxPreference
+            android:id="@+id/crossHair"
+            android:title="Cross Hair"
+            android:key="CrossHair"
+            android:summary="Check to enable target square"
+            android:defaultValue="true"
+            android:icon="@drawable/scan_frame"/>
+
+        <CheckBoxPreference
+            android:id="@+id/beep"
+            android:title="Beep"
+            android:key="Beep"
+            android:summary="Check to enable beep\nNOTE: Not applicable while taking attendance"
+            android:defaultValue="false"
+            android:icon="@drawable/scan_beep"/>
+
+        <CheckBoxPreference
+            android:id="@+id/vibrate"
+            android:title="Vibrate"
+            android:key="Vibrate"
+            android:summary="Check to enable vibration"
+            android:defaultValue="false"
+            android:icon="@drawable/scan_vibrate"/>
+
+        <ListPreference
+            android:title="Scanner Mode"
+            android:key="ScannerMode"
+            android:summary="Tap to select scan mode of QR scanner"
+            android:entries="@array/modeEntries"
+            android:entryValues="@array/modeValues"
+            android:defaultValue="1"
+            android:icon="@drawable/scan_mode"/>
+    </PreferenceCategory>
+</PreferenceScreen>

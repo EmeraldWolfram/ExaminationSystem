@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.InfoGrabActivity;
@@ -22,8 +23,15 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     private CollectionMVP.Model taskModel;
     private Handler handler;
 
-    public CollectionPresenter(CollectionMVP.View taskView){
+    private SharedPreferences preferences;
+    private boolean crossHair;
+    private boolean beep;
+    private boolean vibrate;
+    private int mode;
+
+    public CollectionPresenter(CollectionMVP.View taskView, SharedPreferences pref){
         this.taskView       = taskView;
+        this.preferences    = pref;
     }
 
     public void setTaskModel(CollectionMVP.Model taskModel) {
@@ -43,6 +51,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     @Override
     public void onResume() {
         taskView.resumeScanning();
+        loadSetting();
     }
 
     @Override
@@ -98,6 +107,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     public void onScan(String scanStr){
         try{
             taskView.pauseScanning();
+            taskView.beep();
             taskModel.bundleCollection(scanStr);
             taskView.openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
             handler.postDelayed(taskModel, 5000);
@@ -108,6 +118,16 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
                 taskView.resumeScanning();
         }
+    }
+
+    @Override
+    public void loadSetting() {
+        crossHair   = preferences.getBoolean("CrossHair", true);
+        beep        = preferences.getBoolean("Beep", false);
+        vibrate     = preferences.getBoolean("Vibrate", false);
+        mode        = Integer.parseInt(preferences.getString("GG", "1"));
+
+        taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
 
     @Override

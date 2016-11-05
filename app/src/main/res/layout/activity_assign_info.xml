@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -57,17 +58,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tableInfoLayout">
-        <com.journeyapps.barcodescanner.CompoundBarcodeView
+        <com.journeyapps.barcodescanner.BarcodeView
             android:id="@+id/assignScanner"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </com.journeyapps.barcodescanner.CompoundBarcodeView>
+        </com.journeyapps.barcodescanner.BarcodeView>
 
         <ImageView
-            android:src="@drawable/scan_frame"
+            android:id="@+id/takeAttdCrossHair"
+            app:srcCompat="@drawable/scan_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:onClick="onInitiateScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_crop_free_black_150dp"
+            android:layout_marginBottom="32dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/takeAttdScanButton" />
     </RelativeLayout>
 
 

@@ -8,6 +8,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
+        vectorDrawables.useSupportLibrary true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         applicationId "com.info.ghiny.examsystem"
         minSdkVersion 18

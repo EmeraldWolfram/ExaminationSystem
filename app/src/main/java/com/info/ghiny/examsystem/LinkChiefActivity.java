@@ -3,20 +3,30 @@ package com.info.ghiny.examsystem;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -34,8 +44,12 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     private ErrorManager errorManager;
     private BeepManager beepManager;
     private LinkChiefMVP.PresenterFace taskPresenter;
+    private int mode;
+
     //View Objects
     private ProgressDialog progDialog;
+    private ImageView crossHairView;
+    private FloatingActionButton scanInitiater;
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -61,19 +75,21 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
         initMVP();
 
         taskPresenter.onCreate();
+        taskPresenter.loadSetting();
         barcodeView.decodeContinuous(callback);
     }
 
     private void initView(){
         barcodeView                 = (BarcodeView) findViewById(R.id.ipScanner);
+        scanInitiater               = (FloatingActionButton) findViewById(R.id.linkScanButton);
+        crossHairView               = (ImageView) findViewById(R.id.linkerCrossHair);
         errorManager                = new ErrorManager(this);
         beepManager                 = new BeepManager(this);
-        beepManager.setBeepEnabled(true);
-        beepManager.setVibrateEnabled(true);
     }
 
     private void initMVP(){
-        LinkChiefPresenter presenter= new LinkChiefPresenter(this);
+        SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
+        LinkChiefPresenter presenter= new LinkChiefPresenter(this, preferences);
         CheckListLoader dbLoader    = new CheckListLoader(this);
         LinkChiefModel model        = new LinkChiefModel(dbLoader, presenter);
         presenter.setTaskModel(model);
@@ -107,13 +123,28 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //Experiment on Menu Bar
-        MenuInflater inflater   = getMenuInflater();
+        MenuInflater inflater   = this.getMenuInflater();
         inflater.inflate(R.menu.home_option_menu, menu);
 
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.setting:
+                Intent setting  = new Intent(this, SettingActivity.class);
+                startActivity(setting);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onInitiateScan(View view){
+        barcodeView.resume();
+    }
 
     //==============================================================================================
     @Override
@@ -140,12 +171,9 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public void beep() {
-        beepManager.playBeepSoundAndVibrate();
-    }
-
-    @Override
-    public void resumeScanning() {
-        barcodeView.resume();
+        if(beepManager.isBeepEnabled()){
+            beepManager.playBeepSoundAndVibrate();
+        }
     }
 
     @Override
@@ -154,7 +182,39 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     }
 
     @Override
+    public void resumeScanning() {
+        switch (mode){
+            case 2:
+                barcodeView.postDelayed(this, 500);
+                break;
+            case 3:
+                barcodeView.postDelayed(this, 1000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 2000);
+                break;
+        }
+    }
+
+    @Override
     public void securityPrompt(boolean cancellable) {}
+
+    @Override
+    public void changeScannerSetting(boolean crossHair, boolean beep, boolean vibrate, int mode) {
+        if(crossHair){
+            this.crossHairView.setVisibility(View.VISIBLE);
+        } else {
+            this.crossHairView.setVisibility(View.INVISIBLE);
+        }
+        this.beepManager.setBeepEnabled(beep);
+        this.beepManager.setVibrateEnabled(vibrate);
+        this.mode   = mode;
+        if(mode == 1){
+            scanInitiater.setVisibility(View.VISIBLE);
+        } else {
+            scanInitiater.setVisibility(View.INVISIBLE);
+        }
+    }
 
     @Override
     public void openProgressWindow(String title, String message) {
@@ -165,5 +225,10 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     public void closeProgressWindow() {
         if(progDialog != null)
             progDialog.dismiss();
+    }
+
+    @Override
+    public void run() {
+        barcodeView.resume();
     }
 }

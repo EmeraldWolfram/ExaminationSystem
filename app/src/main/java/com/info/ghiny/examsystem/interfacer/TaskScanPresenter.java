@@ -7,4 +7,5 @@ interface TaskScanPresenter {
     void onScan(String scanStr);
     void onPause();
     void onResume();
+    void loadSetting();
 }

@@ -1,15 +1,15 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.MainLoginActivity;
-import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
-import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -21,9 +21,28 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     private LinkChiefMVP.ModelFace taskModel;
     private Handler handler;
     private boolean reconnect = false;
+    private boolean requestComplete = false;
 
-    public LinkChiefPresenter(LinkChiefMVP.ViewFace taskView){
+    private SharedPreferences preferences;
+    private boolean crossHair;
+    private boolean beep;
+    private boolean vibrate;
+    private int mode;
+
+
+    public LinkChiefPresenter(LinkChiefMVP.ViewFace taskView, SharedPreferences pref){
         this.taskView       = taskView;
+        this.preferences    = pref;
+    }
+
+    @Override
+    public boolean isRequestComplete() {
+        return requestComplete;
+    }
+
+    @Override
+    public void setRequestComplete(boolean requestComplete) {
+        this.requestComplete = requestComplete;
     }
 
     public void setTaskModel(LinkChiefMVP.ModelFace taskModel) {
@@ -48,10 +67,21 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     }
 
     @Override
+    public void loadSetting() {
+        crossHair   = preferences.getBoolean("CrossHair", true);
+        beep        = preferences.getBoolean("Beep", false);
+        vibrate     = preferences.getBoolean("Vibrate", false);
+        mode        = Integer.parseInt(preferences.getString("GG", "4"));
+
+        taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
+    }
+
+    @Override
     public void onResume(final ErrorManager errManager) {
         if(reconnect){
             while(ExternalDbLoader.getTcpClient() == null){}
 
+            Log.d(LinkChiefActivity.TAG, "Check point reconnect 2");
             try{
                 if(taskModel.reconnect()){
                     taskView.openProgressWindow("RECONNECTION", "Authenticating...");
@@ -76,6 +106,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     @Override
     public void onResume() {
         taskView.resumeScanning();
+        loadSetting();
     }
 
     @Override
@@ -87,7 +118,8 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             taskView.displayError(err);
-            taskView.resumeScanning();
+            if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
+                taskView.resumeScanning();
         }
     }
 
@@ -111,7 +143,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
             taskView.closeProgressWindow();
-            ConnectionTask.setCompleteFlag(true);
+            setRequestComplete(true);
             taskModel.onChallengeMessageReceived(messageRx);
             taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {

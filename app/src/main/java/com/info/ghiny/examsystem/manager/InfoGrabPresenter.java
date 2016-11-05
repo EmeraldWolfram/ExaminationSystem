@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.InfoDisplayActivity;
@@ -25,8 +26,15 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     private InfoGrabMVP.ViewFace taskView;
     private InfoGrabMVP.Model taskModel;
 
-    public InfoGrabPresenter(InfoGrabMVP.ViewFace taskView){
+    private SharedPreferences preferences;
+    private boolean crossHair;
+    private boolean beep;
+    private boolean vibrate;
+    private int mode;
+
+    public InfoGrabPresenter(InfoGrabMVP.ViewFace taskView, SharedPreferences pref){
         this.taskView   = taskView;
+        this.preferences    = pref;
     }
 
     public void setTaskModel(InfoGrabMVP.Model taskModel) {
@@ -50,6 +58,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     @Override
     public void onResume() {
         taskView.resumeScanning();
+        loadSetting();
     }
 
     @Override
@@ -142,5 +151,15 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
             taskView.pauseScanning();
             taskView.displayError(err);
         }
+    }
+
+    @Override
+    public void loadSetting() {
+        crossHair   = preferences.getBoolean("CrossHair", true);
+        beep        = preferences.getBoolean("Beep", false);
+        vibrate     = preferences.getBoolean("Vibrate", false);
+        mode        = Integer.parseInt(preferences.getString("GG", "1"));
+
+        taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
 }

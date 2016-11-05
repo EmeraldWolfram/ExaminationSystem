@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.model;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -9,7 +11,6 @@ import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by GhinY on 05/10/2016.
@@ -93,22 +94,25 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
 
     @Override
     public boolean reconnect() throws ProcessException {
+        Log.d(LinkChiefActivity.TAG, "Reconnect method invoked");
         if(!dbLoader.emptyUserInDB()){
+            Log.d(LinkChiefActivity.TAG, "User Not Empty");
             StaffIdentity prevStaff = dbLoader.queryUser();
-            ConnectionTask.setCompleteFlag(false);
+            taskPresenter.setRequestComplete(false);
             ExternalDbLoader.requestDuelMessage(prevStaff.getIdNo());
             return true;
         } //else {
-            //throw new ProcessException("Failed to reconnect, no reference of staff in database",
-              //      ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
+        //throw new ProcessException("Failed to reconnect, no reference of staff in database",
+        //      ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
         //}
+        Log.d(LinkChiefActivity.TAG, "User Not Empty");
         return false;
     }
 
     @Override
     public void run() {
         try{
-            if(!ConnectionTask.isComplete()) {
+            if(!taskPresenter.isRequestComplete()) {
                 ProcessException err = new ProcessException(
                         "Reconnection times out. Find Chief and connect with QR code",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

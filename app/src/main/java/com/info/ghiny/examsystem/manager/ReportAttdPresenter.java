@@ -23,6 +23,7 @@ import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -120,6 +121,8 @@ public class ReportAttdPresenter implements ReportAttdMVP.VPresenter, ReportAttd
             taskView.closeProgressWindow();
             this.setSent(true);
             boolean uploaded = JsonHelper.parseBoolean(messageRx);
+            throw new ProcessException("Submission successful",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         } catch (ProcessException err){
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }

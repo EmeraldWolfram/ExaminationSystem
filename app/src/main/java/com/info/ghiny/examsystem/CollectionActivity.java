@@ -2,15 +2,21 @@ package com.info.ghiny.examsystem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
+import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.manager.CollectionPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -28,7 +34,12 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     private static final String TAG = CollectionActivity.class.getSimpleName();
 
     private ErrorManager errorManager;
+    private BeepManager beepManager;
     private CollectionMVP.PresenterForView taskPresenter;
+
+    private int mode;
+    private ImageView crossHairView;
+    private FloatingActionButton scanInitiater;
     private ProgressDialog progDialog;
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -50,6 +61,21 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
         setContentView(R.layout.activity_collection);
 
         initMVP();
+        initView();
+
+        taskPresenter.loadSetting();
+        barcodeView.decodeContinuous(callback);
+    }
+
+    private void initView(){
+        TextView head2 = (TextView)findViewById(R.id.bundleText);
+        head2.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
+
+        errorManager    = new ErrorManager(this);
+        beepManager     = new BeepManager(this);
+        barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);
+        scanInitiater   = (FloatingActionButton) findViewById(R.id.collectScanButton);
+        crossHairView   = (ImageView) findViewById(R.id.collectCrossHair);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.collectionLayout);
         assert thisLayout != null;
@@ -59,18 +85,11 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
                 taskPresenter.onSwipeBottom();
             }
         });
-
-        barcodeView.decodeContinuous(callback);
     }
 
     private void initMVP(){
-        TextView head2 = (TextView)findViewById(R.id.bundleText);
-        head2.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
-
-        errorManager    = new ErrorManager(this);
-        barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);
-
-        CollectionPresenter presenter   = new CollectionPresenter(this);
+        SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
+        CollectionPresenter presenter   = new CollectionPresenter(this, preferences);
         CollectionModel model           = new CollectionModel(presenter);
         presenter.setHandler(new Handler());
         presenter.setTaskModel(model);
@@ -132,7 +151,9 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     }
 
     @Override
-    public void beep() {}
+    public void beep() {
+        beepManager.playBeepSoundAndVibrate();
+    }
 
     @Override
     public void pauseScanning() {
@@ -141,7 +162,17 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     @Override
     public void resumeScanning() {
-        barcodeView.resume();
+        switch (mode){
+            case 2:
+                barcodeView.postDelayed(this, 500);
+                break;
+            case 3:
+                barcodeView.postDelayed(this, 1000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 2000);
+                break;
+        }
     }
 
     @Override
@@ -159,5 +190,32 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     public void closeProgressWindow() {
         if(progDialog != null)
             progDialog.dismiss();
+    }
+
+    @Override
+    public void changeScannerSetting(boolean crossHair, boolean beep, boolean vibrate, int mode) {
+        if(crossHair){
+            this.crossHairView.setVisibility(View.VISIBLE);
+        } else {
+            this.crossHairView.setVisibility(View.INVISIBLE);
+        }
+        beepManager.setBeepEnabled(beep);
+        beepManager.setVibrateEnabled(vibrate);
+        this.mode   = mode;
+        if(mode == 1){
+            scanInitiater.setVisibility(View.VISIBLE);
+        } else {
+            scanInitiater.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onInitiateScan(View view) {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void run() {
+        barcodeView.resume();
     }
 }

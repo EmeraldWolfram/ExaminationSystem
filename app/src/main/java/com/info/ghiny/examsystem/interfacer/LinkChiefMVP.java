@@ -28,6 +28,8 @@ public interface LinkChiefMVP {
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+        void setRequestComplete(boolean requestComplete);
+        boolean isRequestComplete();
         void onTimesOut(ProcessException err);
     }
 

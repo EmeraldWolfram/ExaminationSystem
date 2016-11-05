@@ -2,11 +2,16 @@ package com.info.ghiny.examsystem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.zxing.ResultPoint;
@@ -19,6 +24,7 @@ import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.List;
@@ -31,13 +37,16 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
 
     private InfoGrabMVP.VPresenter taskPresenter;
     private ErrorManager errManager;
+
+    private int mode;
+    private ImageView crossHairView;
+    private FloatingActionButton scanInitiater;
     private ProgressDialog progDialog;
-    private CompoundBarcodeView barcodeView;
+    private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                barcodeView.setStatusText(result.getText());
                 taskPresenter.onScan(result.getText());
             }
         }
@@ -53,7 +62,17 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obtain_info);
 
+        initView();
         initMVP();
+        taskPresenter.loadSetting();
+        barcodeView.decodeContinuous(callback);
+    }
+
+    private void initView(){
+        barcodeView     = (BarcodeView) findViewById(R.id.obtainScanner);
+        scanInitiater   = (FloatingActionButton) findViewById(R.id.grabInfoScanButton);
+        crossHairView   = (ImageView) findViewById(R.id.grabInfoCrossHair);
+        errManager      = new ErrorManager(this);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
@@ -63,16 +82,12 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
                 taskPresenter.onSwipeTop();
             }
         });
-
-        barcodeView = (CompoundBarcodeView) findViewById(R.id.obtainScanner);
-        barcodeView.decodeContinuous(callback);
-        barcodeView.setStatusText("Scan candidate ID to get his/her exam details");
     }
 
     private void initMVP(){
-        errManager  = new ErrorManager(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        InfoGrabPresenter presenter = new InfoGrabPresenter(this);
+        InfoGrabPresenter presenter = new InfoGrabPresenter(this, preferences);
         InfoGrabModel model     = new InfoGrabModel(presenter);
         presenter.setHandler(new Handler());
         presenter.setTaskModel(model);
@@ -149,7 +164,17 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
 
     @Override
     public void resumeScanning() {
-        barcodeView.resume();
+        switch (mode){
+            case 2:
+                barcodeView.postDelayed(this, 500);
+                break;
+            case 3:
+                barcodeView.postDelayed(this, 1000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 2000);
+                break;
+        }
     }
 
     @Override
@@ -161,5 +186,31 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     public void closeProgressWindow() {
         if(progDialog != null)
             progDialog.dismiss();
+    }
+
+    @Override
+    public void changeScannerSetting(boolean crossHair, boolean beep, boolean vibrate, int mode) {
+        if(crossHair){
+            this.crossHairView.setVisibility(View.VISIBLE);
+        } else {
+            this.crossHairView.setVisibility(View.INVISIBLE);
+        }
+
+        this.mode   = mode;
+        if(mode == 1){
+            scanInitiater.setVisibility(View.VISIBLE);
+        } else {
+            scanInitiater.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onInitiateScan(View view) {
+        barcodeView.resume();
+    }
+
+    @Override
+    public void run() {
+        barcodeView.resume();
     }
 }

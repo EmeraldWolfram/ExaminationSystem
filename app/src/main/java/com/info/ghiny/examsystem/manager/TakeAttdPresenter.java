@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.R;
@@ -28,8 +29,15 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private boolean initComplete;
     private Handler handler;
 
-    public TakeAttdPresenter(TakeAttdMVP.View taskView){
-        this.taskView   = taskView;
+    private SharedPreferences preferences;
+    private boolean crossHair;
+    private boolean beep;
+    private boolean vibrate;
+    private int mode;
+
+    public TakeAttdPresenter(TakeAttdMVP.View taskView, SharedPreferences pref){
+        this.preferences    = pref;
+        this.taskView       = taskView;
         this.navigationFlag = false;
     }
 
@@ -57,6 +65,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onResume(){
+        loadSetting();
         try{
             //if(taskModel.isInitialized())
             taskModel.updateAssignList();
@@ -167,6 +176,16 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
+    }
+
+    @Override
+    public void loadSetting() {
+        crossHair   = preferences.getBoolean("CrossHair", true);
+        beep        = preferences.getBoolean("Beep", false);
+        vibrate     = preferences.getBoolean("Vibrate", false);
+        mode        = Integer.parseInt(preferences.getString("GG", "1"));
+
+        taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
 
     @Override

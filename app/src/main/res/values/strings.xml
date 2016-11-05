@@ -27,5 +27,6 @@
     <string name="room">ROOM:</string>
     <string name="present">PRESENT:</string>
     <string name="in_charge">IN_CHARGE:</string>
+    <string name="setting">Setting</string>
 
 </resources>
