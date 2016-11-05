@@ -32,6 +32,10 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
     private ProgressDialog progDialog;
     private ReportAttdMVP.VPresenter taskPresenter;
 
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private ViewPagerAdapter pagerAdapter;
+
     //==============================================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +46,9 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
     }
 
     private void initView(){
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -98,10 +102,11 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
         taskPresenter.toggleUnassign(view);
     }
 
-    //==============================================================================================
     public void onUpload(View view){
         taskPresenter.onUpload();
     }
+
+    //==============================================================================================
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -195,6 +200,7 @@ public class ReportAttdActivity extends AppCompatActivity implements ReportAttdM
         public CharSequence getPageTitle(int position) {
             return taskPresenter.getPageTitle(position);
         }
+
     }
 }
 

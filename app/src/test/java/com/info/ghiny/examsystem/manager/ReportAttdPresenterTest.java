@@ -321,7 +321,7 @@ public class ReportAttdPresenterTest {
     @Test
     public void testOnChiefRespond_1() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        ConnectionTask.setCompleteFlag(false);
+        manager.setSent(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
         String message = "{\"Result\":true}";
@@ -331,7 +331,7 @@ public class ReportAttdPresenterTest {
 
         verify(taskView).closeProgressWindow();
         assertTrue(manager.isSent());
-        verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
     @Test
@@ -366,7 +366,7 @@ public class ReportAttdPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        ReportAttdPresenter manager   = new ReportAttdPresenter(null);
 
         manager.onTimesOut(err);
 

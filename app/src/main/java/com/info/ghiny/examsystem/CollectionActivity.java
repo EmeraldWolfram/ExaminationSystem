@@ -152,7 +152,9 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     @Override
     public void beep() {
-        beepManager.playBeepSoundAndVibrate();
+        if(beepManager.isBeepEnabled()){
+            beepManager.playBeepSoundAndVibrate();
+        }
     }
 
     @Override

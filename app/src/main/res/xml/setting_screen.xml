@@ -31,7 +31,7 @@
             android:summary="Tap to select scan mode of QR scanner"
             android:entries="@array/modeEntries"
             android:entryValues="@array/modeValues"
-            android:defaultValue="1"
+            android:defaultValue="4"
             android:icon="@drawable/scan_mode"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.R;
@@ -20,6 +21,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Calendar;
@@ -45,6 +47,7 @@ public class TakeAttdPresenterTest {
     private TCPClient tcpClient;
     private Handler handler;
     private DialogInterface dialog;
+    private SharedPreferences preferences;
 
     @Before
     public void setUp() throws Exception {
@@ -54,12 +57,13 @@ public class TakeAttdPresenterTest {
         dialog      = Mockito.mock(DialogInterface.class);
         tcpClient   = Mockito.mock(TCPClient.class);
         task        = Mockito.mock(ConnectionTask.class);
+        preferences = Mockito.mock(SharedPreferences.class);
 
         ExternalDbLoader.setConnectionTask(task);
         ExternalDbLoader.setTcpClient(tcpClient);
         ConnectionTask.setCompleteFlag(false);
 
-        manager = new TakeAttdPresenter(taskView);
+        manager = new TakeAttdPresenter(taskView, preferences);
         manager.setTaskModel(taskModel);
         manager.setHandler(handler);
     }
@@ -225,7 +229,7 @@ public class TakeAttdPresenterTest {
     @Test
     public void testOnResume1_AbleToUpdate() throws Exception {
         doNothing().when(taskModel).updateAssignList();
-
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
         manager.onResume();
 
         verify(taskModel).updateAssignList();
@@ -237,7 +241,7 @@ public class TakeAttdPresenterTest {
     public void testOnResume2_ModelThrowError() throws Exception {
         doThrow(new ProcessException(ProcessException.MESSAGE_TOAST))
                 .when(taskModel).updateAssignList();
-
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
         manager.onResume();
 
         verify(taskModel).updateAssignList();
@@ -256,6 +260,7 @@ public class TakeAttdPresenterTest {
     @Test
     public void testOnResume1() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
         manager.onResume(errorManager);
 
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
@@ -447,6 +452,8 @@ public class TakeAttdPresenterTest {
 
     @Test
     public void testResetDisplay() throws Exception {
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
+
         manager.resetDisplay();
 
         verify(taskView).setTableView("");
@@ -540,7 +547,7 @@ public class TakeAttdPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        TakeAttdPresenter manager   = new TakeAttdPresenter(null, null);
 
         manager.onTimesOut(err);
 

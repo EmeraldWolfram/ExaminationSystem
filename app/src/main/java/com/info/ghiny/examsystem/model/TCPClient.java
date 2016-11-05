@@ -92,13 +92,13 @@ public class TCPClient implements Runnable{
             try {
                 socket.connect(address, 5000);
 
-                Log.d(LinkChiefActivity.TAG, String.format("%s", socket.getRemoteSocketAddress().toString()));
+                //Log.d(LinkChiefActivity.TAG, String.format("%s", socket.getRemoteSocketAddress().toString()));
             } catch (Exception err){
-                Log.d(LinkChiefActivity.TAG, err.getMessage());
+                //Log.d(LinkChiefActivity.TAG, err.getMessage());
             }
 
 
-            Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
+            //Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
             try {
                 //out = sender
                 //out = new PrintWriter(new BufferedWriter(

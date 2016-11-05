@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.TakeAttdActivity;
@@ -16,6 +17,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -42,6 +44,7 @@ public class LoginPresenterTest {
     private Handler handler;
     private Intent password;
     private DialogInterface dialog;
+    private SharedPreferences preferences;
 
     @Before
     public void setUp() throws Exception {
@@ -50,8 +53,9 @@ public class LoginPresenterTest {
         handler     = Mockito.mock(Handler.class);
         password    = Mockito.mock(Intent.class);
         dialog      = Mockito.mock(DialogInterface.class);
+        preferences = Mockito.mock(SharedPreferences.class);
 
-        manager     = new LoginPresenter(taskView);
+        manager     = new LoginPresenter(taskView, preferences);
         manager.setTaskModel(taskModel);
         manager.setHandler(handler);
     }
@@ -199,6 +203,7 @@ public class LoginPresenterTest {
 
         ExternalDbLoader.setTcpClient(tcpClient);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errorManager);
 
@@ -331,7 +336,7 @@ public class LoginPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        LoginPresenter manager   = new LoginPresenter(null, null);
 
         manager.onTimesOut(err);
 

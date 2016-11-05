@@ -152,7 +152,9 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
 
     @Override
     public void beep() {
-        beepManager.playBeepSoundAndVibrate();
+        if(beepManager.isBeepEnabled()){
+            beepManager.playBeepSoundAndVibrate();
+        }
     }
 
     @Override

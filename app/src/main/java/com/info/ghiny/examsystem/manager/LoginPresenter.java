@@ -143,7 +143,7 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
         crossHair   = preferences.getBoolean("CrossHair", true);
         beep        = preferences.getBoolean("Beep", false);
         vibrate     = preferences.getBoolean("Vibrate", false);
-        mode        = Integer.parseInt(preferences.getString("GG", "1"));
+        mode        = Integer.parseInt(preferences.getString("ScannerMode", "4"));
 
         taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }

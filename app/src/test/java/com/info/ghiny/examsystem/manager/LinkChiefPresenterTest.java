@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.MainLoginActivity;
@@ -42,7 +43,7 @@ public class LinkChiefPresenterTest {
     private LinkChiefMVP.ModelFace genModel;
     private ProcessException err;
     private Handler handler;
-
+    private SharedPreferences preferences;
     private TCPClient tcpClient;
     private ConnectionTask task;
     private DialogInterface dialog;
@@ -56,11 +57,12 @@ public class LinkChiefPresenterTest {
         tcpClient   = Mockito.mock(TCPClient.class);
         task        = Mockito.mock(ConnectionTask.class);
         dialog      = Mockito.mock(DialogInterface.class);
+        preferences = Mockito.mock(SharedPreferences.class);
 
         ExternalDbLoader.setTcpClient(tcpClient);
         ExternalDbLoader.setConnectionTask(task);
 
-        manager     = new LinkChiefPresenter(genView);
+        manager     = new LinkChiefPresenter(genView, preferences);
         manager.setTaskModel(genModel);
         manager.setHandler(handler);
     }
@@ -185,6 +187,7 @@ public class LinkChiefPresenterTest {
     public void testOnResume1_ReconnectUsingDatabase() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         when(genModel.reconnect()).thenReturn(true);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.setReconnect(true);
 
@@ -200,6 +203,7 @@ public class LinkChiefPresenterTest {
     public void testOnResume2_ConnectThroughQR() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         manager.setReconnect(false);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errManager);
 
@@ -330,7 +334,7 @@ public class LinkChiefPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        LinkChiefPresenter manager   = new LinkChiefPresenter(null, null);
 
         manager.onTimesOut(err);
 

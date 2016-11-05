@@ -94,9 +94,7 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
 
     @Override
     public boolean reconnect() throws ProcessException {
-        Log.d(LinkChiefActivity.TAG, "Reconnect method invoked");
         if(!dbLoader.emptyUserInDB()){
-            Log.d(LinkChiefActivity.TAG, "User Not Empty");
             StaffIdentity prevStaff = dbLoader.queryUser();
             taskPresenter.setRequestComplete(false);
             ExternalDbLoader.requestDuelMessage(prevStaff.getIdNo());
@@ -105,7 +103,6 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
         //throw new ProcessException("Failed to reconnect, no reference of staff in database",
         //      ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
         //}
-        Log.d(LinkChiefActivity.TAG, "User Not Empty");
         return false;
     }
 

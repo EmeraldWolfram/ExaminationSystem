@@ -307,14 +307,14 @@ public class LinkChiefModelTest {
      */
     @Test
     public void testRun_ChiefDoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(true);
+        when(taskPresenter.isRequestComplete()).thenReturn(true);
         model.run();
         verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
     }
 
     @Test
     public void testRun_ChiefNoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(false);
+        when(taskPresenter.isRequestComplete()).thenReturn(false);
         model.run();
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }

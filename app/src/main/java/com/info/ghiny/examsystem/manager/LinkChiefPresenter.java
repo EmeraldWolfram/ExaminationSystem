@@ -71,7 +71,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         crossHair   = preferences.getBoolean("CrossHair", true);
         beep        = preferences.getBoolean("Beep", false);
         vibrate     = preferences.getBoolean("Vibrate", false);
-        mode        = Integer.parseInt(preferences.getString("GG", "4"));
+        mode        = Integer.parseInt(preferences.getString("ScannerMode", "4"));
 
         taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
@@ -81,7 +81,6 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         if(reconnect){
             while(ExternalDbLoader.getTcpClient() == null){}
 
-            Log.d(LinkChiefActivity.TAG, "Check point reconnect 2");
             try{
                 if(taskModel.reconnect()){
                     taskView.openProgressWindow("RECONNECTION", "Authenticating...");

@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -41,6 +42,7 @@ public class InfoGrabPresenterTest {
     private InfoGrabMVP.Model taskModel;
     private InfoGrabPresenter manager;
     private DialogInterface dialog;
+    private SharedPreferences preferences;
 
     @Before
     public void setUp() throws Exception {
@@ -48,8 +50,9 @@ public class InfoGrabPresenterTest {
         taskView    = Mockito.mock(InfoGrabMVP.ViewFace.class);
         handler     = Mockito.mock(Handler.class);
         dialog      = Mockito.mock(DialogInterface.class);
+        preferences = Mockito.mock(SharedPreferences.class);
 
-        manager = new InfoGrabPresenter(taskView);
+        manager = new InfoGrabPresenter(taskView, preferences);
         manager.setHandler(handler);
         manager.setTaskModel(taskModel);
     }
@@ -140,6 +143,7 @@ public class InfoGrabPresenterTest {
     public void testOnResume_ScannerOnResume() throws Exception {
         TCPClient tcpClient     = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume();
 
@@ -152,6 +156,7 @@ public class InfoGrabPresenterTest {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         TCPClient tcpClient     = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errManager);
 
@@ -346,7 +351,7 @@ public class InfoGrabPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        InfoGrabPresenter manager   = new InfoGrabPresenter(null, null);
 
         manager.onTimesOut(err);
 

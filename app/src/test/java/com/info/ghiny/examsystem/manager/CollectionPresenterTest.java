@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.InfoGrabActivity;
@@ -42,6 +43,7 @@ public class CollectionPresenterTest {
     private CollectionMVP.View taskView;
     private CollectionPresenter manager;
     private Handler handler;
+    private SharedPreferences preferences;
     private DialogInterface dialog;
 
     @Before
@@ -50,8 +52,9 @@ public class CollectionPresenterTest {
         taskView    = Mockito.mock(CollectionMVP.View.class);
         handler     = Mockito.mock(Handler.class);
         dialog      = Mockito.mock(DialogInterface.class);
+        preferences = Mockito.mock(SharedPreferences.class);
 
-        manager = new CollectionPresenter(taskView);
+        manager = new CollectionPresenter(taskView, preferences);
         manager.setHandler(handler);
         manager.setTaskModel(taskModel);
     }
@@ -84,6 +87,7 @@ public class CollectionPresenterTest {
     public void testOnResume_ScannerOnResume() throws Exception {
         TCPClient tcpClient     = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume();
         verify(tcpClient, never()).setMessageListener(any(TCPClient.OnMessageReceived.class));
@@ -95,6 +99,7 @@ public class CollectionPresenterTest {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         TCPClient tcpClient     = Mockito.mock(TCPClient.class);
         ExternalDbLoader.setTcpClient(tcpClient);
+        when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errManager);
         verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
@@ -344,7 +349,7 @@ public class CollectionPresenterTest {
     @Test
     public void testOnTimesOutWithNullView() throws Exception {
         ProcessException err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        CollectionPresenter manager   = new CollectionPresenter(null);
+        CollectionPresenter manager   = new CollectionPresenter(null, null);
 
         manager.onTimesOut(err);
 
