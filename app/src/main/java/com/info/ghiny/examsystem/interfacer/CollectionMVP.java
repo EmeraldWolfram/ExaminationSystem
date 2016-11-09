@@ -47,6 +47,10 @@ public interface CollectionMVP {
          * @param err   The message in form of exception to be display to the user
          */
         void onTimesOut(ProcessException err);
+
+        boolean isAcknowledgementComplete();
+
+        void setAcknowledgementComplete(boolean acknowledgementComplete);
     }
 
     interface Model extends Runnable, TaskSecureModel{

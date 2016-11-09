@@ -1,9 +1,12 @@
 package com.info.ghiny.examsystem.model;
 
+import android.os.Bundle;
+
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
@@ -40,7 +43,7 @@ public class JsonHelper {
     public static final String MINOR_KEY_ID_NO      = "IdNo";
     public static final String MINOR_KEY_HASH_CODE  = "HashPass";
     public static final String MINOR_KEY_COLLECTOR  = "Collector";
-    public static final String MINOR_KEY_BUNDLE     = "Bundle";
+    public static final String MINOR_KEY_BUNDLE     = "PaperBundle";
 
     //Host to Client
     public static final String MINOR_KEY_CANDIDATES = "AttendanceList";
@@ -66,7 +69,7 @@ public class JsonHelper {
     public static String formatStaff(String idNo, String hashCode){
         JSONObject object = new JSONObject();
         try{
-            object.put(MAJOR_KEY_TYPE_TX, JsonHelper.TYPE_IDENTIFICATION);
+            object.put(MAJOR_KEY_TYPE_TX, TYPE_IDENTIFICATION);
             object.put(MINOR_KEY_ID_NO, idNo);
             object.put(MINOR_KEY_HASH_CODE, hashCode);
 
@@ -76,7 +79,7 @@ public class JsonHelper {
         }
     }
 
-    public static String formatAttendanceList(AttendanceList attdList){
+    public static String formatAttendanceList(StaffIdentity inCharge, AttendanceList attdList){
         JSONObject list     = new JSONObject();
         JSONArray cddList   = new JSONArray();
         JSONObject cddObj;
@@ -84,8 +87,8 @@ public class JsonHelper {
 
         try{
             list.put(MAJOR_KEY_TYPE_TX, TYPE_SUBMISSION);
-            list.put(LIST_INVI, LoginModel.getStaff().getIdNo());
-            list.put(LIST_VENUE, LoginModel.getStaff().getExamVenue());
+            list.put(LIST_INVI, inCharge.getIdNo());
+            list.put(LIST_VENUE, inCharge.getExamVenue());
 
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
@@ -106,12 +109,17 @@ public class JsonHelper {
         }
     }
 
-    public static String formatCollection(String bundleStr){
+    public static String formatCollection(String staffId, PaperBundle bundle){
         JSONObject object   = new JSONObject();
+        JSONObject jBundle   = new JSONObject();
         try{
+            jBundle.put(PaperBundle.BUNDLE_VENUE,   bundle.getColVenue());
+            jBundle.put(PaperBundle.BUNDLE_PROG,    bundle.getColProgramme());
+            jBundle.put(PaperBundle.BUNDLE_PAPER,   bundle.getColPaperCode());
+
             object.put(MAJOR_KEY_TYPE_TX, TYPE_COLLECTION);
-            object.put(MINOR_KEY_COLLECTOR, LoginModel.getStaff().getIdNo());
-            object.put(MINOR_KEY_BUNDLE, bundleStr);
+            object.put(MINOR_KEY_COLLECTOR, staffId);
+            object.put(MINOR_KEY_BUNDLE, jBundle);
 
             return object.toString();
         } catch(Exception err){

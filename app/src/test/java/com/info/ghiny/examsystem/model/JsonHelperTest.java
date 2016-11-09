@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
@@ -67,9 +68,8 @@ public class JsonHelperTest {
         attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
         attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
 
-        LoginModel.setStaff(new StaffIdentity("246260", true, "Dr. Smart", "H1"));
-
-        String str = JsonHelper.formatAttendanceList(attdList);
+        String str = JsonHelper.formatAttendanceList(
+                new StaffIdentity("246260", true, "Dr. Smart", "H1"), attdList);
 
         JSONObject obj = new JSONObject(str);
         assertEquals("Submission", obj.getString("Type"));
@@ -88,12 +88,16 @@ public class JsonHelperTest {
      */
     @Test
     public void testFormatCollection() throws Exception {
-        LoginModel.setStaff(new StaffIdentity("246260", true, "Dr. Smart", null));
-        String str = JsonHelper.formatCollection("BAME 0001 SUBJECT 1");
+        PaperBundle bundle  = new PaperBundle();
+        bundle.parseBundle("M4/BAME 0001/RMB3");
 
-        assertEquals("{\"Type\":\"Collection\",\"Bundle\":\"BAME 0001 SUBJECT 1\"," +
+        String str = JsonHelper.formatCollection("246260", bundle);
+
+        assertEquals("{\"Type\":\"Collection\",\"PaperBundle\":" +
+                "{\"Venue\":\"M4\",\"PaperCode\":\"BAME 0001\",\"Programme\":\"RMB3\"}," +
                 "\"Collector\":\"246260\"}", str);
     }
+
 
     //= ParseStaffIdentity() =======================================================================
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -206,13 +207,13 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     public void resumeScanning() {
         switch (mode){
             case 2:
-                barcodeView.postDelayed(this, 500);
-                break;
-            case 3:
                 barcodeView.postDelayed(this, 1000);
                 break;
-            case 4:
+            case 3:
                 barcodeView.postDelayed(this, 2000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 3000);
                 break;
         }
     }
@@ -251,7 +252,11 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     @Override
     public void setAssignBackgroundColor(int color) {
-        cddLayout.getBackground().setColorFilter(color, PorterDuff.Mode.DARKEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cddLayout.setBackgroundColor(getResources().getColor(color, null));
+        } else {
+            cddLayout.setBackgroundColor(getResources().getColor(color));
+        }
     }
 
     @Override

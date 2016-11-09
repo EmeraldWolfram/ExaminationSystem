@@ -356,7 +356,7 @@ public class ExternalDbLoaderTest {
      *  this is to acknowledge the collection of bundle
      *
      *  Tests:
-     *  1. the tcpClient is not null, send out the attendance list
+     *  1. the tcpClient is not null, send out the collector and bundle
      *  2. the tcpClient is null, throw error
      *  3. input param is null, throw error
      *
@@ -364,8 +364,9 @@ public class ExternalDbLoaderTest {
     @Test
     public void testAcknowledgeCollection1_TcpNotNull() throws Exception {
         try{
-            String bundle = "BAME 0001 Subject 1 -----";
-            ExternalDbLoader.acknowledgeCollection(bundle);
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("M4/BAME 0001/RMB3");
+            ExternalDbLoader.acknowledgeCollection("246810", bundle);
 
             verify(tcpClient).sendMessage(anyString());
         } catch (ProcessException err){
@@ -377,9 +378,9 @@ public class ExternalDbLoaderTest {
     public void testAcknowledgeCollection2_NullTcpShouldThrowFATAL() throws Exception {
         try{
             ExternalDbLoader.setTcpClient(null);
-            String bundle = "BAME 0001 Subject 1 -----";
-
-            ExternalDbLoader.acknowledgeCollection(bundle);
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("M4/BAME 0001/RMB3");
+            ExternalDbLoader.acknowledgeCollection("246810", bundle);
 
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
@@ -391,7 +392,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testAcknowledgeCollection3_NullInputShouldThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.acknowledgeCollection(null);
+            ExternalDbLoader.acknowledgeCollection("246810", null);
 
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());

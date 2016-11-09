@@ -8,7 +8,6 @@ import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
-import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +44,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void initAttendance() throws ProcessException {
         if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
-            taskPresenter.setInitComplete(false);
+            taskPresenter.setDownloadComplete(false);
             ExternalDbLoader.dlAttendanceList();
         } else {
             attdList    = dbLoader.queryAttendanceList();
@@ -137,7 +136,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void run() {
         try{
-            if(!taskPresenter.isInitComplete()) {
+            if(!taskPresenter.isDownloadComplete()) {
                 ProcessException err = new ProcessException(
                         "Initialization failed. Response times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

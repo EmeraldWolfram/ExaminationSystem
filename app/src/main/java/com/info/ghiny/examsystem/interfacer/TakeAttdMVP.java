@@ -45,8 +45,8 @@ public interface TakeAttdMVP {
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
-        void setInitComplete(boolean initComplete);
-        boolean isInitComplete();
+        void setDownloadComplete(boolean initComplete);
+        boolean isDownloadComplete();
         void startTimer();
         void onTimesOut(ProcessException err);  //standard
         void displayTable(Integer tableNumber);

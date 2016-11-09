@@ -14,7 +14,6 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
-import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -26,7 +25,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.View taskView;
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
-    private boolean initComplete;
+    private boolean downloadComplete;
     private Handler handler;
 
     private SharedPreferences preferences;
@@ -54,13 +53,13 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void setInitComplete(boolean initComplete) {
-        this.initComplete = initComplete;
+    public void setDownloadComplete(boolean initComplete) {
+        this.downloadComplete = initComplete;
     }
 
     @Override
-    public boolean isInitComplete() {
-        return initComplete;
+    public boolean isDownloadComplete() {
+        return downloadComplete;
     }
 
     @Override
@@ -87,7 +86,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         if(!taskModel.isInitialized()){
             try{
                 taskModel.initAttendance();
-                taskView.openProgressWindow("Initializing:", "Preparing Attendance List...");
+                taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
                 handler.postDelayed(taskModel, 5000);
             } catch (ProcessException err) {
                 taskView.displayError(err);
@@ -171,7 +170,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
             taskView.closeProgressWindow();//Might Change
-            this.initComplete = true;
+            this.downloadComplete = true;
             taskModel.checkDownloadResult(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);

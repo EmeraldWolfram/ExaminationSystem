@@ -166,13 +166,13 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     public void resumeScanning() {
         switch (mode){
             case 2:
-                barcodeView.postDelayed(this, 500);
-                break;
-            case 3:
                 barcodeView.postDelayed(this, 1000);
                 break;
-            case 4:
+            case 3:
                 barcodeView.postDelayed(this, 2000);
+                break;
+            case 4:
+                barcodeView.postDelayed(this, 3000);
                 break;
         }
     }

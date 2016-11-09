@@ -203,32 +203,32 @@ public class CollectionPresenterTest {
     @Test
     public void testOnChiefRespond_1() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        ConnectionTask.setCompleteFlag(false);
+        manager.setAcknowledgementComplete(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
         String message = "{\"Result\":true}";
 
-        assertFalse(ConnectionTask.isComplete());
+        assertFalse(manager.isAcknowledgementComplete());
         manager.onChiefRespond(errManager, message);
 
         verify(taskView).closeProgressWindow();
-        assertTrue(ConnectionTask.isComplete());
+        assertTrue(manager.isAcknowledgementComplete());
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
     @Test
     public void testOnChiefRespond_2() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        ConnectionTask.setCompleteFlag(false);
+        manager.setAcknowledgementComplete(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
         String message = "{\"Result\":false}";
 
-        assertFalse(ConnectionTask.isComplete());
+        assertFalse(manager.isAcknowledgementComplete());
         manager.onChiefRespond(errManager, message);
 
         verify(taskView).closeProgressWindow();
-        assertTrue(ConnectionTask.isComplete());
+        assertTrue(manager.isAcknowledgementComplete());
         verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 

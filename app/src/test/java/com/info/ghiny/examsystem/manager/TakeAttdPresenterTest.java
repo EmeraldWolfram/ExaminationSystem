@@ -21,7 +21,6 @@ import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Calendar;
@@ -351,13 +350,13 @@ public class TakeAttdPresenterTest {
     public void testOnChiefRespond1_PositiveResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         doNothing().when(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
-        assertFalse(manager.isInitComplete());
+        assertFalse(manager.isDownloadComplete());
 
         manager.onChiefRespond(errorManager, "ATTENDANCE & PAPERS");
 
         verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
-        assertTrue(manager.isInitComplete());
+        assertTrue(manager.isDownloadComplete());
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -366,13 +365,13 @@ public class TakeAttdPresenterTest {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         ProcessException err    = new ProcessException(ProcessException.FATAL_MESSAGE);
         doThrow(err).when(taskModel).checkDownloadResult("NO DATA");
-        assertFalse(manager.isInitComplete());
+        assertFalse(manager.isDownloadComplete());
 
         manager.onChiefRespond(errorManager, "NO DATA");
 
         verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("NO DATA");
-        assertTrue(manager.isInitComplete());
+        assertTrue(manager.isDownloadComplete());
         verify(task).publishError(errorManager, err);
     }
 

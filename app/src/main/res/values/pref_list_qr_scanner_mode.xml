@@ -2,9 +2,9 @@
 <resources>
     <string-array name="modeEntries">
         <item>Press to initiate scan</item>
-        <item>Continuous scan with interval 0.5s</item>
         <item>Continuous scan with interval 1.0s</item>
         <item>Continuous scan with interval 2.0s</item>
+        <item>Continuous scan with interval 3.0s</item>
     </string-array>
 
     <string-array name="modeValues">

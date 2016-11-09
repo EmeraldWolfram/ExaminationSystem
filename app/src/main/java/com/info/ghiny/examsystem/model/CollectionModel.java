@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 
 /**
@@ -10,25 +11,54 @@ import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 public class CollectionModel implements CollectionMVP.Model {
 
     private CollectionMVP.PresenterForModel taskPresenter;
+    private String staffIdentity;
+    private PaperBundle bundle;
 
     public CollectionModel(CollectionMVP.PresenterForModel taskPresenter){
         this.taskPresenter  = taskPresenter;
+        this.staffIdentity  = null;
+        this.bundle         = null;
     }
 
-    //Not Yet Complete, refer interface
-    //Verify Rightful Collector
-    //Verify input Bundle format
+    PaperBundle getBundle() {
+        return bundle;
+    }
+
+    void setBundle(PaperBundle bundle) {
+        this.bundle = bundle;
+    }
+
+    void setStaffIdentity(String staffIdentity) {
+        this.staffIdentity = staffIdentity;
+    }
+
+    String getStaffIdentity() {
+        return staffIdentity;
+    }
+
+    //==============================================================================================
+
     @Override
     public void bundleCollection(String scanValue) throws ProcessException {
-        ConnectionTask.setCompleteFlag(false);
-        ExternalDbLoader.acknowledgeCollection(scanValue);
+        if(!verifyCollector(scanValue) && !verifyBundle(scanValue)){
+            throw new ProcessException("The decrypted QR code is neither Staff ID or Bundle",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+        }
+
+        if(staffIdentity != null && bundle != null){
+            taskPresenter.setAcknowledgementComplete(false);
+            ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
+
+            staffIdentity   = null;
+            bundle          = null;
+        }
     }
 
     @Override
     public void run() {
         try{
-            if(!ConnectionTask.isComplete()){
-                ProcessException err = new ProcessException("Bundle collection times out.",
+            if(!taskPresenter.isAcknowledgementComplete()){
+                ProcessException err = new ProcessException("PaperBundle collection times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                 err.setListener(ProcessException.okayButton, taskPresenter);
                 err.setBackPressListener(taskPresenter);
@@ -44,5 +74,24 @@ public class CollectionModel implements CollectionMVP.Model {
         if(!LoginModel.getStaff().matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+    }
+
+    boolean verifyCollector(String scanStr){
+        if(scanStr.length() == 6){
+            this.staffIdentity  = scanStr;
+            return true;
+        }
+        return false;
+    }
+
+    boolean verifyBundle(String scanStr){
+        PaperBundle bundle  = new PaperBundle();
+
+        if (bundle.parseBundle(scanStr)){
+            this.bundle = bundle;
+            return true;
+        }
+
+        return false;
     }
 }

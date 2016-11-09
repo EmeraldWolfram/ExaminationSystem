@@ -87,7 +87,7 @@ public class ExternalDbLoader {
 
     public static void updateAttendanceList(AttendanceList attdList) throws ProcessException{
         if(tcpClient != null && attdList != null){
-            String str = JsonHelper.formatAttendanceList(attdList);
+            String str = JsonHelper.formatAttendanceList(LoginModel.getStaff(), attdList);
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("Fail to send out request!\nPlease consult developer",
@@ -95,9 +95,9 @@ public class ExternalDbLoader {
         }
     }
 
-    public static void acknowledgeCollection(String scanBundleCode) throws ProcessException{
-        if(tcpClient != null && scanBundleCode != null){
-            String str = JsonHelper.formatCollection(scanBundleCode);
+    public static void acknowledgeCollection(String staffId, PaperBundle bundle) throws ProcessException{
+        if(tcpClient != null && bundle != null && staffId != null){
+            String str = JsonHelper.formatCollection(staffId, bundle);
             tcpClient.sendMessage(str);
         } else {
             throw new ProcessException("Fail to send out request!\nPlease consult developer",
