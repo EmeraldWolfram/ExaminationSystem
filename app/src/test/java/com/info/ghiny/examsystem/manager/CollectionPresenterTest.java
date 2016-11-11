@@ -5,11 +5,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.view.View;
 
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
+import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -367,6 +370,57 @@ public class CollectionPresenterTest {
         verify(taskView).closeProgressWindow();
         verify(taskView).pauseScanning();
         verify(taskView).displayError(err);
+    }
+
+    //= NotifyBundleScanned(...) ===================================================================
+    /**
+     * notifyBundleScanned(...)
+     *
+     * This method use to set the bundle object from model to the View layer
+     *
+     */
+    @Test
+    public void testNotifyBundleScanned1_PositiveTest() throws Exception {
+        PaperBundle bundle  = new PaperBundle();
+        bundle.parseBundle("13452/M4/BAME 3223/RMB 3");
+
+        manager.notifyBundleScanned(bundle);
+
+        verify(taskView).setBundle("M4", "BAME 3223", "RMB 3");
+    }
+
+    @Test
+    public void testNotifyBundleScanned2_NegativeTest() throws Exception {
+        manager.notifyBundleScanned(null);
+
+        verify(taskView).setBundle("", "", "");
+    }
+
+    //= NotifyCollector(...) =======================================================================
+    @Test
+    public void testNotifyCollectorScanned() throws Exception {
+        manager.notifyCollectorScanned("ABC");
+
+        verify(taskView).setCollector("ABC");
+    }
+
+    //= NotifyClearance() ==========================================================================
+    @Test
+    public void testNotifyClearance() throws Exception {
+        manager.notifyClearance();
+
+        verify(taskView).setBundle("", "", "");
+        verify(taskView).setCollector("");
+    }
+
+    //= OnTrash() ==================================================================================
+    @Test
+    public void testOnTrash() throws Exception {
+        View v = Mockito.mock(View.class);
+
+        manager.onTrash(v);
+
+        verify(taskModel).resetCollection();
     }
 
 

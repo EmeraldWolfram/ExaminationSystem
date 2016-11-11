@@ -158,9 +158,15 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
 
     @Override
     public void notifyBundleScanned(PaperBundle bundle) {
-        String venue    = bundle.getColVenue();
-        String paper    = bundle.getColPaperCode();
-        String program  = bundle.getColProgramme();
+        String venue = "";
+        String paper = "";
+        String program = "";
+
+        if(bundle != null){
+            venue    = bundle.getColVenue();
+            paper    = bundle.getColPaperCode();
+            program  = bundle.getColProgramme();
+        }
 
         taskView.setBundle(venue, paper, program);
     }

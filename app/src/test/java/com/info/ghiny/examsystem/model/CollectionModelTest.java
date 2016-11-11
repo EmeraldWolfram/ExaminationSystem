@@ -297,4 +297,23 @@ public class CollectionModelTest {
     }
 
     //= ResetCollection() ==========================================================================
+
+    /**
+     * resetCollection()
+     *
+     * This method is used to reset the value scanned
+     */
+    @Test
+    public void testResetCollection() throws Exception {
+        model.setBundle(new PaperBundle());
+        model.setStaffIdentity("");
+
+        model.resetCollection();
+
+        verify(presenterFace).notifyClearance();
+        assertNull(model.getBundle());
+        assertNull(model.getStaffIdentity());
+    }
+
+
 }
