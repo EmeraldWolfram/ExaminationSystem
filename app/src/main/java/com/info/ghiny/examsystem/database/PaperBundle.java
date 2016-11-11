@@ -7,10 +7,10 @@ import java.util.Locale;
  */
 
 public class PaperBundle {
-    public static final String BUNDLE_ID    = "Id";
-    public static final String BUNDLE_VENUE = "Venue";
-    public static final String BUNDLE_PROG  = "Programme";
-    public static final String BUNDLE_PAPER = "PaperCode";
+    public static final String BUNDLE_ID    = "BundleId";
+    public static final String BUNDLE_VENUE = "BundleVenue";
+    public static final String BUNDLE_PROG  = "BundleProgramme";
+    public static final String BUNDLE_PAPER = "BundlePaperCode";
 
     private String colId;
     private String colVenue;

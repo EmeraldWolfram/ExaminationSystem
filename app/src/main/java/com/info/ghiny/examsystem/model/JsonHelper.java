@@ -113,6 +113,7 @@ public class JsonHelper {
         JSONObject object   = new JSONObject();
         JSONObject jBundle   = new JSONObject();
         try{
+            jBundle.put(PaperBundle.BUNDLE_ID,      bundle.getColId());
             jBundle.put(PaperBundle.BUNDLE_VENUE,   bundle.getColVenue());
             jBundle.put(PaperBundle.BUNDLE_PROG,    bundle.getColProgramme());
             jBundle.put(PaperBundle.BUNDLE_PAPER,   bundle.getColPaperCode());

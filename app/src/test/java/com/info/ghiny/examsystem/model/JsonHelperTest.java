@@ -89,13 +89,13 @@ public class JsonHelperTest {
     @Test
     public void testFormatCollection() throws Exception {
         PaperBundle bundle  = new PaperBundle();
-        bundle.parseBundle("M4/BAME 0001/RMB3");
+        bundle.parseBundle("14352/M4/BAME 0001/RMB3");
 
         String str = JsonHelper.formatCollection("246260", bundle);
 
         assertEquals("{\"Type\":\"Collection\",\"PaperBundle\":" +
-                "{\"Venue\":\"M4\",\"PaperCode\":\"BAME 0001\",\"Programme\":\"RMB3\"}," +
-                "\"Collector\":\"246260\"}", str);
+                "{\"BundleId\":\"14352\",\"BundleProgramme\":\"RMB3\",\"BundleVenue\":\"M4\"," +
+                "\"BundlePaperCode\":\"BAME 0001\"},\"Collector\":\"246260\"}", str);
     }
 
 
