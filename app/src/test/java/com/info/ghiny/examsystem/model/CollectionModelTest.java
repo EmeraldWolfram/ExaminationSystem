@@ -99,7 +99,7 @@ public class CollectionModelTest {
     public void testVerifyBundle1_PositiveTest() throws Exception {
         assertNull(model.getBundle());
 
-        assertTrue(model.verifyBundle("M4/BAME 0001/RMB3"));
+        assertTrue(model.verifyBundle("13452/M4/BAME 0001/RMB3"));
 
         assertNotNull(model.getBundle());
     }
@@ -153,6 +153,9 @@ public class CollectionModelTest {
             assertNull(model.getBundle());
             assertEquals("246810", model.getStaffIdentity());
             verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
@@ -164,11 +167,14 @@ public class CollectionModelTest {
             assertNull(model.getBundle());
             assertNull(model.getStaffIdentity());
 
-            model.bundleCollection("M4/BAME 3233/RMB3");
+            model.bundleCollection("13452/M4/BAME 3233/RMB3");
 
             assertNotNull(model.getBundle());
             assertNull(model.getStaffIdentity());
             verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
@@ -177,7 +183,9 @@ public class CollectionModelTest {
     @Test
     public void bundleCollection3_BundleAssigned() throws Exception {
         try{
-            model.verifyBundle("M4/BAME 3233/RMB3");
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("13452/M4/BAME 3233/RMB3");
+            model.setBundle(bundle);
             assertNotNull(model.getBundle());
             assertNull(model.getStaffIdentity());
 
@@ -186,6 +194,9 @@ public class CollectionModelTest {
             assertNull(model.getBundle());
             assertNull(model.getStaffIdentity());
             verify(tcpClient).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace).notifyCollectorScanned(anyString());
+            verify(presenterFace).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
@@ -198,11 +209,14 @@ public class CollectionModelTest {
             assertNull(model.getBundle());
             assertNotNull(model.getStaffIdentity());
 
-            model.bundleCollection("M4/BAME 3233/RMB3");
+            model.bundleCollection("13452/M4/BAME 3233/RMB3");
 
             assertNull(model.getBundle());
             assertNull(model.getStaffIdentity());
             verify(tcpClient).sendMessage(anyString());
+            verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
@@ -217,6 +231,9 @@ public class CollectionModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
             verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
         }
     }
 
@@ -278,4 +295,6 @@ public class CollectionModelTest {
             assertEquals("Access denied. Incorrect Password", err.getErrorMsg());
         }
     }
+
+    //= ResetCollection() ==========================================================================
 }

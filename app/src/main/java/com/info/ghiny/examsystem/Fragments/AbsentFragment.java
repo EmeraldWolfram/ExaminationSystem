@@ -39,7 +39,11 @@ public class AbsentFragment extends Fragment {
         HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.ABSENT);
 
         ExpandableListView absentList = (ExpandableListView)view.findViewById(R.id.absentList);
-        absentList.setAdapter(new FragListAdapter(getContext(), header, child));
+        FragListAdapter adapter = new FragListAdapter(getContext(), header, child);
+        absentList.setAdapter(adapter);
+        for(int i = 0; i < adapter.getGroupCount(); i++){
+            absentList.expandGroup(i);
+        }
 
         return view;
     }

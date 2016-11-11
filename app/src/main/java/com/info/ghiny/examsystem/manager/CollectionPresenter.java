@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.view.View;
 
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -146,7 +148,34 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
         taskView.navigateActivity(InfoGrabActivity.class);
     }
 
+    @Override
+    public void onTrash(View view) {
+        taskModel.resetCollection();
+    }
+
     //= For Model ==================================================================================
+
+
+    @Override
+    public void notifyBundleScanned(PaperBundle bundle) {
+        String venue    = bundle.getColVenue();
+        String paper    = bundle.getColPaperCode();
+        String program  = bundle.getColProgramme();
+
+        taskView.setBundle(venue, paper, program);
+    }
+
+    @Override
+    public void notifyCollectorScanned(String id) {
+        taskView.setCollector(id);
+    }
+
+    @Override
+    public void notifyClearance() {
+        taskView.setBundle("", "", "");
+        taskView.setCollector("");
+    }
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
         taskView.resumeScanning();

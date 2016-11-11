@@ -39,7 +39,11 @@ public class ExemptedFragment extends Fragment {
         HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.EXEMPTED);
 
         ExpandableListView exemList = (ExpandableListView)view.findViewById(R.id.exemptedList);
-        exemList.setAdapter(new FragListAdapter(getContext(), header, child));
+        FragListAdapter adapter = new FragListAdapter(getContext(), header, child);
+        exemList.setAdapter(adapter);
+        for(int i = 0; i < adapter.getGroupCount(); i++){
+            exemList.expandGroup(i);
+        }
 
         return view;
     }

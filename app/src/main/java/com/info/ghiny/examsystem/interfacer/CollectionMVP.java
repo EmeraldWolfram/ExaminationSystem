@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.interfacer;
 
 import android.content.DialogInterface;
+import android.view.View;
 
+import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -9,7 +11,10 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface CollectionMVP {
-    interface View extends TaskConnView, TaskScanView, GeneralView {}
+    interface View extends TaskConnView, TaskScanView, GeneralView {
+        void setBundle(String venue, String paper, String programme);
+        void setCollector(String id);
+    }
 
     interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter {
         /**
@@ -19,6 +24,8 @@ public interface CollectionMVP {
          * In here, it go to another activity when called(InfoGrabActivity)
          */
         void onSwipeBottom();
+
+        void onTrash(android.view.View view);
     }
 
     interface PresenterForModel extends DialogInterface.OnClickListener,
@@ -51,6 +58,12 @@ public interface CollectionMVP {
         boolean isAcknowledgementComplete();
 
         void setAcknowledgementComplete(boolean acknowledgementComplete);
+
+        void notifyBundleScanned(PaperBundle bundle);
+
+        void notifyCollectorScanned(String id);
+
+        void notifyClearance();
     }
 
     interface Model extends Runnable, TaskSecureModel{
@@ -77,6 +90,8 @@ public interface CollectionMVP {
          * @throws ProcessException Any exception thrown due to the verification
          */
         void bundleCollection(String scanValue) throws ProcessException;
+
+        void resetCollection();
     }
 
 }

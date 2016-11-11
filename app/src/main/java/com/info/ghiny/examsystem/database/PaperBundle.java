@@ -7,15 +7,21 @@ import java.util.Locale;
  */
 
 public class PaperBundle {
+    public static final String BUNDLE_ID    = "Id";
     public static final String BUNDLE_VENUE = "Venue";
     public static final String BUNDLE_PROG  = "Programme";
     public static final String BUNDLE_PAPER = "PaperCode";
 
+    private String colId;
     private String colVenue;
     private String colPaperCode;
     private String colProgramme;
 
     public PaperBundle(){}
+
+    public String getColId() {
+        return colId;
+    }
 
     public String getColPaperCode() {
         return colPaperCode;
@@ -32,18 +38,19 @@ public class PaperBundle {
     public boolean parseBundle(String bundleStr){
         String[] bundleInfo = bundleStr.split("/");
 
-        if(bundleInfo.length != 3){
+        if(bundleInfo.length != 4){
             return false;
         } else {
-            colVenue        = bundleInfo[0];
-            colPaperCode    = bundleInfo[1];
-            colProgramme    = bundleInfo[2];
+            colId           = bundleInfo[0];
+            colVenue        = bundleInfo[1];
+            colPaperCode    = bundleInfo[2];
+            colProgramme    = bundleInfo[3];
             return true;
         }
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "%s/%s/%s", colVenue, colPaperCode, colProgramme);
+        return String.format(Locale.ENGLISH, "%s/%s/%s/%s", colId, colVenue, colPaperCode, colProgramme);
     }
 }

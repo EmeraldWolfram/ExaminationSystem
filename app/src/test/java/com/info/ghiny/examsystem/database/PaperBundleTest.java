@@ -25,20 +25,21 @@ public class PaperBundleTest {
      *
      * Tests:
      * 1. When the String is valid, fill up the bundle info and return true
-     * 2. String have only 2 field, does not fill up the bundle and return false
-     * 2. String have 4 field, does not fill up the bundle and return false
+     * 2. String have only 3 field, does not fill up the bundle and return false
+     * 2. String have 5 field, does not fill up the bundle and return false
      *
      * @throws Exception
      */
 
     @Test
     public void testParseBundle1_PositiveTest() throws Exception {
-        String inputScanStr = "M4/BAME 3323/RMB3";
+        String inputScanStr = "13452/M4/BAME 3323/RMB3";
 
         PaperBundle bundle  = new PaperBundle();
 
         assertTrue(bundle.parseBundle(inputScanStr));
 
+        assertEquals("13452", bundle.getColId());
         assertEquals("M4", bundle.getColVenue());
         assertEquals("BAME 3323", bundle.getColPaperCode());
         assertEquals("RMB3", bundle.getColProgramme());
@@ -46,12 +47,13 @@ public class PaperBundleTest {
 
     @Test
     public void testParseBundle2_NegativeTest() throws Exception {
-        String inputScanStr = "M4/BAME 3323";
+        String inputScanStr = "SSdd2/M4/BAME 3323";
 
         PaperBundle bundle  = new PaperBundle();
 
         assertFalse(bundle.parseBundle(inputScanStr));
 
+        assertNull(bundle.getColId());
         assertNull(bundle.getColVenue());
         assertNull(bundle.getColProgramme());
         assertNull(bundle.getColPaperCode());
@@ -59,12 +61,13 @@ public class PaperBundleTest {
 
     @Test
     public void testParseBundle3_NegativeTest() throws Exception {
-        String inputScanStr = "M4/BAME 3323/RMB3/S";
+        String inputScanStr = "M4/BAME 3323/RMB3/S/D";
 
         PaperBundle bundle  = new PaperBundle();
 
         assertFalse(bundle.parseBundle(inputScanStr));
 
+        assertNull(bundle.getColId());
         assertNull(bundle.getColVenue());
         assertNull(bundle.getColProgramme());
         assertNull(bundle.getColPaperCode());
@@ -84,13 +87,13 @@ public class PaperBundleTest {
     @Test
     public void testToString1_PositiveTest() throws Exception {
         PaperBundle bundle  = new PaperBundle();
-        assertTrue(bundle.parseBundle("M4/BAME 3333/RMB3"));
-        assertEquals("M4/BAME 3333/RMB3", bundle.toString());
+        assertTrue(bundle.parseBundle("13452/M4/BAME 3333/RMB3"));
+        assertEquals("13452/M4/BAME 3333/RMB3", bundle.toString());
     }
 
     @Test
     public void testToString2_NegativeTest() throws Exception {
         PaperBundle bundle  = new PaperBundle();
-        assertEquals("null/null/null", bundle.toString());
+        assertEquals("null/null/null/null", bundle.toString());
     }
 }

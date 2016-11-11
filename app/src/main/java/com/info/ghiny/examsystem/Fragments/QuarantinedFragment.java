@@ -39,8 +39,12 @@ public class QuarantinedFragment extends Fragment {
         List<String> header = taskModel.getTitleList(Status.QUARANTINED);
         HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.QUARANTINED);
 
-        ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.quarantizedList);
-        barredList.setAdapter(new FragListAdapter(getContext(), header, child));
+        ExpandableListView quarList = (ExpandableListView)view.findViewById(R.id.quarantizedList);
+        FragListAdapter adapter = new FragListAdapter(getContext(), header, child);
+        quarList.setAdapter(adapter);
+        for(int i = 0; i < adapter.getGroupCount(); i ++){
+            quarList.expandGroup(i);
+        }
 
         return view;
     }

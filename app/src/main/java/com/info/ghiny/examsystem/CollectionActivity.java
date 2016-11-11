@@ -40,6 +40,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     private int mode;
     private ImageView crossHairView;
     private FloatingActionButton scanInitiater;
+    private TextView collectorId;
+    private TextView bundlePaper;
+    private TextView bundleProgramme;
+    private TextView bundleVenue;
     private ProgressDialog progDialog;
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -68,7 +72,7 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     }
 
     private void initView(){
-        TextView head2 = (TextView)findViewById(R.id.bundleText);
+        TextView head2 = (TextView)findViewById(R.id.collectionTitle);
         head2.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
 
         errorManager    = new ErrorManager(this);
@@ -76,6 +80,11 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
         barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);
         scanInitiater   = (FloatingActionButton) findViewById(R.id.collectScanButton);
         crossHairView   = (ImageView) findViewById(R.id.collectCrossHair);
+
+        collectorId     = (TextView) findViewById(R.id.collectorId);
+        bundlePaper     = (TextView) findViewById(R.id.bundlePaperCode);
+        bundleProgramme = (TextView) findViewById(R.id.bundleProgramme);
+        bundleVenue     = (TextView) findViewById(R.id.bundleVenue);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.collectionLayout);
         assert thisLayout != null;
@@ -133,6 +142,18 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     //==============================================================================================
     @Override
+    public void setBundle(String venue, String paper, String programme) {
+        bundleVenue.setText(venue);
+        bundlePaper.setText(paper);
+        bundleProgramme.setText(programme);
+    }
+
+    @Override
+    public void setCollector(String id) {
+        collectorId.setText(id);
+    }
+
+    @Override
     public void navigateActivity(Class<?> cls) {
         Intent intent   = new Intent(this, cls);
         startActivity(intent);
@@ -184,7 +205,6 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, "Notify Collection:", "Waiting for Acknowledgement...");
         progDialog  = ProgressDialog.show(this, title, message);
     }
 
@@ -214,6 +234,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     @Override
     public void onInitiateScan(View view) {
         barcodeView.resume();
+    }
+
+    public void onTrash(View view){
+        taskPresenter.onTrash(view);
     }
 
     @Override

@@ -51,6 +51,7 @@ public class CollectionModel implements CollectionMVP.Model {
 
             staffIdentity   = null;
             bundle          = null;
+            taskPresenter.notifyClearance();
         }
     }
 
@@ -76,9 +77,17 @@ public class CollectionModel implements CollectionMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
 
+    @Override
+    public void resetCollection() {
+        this.bundle = null;
+        this.staffIdentity = null;
+        this.taskPresenter.notifyClearance();
+    }
+
     boolean verifyCollector(String scanStr){
         if(scanStr.length() == 6){
             this.staffIdentity  = scanStr;
+            this.taskPresenter.notifyCollectorScanned(scanStr);
             return true;
         }
         return false;
@@ -89,9 +98,12 @@ public class CollectionModel implements CollectionMVP.Model {
 
         if (bundle.parseBundle(scanStr)){
             this.bundle = bundle;
+            this.taskPresenter.notifyBundleScanned(bundle);
             return true;
         }
 
         return false;
     }
+
+
 }

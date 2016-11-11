@@ -39,7 +39,11 @@ public class BarredFragment extends Fragment {
         HashMap<String, List<Candidate>> child = taskModel.getChildList(Status.BARRED);
 
         ExpandableListView barredList = (ExpandableListView)view.findViewById(R.id.barredList);
-        barredList.setAdapter(new FragListAdapter(getContext(), header, child));
+        FragListAdapter adapter = new FragListAdapter(getContext(), header, child);
+        barredList.setAdapter(adapter);
+        for(int i = 0; i < adapter.getGroupCount(); i++){
+            barredList.expandGroup(i);
+        }
 
         return view;
     }

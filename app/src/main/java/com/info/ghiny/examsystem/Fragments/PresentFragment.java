@@ -39,7 +39,11 @@ public class PresentFragment extends Fragment {
         HashMap<String, List<Candidate>> cddChild = taskModel.getChildList(Status.PRESENT);
 
         ExpandableListView presentList  = (ExpandableListView) view.findViewById(R.id.presentList);
-        presentList.setAdapter(new FragListAdapter(getContext(), header, cddChild));
+        FragListAdapter adapter = new FragListAdapter(getContext(), header, cddChild);
+        presentList.setAdapter(adapter);
+        for(int i = 0; i < adapter.getGroupCount(); i ++){
+            presentList.expandGroup(i);
+        }
 
         return view;
     }
