@@ -82,6 +82,18 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/takeAttdScanButton" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:onClick="onTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/tag_button"
+            android:id="@+id/lateTagButton"
+            android:layout_alignTop="@+id/takeAttdScanButton"
+            android:layout_alignEnd="@+id/takeAttdCrossHair"
+            app:backgroundTint="@color/colorDarkRed" />
     </RelativeLayout>
 
 

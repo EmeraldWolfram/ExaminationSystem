@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.view.View;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.ReportAttdActivity;
@@ -262,5 +263,10 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 taskView.resumeScanning();
             }
         }
+    }
+
+    @Override
+    public void onTag(View view) {
+        taskModel.tagAsLate();
     }
 }

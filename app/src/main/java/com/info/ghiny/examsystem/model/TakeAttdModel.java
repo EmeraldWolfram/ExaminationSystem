@@ -166,6 +166,11 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         dialog.cancel();
     }
 
+    @Override
+    public void tagAsLate() {
+
+    }
+
     //= Methods for abnormal cases =================================================================
     //  updateNewCandidae()
     //  - Replace previously assigned Table Candidate set with New Table Candidate set

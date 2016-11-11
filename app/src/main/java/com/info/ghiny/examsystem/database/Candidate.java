@@ -19,6 +19,7 @@ public class Candidate {
     public static final String CDD_PROG         = "Programme";
     public static final String CDD_TABLE        = "TableNo";
     public static final String CDD_PAPER        = "PaperCode";
+    public static final String CDD_LATE         = "Late";
     public static final String CDD_DB_ID        = "_id";
 
     private Integer tableNumber;
@@ -26,6 +27,7 @@ public class Candidate {
     private String regNum;
     private String paperCode;
     private String programme;
+    private Boolean late;
     private static HashMap<String, ExamSubject> paperList;
     private Status status;
 
@@ -36,6 +38,7 @@ public class Candidate {
         regNum      = null;
         paperCode   = null;
         programme   = null;
+        late        = false;
         status      = Status.ABSENT;
     }
 
@@ -47,9 +50,17 @@ public class Candidate {
         this.regNum         = regNum;
         this.paperCode      = paperCode;
         this.status         = status;
+        this.late           = false;
     }
 
     //Instance Method ---------------------------------------------------------------------
+    public Boolean isLate() {
+        return late;
+    }
+    public void setLate(Boolean late) {
+        this.late = late;
+    }
+
     public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
     }

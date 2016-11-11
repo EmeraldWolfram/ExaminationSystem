@@ -159,6 +159,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         barcodeView.resume();
     }
 
+    public void onTag(View view){
+        taskPresenter.onTag(view);
+    }
+
     //= MVP Interface Method =======================================================================
     @Override
     public void setTableView(String tableNum) {

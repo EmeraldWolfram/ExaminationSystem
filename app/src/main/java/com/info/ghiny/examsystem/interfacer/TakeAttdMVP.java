@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.interfacer;
 
 import android.content.DialogInterface;
+import android.view.View;
 
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -42,6 +43,7 @@ public interface TakeAttdMVP {
         void onBackPressed();   //Show dialog, prevent logout
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
+        void onTag(android.view.View view);
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
@@ -65,6 +67,7 @@ public interface TakeAttdMVP {
         void tryAssignScanValue(String scanStr) throws ProcessException;    //assign scan value
         void updateNewCandidate();  //when update pressed
         void cancelNewAssign();     //when cancel pressed
+        void tagAsLate();
     }
 
 }
