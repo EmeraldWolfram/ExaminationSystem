@@ -67,40 +67,7 @@ public class TakeAttdPresenterTest {
         manager.setHandler(handler);
     }
 
-    //= OnCreate() =================================================================================
-    /**
-     * onCreate()
-     *
-     * When TakeAttdActivity was first created
-     * it require initialization of the attendance list and exam paper info
-     * This method will call initialization.
-     *
-     * Tests:
-     * 1. Initialization Complete, do nothing and let the apps continue to run
-     * 2. Initialization Failed, display the error and end the app
-     */
-    /*
-    @Test
-    public void testOnCreate1_CompleteInit() throws Exception {
-        manager.onCreate();
 
-        verify(taskModel).initAttendance();
-        verify(taskView).openProgressWindow("Initializing:", "Preparing Attendance List...");
-        verify(taskView, never()).displayError(any(ProcessException.class));
-    }
-
-    @Test
-    public void testOnCreate2_IncompleteInit() throws Exception {
-        doThrow(new ProcessException(ProcessException.MESSAGE_TOAST))
-                .when(taskModel).initAttendance();
-
-        manager.onCreate();
-
-        verify(taskModel).initAttendance();
-        verify(taskView, never()).openProgressWindow(anyString(), anyString());
-        verify(taskView).displayError(any(ProcessException.class));
-    }
-    */
     //= OnScan() ===================================================================================
     /**
      * onScan()
@@ -346,18 +313,15 @@ public class TakeAttdPresenterTest {
      * 2. Received message, send to model, model complain with Exception
      *
      */
-    /*
     @Test
     public void testOnChiefRespond1_PositiveResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         doNothing().when(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
-        assertFalse(manager.isDownloadComplete());
 
         manager.onChiefRespond(errorManager, "ATTENDANCE & PAPERS");
 
         verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
-        assertTrue(manager.isDownloadComplete());
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -366,17 +330,15 @@ public class TakeAttdPresenterTest {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         ProcessException err    = new ProcessException(ProcessException.FATAL_MESSAGE);
         doThrow(err).when(taskModel).checkDownloadResult("NO DATA");
-        assertFalse(manager.isDownloadComplete());
 
         manager.onChiefRespond(errorManager, "NO DATA");
 
         verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("NO DATA");
-        assertTrue(manager.isDownloadComplete());
         verify(task).publishError(errorManager, err);
     }
-    */
-    //= notifyTableScanned() =============================================================================
+
+    //= NotifyTableScanned() =============================================================================
 
     /**
      * notifyTableScanned()
@@ -401,7 +363,7 @@ public class TakeAttdPresenterTest {
         verify(taskView).setTableView("12");
     }
 
-    //= DisplayCandidate() =============================================================================
+    //= NotifyCandidateScanned() =============================================================================
 
     /**
      * notifyCandidateScanned(Candidate)
@@ -440,7 +402,7 @@ public class TakeAttdPresenterTest {
         verify(taskView).displayError(any(ProcessException.class));
     }
 
-    //= ResetDisplay() ===================================================================
+    //= NotifyDisplayReset() ===================================================================
 
     /**
      * notifyDisplayReset()
@@ -550,7 +512,7 @@ public class TakeAttdPresenterTest {
         verify(taskView).displayError(err);
     }
 
-    //= SignalReassign(...) ========================================================================
+    //= NotifyReassign(...) ========================================================================
     /**
      * notifyReassign(...)
      *

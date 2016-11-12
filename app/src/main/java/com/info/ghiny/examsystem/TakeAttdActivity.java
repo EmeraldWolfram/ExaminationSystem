@@ -163,6 +163,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         taskPresenter.onTag(view);
     }
 
+    public void onTrash(View view) {
+        taskPresenter.onTrash(view);
+    }
+
     //= MVP Interface Method =======================================================================
     @Override
     public void setTableView(String tableNum) {

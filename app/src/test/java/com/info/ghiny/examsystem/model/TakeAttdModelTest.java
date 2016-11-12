@@ -206,7 +206,6 @@ public class TakeAttdModelTest {
     }
 
     //= CheckDownloadResult() ======================================================================
-
     /**
      * checkDownloadResult()
      *
@@ -238,11 +237,14 @@ public class TakeAttdModelTest {
 
             model.checkDownloadResult(MESSAGE_FROM_CHIEF);
 
+            fail("Expected MESSAGE_TOAST but none was thrown!");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Download Complete", err.getErrorMsg());
+
             assertTrue(model.isInitialized());
             assertNotEquals(paperList, Candidate.getPaperList());
             assertNotEquals(attdList, TakeAttdModel.getAttdList());
-        } catch (ProcessException err) {
-            fail("Exception --" + err.getErrorMsg() + "-- is not expected!");
         }
     }
 
@@ -345,7 +347,7 @@ public class TakeAttdModelTest {
     /**
      * tryAssignScanValue(...)
      *
-     * The most core method of taking attendance
+     * The core method of taking attendance
      * It takes the qr code in String as input,
      * filter, verify and take action according to the input String
      *
@@ -356,7 +358,14 @@ public class TakeAttdModelTest {
      *    and throw MESSAGE_TOAST to indicate assign
      * 4. Input string was candidate and table NOT null, assign as candidate and match the pair
      *    and throw MESSAGE_TOAST to indicate assign
-     * 5. Input string was neither any of it, throw MESSAGE_TOAST Exception
+     * 5. Both Candidate & Table NOT null, receive input which is candidate, assign as candidate
+     *    and clear previous displaying table and candidate
+     * 6. Both Candidate & Table NOT null, receive input which is candidate, assign as candidate
+     *    and clear previous displaying table and candidate
+     * 7. Both are null, Input string was neither any of it, throw MESSAGE_TOAST Exception
+     * 8. Candidate null only, Input string was neither any of it, throw MESSAGE_TOAST Exception
+     * 9. Table null only, Input string was neither any of it, throw MESSAGE_TOAST Exception
+     * 10. Both NOT null, Input string was neither any of it, throw MESSAGE_TOAST Exception
      */
     @Test
     public void testTryAssignScanValue1_AssignTableOnly() throws Exception {
@@ -411,9 +420,9 @@ public class TakeAttdModelTest {
 
             verify(taskPresenter).notifyTableScanned(13);
             verify(taskPresenter, never()).notifyCandidateScanned(any(Candidate.class));
-            verify(taskPresenter).notifyDisplayReset();
-            assertNull(model.getTempTable());
-            assertNull(model.getTempCdd());
+            verify(taskPresenter, never()).notifyDisplayReset();
+            assertNotNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
         }
     }
 
@@ -432,14 +441,50 @@ public class TakeAttdModelTest {
 
             verify(taskPresenter, never()).notifyTableScanned(anyInt());
             verify(taskPresenter).notifyCandidateScanned(cdd1);
-            verify(taskPresenter).notifyDisplayReset();
-            assertNull(model.getTempTable());
-            assertNull(model.getTempCdd());
+            verify(taskPresenter, never()).notifyDisplayReset();
+            assertNotNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
         }
     }
 
     @Test
-    public void testTryAssignScanValue5_InvalidString() throws Exception {
+    public void testTryAssignScanValue5_BothAssigned() throws Exception {
+        try{
+            model.setTempCdd(cdd2);
+            model.setTempTable(13);
+
+            model.tryAssignScanValue("15WAU00001");
+
+            verify(taskPresenter).notifyDisplayReset();
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter).notifyCandidateScanned(cdd1);
+            assertNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testTryAssignScanValue6_BothAssigned() throws Exception {
+        try{
+            model.setTempCdd(cdd2);
+            model.setTempTable(13);
+
+            model.tryAssignScanValue("45");
+
+            verify(taskPresenter).notifyDisplayReset();
+            verify(taskPresenter).notifyTableScanned(45);
+            verify(taskPresenter, never()).notifyCandidateScanned(cdd1);
+            assertNotNull(model.getTempTable());
+            assertNull(model.getTempCdd());
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testTryAssignScanValue7_InvalidStringBothNull() throws Exception {
         try{
             assertNull(model.getTempTable());
             assertNull(model.getTempCdd());
@@ -459,23 +504,101 @@ public class TakeAttdModelTest {
         }
     }
 
+    @Test
+    public void testTryAssignScanValue8_InvalidStringCandidateNull() throws Exception {
+        try{
+            model.setTempTable(13);
+            assertNotNull(model.getTempTable());
+            assertNull(model.getTempCdd());
+
+            model.tryAssignScanValue("AXXD");
+
+            fail("Expected MESSAGE_TOAST exception but none thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Not a valid QR", err.getErrorMsg());
+
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter, never()).notifyCandidateScanned(cdd1);
+            verify(taskPresenter, never()).notifyDisplayReset();
+            assertNotNull(model.getTempTable());
+            assertNull(model.getTempCdd());
+        }
+    }
+
+    @Test
+    public void testTryAssignScanValue9_InvalidStringTableNull() throws Exception {
+        try{
+            model.setTempCdd(cdd1);
+            assertNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
+
+            model.tryAssignScanValue("AXXD");
+
+            fail("Expected MESSAGE_TOAST exception but none thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Not a valid QR", err.getErrorMsg());
+
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter, never()).notifyCandidateScanned(cdd1);
+            verify(taskPresenter, never()).notifyDisplayReset();
+            assertNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
+        }
+    }
+
+    @Test
+    public void testTryAssignScanValue10_InvalidStringBothAssigned() throws Exception {
+        try{
+            model.setTempCdd(cdd1);
+            model.setTempTable(13);
+            assertNotNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
+
+            model.tryAssignScanValue("AXXD");
+
+            fail("Expected MESSAGE_TOAST exception but none thrown");
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Not a valid QR", err.getErrorMsg());
+
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter, never()).notifyCandidateScanned(cdd1);
+            verify(taskPresenter, never()).notifyDisplayReset();
+            assertNotNull(model.getTempTable());
+            assertNotNull(model.getTempCdd());
+        }
+    }
+
     //= Run() ======================================================================================
     /**
      * run()
      *
      * 1. When ConnectionTask is complete, do nothing
-     * 2. When ConnectionTask is not complete, throw an error and the presenter shall handle
+     * 2. Initialize using database, no times out should be thrown
+     * 3. When ConnectionTask is not complete, throw an error and the presenter shall handle
      */
     @Test
     public void testRun_ChiefDoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(true);
+        model.setDownloadComplete(true);
+        model.setInitialized(true);
         model.run();
-        verify(taskPresenter).onTimesOut(any(ProcessException.class));
+        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
     }
 
     @Test
     public void testRun_ChiefNoRespond() throws Exception {
-        ConnectionTask.setCompleteFlag(false);
+        model.setDownloadComplete(false);
+        model.setInitialized(true);
+        model.run();
+        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+    }
+
+    @Test
+    public void testRun_UsedDatabaseRespond() throws Exception {
+        model.setInitialized(false);
+        model.setDownloadComplete(false);
         model.run();
         verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
@@ -548,10 +671,50 @@ public class TakeAttdModelTest {
 
         assertTrue(model.getAssgnList().containsValue(cdd2.getRegNum()));
         assertFalse(model.getAssgnList().containsValue(cdd1.getRegNum()));
-        assertNull(model.getTempCdd());
-        assertNull(model.getTempTable());
+        assertNotNull(model.getTempCdd());
+        assertNotNull(model.getTempTable());
         verify(dialog).cancel();
-        verify(taskPresenter).notifyDisplayReset();
+        verify(taskPresenter, never()).notifyDisplayReset();
+    }
+
+    //= TagAsLate() ================================================================================
+    /**
+     * tagAsLate()
+     *
+     * This method tag the candidate as late and tag the next candidate if candidate is null
+     *
+     * Tests:
+     * 1. Tag current candidate because candidate not null
+     * 2. Set tagNextCandidate because csndidate is null
+     *
+     */
+    @Test
+    public void testTagAsLate1_CandidateNotNull() throws Exception{
+        model.setTempCdd(cdd1);
+        assertFalse(model.getTempCdd().isLate());
+        assertFalse(model.isTagNextLate());
+
+        model.tagAsLate();
+
+        assertTrue(model.getTempCdd().isLate());
+        assertFalse(model.isTagNextLate());
+    }
+
+    @Test
+    public void testTagAsLate2_CandidateNull() throws Exception{
+        model.setTempCdd(null);
+        assertNull(model.getTempCdd());
+        assertFalse(model.isTagNextLate());
+
+        model.tagAsLate();
+
+        assertNull(model.getTempCdd());
+        assertTrue(model.isTagNextLate());
+
+        model.tryAssignScanValue("15WAU00002");
+
+        assertFalse(model.isTagNextLate());
+        assertTrue(cdd2.isLate());
     }
 
     //= CheckTable =================================================================================
@@ -591,11 +754,47 @@ public class TakeAttdModelTest {
         }
     }
 
+    //= VerifyTable(...) ===========================================================================
+    /**
+     * verifyTable(...)
+     *
+     * This method verify if the scan string is a table
+     * if yes, return true
+     * else return false
+     *
+     * Tests:
+     * 1. Input string was a valid table
+     * 2. Input string was not a full digit number (not possible to be table)
+     *
+     */
+    @Test
+    public void testVerifyTable1_ValidNumberString() throws Exception {
+        try{
+            assertTrue(model.verifyTable("12"));
+
+            assertNotNull(model.getTempTable());
+            assertEquals(12, model.getTempTable().intValue());
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testVerifyTable2_NotFullDigitNumber() throws Exception {
+        try{
+            assertFalse(model.verifyTable("3A"));
+
+            assertNull(model.getTempTable());
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
     //= CheckCandidate =============================================================================
     /**
      * checkCandidate()
      *
-     * This method should not be called by outsider.
+     * This method should NOT be called by outsider.
      * Partial method of tryAssignScanValue(...) 2nd piece of 6
      *
      * This method used to verify the scan String is a candidate register number
@@ -687,6 +886,102 @@ public class TakeAttdModelTest {
         }
     }
 
+    //= VerifyCandidate() ==========================================================================
+    /**
+     * verifyCandidate()
+     *
+     * This method should NOT be called by outsider.
+     * Partial method of tryAssignScanValue(...) 2nd piece of 6
+     *
+     * This method used to verify the scan String is a candidate register number
+     * If verification passed, the candidate will be register into the candidate buffer
+     * Exception will be thrown if verification failed
+     * return true if candidate registered in buffer and return false if not
+     *
+     * Tests:
+     * 1. Input String is a candidate, but not in attendance list. (Other venue maybe) Throw....
+     * 2. Input String is a candidate, but listed as EXEMPTED. Throw MESSAGE_TOAST
+     * 3. Input String is a candidate, but listed as BARRED. Throw MESSAGE_TOAST
+     * 4. Input String is a candidate, but listed as QUARANTINED. Throw MESSAGE_TOAST
+     * 5. Input String is a valid candidate, register into the buffer
+     * 6. Attendance List is not initialized yet, throw FATAL_MESSAGE
+     */
+    @Test
+    public void testVerifyCandidate1_NotListedCandidateThrowMessageToast() throws Exception{
+        try{
+            assertFalse(model.verifyCandidate("15WAU22222"));;
+
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch(ProcessException err){
+            assertNull(model.getTempCdd());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("15WAU22222 doest not belong to this venue", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testVerifyCandidate2_CandidateExemptedThrowMessageToast() throws Exception{
+        try{
+            assertFalse(model.verifyCandidate("15WAU00005"));
+
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch(ProcessException err){
+            assertNull(model.getTempCdd());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The paper was exempted for Ms. Exm", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testVerifyCandidate3_CandidateBarredThrowMessageToast() throws Exception {
+        try{
+            model.verifyCandidate("15WAU00004");
+
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch(ProcessException err){
+            assertNull(model.getTempCdd());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("Mr. Bar have been barred", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testVerifyCandidate4_CandidateQuarantinedThrowMessageToast() throws Exception{
+        try{
+            model.verifyCandidate("15WAR00006");
+
+            fail("Expected MESSAGE_TOAST but none thrown");
+        } catch(ProcessException err){
+            assertNull(model.getTempCdd());
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The paper was quarantized for Ms. Qua", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testVerifyCandidate5_CandidateIsValid() throws Exception{
+        try{
+            assertTrue(model.verifyCandidate("15WAU00001"));
+
+            assertNotNull(model.getTempCdd());
+            assertEquals(model.getTempCdd(), cdd1);
+        } catch(ProcessException err){
+            fail("No error should be thrown but thrown ErrorMsg " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testVerifyCandidate6_AttendanceListNotInitializeYet() throws Exception{
+        try{
+            TakeAttdModel.setAttdList(null);
+            model.verifyCandidate("15WAU00001");
+
+            fail("Expected MESSAGE_DIALOG but none thrown");
+        } catch(ProcessException err){
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("No Attendance List", err.getErrorMsg());
+        }
+    }
     //=TryAssignCandidate===========================================================================
     /**
      * tryAssignCandidate()
@@ -822,7 +1117,7 @@ public class TakeAttdModelTest {
      * Dialog -> update
      * Table 14 previously assigned to Cdd1
      * Table 14 then assign to Cdd2
-     * updateNewCandidate():
+     * updateNewAssignment():
      * + should reset Cdd1 to Table 0 and ABSENT
      * + should assign Cdd2 to Table 14 and PRESENT
     *************************************************/
@@ -837,7 +1132,7 @@ public class TakeAttdModelTest {
         model.checkTable("14");
         model.checkCandidate("15WAU00002");
 
-        model.updateNewCandidate();
+        model.updateNewAssignment();
 
         assertEquals(1, model.getAssgnList().size());
         assertEquals("15WAU00002", model.getAssgnList().get(14));
@@ -850,7 +1145,7 @@ public class TakeAttdModelTest {
      * Dialog -> update
      * Table 12 previously assigned to Cdd1
      * Table 14 then assign to Cdd1
-     * updateNewCandidate():
+     * updateNewAssignment():
      * + should renew Cdd1 to Table 14
      *************************************************/
     @Test
@@ -864,7 +1159,7 @@ public class TakeAttdModelTest {
         model.checkTable("14");
         model.checkCandidate("15WAU00001");
 
-        model.updateNewCandidate();
+        model.updateNewAssignment();
 
         assertEquals(1, model.getAssgnList().size());
         assertNull(model.getAssgnList().get(12));
@@ -929,7 +1224,70 @@ public class TakeAttdModelTest {
         assertEquals(Status.ABSENT, cdd2.getStatus());
     }
 
-    //= AttemptReassign() ===========================================================================
+    //= ResetAttendanceAssignment() ================================================================
+    /**
+     * resetAttendanceAssignment()
+     *
+     * This method reset the assigned attendance on display
+     * If the display is not filled or partially filled, only clear the buffer but no removal occur
+     *
+     * Tests:
+     * 1. Table = null, Candidate != null
+     *    - Clear candidate only
+     * 2. Table != null, Candidate = null
+     *    - Clear table only
+     * 3. Table != null, Candidate != null
+     *    - Undo assign of that candidate
+     */
+    @Test
+    public void testResetAttendance_TableNull() throws Exception {
+        model.setTempCdd(cdd1);
+        assertNull(model.getTempTable());
+        assertNotNull(model.getTempCdd());
+        cdd1.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+
+        model.resetAttendanceAssignment();
+
+        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertNull(model.getTempCdd());
+        assertNull(model.getTempTable());
+        verify(taskPresenter).notifyDisplayReset();
+    }
+
+    @Test
+    public void testResetAttendance_CandidateNull() throws Exception {
+        model.setTempTable(14);
+        assertNotNull(model.getTempTable());
+        assertNull(model.getTempCdd());
+
+        model.resetAttendanceAssignment();
+
+        assertNull(model.getTempCdd());
+        assertNull(model.getTempTable());
+        verify(taskPresenter).notifyDisplayReset();
+    }
+
+    @Test
+    public void testResetAttendance_BothNotNull() throws Exception {
+        model.setTempTable(14);
+        model.setTempCdd(cdd1);
+        assertNotNull(model.getTempTable());
+        assertNotNull(model.getTempCdd());
+        cdd1.setStatus(Status.PRESENT);
+        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+
+        model.resetAttendanceAssignment();
+
+        assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertNull(model.getTempCdd());
+        assertNull(model.getTempTable());
+        verify(taskPresenter).notifyDisplayReset();
+    }
+
+    //= AttemptReassign() ==========================================================================
     /**
      * attemptReassign()
      *
@@ -1067,7 +1425,6 @@ public class TakeAttdModelTest {
 
         model.assignCandidate();
 
-        verify(taskPresenter).notifyDisplayReset();
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertTrue(model.getAssgnList().containsValue(cdd1.getRegNum()));

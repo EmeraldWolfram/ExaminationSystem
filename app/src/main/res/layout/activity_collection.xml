@@ -113,7 +113,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_delete_black_150dp"
+        app:srcCompat="@drawable/button_trash_icon"
         android:layout_alignBottom="@+id/collectScanButton"
         android:layout_alignEnd="@+id/collectCrossHair"
         android:id="@+id/collectTrashButton"

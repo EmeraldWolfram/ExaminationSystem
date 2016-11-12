@@ -44,12 +44,10 @@ public interface TakeAttdMVP {
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
         void onTag(android.view.View view);
+        void onTrash(android.view.View view);
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
-        //void setDownloadComplete(boolean initComplete);
-        //boolean isDownloadComplete();
-        //void startTimer();
         void onTimesOut(ProcessException err);  //standard
 
         void notifyTableScanned(Integer tableNumber);
@@ -82,9 +80,43 @@ public interface TakeAttdMVP {
          *
          * @param scanStr               The value scan from the QR scanner
          */
-        void tryAssignScanValue(String scanStr) throws ProcessException;    //assign scan value
-        void updateNewCandidate();  //when update pressed
+        void tryAssignScanValue(String scanStr) throws ProcessException;
+
+        /**
+         * updateNewAssignment()
+         *
+         * This method will be called when the update button was pressed
+         * in a Reassign Window
+         * Replace previously assigned Table Candidate set with New Table Candidate set
+         *
+         */
+        void updateNewAssignment();
+
+        /**
+         * cancelNewAssign()
+         *
+         * This method will be called when the cancel button was pressed
+         * in a Reassign Window
+         * Remain previously assigned Table Candidate set and discard New Table Candidate set
+         */
         void cancelNewAssign();     //when cancel pressed
+
+        /**
+         * resetAttendanceAssignment()
+         *
+         * This method use to undo assigned Table Candidate set that was displaying
+         * If the set is partially filled or not filled, this method simply clear the view
+         */
+        void resetAttendanceAssignment();
+
+        /**
+         * tagAsLate()
+         *
+         * This method use to tag the candidate in the display as late
+         *
+         * If no candidate is in display, the next candidate that was scanned will be tagged
+         *
+         */
         void tagAsLate();
     }
 

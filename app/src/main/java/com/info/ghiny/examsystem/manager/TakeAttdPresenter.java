@@ -53,17 +53,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         this.navigationFlag = navigationFlag;
     }
 
-    /*
-    @Override
-    public void setDownloadComplete(boolean initComplete) {
-        this.downloadComplete = initComplete;
-    }
-
-    @Override
-    public boolean isDownloadComplete() {
-        return downloadComplete;
-    }
-    */
+    //==============================================================================================
     @Override
     public void onResume(){
         loadSetting();
@@ -174,7 +164,6 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
             taskView.closeProgressWindow();//Might Change
-            //this.downloadComplete = true;
             taskModel.checkDownloadResult(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -266,5 +255,10 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     @Override
     public void onTag(View view) {
         taskModel.tagAsLate();
+    }
+
+    @Override
+    public void onTrash(View view) {
+        taskModel.resetAttendanceAssignment();
     }
 }

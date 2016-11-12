@@ -69,7 +69,8 @@
             app:srcCompat="@drawable/scan_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/app_name"/>
 
         <android.support.design.widget.FloatingActionButton
             android:onClick="onInitiateScan"
@@ -89,11 +90,23 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             app:fabSize="normal"
-            app:srcCompat="@drawable/tag_button"
+            app:srcCompat="@drawable/button_tag_icon"
             android:id="@+id/lateTagButton"
             android:layout_alignTop="@+id/takeAttdScanButton"
             android:layout_alignEnd="@+id/takeAttdCrossHair"
             app:backgroundTint="@color/colorDarkRed" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:onClick="onTrash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/button_trash_icon"
+            android:id="@+id/undoAssignTrashButton"
+            app:backgroundTint="@color/colorTrashBlue"
+            android:layout_alignTop="@+id/takeAttdScanButton"
+            android:layout_alignStart="@+id/takeAttdCrossHair" />
     </RelativeLayout>
 
 
