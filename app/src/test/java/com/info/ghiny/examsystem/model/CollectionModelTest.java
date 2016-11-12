@@ -140,7 +140,23 @@ public class CollectionModelTest {
      * 4. Staff ID not null & Bundle (null),
      *      - input is bundle, assign bundle, send out data and clear the two holder to null
      *
-     * 5. Input is neither bundle info or staff ID, throw MESSAGE_TOAST
+     * 5. Staff ID & Bundle both NOT null,
+     *      - input is bundle, clear both and set bundle
+     *
+     * 6. Staff ID & Bundle both NOT null,
+     *      - input is collector, clear both and set collector
+     *
+     * 7. Staff ID & Bundle both null,
+     *      - neither bundle nor collector, throw error only, no clear
+     *
+     * 8. Staff ID null & Bundle NOT null
+     *      - neither bundle nor collector, throw error only, no clear
+     *
+     * 9. Staff ID NOT null & Bundle null
+     *      - neither bundle nor collector, throw error only, no clear
+     *
+     * 10. Staff ID & Bundle both NOT null,
+     *      - neither bundle nor collector, throw error only, no clear
      */
     @Test
     public void bundleCollection1_BothNotAssign() throws Exception {
@@ -191,12 +207,13 @@ public class CollectionModelTest {
 
             model.bundleCollection("246810");
 
-            assertNull(model.getBundle());
-            assertNull(model.getStaffIdentity());
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+            assertFalse(model.isAcknowledgeCollection());
             verify(tcpClient).sendMessage(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace).notifyCollectorScanned(anyString());
-            verify(presenterFace).notifyClearance();
+            verify(presenterFace, never()).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
@@ -211,25 +228,148 @@ public class CollectionModelTest {
 
             model.bundleCollection("13452/M4/BAME 3233/RMB3");
 
-            assertNull(model.getBundle());
-            assertNull(model.getStaffIdentity());
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+            assertFalse(model.isAcknowledgeCollection());
             verify(tcpClient).sendMessage(anyString());
             verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
-            verify(presenterFace).notifyClearance();
+            verify(presenterFace, never()).notifyClearance();
         } catch (ProcessException err){
             fail("No exception expected but thrown " + err.getErrorMsg());
         }
     }
 
     @Test
-    public void bundleCollection5_ThrowMessageToastWhenQRNotRecognize() throws Exception {
+    public void bundleCollection5_BothAssigned() throws Exception {
         try{
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("13452/M4/BAME 3233/RMB3");
+            model.setBundle(bundle);
+            model.setStaffIdentity("246810");
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+
+            model.bundleCollection("123456");
+
+            assertNull(model.getBundle());
+            assertEquals("123456", model.getStaffIdentity());
+            verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace).notifyClearance();
+            verify(presenterFace).notifyCollectorScanned(anyString());
+        } catch (ProcessException err){
+            fail("No exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void bundleCollection6_BothAssigned() throws Exception {
+        try{
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("13452/M4/BAME 3233/RMB3");
+            model.setBundle(bundle);
+            model.setStaffIdentity("246810");
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+
+            model.bundleCollection("14562/H3/BAME 0002/RIS3");
+
+            assertEquals("14562/H3/BAME 0002/RIS3", model.getBundle().toString());
+            assertNull(model.getStaffIdentity());
+            verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace).notifyClearance();
+            verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+        } catch (ProcessException err){
+            fail("No exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void bundleCollection7_ThrowMessageToastWhenQRNotRecognize() throws Exception {
+        try{
+            assertNull(model.getBundle());
+            assertNull(model.getStaffIdentity());
+
             model.bundleCollection("INCORRECT KIND OF QR STRING");
             fail("Expected MESSAGE_TOAST but none was thrown");
         } catch (ProcessException err){
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
+            assertNull(model.getBundle());
+            assertNull(model.getStaffIdentity());
+            verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
+        }
+    }
+
+    @Test
+    public void bundleCollection8_ThrowMessageToastWhenQRNotRecognize() throws Exception {
+        try{
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("13452/M4/BAME 3233/RMB3");
+            model.setBundle(bundle);
+            assertNotNull(model.getBundle());
+            assertNull(model.getStaffIdentity());
+
+            model.bundleCollection("INCORRECT KIND OF QR STRING");
+
+            fail("Expected MESSAGE_TOAST but none was thrown");
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
+            assertNotNull(model.getBundle());
+            assertNull(model.getStaffIdentity());
+            verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
+        }
+    }
+
+    @Test
+    public void bundleCollection9_ThrowMessageToastWhenQRNotRecognize() throws Exception {
+        try{
+            model.setStaffIdentity("123456");
+            assertNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+
+            model.bundleCollection("INCORRECT KIND OF QR STRING");
+
+            fail("Expected MESSAGE_TOAST but none was thrown");
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
+            assertNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+            verify(tcpClient, never()).sendMessage(anyString());
+            verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
+            verify(presenterFace, never()).notifyCollectorScanned(anyString());
+            verify(presenterFace, never()).notifyClearance();
+        }
+    }
+
+    @Test
+    public void bundleCollection10_ThrowMessageToastWhenQRNotRecognize() throws Exception {
+        try{
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("13452/M4/BAME 3233/RMB3");
+            model.setBundle(bundle);
+            model.setStaffIdentity("123456");
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
+
+            model.bundleCollection("INCORRECT KIND OF QR STRING");
+
+            fail("Expected MESSAGE_TOAST but none was thrown");
+        } catch (ProcessException err){
+            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
+            assertNotNull(model.getBundle());
+            assertNotNull(model.getStaffIdentity());
             verify(tcpClient, never()).sendMessage(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
@@ -242,19 +382,37 @@ public class CollectionModelTest {
     /**
      * run()
      *
-     * 1. When ConnectionTask is complete, do nothing
-     * 2. When ConnectionTask is not complete, throw an error and the presenter shall handle
+     * 1. - 3. When ConnectionTask is complete, do nothing
+     * 4. When ConnectionTask is not complete, throw an error and the presenter shall handle
      */
     @Test
-    public void testRun_ChiefDoRespond() throws Exception {
-        when(presenterFace.isAcknowledgementComplete()).thenReturn(true);
+    public void testRun_ChiefDoRespond1() throws Exception {
+        model.setAcknowledgeCollection(true);
+        model.setAcknowledgeUndoCollection(true);
+        model.run();
+        verify(presenterFace, never()).onTimesOut(any(ProcessException.class));
+    }
+
+    @Test
+    public void testRun_ChiefDoRespond2() throws Exception {
+        model.setAcknowledgeCollection(true);
+        model.setAcknowledgeUndoCollection(false);
+        model.run();
+        verify(presenterFace, never()).onTimesOut(any(ProcessException.class));
+    }
+
+    @Test
+    public void testRun_ChiefDoRespond3() throws Exception {
+        model.setAcknowledgeCollection(false);
+        model.setAcknowledgeUndoCollection(true);
         model.run();
         verify(presenterFace, never()).onTimesOut(any(ProcessException.class));
     }
 
     @Test
     public void testRun_ChiefNoRespond() throws Exception {
-        when(presenterFace.isAcknowledgementComplete()).thenReturn(false);
+        model.setAcknowledgeCollection(false);
+        model.setAcknowledgeUndoCollection(false);
         model.run();
         verify(presenterFace).onTimesOut(any(ProcessException.class));
     }
@@ -304,16 +462,62 @@ public class CollectionModelTest {
      * This method is used to reset the value scanned
      */
     @Test
-    public void testResetCollection() throws Exception {
+    public void testResetCollection1() throws Exception {
         model.setBundle(new PaperBundle());
         model.setStaffIdentity("");
 
         model.resetCollection();
 
-        verify(presenterFace).notifyClearance();
+        verify(tcpClient).sendMessage(anyString());
+        assertFalse(model.isAcknowledgeUndoCollection());
         assertNull(model.getBundle());
         assertNull(model.getStaffIdentity());
+        verify(presenterFace).notifyClearance();
     }
 
+    @Test
+    public void testResetCollection2() throws Exception {
+        model.setBundle(null);
+        model.setStaffIdentity(null);
 
+        model.resetCollection();
+
+        verify(tcpClient, never()).sendMessage(anyString());
+        assertNull(model.getBundle());
+        assertNull(model.getStaffIdentity());
+        verify(presenterFace).notifyClearance();
+    }
+
+    //= AcknowledgeChiefReply(...) =================================================================
+    /**
+     * acknowledgeChiefReply(...)
+     *
+     * This method used to parse the chief reply and identify the type of request from the chief
+     *
+     * Tests:
+     * 1. Reply is Collection type
+     * 2. Reply is Undo Collection type
+     *
+     */
+    @Test
+    public void testAcknowledgeChiefReply1_CollectionType() throws Exception {
+        model.setAcknowledgeCollection(false);
+        model.setAcknowledgeUndoCollection(false);
+
+        model.acknowledgeChiefReply("{\"Type\":\"Collection\"}");
+
+        assertFalse(model.isAcknowledgeUndoCollection());
+        assertTrue(model.isAcknowledgeCollection());
+    }
+
+    @Test
+    public void testAcknowledgeChiefReply2_UndoCollectionType() throws Exception {
+        model.setAcknowledgeCollection(false);
+        model.setAcknowledgeUndoCollection(false);
+
+        model.acknowledgeChiefReply("{\"Type\":\"UndoCollection\"}");
+
+        assertTrue(model.isAcknowledgeUndoCollection());
+        assertFalse(model.isAcknowledgeCollection());
+    }
 }

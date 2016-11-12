@@ -20,6 +20,7 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -206,35 +207,31 @@ public class CollectionPresenterTest {
     @Test
     public void testOnChiefRespond_1() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        manager.setAcknowledgementComplete(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
-        String message = "{\"Result\":true}";
+        doNothing().when(taskModel).acknowledgeChiefReply(anyString());
 
-        assertFalse(manager.isAcknowledgementComplete());
-        manager.onChiefRespond(errManager, message);
+        manager.onChiefRespond(errManager, "CORRECT KIND OF MESSAGE");
 
         verify(taskView).closeProgressWindow();
-        assertTrue(manager.isAcknowledgementComplete());
+        verify(taskModel).acknowledgeChiefReply("CORRECT KIND OF MESSAGE");
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
     @Test
     public void testOnChiefRespond_2() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        manager.setAcknowledgementComplete(false);
-        ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
+        ConnectionTask conTask  = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
-        String message = "{\"Result\":false}";
+        ProcessException err    = Mockito.mock(ProcessException.class);
+        doThrow(err).when(taskModel).acknowledgeChiefReply(anyString());
 
-        assertFalse(manager.isAcknowledgementComplete());
-        manager.onChiefRespond(errManager, message);
+        manager.onChiefRespond(errManager, "INCORRECT KIND OF MESSAGE");
 
         verify(taskView).closeProgressWindow();
-        assertTrue(manager.isAcknowledgementComplete());
-        verify(conTask).publishError(any(ErrorManager.class), any(ProcessException.class));
+        verify(taskModel).acknowledgeChiefReply("INCORRECT KIND OF MESSAGE");
+        verify(conTask).publishError(errManager, err);
     }
-
     //= OnPasswordReceived() ========================================================================
     /**
      * onPasswordReceived()

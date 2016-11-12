@@ -24,7 +24,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     private CollectionMVP.View taskView;
     private CollectionMVP.Model taskModel;
     private Handler handler;
-    private boolean acknowledgementComplete;
+    //private boolean acknowledgementComplete;
 
     private SharedPreferences preferences;
     private boolean crossHair;
@@ -45,7 +45,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
         this.handler = handler;
     }
 
-    @Override
+    /*@Override
     public boolean isAcknowledgementComplete() {
         return acknowledgementComplete;
     }
@@ -53,7 +53,7 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     @Override
     public void setAcknowledgementComplete(boolean acknowledgementComplete) {
         this.acknowledgementComplete = acknowledgementComplete;
-    }
+    }*/
 
     //= For View ===================================================================================
     @Override
@@ -94,8 +94,9 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
             taskView.closeProgressWindow();
-            setAcknowledgementComplete(true);
-            boolean ack = JsonHelper.parseBoolean(messageRx);
+            taskModel.acknowledgeChiefReply(messageRx);
+            //setAcknowledgementComplete(true);
+            //boolean ack = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
@@ -150,7 +151,11 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
 
     @Override
     public void onTrash(View view) {
-        taskModel.resetCollection();
+        try{
+            taskModel.resetCollection();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
     }
 
     //= For Model ==================================================================================

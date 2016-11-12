@@ -31,6 +31,7 @@ public class JsonHelper {
     public static final String TYPE_RECONNECTION    = "Reconnection";
     public static final String TYPE_IDENTIFICATION  = "Identification";
     public static final String TYPE_COLLECTION      = "Collection";
+    public static final String TYPE_UNDO_COLLECTION = "UndoCollection";
     public static final String TYPE_VENUE_INFO      = "VenueInfo";
     public static final String TYPE_CANDIDATE_INFO  = "CandidateInfo";
     public static final String TYPE_SUBMISSION      = "Submission";
@@ -128,6 +129,25 @@ public class JsonHelper {
         }
     }
 
+    public static String formatUndoCollection(String staffId, PaperBundle bundle){
+        JSONObject object   = new JSONObject();
+        JSONObject jBundle   = new JSONObject();
+        try{
+            jBundle.put(PaperBundle.BUNDLE_ID,      bundle.getColId());
+            jBundle.put(PaperBundle.BUNDLE_VENUE,   bundle.getColVenue());
+            jBundle.put(PaperBundle.BUNDLE_PROG,    bundle.getColProgramme());
+            jBundle.put(PaperBundle.BUNDLE_PAPER,   bundle.getColPaperCode());
+
+            object.put(MAJOR_KEY_TYPE_TX, TYPE_UNDO_COLLECTION);
+            object.put(MINOR_KEY_COLLECTOR, staffId);
+            object.put(MINOR_KEY_BUNDLE, jBundle);
+
+            return object.toString();
+        } catch(Exception err){
+            return null;
+        }
+    }
+
     //==============================================================================================
 
     public static StaffIdentity parseStaffIdentity(String inStr, int attp) throws ProcessException{
@@ -163,6 +183,16 @@ public class JsonHelper {
         } catch (JSONException err) {
             throw new ProcessException("Failed to read data from Chief\nPlease consult developer!",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
+    }
+
+    public static String parseType(String inStr) throws ProcessException {
+        try {
+            JSONObject obj = new JSONObject(inStr);
+            return obj.getString(MAJOR_KEY_TYPE_TX);
+        } catch (JSONException err) {
+            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 

@@ -105,5 +105,15 @@ public class ExternalDbLoader {
         }
     }
 
+    public static void undoCollection(String staffId, PaperBundle bundle) throws ProcessException {
+        if(tcpClient != null && bundle != null && staffId != null){
+            String str = JsonHelper.formatUndoCollection(staffId, bundle);
+            tcpClient.sendMessage(str);
+        } else {
+            throw new ProcessException("Fail to send out request!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+    }
+
 
 }

@@ -55,10 +55,6 @@ public interface CollectionMVP {
          */
         void onTimesOut(ProcessException err);
 
-        boolean isAcknowledgementComplete();
-
-        void setAcknowledgementComplete(boolean acknowledgementComplete);
-
         void notifyBundleScanned(PaperBundle bundle);
 
         void notifyCollectorScanned(String id);
@@ -91,7 +87,9 @@ public interface CollectionMVP {
          */
         void bundleCollection(String scanValue) throws ProcessException;
 
-        void resetCollection();
+        void resetCollection() throws ProcessException;
+
+        void acknowledgeChiefReply(String messageRx) throws ProcessException;
     }
 
 }

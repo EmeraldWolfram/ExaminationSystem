@@ -13,11 +13,29 @@ public class CollectionModel implements CollectionMVP.Model {
     private CollectionMVP.PresenterForModel taskPresenter;
     private String staffIdentity;
     private PaperBundle bundle;
+    private boolean acknowledgeCollection;
+    private boolean acknowledgeUndoCollection;
 
     public CollectionModel(CollectionMVP.PresenterForModel taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.staffIdentity  = null;
         this.bundle         = null;
+    }
+
+    boolean isAcknowledgeCollection() {
+        return acknowledgeCollection;
+    }
+
+    boolean isAcknowledgeUndoCollection() {
+        return acknowledgeUndoCollection;
+    }
+
+    void setAcknowledgeCollection(boolean acknowledgeCollection) {
+        this.acknowledgeCollection = acknowledgeCollection;
+    }
+
+    void setAcknowledgeUndoCollection(boolean acknowledgeUndoCollection) {
+        this.acknowledgeUndoCollection = acknowledgeUndoCollection;
     }
 
     PaperBundle getBundle() {
@@ -40,26 +58,41 @@ public class CollectionModel implements CollectionMVP.Model {
 
     @Override
     public void bundleCollection(String scanValue) throws ProcessException {
-        if(!verifyCollector(scanValue) && !verifyBundle(scanValue)){
-            throw new ProcessException("The decrypted QR code is neither Staff ID or Bundle",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-        }
-
         if(staffIdentity != null && bundle != null){
-            taskPresenter.setAcknowledgementComplete(false);
-            ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
+            if(verifyBundle(scanValue)){
+                this.staffIdentity  = null;
+                this.taskPresenter.notifyClearance();
+                this.taskPresenter.notifyBundleScanned(bundle);
+            } else if(verifyCollector(scanValue)){
+                this.bundle = null;
+                this.taskPresenter.notifyClearance();
+                this.taskPresenter.notifyCollectorScanned(staffIdentity);
+            } else {
+                throw new ProcessException("The decrypted QR code is neither Staff ID or Bundle",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            }
+        } else {
+            if(verifyCollector(scanValue)) {
+                this.taskPresenter.notifyCollectorScanned(scanValue);
+            } else if(verifyBundle(scanValue)) {
+                this.taskPresenter.notifyBundleScanned(bundle);
+            } else {
+                throw new ProcessException("The decrypted QR code is neither Staff ID or Bundle",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+            }
 
-            staffIdentity   = null;
-            bundle          = null;
-            taskPresenter.notifyClearance();
+            if(staffIdentity != null && bundle != null){
+                acknowledgeCollection   = false;
+                ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
+            }
         }
     }
 
     @Override
     public void run() {
         try{
-            if(!taskPresenter.isAcknowledgementComplete()){
-                ProcessException err = new ProcessException("PaperBundle collection times out.",
+            if(!acknowledgeCollection && !acknowledgeUndoCollection){
+                ProcessException err = new ProcessException("Request times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
                 err.setListener(ProcessException.okayButton, taskPresenter);
                 err.setBackPressListener(taskPresenter);
@@ -78,7 +111,11 @@ public class CollectionModel implements CollectionMVP.Model {
     }
 
     @Override
-    public void resetCollection() {
+    public void resetCollection() throws ProcessException {
+        if(this.bundle != null && this.staffIdentity != null){
+            acknowledgeUndoCollection = false;
+            ExternalDbLoader.undoCollection(staffIdentity, bundle);
+        }
         this.bundle = null;
         this.staffIdentity = null;
         this.taskPresenter.notifyClearance();
@@ -87,7 +124,6 @@ public class CollectionModel implements CollectionMVP.Model {
     boolean verifyCollector(String scanStr){
         if(scanStr.length() == 6){
             this.staffIdentity  = scanStr;
-            this.taskPresenter.notifyCollectorScanned(scanStr);
             return true;
         }
         return false;
@@ -98,12 +134,25 @@ public class CollectionModel implements CollectionMVP.Model {
 
         if (bundle.parseBundle(scanStr)){
             this.bundle = bundle;
-            this.taskPresenter.notifyBundleScanned(bundle);
             return true;
         }
 
         return false;
     }
 
+    @Override
+    public void acknowledgeChiefReply(String messageRx) throws ProcessException {
+        switch (JsonHelper.parseType(messageRx)){
+            case JsonHelper.TYPE_COLLECTION:
+                acknowledgeCollection = true;
+                break;
+            case JsonHelper.TYPE_UNDO_COLLECTION:
+                acknowledgeUndoCollection = true;
+                break;
+        }
 
+        //if(!JsonHelper.parseBoolean(messageRx)){
+            //throw error
+        //}
+    }
 }
