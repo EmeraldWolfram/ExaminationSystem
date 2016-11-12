@@ -81,12 +81,10 @@ public class CollectionModel implements CollectionMVP.Model {
                         ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
             }
 
-            if(staffIdentity != null && bundle != null){
-                acknowledgeCollection   = false;
-                ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
-            }
+            sendCollection();
         }
     }
+
 
     @Override
     public void run() {
@@ -138,6 +136,13 @@ public class CollectionModel implements CollectionMVP.Model {
         }
 
         return false;
+    }
+
+    private void sendCollection() throws ProcessException {
+        if(staffIdentity != null && bundle != null){
+            acknowledgeCollection   = false;
+            ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
+        }
     }
 
     @Override

@@ -346,6 +346,7 @@ public class TakeAttdPresenterTest {
      * 2. Received message, send to model, model complain with Exception
      *
      */
+    /*
     @Test
     public void testOnChiefRespond1_PositiveResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
@@ -374,11 +375,11 @@ public class TakeAttdPresenterTest {
         assertTrue(manager.isDownloadComplete());
         verify(task).publishError(errorManager, err);
     }
-
-    //= displayTable() =============================================================================
+    */
+    //= notifyTableScanned() =============================================================================
 
     /**
-     * displayTable()
+     * notifyTableScanned()
      *
      * Set TextView (tableNum) in the View
      *
@@ -390,20 +391,20 @@ public class TakeAttdPresenterTest {
 
     @Test
     public void testDisplayTable_withNumberZeroOrSmaller() throws Exception {
-        manager.displayTable(0);
+        manager.notifyTableScanned(0);
         verify(taskView).setTableView("");
     }
 
     @Test
     public void testDisplayTable_withNumberLargerThanZero() throws Exception {
-        manager.displayTable(12);
+        manager.notifyTableScanned(12);
         verify(taskView).setTableView("12");
     }
 
     //= DisplayCandidate() =============================================================================
 
     /**
-     * displayCandidate(Candidate)
+     * notifyCandidateScanned(Candidate)
      *
      * Set all the TextView related to Candidate (Index, RegNum, Paper ...) in the View
      *
@@ -421,7 +422,7 @@ public class TakeAttdPresenterTest {
         when(cdd.getRegNum()).thenReturn("15WAU00001");
         when(cdd.getPaper()).thenReturn(paper);
 
-        manager.displayCandidate(cdd);
+        manager.notifyCandidateScanned(cdd);
 
         verify(taskView).setCandidateView("W0000AUMB", "15WAU00001", "BAME 0001  SUBJECT 1");
         verify(taskView, never()).displayError(any(ProcessException.class));
@@ -433,7 +434,7 @@ public class TakeAttdPresenterTest {
         ProcessException err = new ProcessException("ERROR", ProcessException.MESSAGE_DIALOG, 0);
         when(cdd.getPaper()).thenThrow(err);
 
-        manager.displayCandidate(cdd);
+        manager.notifyCandidateScanned(cdd);
 
         verify(taskView, never()).setCandidateView(anyString(), anyString(), anyString());
         verify(taskView).displayError(any(ProcessException.class));
@@ -442,7 +443,7 @@ public class TakeAttdPresenterTest {
     //= ResetDisplay() ===================================================================
 
     /**
-     * resetDisplay()
+     * notifyDisplayReset()
      *
      * clear the Table and Candidate related TextView in the layout xml
      *
@@ -453,7 +454,7 @@ public class TakeAttdPresenterTest {
     public void testResetDisplay() throws Exception {
         when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
-        manager.resetDisplay();
+        manager.notifyDisplayReset();
 
         verify(taskView).setTableView("");
         verify(taskView).setCandidateView("", "", "");
@@ -513,23 +514,6 @@ public class TakeAttdPresenterTest {
         verify(taskView).resumeScanning();
     }
 
-    //= StartTimer() ===============================================================================
-    /**
-     * startTimer()
-     *
-     * Start a timer when called
-     * Used by model to start timer during the initialization
-     * when model found that the local database does not have attendance list
-     * it will request the attendance list from the chief
-     *
-     */
-    @Test
-    public void testStartTimer() throws Exception {
-        manager.startTimer();
-
-        verify(handler).postDelayed(taskModel, 5000);
-    }
-
     //= OnTimesOut(...) ============================================================================
     /**
      * onTimesOut(...)
@@ -568,7 +552,7 @@ public class TakeAttdPresenterTest {
 
     //= SignalReassign(...) ========================================================================
     /**
-     * signalReassign(...)
+     * notifyReassign(...)
      *
      * Tests:
      * 1. Input byte is not listed, do nothing
@@ -578,21 +562,21 @@ public class TakeAttdPresenterTest {
      */
     @Test
     public void testSignalReassign1_NotListedInput() throws Exception{
-        manager.signalReassign(10);
+        manager.notifyReassign(10);
 
         verify(taskView, never()).setAssignBackgroundColor(R.color.colorDarkRed);
     }
 
     @Test
     public void testSignalReassign2_TableReassign() throws Exception{
-        manager.signalReassign(TakeAttdMVP.TABLE_REASSIGN);
+        manager.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
 
         verify(taskView).setAssignBackgroundColor(R.color.colorDarkRed);
     }
 
     @Test
     public void testSignalReassign3_CandidateReassign() throws Exception{
-        manager.signalReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
+        manager.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
 
         verify(taskView).setAssignBackgroundColor(R.color.colorDarkRed);
     }

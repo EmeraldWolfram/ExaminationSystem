@@ -235,7 +235,7 @@ public class ExternalDbLoaderTest {
      * Parse to HashMap<String, ExamSubject> format
      * return as HashMap<String, ExamSubject>
      *
-     */
+     *//*
     @Test
     public void testDlPaperList() throws Exception {
         LoginModel.setStaff(staff);    //Set the venue to H3
@@ -252,7 +252,7 @@ public class ExternalDbLoaderTest {
         paperList.put(subject3.getPaperCode(), subject3);
 
         ExternalDbLoader.dlPaperList();
-    }
+    }*/
 
     //= GetPapersExamineByCdd() ====================================================================
     /**

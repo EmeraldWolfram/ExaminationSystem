@@ -53,6 +53,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         this.navigationFlag = navigationFlag;
     }
 
+    /*
     @Override
     public void setDownloadComplete(boolean initComplete) {
         this.downloadComplete = initComplete;
@@ -62,7 +63,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public boolean isDownloadComplete() {
         return downloadComplete;
     }
-
+    */
     @Override
     public void onResume(){
         loadSetting();
@@ -87,8 +88,10 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         if(!taskModel.isInitialized()){
             try{
                 taskModel.initAttendance();
-                taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-                handler.postDelayed(taskModel, 5000);
+                if(!taskModel.isInitialized()){
+                    taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
+                    handler.postDelayed(taskModel, 5000);
+                }
             } catch (ProcessException err) {
                 taskView.displayError(err);
             }
@@ -171,7 +174,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
             taskView.closeProgressWindow();//Might Change
-            this.downloadComplete = true;
+            //this.downloadComplete = true;
             taskModel.checkDownloadResult(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -189,7 +192,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void displayTable(Integer tableNum){
+    public void notifyTableScanned(Integer tableNum){
         if(tableNum > 0){
             taskView.setTableView(tableNum.toString());
         } else{
@@ -198,7 +201,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void displayCandidate(Candidate cdd){
+    public void notifyCandidateScanned(Candidate cdd){
         try{
             ExamSubject paper = cdd.getPaper();
             taskView.setCandidateView(cdd.getExamIndex(), cdd.getRegNum(), paper.toString());
@@ -209,7 +212,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void resetDisplay(){
+    public void notifyDisplayReset(){
         taskView.pauseScanning();
         taskView.setTableView("");
         taskView.setCandidateView("","","");
@@ -218,7 +221,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void signalReassign(int whichReassigned) {
+    public void notifyReassign(int whichReassigned) {
         switch(whichReassigned){
             case TakeAttdMVP.TABLE_REASSIGN:
                 taskView.setAssignBackgroundColor(R.color.colorDarkRed);
@@ -246,11 +249,6 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onCancel(DialogInterface dialog) {
         taskView.resumeScanning();
         dialog.cancel();
-    }
-
-    @Override
-    public void startTimer() {
-        handler.postDelayed(taskModel, 5000);
     }
 
     @Override

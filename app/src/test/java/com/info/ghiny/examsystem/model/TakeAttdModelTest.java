@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -367,9 +366,9 @@ public class TakeAttdModelTest {
 
             model.tryAssignScanValue("13");
 
-            verify(taskPresenter).displayTable(13);
-            verify(taskPresenter, never()).displayCandidate(any(Candidate.class));
-            verify(taskPresenter, never()).resetDisplay();
+            verify(taskPresenter).notifyTableScanned(13);
+            verify(taskPresenter, never()).notifyCandidateScanned(any(Candidate.class));
+            verify(taskPresenter, never()).notifyDisplayReset();
 
             assertNull(model.getTempCdd());
             assertEquals(13, model.getTempTable().intValue());
@@ -386,9 +385,9 @@ public class TakeAttdModelTest {
 
             model.tryAssignScanValue("15WAU00001");
 
-            verify(taskPresenter, never()).displayTable(13);
-            verify(taskPresenter).displayCandidate(any(Candidate.class));
-            verify(taskPresenter, never()).resetDisplay();
+            verify(taskPresenter, never()).notifyTableScanned(13);
+            verify(taskPresenter).notifyCandidateScanned(any(Candidate.class));
+            verify(taskPresenter, never()).notifyDisplayReset();
 
             assertEquals(cdd1, model.getTempCdd());
             assertNull(model.getTempTable());
@@ -410,9 +409,9 @@ public class TakeAttdModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("LHN Assigned to 13", err.getErrorMsg());
 
-            verify(taskPresenter).displayTable(13);
-            verify(taskPresenter, never()).displayCandidate(any(Candidate.class));
-            verify(taskPresenter).resetDisplay();
+            verify(taskPresenter).notifyTableScanned(13);
+            verify(taskPresenter, never()).notifyCandidateScanned(any(Candidate.class));
+            verify(taskPresenter).notifyDisplayReset();
             assertNull(model.getTempTable());
             assertNull(model.getTempCdd());
         }
@@ -431,9 +430,9 @@ public class TakeAttdModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("FGY Assigned to 13", err.getErrorMsg());
 
-            verify(taskPresenter, never()).displayTable(anyInt());
-            verify(taskPresenter).displayCandidate(cdd1);
-            verify(taskPresenter).resetDisplay();
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter).notifyCandidateScanned(cdd1);
+            verify(taskPresenter).notifyDisplayReset();
             assertNull(model.getTempTable());
             assertNull(model.getTempCdd());
         }
@@ -452,9 +451,9 @@ public class TakeAttdModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a valid QR", err.getErrorMsg());
 
-            verify(taskPresenter, never()).displayTable(anyInt());
-            verify(taskPresenter, never()).displayCandidate(cdd1);
-            verify(taskPresenter, never()).resetDisplay();
+            verify(taskPresenter, never()).notifyTableScanned(anyInt());
+            verify(taskPresenter, never()).notifyCandidateScanned(cdd1);
+            verify(taskPresenter, never()).notifyDisplayReset();
             assertNull(model.getTempTable());
             assertNull(model.getTempCdd());
         }
@@ -512,7 +511,7 @@ public class TakeAttdModelTest {
         assertNull(model.getTempCdd());
         assertNull(model.getTempTable());
         verify(dialog).cancel();
-        verify(taskPresenter).resetDisplay();
+        verify(taskPresenter).notifyDisplayReset();
     }
 
     @Test
@@ -532,7 +531,7 @@ public class TakeAttdModelTest {
         assertNull(model.getTempCdd());
         assertNull(model.getTempTable());
         verify(dialog).cancel();
-        verify(taskPresenter).resetDisplay();
+        verify(taskPresenter).notifyDisplayReset();
     }
 
     @Test
@@ -552,7 +551,7 @@ public class TakeAttdModelTest {
         assertNull(model.getTempCdd());
         assertNull(model.getTempTable());
         verify(dialog).cancel();
-        verify(taskPresenter).resetDisplay();
+        verify(taskPresenter).notifyDisplayReset();
     }
 
     //= CheckTable =================================================================================
@@ -604,7 +603,6 @@ public class TakeAttdModelTest {
      * Exception will be thrown if verification failed
      *
      * Tests:
-     * 1. Input String is null, throw error. (Not possible, tryAssignScanValue will pre-handle)
      * 2. Input String is a candidate, but not in attendance list. (Other venue maybe) Throw....
      * 3. Input String is a candidate, but listed as EXEMPTED. Throw MESSAGE_TOAST
      * 4. Input String is a candidate, but listed as BARRED. Throw MESSAGE_TOAST
@@ -612,19 +610,6 @@ public class TakeAttdModelTest {
      * 6. Input String is a valid candidate, register into the buffer
      * 7. Attendance List is not initialized yet, throw FATAL_MESSAGE
      */
-    @Test
-    public void testCheckCandidate1_NullInputStringThrowMessageToast() throws Exception {
-        try{
-            model.checkCandidate(null);
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch(ProcessException err){
-            assertNull(model.getTempCdd());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Scanning a null value", err.getErrorMsg());
-        }
-    }
-
     @Test
     public void testCheckCandidate2_NotAListedCandidateThrowMessageToast() throws Exception{
         try{
@@ -1082,7 +1067,7 @@ public class TakeAttdModelTest {
 
         model.assignCandidate();
 
-        verify(taskPresenter).resetDisplay();
+        verify(taskPresenter).notifyDisplayReset();
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertTrue(model.getAssgnList().containsValue(cdd1.getRegNum()));

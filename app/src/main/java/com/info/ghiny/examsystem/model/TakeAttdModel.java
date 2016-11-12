@@ -21,19 +21,29 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private TakeAttdMVP.MPresenter taskPresenter;
     private CheckListLoader dbLoader;
 
-    private boolean initialized = false;
+    private boolean isDownloadComplete;
+    private boolean initialized;
     private Candidate tempCdd    = null;
     private Integer tempTable    = null;
 
     public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter, CheckListLoader dbLoader){
-        this.taskPresenter  = taskPresenter;
-        this.dbLoader       = dbLoader;
-        this.initialized    = false;
-        this.assgnList      = new HashMap<>();
+        this.taskPresenter      = taskPresenter;
+        this.dbLoader           = dbLoader;
+        this.initialized        = false;
+        this.isDownloadComplete = false;
+        this.assgnList          = new HashMap<>();
     }
 
     void setInitialized(boolean initialized){
         this.initialized    = initialized;
+    }
+
+    void setDownloadComplete(boolean downloadComplete) {
+        isDownloadComplete = downloadComplete;
+    }
+
+    boolean isDownloadComplete() {
+        return isDownloadComplete;
     }
 
     @Override
@@ -41,10 +51,11 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         return initialized;
     }
 
+    //==============================================================================================
     @Override
     public void initAttendance() throws ProcessException {
         if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
-            taskPresenter.setDownloadComplete(false);
+            isDownloadComplete = false;
             ExternalDbLoader.dlAttendanceList();
         } else {
             attdList    = dbLoader.queryAttendanceList();
@@ -65,6 +76,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     public void checkDownloadResult(String chiefMessage) throws ProcessException {
         attdList    = JsonHelper.parseAttdList(chiefMessage);
         Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
+        isDownloadComplete  = true;
         initialized = true;
     }
 
@@ -94,24 +106,14 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         }
     }
 
-    /**
-     * tryAssignScanValue()
-     *
-     * This method check the scanStr length and call one of the following
-     * methods to assign the value if the length is possible table or candidate
-     * 1. checkCandidate
-     * 2. checkTable
-     *
-     * If the length is not possible to be any useful data for attendance collection process
-     * this method throw MESSAGE_TOAST error
-     *
-     * After that, tryAssignCandidate was called to check if both table and candidate
-     * is registered in the buffer and is a valid set of data and take the attendance
-     *
-     * @param scanStr               The value scan from the QR scanner
-     */
     @Override
     public void tryAssignScanValue(String scanStr) throws ProcessException{
+
+        if(scanStr == null){
+            throw new ProcessException("Scanning a null QR", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
+        }
+
         if(scanStr.length() < 4 && scanStr.length() > 0){
             checkTable(scanStr);
         } else if(scanStr.length() == 10){
@@ -131,12 +133,52 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
             throw err;
         }
+
     }
+
+    /*  NEW LOGIC but need to confirm 1st
+    	if(scanStr == null){
+            throw new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
+                    IconManager.WARNING);
+        }
+
+        if(tempCdd != null && tempTable != null) {
+            if(verifyCandidate(scanStr)) {
+                this.tempTable   = null;
+                this.taskPresenter.notifyDisplayReset();
+                this.taskPresenter.notifyCandidateScanned(tempCdd);
+            } else if(verifyTable(scanStr)) {
+                this.tempCdd     = null;
+                this.taskPresenter.notifyDisplayReset();
+                this.taskPresenter.notifyTableScanned(tempTable);
+            } else {
+                throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
+                        IconManager.MESSAGE);
+            }
+        } else {
+            if(verifyCandidate(scanStr)) {
+                this.taskPresenter.notifyCandidateScanned(tempCdd);
+            } else if(verifyTable(scanStr)) {
+                this.taskPresenter.notifyTableScanned(tempTable);
+            } else {
+                throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
+                        IconManager.MESSAGE);
+            }
+
+            if(tryAssignCandidate()){
+                ProcessException err = new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
+                        + tempTable.toString(), ProcessException.MESSAGE_TOAST,
+                        IconManager.ASSIGNED);
+
+                throw err;
+            }
+        }
+     */
 
     @Override
     public void run() {
         try{
-            if(!taskPresenter.isDownloadComplete()) {
+            if(!isDownloadComplete && !initialized) {
                 ProcessException err = new ProcessException(
                         "Initialization failed. Response times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
@@ -162,7 +204,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                 cancelNewAssign();
                 break;
         }
-        taskPresenter.resetDisplay();
+        taskPresenter.notifyDisplayReset();
         dialog.cancel();
     }
 
@@ -267,9 +309,9 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         }
 
         this.tempTable = Integer.parseInt(scanString);
-        this.taskPresenter.displayTable(tempTable);
+        this.taskPresenter.notifyTableScanned(tempTable);
         if(this.assgnList.containsKey(this.tempTable)){
-            this.taskPresenter.signalReassign(TakeAttdMVP.TABLE_REASSIGN);
+            this.taskPresenter.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
         }
     }
 
@@ -287,11 +329,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
      */
     void checkCandidate(String scanString) throws ProcessException {
         ProcessException err;
-        if(scanString == null){
-            err = new ProcessException("Scanning a null value", ProcessException.MESSAGE_TOAST,
-                    IconManager.WARNING);
-            throw err;
-        }
+
 
         if(attdList == null || attdList.getAttendanceList() == null){
             err = new ProcessException("No Attendance List",
@@ -322,11 +360,12 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         }
 
         this.tempCdd = candidate;
-        this.taskPresenter.displayCandidate(tempCdd);
+        this.taskPresenter.notifyCandidateScanned(tempCdd);
         if(this.assgnList.containsValue(this.tempCdd.getRegNum())){
-            this.taskPresenter.signalReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
+            this.taskPresenter.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
         }
     }
+
 
     /**
      * tryAssignCandidate()
@@ -393,6 +432,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                 tempCdd.getProgramme());
         assgnList.put(tempTable, tempCdd.getRegNum());
 
-        taskPresenter.resetDisplay();
+        taskPresenter.notifyDisplayReset();
     }
 }

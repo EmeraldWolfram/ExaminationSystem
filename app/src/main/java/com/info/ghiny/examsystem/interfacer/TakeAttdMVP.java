@@ -47,14 +47,15 @@ public interface TakeAttdMVP {
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
-        void setDownloadComplete(boolean initComplete);
-        boolean isDownloadComplete();
-        void startTimer();
+        //void setDownloadComplete(boolean initComplete);
+        //boolean isDownloadComplete();
+        //void startTimer();
         void onTimesOut(ProcessException err);  //standard
-        void displayTable(Integer tableNumber);
-        void displayCandidate(Candidate cdd);
-        void resetDisplay();
-        void signalReassign(int whichReassigned);   //true means table, false mean cdd
+
+        void notifyTableScanned(Integer tableNumber);
+        void notifyCandidateScanned(Candidate cdd);
+        void notifyDisplayReset();
+        void notifyReassign(int whichReassigned);   //true means table, false mean cdd
     }
 
     interface Model extends Runnable, DialogInterface.OnClickListener, TaskSecureModel {
@@ -64,6 +65,23 @@ public interface TakeAttdMVP {
         void saveAttendance();  //save before destroy
         void updateAssignList() throws ProcessException;    //update the assigned list
         //================================================================================
+
+        /**
+         * tryAssignScanValue()
+         *
+         * This method check the scanStr length and call one of the following
+         * methods to assign the value if the length is possible table or candidate
+         * 1. checkCandidate
+         * 2. checkTable
+         *
+         * If the length is not possible to be any useful data for attendance collection process
+         * this method throw MESSAGE_TOAST error
+         *
+         * After that, tryAssignCandidate was called to check if both table and candidate
+         * is registered in the buffer and is a valid set of data and take the attendance
+         *
+         * @param scanStr               The value scan from the QR scanner
+         */
         void tryAssignScanValue(String scanStr) throws ProcessException;    //assign scan value
         void updateNewCandidate();  //when update pressed
         void cancelNewAssign();     //when cancel pressed

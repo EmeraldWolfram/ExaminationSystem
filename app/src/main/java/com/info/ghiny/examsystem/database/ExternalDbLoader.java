@@ -64,17 +64,6 @@ public class ExternalDbLoader {
         }
     }
 
-    public static void dlPaperList() throws ProcessException {
-        String str = JsonHelper.formatString(JsonHelper.TYPE_PAPERS_VENUE,
-                LoginModel.getStaff().getExamVenue());
-        if (tcpClient != null){
-            tcpClient.sendMessage(str);
-        } else {
-            throw new ProcessException("Fail to request attendance list!\nPlease consult developer",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        }
-    }
-
     public static void getPapersExamineByCdd(String scanRegNum) throws ProcessException{
         if(tcpClient != null && scanRegNum != null){
             String str = JsonHelper.formatString(JsonHelper.TYPE_CANDIDATE_INFO, scanRegNum);
@@ -114,6 +103,4 @@ public class ExternalDbLoader {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
-
-
 }

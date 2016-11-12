@@ -93,12 +93,15 @@ public class JsonHelper {
 
             for(int i = 0; i < regNumList.size(); i++){
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
-                if(cdd.getStatus() != Status.EXEMPTED && cdd.getStatus() != Status.BARRED){
+                if(cdd.getStatus() != Status.EXEMPTED
+                        && cdd.getStatus() != Status.BARRED
+                        && cdd.getStatus() != Status.QUARANTINED){
                     cddObj = new JSONObject();
                     cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
                     cddObj.put(Candidate.CDD_PAPER, cdd.getPaperCode());
                     cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
                     cddObj.put(Candidate.CDD_ATTENDAND, cdd.getStatus().toString());
+                    cddObj.put(Candidate.CDD_LATE, cdd.isLate());
                     cddList.put(cddObj);
                 }
             }
