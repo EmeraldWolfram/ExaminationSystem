@@ -3,6 +3,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.style.TtsSpan;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class CheckListLoader {
-    private static final int DATABASE_VERSION       = 5;
+    private static final int DATABASE_VERSION       = 6;
     private static final String DATABASE_NAME       = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
@@ -24,7 +25,7 @@ public class CheckListLoader {
             + " (" + Candidate.CDD_EXAM_INDEX   + ", " + Candidate.CDD_REG_NUM
             + ", " + Candidate.CDD_TABLE        + ", " + Candidate.CDD_STATUS
             + ", " + Candidate.CDD_PAPER        + ", " + Candidate.CDD_PROG
-            + ") VALUES ('";
+            + ", " + Candidate.CDD_LATE         + ") VALUES ('";
 
     private static final String SAVE_PAPER      = "INSERT OR REPLACE INTO " + PAPERS_TABLE
             + " (" + ExamSubject.PAPER_CODE     + ", " + ExamSubject.PAPER_DESC
@@ -243,7 +244,8 @@ public class CheckListLoader {
                 + cdd.getTableNumber()  + ", '"
                 + cdd.getStatus()       + "', '"
                 + cdd.getPaperCode()    + "', '"
-                + cdd.getProgramme()    + "')");
+                + cdd.getProgramme()    + "', "
+                + cdd.getLate()         + ")");
     }
 
     private void savePaper(ExamSubject paper){
@@ -271,6 +273,7 @@ public class CheckListLoader {
                 cdd.setPaperCode(ptr.getString(ptr.getColumnIndex(Candidate.CDD_PAPER)));
                 cdd.setStatus(status);
                 cdd.setProgramme(ptr.getString(ptr.getColumnIndex(Candidate.CDD_PROG)));
+                cdd.setLate(ptr.getInt(ptr.getColumnIndex(Candidate.CDD_LATE)));
                 candidates.add(cdd);
             }while (ptr.moveToNext());
         }
@@ -299,7 +302,8 @@ public class CheckListLoader {
                     + Candidate.CDD_STATUS      + " TEXT    NOT NULL, "
                     + Candidate.CDD_PAPER       + " TEXT    NOT NULL, "
                     + Candidate.CDD_PROG        + " TEXT    NOT NULL, "
-                    + Candidate.CDD_TABLE       + " INTEGER NOT NULL)");
+                    + Candidate.CDD_TABLE       + " INTEGER NOT NULL, "
+                    + Candidate.CDD_LATE        + " INTEGER NOT NULL)");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
                     + ExamSubject.PAPER_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "

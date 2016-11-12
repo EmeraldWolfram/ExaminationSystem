@@ -33,7 +33,7 @@ public class CheckListLoaderTest {
     private CheckListLoader dbLoader;
 
     private String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
-            "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme) VALUES (";
+            "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme, Late) VALUES (";
 
     @Before
     public void setUp() throws Exception {
@@ -122,21 +122,26 @@ public class CheckListLoaderTest {
         AttendanceList attdList = dbLoader.queryAttendanceList();
 
         //= ABSENT ====
-        assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
+        assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
-        assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00002").getStatus());
+        assertFalse(attdList.getCandidate("15WAU00001").isLate());
 
         //= PRESENT ====
-        assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(2, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00002").getStatus());
+        assertTrue(attdList.getCandidate("15WAU00002").isLate());
         assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00003").getStatus());
+        assertFalse(attdList.getCandidate("15WAU00003").isLate());
 
         //= BARRED ====
         assertEquals(1, attdList.getNumberOfCandidates(Status.BARRED));
         assertEquals(Status.BARRED, attdList.getCandidate("15WAU00004").getStatus());
+        assertFalse(attdList.getCandidate("15WAU00004").isLate());
 
         //= EXEMPTED ====
         assertEquals(1, attdList.getNumberOfCandidates(Status.EXEMPTED));
         assertEquals(Status.EXEMPTED, attdList.getCandidate("15WAU00005").getStatus());
+        assertFalse(attdList.getCandidate("15WAU00005").isLate());
 
         //= QUARANTINED ====
         assertEquals(0, attdList.getNumberOfCandidates(Status.QUARANTINED));
@@ -214,7 +219,7 @@ public class CheckListLoaderTest {
 
         assertTrue(dbLoader.emptyAttdInDB());
 
-        db.execSQL(SAVE_ATTENDANCE + "'Steven', '15WAU11111', 16, 'PRESENT', 'BAME 0001', 'RMB3')");
+        db.execSQL(SAVE_ATTENDANCE + "'Steven', '15WAU11111', 16, 'PRESENT', 'BAME 0001', 'RMB3', 0)");
         assertFalse(dbLoader.emptyAttdInDB());
 
         dbLoader.clearDatabase();

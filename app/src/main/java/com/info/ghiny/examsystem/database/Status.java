@@ -10,7 +10,6 @@ public enum Status {
     BARRED,
     QUARANTINED;
 
-
     @Override
     public String toString() {
         return super.toString();

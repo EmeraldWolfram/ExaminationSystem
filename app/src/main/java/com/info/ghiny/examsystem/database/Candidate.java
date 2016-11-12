@@ -60,6 +60,19 @@ public class Candidate {
     public void setLate(Boolean late) {
         this.late = late;
     }
+    public int getLate(){
+        if(late){
+            return 1;
+        }
+        return 0;
+    }
+    public void setLate(int value){
+        if(value != 0) {
+            this.late   = true;
+        } else {
+            this.late   = false;
+        }
+    }
 
     public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
@@ -113,6 +126,7 @@ public class Candidate {
     }
 
     //Static Method ----------------------------------------------------------------------------
+
     public static void setPaperList(HashMap<String, ExamSubject> papers){
         Candidate.paperList = papers;
     }
