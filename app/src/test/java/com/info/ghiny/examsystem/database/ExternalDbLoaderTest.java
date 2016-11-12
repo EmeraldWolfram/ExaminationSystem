@@ -400,4 +400,57 @@ public class ExternalDbLoaderTest {
             verify(tcpClient, never()).sendMessage(anyString());
         }
     }
+
+    //= AcknowledgeUndoCollection() ====================================================================
+    /**
+     *  acknowledgeUndoCollection(String bundle)
+     *
+     *  Send out the bundle and collector id in JSON Format
+     *  this is to acknowledge the collection of bundle
+     *
+     *  Tests:
+     *  1. the tcpClient is not null, send out the removing collector and bundle
+     *  2. the tcpClient is null, throw error
+     *  3. input param is null, throw error
+     *
+     */
+    @Test
+    public void testAcknowledgeUndoCollection1_TcpNotNull() throws Exception {
+        try{
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("M4/BAME 0001/RMB3");
+            ExternalDbLoader.undoCollection("246810", bundle);
+
+            verify(tcpClient).sendMessage(anyString());
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testAcknowledgeUndoCollection2_NullTcpShouldThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.setTcpClient(null);
+            PaperBundle bundle  = new PaperBundle();
+            bundle.parseBundle("M4/BAME 0001/RMB3");
+            ExternalDbLoader.undoCollection("246810", bundle);
+
+        } catch (ProcessException err) {
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testAcknowledgeUndoCollection3_NullInputShouldThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.undoCollection("246810", null);
+
+        } catch (ProcessException err) {
+            assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
 }

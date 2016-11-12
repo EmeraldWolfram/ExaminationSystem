@@ -98,6 +98,23 @@ public class JsonHelperTest {
                 "\"BundlePaperCode\":\"BAME 0001\"},\"Collector\":\"246260\"}", str);
     }
 
+    //= FormatUndoCollection() =========================================================================
+    /**
+     *  formatUndoCollection(scanBundleStr)
+     *
+     *  return a JSON Object in string to acknowledge the collection of the bundle
+     */
+    @Test
+    public void testFormatUndoCollection() throws Exception {
+        PaperBundle bundle  = new PaperBundle();
+        bundle.parseBundle("14352/M4/BAME 0001/RMB3");
+
+        String str = JsonHelper.formatUndoCollection("246260", bundle);
+
+        assertEquals("{\"Type\":\"UndoCollection\",\"PaperBundle\":" +
+                "{\"BundleId\":\"14352\",\"BundleProgramme\":\"RMB3\",\"BundleVenue\":\"M4\"," +
+                "\"BundlePaperCode\":\"BAME 0001\"},\"Collector\":\"246260\"}", str);
+    }
 
     //= ParseStaffIdentity() =======================================================================
 
@@ -426,6 +443,33 @@ public class JsonHelperTest {
         assertEquals("Identification", obj.getString("Type"));
         assertEquals("246800", obj.getString("IdNo"));
         assertEquals("0123", obj.getString("HashPass"));
+    }
+
+    //= ParseType() ================================================================================
+    /**
+     * parseType()
+     *
+     * This method use to check the type of the message received
+     *
+     * Tests:
+     * 1. There is a Type key, return its value
+     * 2. The message does not have a Type key, throw FATAL
+     *
+     */
+    @Test
+    public void testParseType1_withCorrectType() throws Exception {
+        assertEquals("Collection", JsonHelper.parseType("{\"Type\":\"Collection\"}"));
+    }
+
+    @Test
+    public void testParseType2_withError() throws Exception {
+        try{
+            JsonHelper.parseType("{}");
+        } catch (ProcessException err){
+            assertEquals("FATAL: Data from Chief corrupted\n" +
+                    "Please consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+        }
     }
 
     //= ParseBoolean() =============================================================================
