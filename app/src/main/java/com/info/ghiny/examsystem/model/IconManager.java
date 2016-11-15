@@ -18,7 +18,7 @@ public class IconManager {
             icon    = R.drawable.msg_icon;
 
         if(iconType == ASSIGNED)
-            icon    = R.drawable.entry_icon;
+            icon    = R.drawable.entry_icon_2;
 
         return icon;
     }

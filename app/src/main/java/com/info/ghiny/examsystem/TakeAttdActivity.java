@@ -3,8 +3,7 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.List;
 
@@ -57,6 +55,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private int mode;
     private ImageView crossHairView;
     private FloatingActionButton scanInitiater;
+    private FloatingActionButton tagButton;
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
         @Override
@@ -94,8 +93,9 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         paperView  = (TextView)findViewById(R.id.paperAssignText);
         tableView  = (TextView)findViewById(R.id.tableNumberText);
 
-        scanInitiater               = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
-        crossHairView               = (ImageView) findViewById(R.id.takeAttdCrossHair);
+        scanInitiater   = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
+        tagButton       = (FloatingActionButton) findViewById(R.id.lateTagButton);
+        crossHairView   = (ImageView) findViewById(R.id.takeAttdCrossHair);
 
         assert thisLayout != null;
         thisLayout.setOnTouchListener(new OnSwipeListener(this){
@@ -264,6 +264,15 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
             cddLayout.setBackgroundColor(getResources().getColor(color, null));
         } else {
             cddLayout.setBackgroundColor(getResources().getColor(color));
+        }
+    }
+
+    @Override
+    public void setTagButton(boolean showAntiTag) {
+        if (showAntiTag){
+            tagButton.setImageResource(R.drawable.untag_icon);
+        } else {
+            tagButton.setImageResource(R.drawable.button_tag_icon);
         }
     }
 

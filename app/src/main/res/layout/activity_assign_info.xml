@@ -94,7 +94,7 @@
             android:id="@+id/lateTagButton"
             android:layout_alignTop="@+id/takeAttdScanButton"
             android:layout_alignEnd="@+id/takeAttdCrossHair"
-            app:backgroundTint="@color/colorDarkRed" />
+            app:backgroundTint="@color/colorTagBlue" />
 
         <android.support.design.widget.FloatingActionButton
             android:onClick="onTrash"
@@ -104,7 +104,7 @@
             app:fabSize="normal"
             app:srcCompat="@drawable/button_trash_icon"
             android:id="@+id/undoAssignTrashButton"
-            app:backgroundTint="@color/colorTrashBlue"
+            app:backgroundTint="@color/colorDarkRed"
             android:layout_alignTop="@+id/takeAttdScanButton"
             android:layout_alignStart="@+id/takeAttdCrossHair" />
     </RelativeLayout>

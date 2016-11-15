@@ -37,6 +37,8 @@ public interface TakeAttdMVP {
         void setCandidateView(String cddIndex, String cddRegNum, String cddPaper);
 
         void setAssignBackgroundColor(int color);
+
+        void setTagButton(boolean showAntiTag);
     }
 
     interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {

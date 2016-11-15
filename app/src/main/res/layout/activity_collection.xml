@@ -117,6 +117,6 @@
         android:layout_alignBottom="@+id/collectScanButton"
         android:layout_alignEnd="@+id/collectCrossHair"
         android:id="@+id/collectTrashButton"
-        app:backgroundTint="@color/colorTrashBlue" />
+        app:backgroundTint="@color/colorDarkRed" />
 
 </RelativeLayout>

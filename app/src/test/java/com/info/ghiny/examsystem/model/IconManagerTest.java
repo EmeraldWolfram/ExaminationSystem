@@ -30,7 +30,7 @@ public class IconManagerTest {
     public void testGetIcon_Assigned_icon_type() throws Exception {
         IconManager iconManager = new IconManager();
         int test = iconManager.getIcon(IconManager.ASSIGNED);
-        assertEquals(R.drawable.entry_icon, test);
+        assertEquals(R.drawable.entry_icon_2, test);
     }
 
 }

@@ -13,7 +13,7 @@
     <color name="white">#FFFFFF</color>
 
     <color name="colorDarkRed">#b50000</color>
-    <color name="colorTrashBlue">#771188</color>
+    <color name="colorTagBlue">#771188</color>
 
     <color name="tableNo">#61616161</color>
 </resources>
