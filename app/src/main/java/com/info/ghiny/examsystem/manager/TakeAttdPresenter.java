@@ -26,7 +26,6 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.View taskView;
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
-    private boolean downloadComplete;
     private Handler handler;
 
     private SharedPreferences preferences;
@@ -206,6 +205,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         taskView.setTableView("");
         taskView.setCandidateView("","","");
         taskView.setAssignBackgroundColor(R.color.colorDarkGreen);
+        taskView.setTagButton(false);
         onResume();
     }
 
@@ -219,6 +219,11 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 taskView.setAssignBackgroundColor(R.color.colorDarkRed);
                 break;
         }
+    }
+
+    @Override
+    public void notifyTagUntag(boolean showAntiTag) {
+        taskView.setTagButton(showAntiTag);
     }
 
     @Override
@@ -254,7 +259,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onTag(View view) {
-        taskModel.tagAsLate();
+        taskModel.tagAsLateNot();
     }
 
     @Override

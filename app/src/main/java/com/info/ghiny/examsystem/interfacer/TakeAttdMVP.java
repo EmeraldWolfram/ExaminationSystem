@@ -56,6 +56,7 @@ public interface TakeAttdMVP {
         void notifyCandidateScanned(Candidate cdd);
         void notifyDisplayReset();
         void notifyReassign(int whichReassigned);   //true means table, false mean cdd
+        void notifyTagUntag(boolean showAntiTag);
     }
 
     interface Model extends Runnable, DialogInterface.OnClickListener, TaskSecureModel {
@@ -112,14 +113,14 @@ public interface TakeAttdMVP {
         void resetAttendanceAssignment();
 
         /**
-         * tagAsLate()
+         * tagAsLateNot()
          *
          * This method use to tag the candidate in the display as late
          *
          * If no candidate is in display, the next candidate that was scanned will be tagged
          *
          */
-        void tagAsLate();
+        void tagAsLateNot();
     }
 
 }

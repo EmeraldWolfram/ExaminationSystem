@@ -679,35 +679,38 @@ public class TakeAttdModelTest {
 
     //= TagAsLate() ================================================================================
     /**
-     * tagAsLate()
+     * tagAsLateNot()
      *
      * This method tag the candidate as late and tag the next candidate if candidate is null
      *
      * Tests:
-     * 1. Tag current candidate because candidate not null
-     * 2. Set tagNextCandidate because csndidate is null
-     *
+     * 1. Candidate NOT null and not late, tag the candidate as late
+     * 2. Candidate is null and tagNextLate is false, set tagNextLate as true
+     * 3. Candidate NOT null and late, untag the candidate to make him/her NOT late
+     * 4. Candidate is null and tagNextLate is true, set tagNextLate as false
      */
     @Test
-    public void testTagAsLate1_CandidateNotNull() throws Exception{
+    public void testTagAsLate1_CandidateNotNullAndNotLate() throws Exception{
         model.setTempCdd(cdd1);
         assertFalse(model.getTempCdd().isLate());
         assertFalse(model.isTagNextLate());
 
-        model.tagAsLate();
+        model.tagAsLateNot();
 
+        verify(taskPresenter).notifyTagUntag(true);
         assertTrue(model.getTempCdd().isLate());
         assertFalse(model.isTagNextLate());
     }
 
     @Test
-    public void testTagAsLate2_CandidateNull() throws Exception{
+    public void testTagAsLate2_CandidateNullAndTagIsFalse() throws Exception{
         model.setTempCdd(null);
         assertNull(model.getTempCdd());
         assertFalse(model.isTagNextLate());
 
-        model.tagAsLate();
+        model.tagAsLateNot();
 
+        verify(taskPresenter).notifyTagUntag(true);
         assertNull(model.getTempCdd());
         assertTrue(model.isTagNextLate());
 
@@ -715,6 +718,39 @@ public class TakeAttdModelTest {
 
         assertFalse(model.isTagNextLate());
         assertTrue(cdd2.isLate());
+    }
+
+    @Test
+    public void testTagAsLate3_CandidateNotNullButLate() throws Exception{
+        model.setTempCdd(cdd1);
+        cdd1.setLate(true);
+        assertTrue(model.getTempCdd().isLate());
+        assertFalse(model.isTagNextLate());
+
+        model.tagAsLateNot();
+
+        verify(taskPresenter).notifyTagUntag(false);
+        assertFalse(model.getTempCdd().isLate());
+        assertFalse(model.isTagNextLate());
+    }
+
+    @Test
+    public void testTagAsLate4_CandidateNullAndTagIsTrue() throws Exception{
+        model.setTempCdd(null);
+        model.setTagNextLate(true);
+        assertNull(model.getTempCdd());
+        assertTrue(model.isTagNextLate());
+
+        model.tagAsLateNot();
+
+        verify(taskPresenter).notifyTagUntag(false);
+        assertNull(model.getTempCdd());
+        assertFalse(model.isTagNextLate());
+
+        model.tryAssignScanValue("15WAU00002");
+
+        assertFalse(model.isTagNextLate());
+        assertFalse(cdd2.isLate());
     }
 
     //= CheckTable =================================================================================

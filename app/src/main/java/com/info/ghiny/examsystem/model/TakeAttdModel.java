@@ -190,11 +190,13 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     @Override
-    public void tagAsLate() {
-        if(tempCdd != null){
-            tempCdd.setLate(true);
+    public void tagAsLateNot() {
+        if(tempCdd == null) {
+            tagNextLate = !tagNextLate;
+            taskPresenter.notifyTagUntag(tagNextLate);
         } else {
-            tagNextLate = true;
+            tempCdd.setLate((!tempCdd.isLate()));
+            taskPresenter.notifyTagUntag(tempCdd.isLate());
         }
     }
 
