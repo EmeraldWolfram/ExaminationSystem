@@ -44,8 +44,12 @@
         <activity
             android:name=".CollectionActivity"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".InfoDisplayActivity"/>
+        <activity android:name=".InfoDisplayActivity" />
         <activity android:name=".SettingActivity" />
+        <activity
+            android:name=".SubmissionActivity"
+            android:label="@string/title_activity_submission"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

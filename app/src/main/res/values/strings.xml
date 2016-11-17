@@ -28,5 +28,11 @@
     <string name="present">PRESENT:</string>
     <string name="in_charge">IN_CHARGE:</string>
     <string name="setting">Setting</string>
+    <string name="title_activity_submission">SubmissionActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 
 </resources>

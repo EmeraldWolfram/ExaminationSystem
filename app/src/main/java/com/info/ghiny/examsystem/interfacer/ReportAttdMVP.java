@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.interfacer;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 
