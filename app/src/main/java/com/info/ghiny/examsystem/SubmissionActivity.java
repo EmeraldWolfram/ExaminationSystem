@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -18,16 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.manager.ReportAttdPresenter;
 import com.info.ghiny.examsystem.manager.SubmissionPresenter;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.ReportAttdModel;
 import com.info.ghiny.examsystem.model.SubmissionModel;
 
 public class SubmissionActivity extends AppCompatActivity implements SubmissionMVP.MvpView {
@@ -36,7 +32,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     private ErrorManager errorManager;
     private ProgressDialog progDialog;
 
-    private FrameLayout pageFrame;
     private Toolbar toolbar;
     private FloatingActionButton submitButton;
     private DrawerLayout drawer;
@@ -53,7 +48,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     }
 
     private void initView(){
-        pageFrame       = (FrameLayout)         findViewById(R.id.submitContainer);
         toolbar         = (Toolbar)             findViewById(R.id.toolbar);
         submitButton    = (FloatingActionButton)findViewById(R.id.fab);
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
@@ -89,9 +83,21 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     }
 
     @Override
+    protected void onResume() {
+        taskPresenter.onResume(errorManager);
+        super.onResume();
+    }
+
+    @Override
     protected void onRestart() {
         taskPresenter.onRestart();
         super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        taskPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -130,6 +136,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
+
+    //==============================================================================================
 
     @Override
     public void onUpload(View view) {
@@ -173,7 +181,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         return taskPresenter.onNavigationItemSelected(item, getSupportFragmentManager(), drawer);
     }
 
