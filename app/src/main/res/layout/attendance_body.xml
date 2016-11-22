@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="6dp"
     android:padding="4dp"
     android:background="@drawable/custom_attendance">
@@ -30,11 +31,24 @@
             android:textColor="#156039" />
 
         <TextView
+            android:id="@+id/assignedRegNumText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#156039"/>
+
+        <TextView
             android:id="@+id/assignedPrgText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#156039" />
+        <TextView
+            android:id="@+id/assignedPaperText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#156039"/>
     </LinearLayout>
 
     <TextView
@@ -52,4 +66,14 @@
         android:layout_alignParentEnd="true"
         android:text=""
         android:onClick="onUncheck" />
+
+    <ImageView
+        android:id="@+id/assignedLateTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/button_tag_icon"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/app_name"/>
 </RelativeLayout>

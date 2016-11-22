@@ -7,7 +7,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.model.ProcessException;
+
+import java.util.ArrayList;
 
 /**
  * Created by user09 on 11/17/2016.
@@ -34,6 +38,9 @@ public interface SubmissionMVP {
     interface MvpModel extends Runnable, TaskSecureModel {
         void verifyChiefResponse(String messageRx) throws ProcessException;
         void uploadAttdList() throws ProcessException;
+        ArrayList<Candidate> getCandidatesWith(Status status);
+        void unassignCandidate(String tableNumber, String cddRegNum) throws ProcessException;
+        void assignCandidate(String cddRegNum) throws ProcessException;
     }
 
 }

@@ -95,7 +95,8 @@ public class JsonHelper {
                 Candidate cdd = attdList.getCandidate(regNumList.get(i));
                 if(cdd.getStatus() != Status.EXEMPTED
                         && cdd.getStatus() != Status.BARRED
-                        && cdd.getStatus() != Status.QUARANTINED){
+                        && cdd.getStatus() != Status.QUARANTINED
+                        && cdd.getStatus() != Status.ABSENT){
                     cddObj = new JSONObject();
                     cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
                     cddObj.put(Candidate.CDD_PAPER, cdd.getPaperCode());

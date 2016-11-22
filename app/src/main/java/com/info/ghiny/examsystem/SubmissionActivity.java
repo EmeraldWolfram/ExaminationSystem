@@ -45,6 +45,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
         initView();
         initMVP();
+
     }
 
     private void initView(){
