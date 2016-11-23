@@ -18,7 +18,6 @@ import org.w3c.dom.Text;
 
 public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
 
-    private Context context;
     private OnLongPressed pressListener;
 
     private TextView cddName;
@@ -30,7 +29,7 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
 
     public CandidateDisplayHolder(Context context, View view, final OnLongPressed pressListener) {
         super(view);
-        this.context         = context;
+        this.pressListener   = pressListener;
         this.cddName         = (TextView) view.findViewById(R.id.assignedCddText);
         this.cddRegNum       = (TextView) view.findViewById(R.id.assignedRegNumText);
         this.cddProgramme    = (TextView) view.findViewById(R.id.assignedPrgText);
@@ -56,6 +55,21 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
                 return true;
             }
         });
+    }
+
+    public CandidateDisplayHolder(Context context, View view) {
+        super(view);
+        this.cddName         = (TextView) view.findViewById(R.id.assignedCddText);
+        this.cddRegNum       = (TextView) view.findViewById(R.id.assignedRegNumText);
+        this.cddProgramme    = (TextView) view.findViewById(R.id.assignedPrgText);
+        this.cddPaperCode    = (TextView) view.findViewById(R.id.assignedPaperText);
+        this.cddTable        = (TextView) view.findViewById(R.id.assignedTableText);
+        this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
+
+        cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
+        cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
+        cddProgramme.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
+        cddPaperCode.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
     }
 
     public void setCddName(String cddName) {

@@ -16,6 +16,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -25,22 +26,23 @@ import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
-
 import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Created by user09 on 11/22/2016.
+ * Created by user09 on 11/23/2016.
  */
 
-public class FragmentPresent extends RootFragment implements View.OnClickListener, CandidateDisplayHolder.OnLongPressed {
-
+public class FragmentAbsent extends RootFragment implements View.OnClickListener {
     private SubmissionMVP.MvpModel taskModel;
     private ErrorManager errorManager;
     private RecyclerView recyclerView;
-    private PresentListAdapter adapter;
+    private AbsentListAdapter adapter;
+
     private Candidate tempCandidate;
-    private Bitmap trashIcon;
+    private int tempPosition;
+
+    private Bitmap retakeIcon;
     private Paint p;
     private ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
         @Override
@@ -54,13 +56,13 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
                 int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.LEFT){
                     tempCandidate   = adapter.removeCandidate(position);
-                    taskModel.unassignCandidate(position, tempCandidate);
-                    String msg  = String.format(Locale.ENGLISH, "%s is now ABSENT",
+                    tempPosition    = taskModel.assignCandidate(tempCandidate);
+                    String msg  = String.format(Locale.ENGLISH, "%s is now PRESENT",
                             tempCandidate.getRegNum());
 
                     Snackbar.make(getActivity().findViewById(R.id.uploadButton),
                             msg, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("UNDO", FragmentPresent.this).show();
+                            .setAction("UNDO", FragmentAbsent.this).show();
                 }
             } catch (ProcessException err) {
                 errorManager.displayError(err);
@@ -78,7 +80,7 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
                 float width = height / 3;
 
                 if(dX < 0){
-                    p.setColor(Color.parseColor("#D32F2F"));
+                    p.setColor(Color.parseColor("#00b500"));
                     RectF background = new RectF(
                             (float) itemView.getRight() + dX,
                             (float) itemView.getTop(),
@@ -90,14 +92,14 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
                             (float) itemView.getRight()  - width,
                             (float) itemView.getBottom() - width);
                     canvas.drawRect(background,p);
-                    canvas.drawBitmap(trashIcon, null, icon_dest, p);
+                    canvas.drawBitmap(retakeIcon, null, icon_dest, p);
                 }
             }
             super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
 
-    public FragmentPresent(){}
+    public FragmentAbsent(){}
 
     @Override
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -113,93 +115,79 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         p   = new Paint();
-        trashIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.trash_icon);
+        retakeIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.scroll_with_tick_icon);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view       =  inflater.inflate(R.layout.fragment_status_present, null);
-        recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerPresentList);
-        adapter         = new PresentListAdapter(taskModel.getCandidatesWith(Status.PRESENT));
+        View view       =  inflater.inflate(R.layout.fragment_status_absent, null);
+        recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerAbsentList);
+        adapter         = new AbsentListAdapter(taskModel.getCandidatesWith(Status.ABSENT));
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
         return view;
     }
 
 
-    public class PresentListAdapter extends RecyclerView.Adapter<CandidateDisplayHolder> {
+    public class AbsentListAdapter extends RecyclerView.Adapter<CandidateDisplayHolder> {
 
-        private ArrayList<Candidate> presentList;
+        private ArrayList<Candidate> absentList;
 
 
-        PresentListAdapter(ArrayList<Candidate> presentList) {
-            this.presentList    = presentList;
+        AbsentListAdapter(ArrayList<Candidate> absentList) {
+            this.absentList    = absentList;
         }
 
         @Override
         public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
-            return new CandidateDisplayHolder(context, v, FragmentPresent.this);
+            return new CandidateDisplayHolder(context, v);
         }
 
         @Override
         public void onBindViewHolder(CandidateDisplayHolder holder, int position) {
-            Candidate cdd   = presentList.get(position);
+            Candidate cdd   = absentList.get(position);
 
             holder.setCddName(cdd.getExamIndex());
             holder.setCddRegNum(cdd.getRegNum());
             holder.setCddPaperCode(cdd.getPaperCode());
             holder.setCddProgramme(cdd.getProgramme());
             holder.setCddTable(cdd.getTableNumber());
-            if(cdd.isLate()){
-                holder.setCddLateTag(true);
-            } else {
-                holder.setCddLateTag(false);
-            }
         }
+
 
         @Override
         public int getItemCount() {
-            return presentList.size();
+            return absentList.size();
         }
 
         void insertCandidate(int position, Candidate cdd){
-            presentList.add(position, cdd);
+            absentList.add(position, cdd);
             notifyItemInserted(position);
         }
 
         Candidate removeCandidate(int position){
-            Candidate cdd = presentList.remove(position);
+            Candidate cdd = absentList.remove(position);
             notifyItemRemoved(position);
-            notifyItemRangeChanged(position, presentList.size());
+            notifyItemRangeChanged(position, absentList.size());
 
             return cdd;
-        }
-
-        void tagCandidate(int position, boolean toggleToTrue){
-            presentList.get(position).setLate(toggleToTrue);
         }
     }
 
     @Override
     public void onClick(View v) {
         try{
-            int position    = taskModel.assignCandidate(tempCandidate);
-            adapter.insertCandidate(position, tempCandidate);
+            taskModel.unassignCandidate(tempPosition, tempCandidate);
+            adapter.insertCandidate(tempPosition, tempCandidate);
         } catch (ProcessException err) {
             errorManager.displayError(err);
         }
-    }
-
-    @Override
-    public void onLongPressed(int position, View view, boolean toggleToTrue) {
-        adapter.tagCandidate(position, toggleToTrue);
     }
 }

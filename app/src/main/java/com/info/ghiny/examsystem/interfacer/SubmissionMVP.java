@@ -39,8 +39,8 @@ public interface SubmissionMVP {
         void verifyChiefResponse(String messageRx) throws ProcessException;
         void uploadAttdList() throws ProcessException;
         ArrayList<Candidate> getCandidatesWith(Status status);
-        void unassignCandidate(String tableNumber, String cddRegNum) throws ProcessException;
-        void assignCandidate(String cddRegNum) throws ProcessException;
+        void unassignCandidate(int lastPosition, Candidate candidate) throws ProcessException;
+        int assignCandidate(Candidate candidate) throws ProcessException;
     }
 
 }

@@ -50,28 +50,21 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     private void initView(){
         toolbar         = (Toolbar)             findViewById(R.id.toolbar);
-        submitButton    = (FloatingActionButton)findViewById(R.id.fab);
+        submitButton    = (FloatingActionButton)findViewById(R.id.uploadButton);
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
         navigationView  = (NavigationView)      findViewById(R.id.nav_view);
 
         drawerToggleButton = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        drawer.setDrawerListener(drawerToggleButton);
+        drawer.addDrawerListener(drawerToggleButton);
         drawerToggleButton.syncState();
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.submitContainer, new PresentFragment());
-        ft.commit();
+        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //ft.replace(R.id.submitContainer, new PresentFragment());
+        //ft.commit();
     }
 
     private void initMVP(){

@@ -21,8 +21,14 @@ import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.fragments.AbsentFragment;
 import com.info.ghiny.examsystem.fragments.BarredFragment;
 import com.info.ghiny.examsystem.fragments.ExemptedFragment;
+import com.info.ghiny.examsystem.fragments.FragmentAbsent;
+import com.info.ghiny.examsystem.fragments.FragmentBarred;
+import com.info.ghiny.examsystem.fragments.FragmentExempted;
+import com.info.ghiny.examsystem.fragments.FragmentPresent;
+import com.info.ghiny.examsystem.fragments.FragmentQuarantined;
 import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
+import com.info.ghiny.examsystem.fragments.RootFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
@@ -37,9 +43,10 @@ import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, SubmissionMVP.MvpMPresenter{
 
-    public SubmissionMVP.MvpView taskView;
-    public SubmissionMVP.MvpModel taskModel;
-    public Handler handler;
+    private SubmissionMVP.MvpView taskView;
+    private SubmissionMVP.MvpModel taskModel;
+    private Handler handler;
+    private ErrorManager errorManager;
     //private boolean sent;
     private boolean uploadFlag;
 
@@ -62,12 +69,15 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     @Override
     public void onResume(final ErrorManager errManager) {
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
-            @Override
-            public void messageReceived(String message) {
-                onChiefRespond(errManager, message);
-            }
-        });
+        this.errorManager   = errManager;
+        if(ExternalDbLoader.getTcpClient() != null){
+            ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+                @Override
+                public void messageReceived(String message) {
+                    onChiefRespond(errManager, message);
+                }
+            });
+        }
     }
 
     @Override
@@ -135,39 +145,30 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item, FragmentManager manager, DrawerLayout drawer) {
-        Fragment fragment;
+        RootFragment fragment;
 
         switch (item.getItemId()){
             case R.id.nav_present:
-                PresentFragment presentF    = new PresentFragment();
-                //presentF.setTaskModel(taskModel);
-                fragment    = presentF;
+                fragment    = new FragmentPresent();
                 break;
             case R.id.nav_absent:
-                AbsentFragment absentF    = new AbsentFragment();
-                //absentF.setTaskModel(taskModel);
-                fragment    = absentF;
+                fragment    = new FragmentAbsent();
                 break;
             case R.id.nav_barred:
-                BarredFragment barredF    = new BarredFragment();
-                //barredF.setTaskModel(taskModel);
-                fragment    = barredF;
+                fragment    = new FragmentBarred();
                 break;
             case R.id.nav_exempted:
-                ExemptedFragment exemptF    = new ExemptedFragment();
-                //exemptF.setTaskModel(taskModel);
-                fragment    = exemptF;
+                fragment    = new FragmentExempted();
                 break;
             case R.id.nav_quarantined:
-                QuarantinedFragment quaranF = new QuarantinedFragment();
-                //quaranF.setTaskModel(taskModel);
-                fragment    = quaranF;
+                fragment    = new FragmentQuarantined();
                 break;
             default:
-                PresentFragment presentFragment = new PresentFragment();
-                //presentFragment.setTaskModel(taskModel);
-                fragment    = presentFragment;
+                fragment    = new FragmentPresent();
         }
+
+        fragment.setTaskModel(taskModel);
+        //fragment.setErrorManager(errorManager);
 
         FragmentTransaction ft = manager.beginTransaction();
         ft.replace(R.id.submitContainer, fragment);

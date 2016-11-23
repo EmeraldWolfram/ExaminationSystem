@@ -132,6 +132,10 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
                 Intent setting  = new Intent(this, SettingActivity.class);
                 startActivity(setting);
                 return true;
+            case R.id.test:
+                Intent testing  = new Intent(this, SubmissionActivity.class);
+                startActivity(testing);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

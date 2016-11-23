@@ -1,6 +1,8 @@
 package com.info.ghiny.examsystem.database;
 
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,8 +157,27 @@ public class AttendanceList {
             }
 
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            Log.d("EXAM System", e.getMessage());
             //DO SOMETHING, the requested paper was empty
+        }
+    }
+
+    public void addCandidate(Candidate cdd){
+        String paperCode    = cdd.getPaperCode();
+        Status status       = cdd.getStatus();
+        String programme    = cdd.getProgramme();
+
+        try{
+            HashMap<String, Candidate> cddList = getCandidateList(status, paperCode, programme);
+            if(cddList.isEmpty()) {
+                cddList.put(cdd.getRegNum(), cdd);
+            } else {
+                cdd.setStatus(status);
+                cddList.put(cdd.getRegNum(), cdd);
+            }
+
+        }catch (Exception e){
+            Log.d("EXAM System", e.getMessage());
         }
     }
 

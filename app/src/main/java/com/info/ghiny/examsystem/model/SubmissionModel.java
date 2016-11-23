@@ -8,6 +8,7 @@ import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ import java.util.List;
 
 public class SubmissionModel implements SubmissionMVP.MvpModel {
     private HashMap<String, Integer> unassignedMap;
+    private LinkedHashMap<String, Integer> undoMap;
+
     private SubmissionMVP.MvpMPresenter taskPresenter;
     private boolean sent;
     private AttendanceList attendanceList;
@@ -24,6 +27,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         this.taskPresenter  = taskPresenter;
         this.sent           = false;
         this.unassignedMap  = new HashMap<>();
+        this.undoMap        = new LinkedHashMap<>();
         this.attendanceList = TakeAttdModel.getAttdList();
     }
 
@@ -64,53 +68,38 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     }
 
     @Override
-    public void unassignCandidate(String tableNumber, String cddRegNum) throws ProcessException{
-        if(attendanceList == null){
-            throw new ProcessException("Attendance List not initialized",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        }
-
-        Candidate targetCdd   = attendanceList.getCandidate(cddRegNum);
-
-        if(targetCdd == null || targetCdd.getStatus() != Status.PRESENT){
+    public void unassignCandidate(int lastPosition, Candidate candidate) throws ProcessException {
+        if(candidate == null || candidate.getStatus() != Status.PRESENT){
             throw new ProcessException("Candidate Info Corrupted",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
-
-        unassignedMap.put(targetCdd.getRegNum(), Integer.parseInt(tableNumber));
-        targetCdd.setStatus(Status.ABSENT);
-        targetCdd.setTableNumber(0);
-
-        attendanceList.removeCandidate(targetCdd.getRegNum());
-        attendanceList.addCandidate(targetCdd, targetCdd.getPaperCode(),
-                targetCdd.getStatus(), targetCdd.getProgramme());
+        unassignedMap.put(candidate.getRegNum(), candidate.getTableNumber());
+        undoMap.put(candidate.getRegNum(), lastPosition);
+        candidate.setStatus(Status.ABSENT);
+        candidate.setTableNumber(0);
+        attendanceList.removeCandidate(candidate.getRegNum());
+        attendanceList.addCandidate(candidate);
     }
 
     @Override
-    public void assignCandidate(String cddIndex) throws ProcessException{
-        if(attendanceList == null){
-            throw new ProcessException("Attendance List not initialized",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        }
-
-        Candidate cdd   = attendanceList.getCandidateUsingExamIndex(cddIndex);
-
-        if(cdd == null || cdd.getStatus() != Status.ABSENT){
+    public int assignCandidate(Candidate candidate) throws ProcessException {
+        if(candidate == null || candidate.getStatus() != Status.ABSENT){
             throw new ProcessException("Candidate Info Corrupted",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
-        Integer table   = unassignedMap.get(cdd.getRegNum());
+        Integer table   = unassignedMap.remove(candidate.getRegNum());
         if(table == null){
             throw new ProcessException("Candidate is never assign before",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
 
-        attendanceList.removeCandidate(cdd.getRegNum());
-        cdd.setTableNumber(table);
-        cdd.setStatus(Status.PRESENT);
-        attendanceList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-        unassignedMap.remove(cdd.getRegNum());
+        attendanceList.removeCandidate(candidate.getRegNum());
+        candidate.setTableNumber(table);
+        candidate.setStatus(Status.PRESENT);
+        attendanceList.addCandidate(candidate);
+
+        return undoMap.remove(candidate.getRegNum());
     }
 
     @Override
