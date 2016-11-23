@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -34,8 +36,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     private Toolbar toolbar;
     private FloatingActionButton submitButton;
-    private DrawerLayout drawer;
     private ActionBarDrawerToggle drawerToggleButton;
+    private DrawerLayout drawer;
     private NavigationView navigationView;
 
     @Override
@@ -57,14 +59,28 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         drawerToggleButton = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
+        drawerToggleButton.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
+
         drawer.addDrawerListener(drawerToggleButton);
         drawerToggleButton.syncState();
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
+        toolbar.setSubtitle("Present Candidates");
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ft.replace(R.id.submitContainer, new PresentFragment());
         //ft.commit();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggleButton.syncState();
     }
 
     private void initMVP(){
@@ -123,7 +139,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return drawerToggleButton.onOptionsItemSelected(item);
     }
 
     @Override
@@ -175,7 +191,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        return taskPresenter.onNavigationItemSelected(item, getSupportFragmentManager(), drawer);
+        return taskPresenter.onNavigationItemSelected(toolbar, item, getSupportFragmentManager(), drawer);
     }
 
     @Override

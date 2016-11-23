@@ -48,8 +48,8 @@
         <activity android:name=".SettingActivity" />
         <activity
             android:name=".SubmissionActivity"
-            android:label="@string/title_activity_submission"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="Attendance List"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

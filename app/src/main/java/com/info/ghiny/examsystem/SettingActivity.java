@@ -9,6 +9,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(getResources().getString(R.string.action_settings));
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingFragment()).commit();
     }

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -28,7 +29,8 @@ public interface SubmissionMVP {
     interface MvpVPresenter extends DialogInterface.OnClickListener,
             TaskSecurePresenter, TaskConnPresenter {
         void onUpload();
-        boolean onNavigationItemSelected(MenuItem item, FragmentManager manager, DrawerLayout drawer);
+        boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item,
+                                         FragmentManager manager, DrawerLayout drawer);
     }
 
     interface MvpMPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {

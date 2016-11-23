@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 
@@ -144,31 +145,38 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item, FragmentManager manager, DrawerLayout drawer) {
+    public boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item,
+                                            FragmentManager manager, DrawerLayout drawer) {
         RootFragment fragment;
 
         switch (item.getItemId()){
             case R.id.nav_present:
                 fragment    = new FragmentPresent();
+                toolbar.setSubtitle("Present Candidates");
                 break;
             case R.id.nav_absent:
                 fragment    = new FragmentAbsent();
+                toolbar.setSubtitle("Absent Candidates");
                 break;
             case R.id.nav_barred:
                 fragment    = new FragmentBarred();
+                toolbar.setSubtitle("Barred Candidates");
                 break;
             case R.id.nav_exempted:
                 fragment    = new FragmentExempted();
+                toolbar.setSubtitle("Exempted Candidates");
                 break;
             case R.id.nav_quarantined:
                 fragment    = new FragmentQuarantined();
+                toolbar.setSubtitle("Quarantined Candidates");
                 break;
             default:
                 fragment    = new FragmentPresent();
+                toolbar.setSubtitle("Present Candidates");
         }
 
         fragment.setTaskModel(taskModel);
-        //fragment.setErrorManager(errorManager);
+        fragment.setErrorManager(errorManager);
 
         FragmentTransaction ft = manager.beginTransaction();
         ft.replace(R.id.submitContainer, fragment);
