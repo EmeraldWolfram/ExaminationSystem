@@ -5,10 +5,10 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,8 +17,6 @@ import java.util.List;
 
 public class SubmissionModel implements SubmissionMVP.MvpModel {
     private HashMap<String, Integer> unassignedMap;
-    private LinkedHashMap<String, Integer> undoMap;
-
     private SubmissionMVP.MvpMPresenter taskPresenter;
     private boolean sent;
     private AttendanceList attendanceList;
@@ -27,7 +25,6 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         this.taskPresenter  = taskPresenter;
         this.sent           = false;
         this.unassignedMap  = new HashMap<>();
-        this.undoMap        = new LinkedHashMap<>();
         this.attendanceList = TakeAttdModel.getAttdList();
     }
 
@@ -74,7 +71,6 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         unassignedMap.put(candidate.getRegNum(), candidate.getTableNumber());
-        undoMap.put(candidate.getRegNum(), lastPosition);
         candidate.setStatus(Status.ABSENT);
         candidate.setTableNumber(0);
         attendanceList.removeCandidate(candidate.getRegNum());
@@ -82,7 +78,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     }
 
     @Override
-    public int assignCandidate(Candidate candidate) throws ProcessException {
+    public void assignCandidate(Candidate candidate) throws ProcessException {
         if(candidate == null || candidate.getStatus() != Status.ABSENT){
             throw new ProcessException("Candidate Info Corrupted",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -91,15 +87,13 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         Integer table   = unassignedMap.remove(candidate.getRegNum());
         if(table == null){
             throw new ProcessException("Candidate is never assign before",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+                    ProcessException.MESSAGE_TOAST, IconManager.WARNING);
         }
 
         attendanceList.removeCandidate(candidate.getRegNum());
         candidate.setTableNumber(table);
         candidate.setStatus(Status.PRESENT);
         attendanceList.addCandidate(candidate);
-
-        return undoMap.remove(candidate.getRegNum());
     }
 
     @Override

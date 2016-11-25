@@ -22,8 +22,6 @@ import com.info.ghiny.examsystem.fragments.ExemptedFragment;
 import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
 import com.info.ghiny.examsystem.interfacer.ReportAttdMVP;
-import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;

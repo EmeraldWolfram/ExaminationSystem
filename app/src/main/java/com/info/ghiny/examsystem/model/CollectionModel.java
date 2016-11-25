@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 /**
  * Created by GhinY on 05/10/2016.

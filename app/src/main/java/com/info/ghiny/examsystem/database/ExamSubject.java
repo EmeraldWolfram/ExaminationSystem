@@ -1,10 +1,9 @@
 package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by GhinY on 07/05/2016.

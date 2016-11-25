@@ -1,14 +1,10 @@
 package com.info.ghiny.examsystem.model;
 
-import android.util.Base64;
-
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 /**
  * Created by GhinY on 15/06/2016.

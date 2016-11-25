@@ -1,12 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.ProcessException;
-
-import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Properties;
 
 /**
  * Created by GhinY on 18/08/2016.

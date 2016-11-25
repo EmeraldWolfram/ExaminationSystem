@@ -1,7 +1,5 @@
 package com.info.ghiny.examsystem.model;
 
-import android.os.Bundle;
-
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Connector;
@@ -10,6 +8,7 @@ import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
         this.cddPaperCode    = (TextView) view.findViewById(R.id.assignedPaperText);
         this.cddTable        = (TextView) view.findViewById(R.id.assignedTableText);
         this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
+        view.findViewById(R.id.uncheckPresent).setVisibility(View.INVISIBLE);
 
         cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
         cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
@@ -65,6 +67,7 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
         this.cddPaperCode    = (TextView) view.findViewById(R.id.assignedPaperText);
         this.cddTable        = (TextView) view.findViewById(R.id.assignedTableText);
         this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
+        view.findViewById(R.id.uncheckPresent).setVisibility(View.INVISIBLE);
 
         cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
         cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));

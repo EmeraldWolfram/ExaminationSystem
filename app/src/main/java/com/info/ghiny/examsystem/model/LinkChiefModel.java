@@ -1,14 +1,13 @@
 package com.info.ghiny.examsystem.model;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.Calendar;
 

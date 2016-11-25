@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 /**
  * Created by GhinY on 01/07/2016.

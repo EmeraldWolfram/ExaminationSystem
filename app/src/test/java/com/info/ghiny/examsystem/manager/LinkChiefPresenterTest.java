@@ -8,11 +8,8 @@ import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;

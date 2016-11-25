@@ -3,7 +3,7 @@ package com.info.ghiny.examsystem.database;
 import android.support.annotation.Nullable;
 
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.HashMap;
 import java.util.Locale;

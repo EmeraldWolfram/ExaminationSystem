@@ -15,7 +15,6 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
-import com.info.ghiny.examsystem.model.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 

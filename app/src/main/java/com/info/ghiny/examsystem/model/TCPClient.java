@@ -1,14 +1,11 @@
 package com.info.ghiny.examsystem.model;
 
 
-import android.util.Log;
-
-import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;

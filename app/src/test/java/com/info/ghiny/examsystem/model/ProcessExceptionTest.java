@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import org.junit.Before;
 import org.junit.Test;

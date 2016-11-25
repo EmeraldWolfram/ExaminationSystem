@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.database;
 
 import android.util.Base64;
 
-import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 

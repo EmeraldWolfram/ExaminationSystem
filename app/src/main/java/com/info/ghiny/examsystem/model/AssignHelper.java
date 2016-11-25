@@ -8,6 +8,7 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CheckListLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.HashMap;
 

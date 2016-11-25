@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public interface SubmissionMVP {
     interface MvpVPresenter extends DialogInterface.OnClickListener,
             TaskSecurePresenter, TaskConnPresenter {
         void onUpload();
-        boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item,
+        boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item, ErrorManager errManager,
                                          FragmentManager manager, DrawerLayout drawer);
     }
 
@@ -42,7 +43,7 @@ public interface SubmissionMVP {
         void uploadAttdList() throws ProcessException;
         ArrayList<Candidate> getCandidatesWith(Status status);
         void unassignCandidate(int lastPosition, Candidate candidate) throws ProcessException;
-        int assignCandidate(Candidate candidate) throws ProcessException;
+        void assignCandidate(Candidate candidate) throws ProcessException;
     }
 
 }

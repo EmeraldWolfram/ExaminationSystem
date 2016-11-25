@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.info.ghiny.examsystem.fragments.PresentFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.SubmissionPresenter;
@@ -42,8 +42,10 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("SOMETHING =============", "In On-Create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
+        Log.d("SOMETHING =============", "Created");
 
         initView();
         initMVP();
@@ -73,7 +75,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         toolbar.setSubtitle("Present Candidates");
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.replace(R.id.submitContainer, new PresentFragment());
+        //ft.replace(R.id.submitContainer, new FragmentPresent());
         //ft.commit();
     }
 
@@ -94,7 +96,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     protected void onResume() {
-        taskPresenter.onResume(errorManager);
+        //taskPresenter.onResume(errorManager);
         super.onResume();
     }
 
@@ -132,14 +134,14 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()){
+            case R.id.action_settings:
+                Intent setting  = new Intent(this, SettingActivity.class);
+                startActivity(setting);
+                return true;
+            default:
+                return drawerToggleButton.onOptionsItemSelected(item);
         }
-
-        return drawerToggleButton.onOptionsItemSelected(item);
     }
 
     @Override
@@ -191,7 +193,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        return taskPresenter.onNavigationItemSelected(toolbar, item, getSupportFragmentManager(), drawer);
+        return taskPresenter.onNavigationItemSelected(toolbar, item, errorManager,
+                                                        getSupportFragmentManager(), drawer);
     }
 
     @Override

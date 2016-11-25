@@ -36,12 +36,16 @@ import java.util.Locale;
 public class FragmentPresent extends RootFragment implements View.OnClickListener, CandidateDisplayHolder.OnLongPressed {
 
     private SubmissionMVP.MvpModel taskModel;
-    private ErrorManager errorManager;
     private RecyclerView recyclerView;
     private PresentListAdapter adapter;
+    private ErrorManager errorManager;
+
     private Candidate tempCandidate;
+    private int tempPosition;
+    private Snackbar snackbar;
     private Bitmap trashIcon;
     private Paint p;
+
     private ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -50,17 +54,22 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            if(snackbar != null){
+                snackbar.dismiss();
+            }
+            int position = viewHolder.getAdapterPosition();
             try{
-                int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.LEFT){
                     tempCandidate   = adapter.removeCandidate(position);
                     taskModel.unassignCandidate(position, tempCandidate);
+                    tempPosition    = position;
                     String msg  = String.format(Locale.ENGLISH, "%s is now ABSENT",
                             tempCandidate.getRegNum());
 
-                    Snackbar.make(getActivity().findViewById(R.id.uploadButton),
-                            msg, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("UNDO", FragmentPresent.this).show();
+                    snackbar = Snackbar.make(getActivity().findViewById(R.id.uploadButton),
+                            msg, Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setAction("UNDO", FragmentPresent.this);
+                    snackbar.show();
                 }
             } catch (ProcessException err) {
                 errorManager.displayError(err);
@@ -96,6 +105,13 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
             super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
+
+    @Override
+    public void onPause() {
+        if(snackbar != null)
+            snackbar.dismiss();
+        super.onPause();
+    }
 
     public FragmentPresent(){}
 
@@ -191,8 +207,8 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         try{
-            int position    = taskModel.assignCandidate(tempCandidate);
-            adapter.insertCandidate(position, tempCandidate);
+            taskModel.assignCandidate(tempCandidate);
+            adapter.insertCandidate(tempPosition, tempCandidate);
         } catch (ProcessException err) {
             errorManager.displayError(err);
         }

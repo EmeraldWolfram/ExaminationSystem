@@ -16,15 +16,20 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.IconManager;
+import com.info.ghiny.examsystem.manager.StatusAbsentPresenter;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.SubmissionModel;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -33,71 +38,17 @@ import java.util.Locale;
  * Created by user09 on 11/23/2016.
  */
 
-public class FragmentAbsent extends RootFragment implements View.OnClickListener {
+public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.AbsentMvpView {
     private SubmissionMVP.MvpModel taskModel;
-    private ErrorManager errorManager;
+
+    private StatusFragmentMVP.AbsentMvpVPresenter taskPresenter;
+
     private RecyclerView recyclerView;
+    private View uploadButton;
     private AbsentListAdapter adapter;
-
-    private Candidate tempCandidate;
-    private int tempPosition;
-
+    private ErrorManager errorManager;
     private Bitmap retakeIcon;
-    private Paint p;
-    private ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
 
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            try{
-                int position = viewHolder.getAdapterPosition();
-                if (direction == ItemTouchHelper.LEFT){
-                    tempCandidate   = adapter.removeCandidate(position);
-                    tempPosition    = taskModel.assignCandidate(tempCandidate);
-                    String msg  = String.format(Locale.ENGLISH, "%s is now PRESENT",
-                            tempCandidate.getRegNum());
-
-                    Snackbar.make(getActivity().findViewById(R.id.uploadButton),
-                            msg, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("UNDO", FragmentAbsent.this).show();
-                }
-            } catch (ProcessException err) {
-                errorManager.displayError(err);
-            }
-        }
-
-        @Override
-        public void onChildDraw(Canvas canvas, RecyclerView recyclerView,
-                                RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                int actionState, boolean isCurrentlyActive) {
-            if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
-
-                View itemView = viewHolder.itemView;
-                float height = (float) itemView.getBottom() - (float) itemView.getTop();
-                float width = height / 3;
-
-                if(dX < 0){
-                    p.setColor(Color.parseColor("#00b500"));
-                    RectF background = new RectF(
-                            (float) itemView.getRight() + dX,
-                            (float) itemView.getTop(),
-                            (float) itemView.getRight(),
-                            (float) itemView.getBottom());
-                    RectF icon_dest = new RectF(
-                            (float) itemView.getRight()  - 2*width,
-                            (float) itemView.getTop()    + width,
-                            (float) itemView.getRight()  - width,
-                            (float) itemView.getBottom() - width);
-                    canvas.drawRect(background,p);
-                    canvas.drawBitmap(retakeIcon, null, icon_dest, p);
-                }
-            }
-            super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
-    };
 
     public FragmentAbsent(){}
 
@@ -114,8 +65,8 @@ public class FragmentAbsent extends RootFragment implements View.OnClickListener
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        p   = new Paint();
-        retakeIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.scroll_with_tick_icon);
+        retakeIcon  = BitmapFactory.decodeResource(getResources(), R.drawable.entry_icon);
+        initMVP();
     }
 
     @Nullable
@@ -123,7 +74,29 @@ public class FragmentAbsent extends RootFragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view       =  inflater.inflate(R.layout.fragment_status_absent, null);
         recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerAbsentList);
-        adapter         = new AbsentListAdapter(taskModel.getCandidatesWith(Status.ABSENT));
+        uploadButton    = getActivity().findViewById(R.id.uploadButton);
+        adapter         = new AbsentListAdapter();
+        ItemTouchHelper.SimpleCallback callback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
+                return taskPresenter.onMove(recyclerView, viewHolder, target);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                taskPresenter.onSwiped(uploadButton, viewHolder, direction);
+            }
+
+            @Override
+            public void onChildDraw(Canvas canvas, RecyclerView rcView,
+                                    RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isActive) {
+                taskPresenter.onChildDraw(canvas, rcView, viewHolder, dX, dY, actionState, isActive);
+                super.onChildDraw(canvas, rcView, viewHolder, dX, dY, actionState, isActive);
+            }
+        };
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -133,61 +106,51 @@ public class FragmentAbsent extends RootFragment implements View.OnClickListener
         return view;
     }
 
+    private void initMVP(){
+        StatusAbsentPresenter presenter = new StatusAbsentPresenter(retakeIcon, this);
+        presenter.setTaskModel(taskModel);
+        this.taskPresenter              = presenter;
+    }
+
+    @Override
+    public void onPause() {
+        taskPresenter.onPause();
+        super.onPause();
+    }
+
 
     public class AbsentListAdapter extends RecyclerView.Adapter<CandidateDisplayHolder> {
 
-        private ArrayList<Candidate> absentList;
-
-
-        AbsentListAdapter(ArrayList<Candidate> absentList) {
-            this.absentList    = absentList;
-        }
-
         @Override
         public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Context context = parent.getContext();
-            View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
-            return new CandidateDisplayHolder(context, v);
+            return taskPresenter.onCreateViewHolder(parent, viewType);
         }
 
         @Override
         public void onBindViewHolder(CandidateDisplayHolder holder, int position) {
-            Candidate cdd   = absentList.get(position);
-
-            holder.setCddName(cdd.getExamIndex());
-            holder.setCddRegNum(cdd.getRegNum());
-            holder.setCddPaperCode(cdd.getPaperCode());
-            holder.setCddProgramme(cdd.getProgramme());
-            holder.setCddTable(cdd.getTableNumber());
+            taskPresenter.onBindViewHolder(holder, position);
         }
 
 
         @Override
         public int getItemCount() {
-            return absentList.size();
-        }
-
-        void insertCandidate(int position, Candidate cdd){
-            absentList.add(position, cdd);
-            notifyItemInserted(position);
-        }
-
-        Candidate removeCandidate(int position){
-            Candidate cdd = absentList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, absentList.size());
-
-            return cdd;
+            return taskPresenter.getItemCount();
         }
     }
 
     @Override
-    public void onClick(View v) {
-        try{
-            taskModel.unassignCandidate(tempPosition, tempCandidate);
-            adapter.insertCandidate(tempPosition, tempCandidate);
-        } catch (ProcessException err) {
-            errorManager.displayError(err);
-        }
+    public void insertCandidate(int position) {
+        adapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void removeCandidate(int position, int newSize) {
+        adapter.notifyItemRemoved(position);
+        adapter.notifyItemRangeChanged(position, newSize);
+    }
+
+    @Override
+    public void displayError(ProcessException err){
+        errorManager.displayError(err);
     }
 }

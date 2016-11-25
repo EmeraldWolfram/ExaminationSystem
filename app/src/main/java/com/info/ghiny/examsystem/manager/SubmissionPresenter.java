@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.info.ghiny.examsystem.PopUpLogin;
@@ -19,20 +17,13 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.fragments.AbsentFragment;
-import com.info.ghiny.examsystem.fragments.BarredFragment;
-import com.info.ghiny.examsystem.fragments.ExemptedFragment;
 import com.info.ghiny.examsystem.fragments.FragmentAbsent;
 import com.info.ghiny.examsystem.fragments.FragmentBarred;
 import com.info.ghiny.examsystem.fragments.FragmentExempted;
 import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.fragments.FragmentQuarantined;
-import com.info.ghiny.examsystem.fragments.PresentFragment;
-import com.info.ghiny.examsystem.fragments.QuarantinedFragment;
 import com.info.ghiny.examsystem.fragments.RootFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
-import com.info.ghiny.examsystem.model.IconManager;
-import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
@@ -47,7 +38,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     private SubmissionMVP.MvpView taskView;
     private SubmissionMVP.MvpModel taskModel;
     private Handler handler;
-    private ErrorManager errorManager;
     //private boolean sent;
     private boolean uploadFlag;
 
@@ -70,7 +60,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     @Override
     public void onResume(final ErrorManager errManager) {
-        this.errorManager   = errManager;
         if(ExternalDbLoader.getTcpClient() != null){
             ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
                 @Override
@@ -145,7 +134,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     }
 
     @Override
-    public boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item,
+    public boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item, ErrorManager errManager,
                                             FragmentManager manager, DrawerLayout drawer) {
         RootFragment fragment;
 
@@ -176,7 +165,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         }
 
         fragment.setTaskModel(taskModel);
-        fragment.setErrorManager(errorManager);
+        fragment.setErrorManager(errManager);
 
         FragmentTransaction ft = manager.beginTransaction();
         ft.replace(R.id.submitContainer, fragment);

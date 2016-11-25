@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.database;
 
-import com.info.ghiny.examsystem.model.IconManager;
+import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.sql.Connection;
