@@ -23,6 +23,7 @@ import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.SortManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 
@@ -137,7 +138,7 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view       =  inflater.inflate(R.layout.fragment_status_present, null);
         recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerPresentList);
-        adapter         = new PresentListAdapter(taskModel.getCandidatesWith(Status.PRESENT));
+        adapter         = new PresentListAdapter(taskModel.getCandidatesWith(Status.PRESENT, SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_TABLE, true));
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

@@ -51,7 +51,8 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
         this.taskModel  = taskModel;
-        this.absentList = taskModel.getCandidatesWith(Status.ABSENT);
+        this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_ID, true);
     }
 
     @Override

@@ -13,4 +13,15 @@
         <item>3</item>
         <item>4</item>
     </string-array>
+
+    <string-array name="sortEntries">
+        <item>Register Number of Candidate</item>
+        <item>Table Number Assigned to Candidate</item>
+        <item>Name of Candidate</item>
+    </string-array>
+    <string-array name="sortValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

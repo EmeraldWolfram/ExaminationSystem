@@ -158,9 +158,9 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
                 LoginModel.setStaff(staff);
                 AttendanceList attdList = new AttendanceList();
                 attdList.addCandidate(new Candidate(12, "RMB3", "Candidate A", "15WAU00001", "BAME0001", Status.PRESENT));
-                attdList.addCandidate(new Candidate(13, "RMB3", "Candidate B", "15WAU00002", "BAME0001", Status.PRESENT));
+                attdList.addCandidate(new Candidate(15, "RMB3", "Candidate B", "15WAU00002", "BAME0001", Status.PRESENT));
                 attdList.addCandidate(new Candidate(14, "RMB3", "Candidate C", "15WAU00003", "BAME0001", Status.PRESENT));
-                attdList.addCandidate(new Candidate(15, "RMB3", "Candidate D", "15WAU00004", "BAME0001", Status.PRESENT));
+                attdList.addCandidate(new Candidate(13, "RMB3", "Candidate D", "15WAU00004", "BAME0001", Status.PRESENT));
                 attdList.addCandidate(new Candidate(0, "RMB3", "Candidate E", "15WAU00005", "BAME0001", Status.ABSENT));
                 attdList.addCandidate(new Candidate(0, "RMB3", "Candidate F", "15WAU00006", "BAME0001", Status.ABSENT));
                 attdList.addCandidate(new Candidate(0, "RMB3", "Candidate G", "15WAU00007", "BAME0001", Status.BARRED));

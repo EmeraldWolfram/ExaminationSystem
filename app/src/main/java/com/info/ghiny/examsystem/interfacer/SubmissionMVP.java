@@ -11,6 +11,7 @@ import android.view.View;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.SortManager;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public interface SubmissionMVP {
         void verifyChiefResponse(String messageRx) throws ProcessException;
         void uploadAttdList() throws ProcessException;
         ArrayList<Candidate> getCandidatesWith(Status status);
+        ArrayList<Candidate> getCandidatesWith(Status status, SortManager.SortMethod sortMethod, boolean ascendingOrder);
         void unassignCandidate(int lastPosition, Candidate candidate) throws ProcessException;
         void assignCandidate(Candidate candidate) throws ProcessException;
     }

@@ -34,4 +34,29 @@
             android:defaultValue="4"
             android:icon="@drawable/scan_mode"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="Attendance List Group &amp; Sort" android:key="Sort">
+        <CheckBoxPreference
+            android:id="@+id/groupProgramme"
+            android:title="Programme Grouping"
+            android:key="ProgrammeGrouping"
+            android:summary="Group the attendance list according to Programme"
+            android:defaultValue="true"
+            android:icon="@drawable/trash_icon"/>
+        <CheckBoxPreference
+            android:id="@+id/ascendingSort"
+            android:title="Ascending Sort"
+            android:key="AscendingSort"
+            android:summary="Sort the attendance list in ascending order"
+            android:defaultValue="true"
+            android:icon="@drawable/trash_icon"/>
+        <ListPreference
+            android:title="Candidates Sorting"
+            android:key="CandidatesSorting"
+            android:summary="Arrange attendance list according to selection"
+            android:entries="@array/sortEntries"
+            android:entryValues="@array/sortValues"
+            android:defaultValue="2"
+            android:icon="@drawable/trash_icon"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>

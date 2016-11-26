@@ -1,10 +1,23 @@
 package com.info.ghiny.examsystem.model;
 
 
+
+import android.os.SystemClock;
+
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.manager.IconManager;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import edu.emory.mathcs.backport.java.util.AbstractMap;
 
 import static org.junit.Assert.*;
 
@@ -33,5 +46,4 @@ public class IconManagerTest {
         int test = iconManager.getIcon(IconManager.ASSIGNED);
         assertEquals(R.drawable.entry_icon_2, test);
     }
-
 }

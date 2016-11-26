@@ -6,10 +6,17 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
+import com.info.ghiny.examsystem.manager.SortManager;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Created by user09 on 11/17/2016.
@@ -20,12 +27,16 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     private SubmissionMVP.MvpMPresenter taskPresenter;
     private boolean sent;
     private AttendanceList attendanceList;
+    private SortManager sortManager;
+    private List<String> regNumList;
 
     public SubmissionModel(SubmissionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.sent           = false;
         this.unassignedMap  = new HashMap<>();
         this.attendanceList = TakeAttdModel.getAttdList();
+        this.sortManager    = new SortManager();
+        this.regNumList     = attendanceList.getAllCandidateRegNumList();
     }
 
     @Override
@@ -62,6 +73,24 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         }
 
         return candidates;
+    }
+
+    @Override
+    public ArrayList<Candidate> getCandidatesWith(Status                    status,
+                                                  SortManager.SortMethod    sortMethod,
+                                                  boolean                   ascendingOrder) {
+
+        TreeSet<Candidate> treeSet  = new TreeSet<>(sortManager.getComparator(sortMethod));
+        for(int i = 0; i < regNumList.size(); i++) {
+            Candidate tempCdd = attendanceList.getCandidate(regNumList.get(i));
+            if(tempCdd.getStatus() == status){
+                treeSet.add(tempCdd);
+            }
+        }
+
+        if(!ascendingOrder)
+            return new ArrayList<>(treeSet.descendingSet());
+        return new ArrayList<>(treeSet);
     }
 
     @Override
