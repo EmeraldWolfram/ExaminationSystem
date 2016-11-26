@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,9 +23,12 @@ import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.SortManager;
+import com.info.ghiny.examsystem.manager.StatusAbsentPresenter;
+import com.info.ghiny.examsystem.manager.StatusPresentPresenter;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 
@@ -34,85 +39,16 @@ import java.util.Locale;
  * Created by user09 on 11/22/2016.
  */
 
-public class FragmentPresent extends RootFragment implements View.OnClickListener, CandidateDisplayHolder.OnLongPressed {
+public class FragmentPresent extends RootFragment implements StatusFragmentMVP.PresentMvpView {
 
     private SubmissionMVP.MvpModel taskModel;
     private RecyclerView recyclerView;
     private PresentListAdapter adapter;
     private ErrorManager errorManager;
 
-    private Candidate tempCandidate;
-    private int tempPosition;
-    private Snackbar snackbar;
+    private StatusFragmentMVP.PresentMvpPresenter taskPresenter;
     private Bitmap trashIcon;
-    private Paint p;
-
-    private ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            if(snackbar != null){
-                snackbar.dismiss();
-            }
-            int position = viewHolder.getAdapterPosition();
-            try{
-                if (direction == ItemTouchHelper.LEFT){
-                    tempCandidate   = adapter.removeCandidate(position);
-                    taskModel.unassignCandidate(position, tempCandidate);
-                    tempPosition    = position;
-                    String msg  = String.format(Locale.ENGLISH, "%s is now ABSENT",
-                            tempCandidate.getRegNum());
-
-                    snackbar = Snackbar.make(getActivity().findViewById(R.id.uploadButton),
-                            msg, Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction("UNDO", FragmentPresent.this);
-                    snackbar.show();
-                }
-            } catch (ProcessException err) {
-                errorManager.displayError(err);
-            }
-        }
-
-        @Override
-        public void onChildDraw(Canvas canvas, RecyclerView recyclerView,
-                                RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                int actionState, boolean isCurrentlyActive) {
-            if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
-
-                View itemView = viewHolder.itemView;
-                float height = (float) itemView.getBottom() - (float) itemView.getTop();
-                float width = height / 3;
-
-                if(dX < 0){
-                    p.setColor(Color.parseColor("#D32F2F"));
-                    RectF background = new RectF(
-                            (float) itemView.getRight() + dX,
-                            (float) itemView.getTop(),
-                            (float) itemView.getRight(),
-                            (float) itemView.getBottom());
-                    RectF icon_dest = new RectF(
-                            (float) itemView.getRight()  - 2*width,
-                            (float) itemView.getTop()    + width,
-                            (float) itemView.getRight()  - width,
-                            (float) itemView.getBottom() - width);
-                    canvas.drawRect(background,p);
-                    canvas.drawBitmap(trashIcon, null, icon_dest, p);
-                }
-            }
-            super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
-    };
-
-    @Override
-    public void onPause() {
-        if(snackbar != null)
-            snackbar.dismiss();
-        super.onPause();
-    }
+    private View uploadButton;
 
     public FragmentPresent(){}
 
@@ -126,97 +62,109 @@ public class FragmentPresent extends RootFragment implements View.OnClickListene
         this.errorManager   = errorManager;
     }
 
+    //==============================================================================================
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        p   = new Paint();
         trashIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.trash_icon);
+        initMVP();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater         inflater,
+                             @Nullable ViewGroup    container,
+                             @Nullable Bundle       savedInstanceState) {
         View view       =  inflater.inflate(R.layout.fragment_status_present, null);
         recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerPresentList);
-        adapter         = new PresentListAdapter(taskModel.getCandidatesWith(Status.PRESENT, SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_TABLE, true));
+        uploadButton    = getActivity().findViewById(R.id.uploadButton);
+        adapter         = new PresentListAdapter();
+        ItemTouchHelper.SimpleCallback callback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
+            @Override
+            public boolean onMove(RecyclerView              recyclerView,
+                                  RecyclerView.ViewHolder   viewHolder,
+                                  RecyclerView.ViewHolder   target) {
+                return taskPresenter.onMove(recyclerView, viewHolder, target);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                taskPresenter.onSwiped(uploadButton, viewHolder, direction);
+            }
+
+            @Override
+            public void onChildDraw(Canvas canvas, RecyclerView rccView,
+                                    RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isActive) {
+                taskPresenter.onChildDraw(canvas, rccView, viewHolder, dX, dY, actionState, isActive);
+                super.onChildDraw(canvas, rccView, viewHolder, dX, dY, actionState, isActive);
+            }
+        };
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
         return view;
     }
 
+    @Override
+    public void onResume() {
+        taskPresenter.onResume();
+        adapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        taskPresenter.onPause();
+        super.onPause();
+    }
+
+    private void initMVP(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        StatusPresentPresenter presenter = new StatusPresentPresenter(trashIcon, preferences, this);
+        presenter.setTaskModel(taskModel);
+        this.taskPresenter  = presenter;
+    }
+
+    //= Adapter Class ==============================================================================
 
     public class PresentListAdapter extends RecyclerView.Adapter<CandidateDisplayHolder> {
-
-        private ArrayList<Candidate> presentList;
-
-
-        PresentListAdapter(ArrayList<Candidate> presentList) {
-            this.presentList    = presentList;
-        }
-
         @Override
         public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Context context = parent.getContext();
-            View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
-            return new CandidateDisplayHolder(context, v, FragmentPresent.this);
+            return taskPresenter.onCreateViewHolder(parent, viewType);
         }
 
         @Override
         public void onBindViewHolder(CandidateDisplayHolder holder, int position) {
-            Candidate cdd   = presentList.get(position);
-
-            holder.setCddName(cdd.getExamIndex());
-            holder.setCddRegNum(cdd.getRegNum());
-            holder.setCddPaperCode(cdd.getPaperCode());
-            holder.setCddProgramme(cdd.getProgramme());
-            holder.setCddTable(cdd.getTableNumber());
-            if(cdd.isLate()){
-                holder.setCddLateTag(true);
-            } else {
-                holder.setCddLateTag(false);
-            }
+            taskPresenter.onBindViewHolder(holder, position);
         }
 
         @Override
         public int getItemCount() {
-            return presentList.size();
-        }
-
-        void insertCandidate(int position, Candidate cdd){
-            presentList.add(position, cdd);
-            notifyItemInserted(position);
-        }
-
-        Candidate removeCandidate(int position){
-            Candidate cdd = presentList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, presentList.size());
-
-            return cdd;
-        }
-
-        void tagCandidate(int position, boolean toggleToTrue){
-            presentList.get(position).setLate(toggleToTrue);
+            return taskPresenter.getItemCount();
         }
     }
 
+    //= MVP View Interface Implementation ==========================================================
+
     @Override
-    public void onClick(View v) {
-        try{
-            taskModel.assignCandidate(tempCandidate);
-            adapter.insertCandidate(tempPosition, tempCandidate);
-        } catch (ProcessException err) {
-            errorManager.displayError(err);
-        }
+    public void insertCandidate(int position) {
+        adapter.notifyItemInserted(position);
     }
 
     @Override
-    public void onLongPressed(int position, View view, boolean toggleToTrue) {
-        adapter.tagCandidate(position, toggleToTrue);
+    public void removeCandidate(int position, int newSize) {
+        adapter.notifyItemRemoved(position);
+        adapter.notifyItemRangeChanged(position, newSize);
+    }
+
+    @Override
+    public void displayError(ProcessException err) {
+        errorManager.displayError(err);
     }
 }

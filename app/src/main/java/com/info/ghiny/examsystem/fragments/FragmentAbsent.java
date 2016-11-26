@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,7 +51,6 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
     private ErrorManager errorManager;
     private Bitmap retakeIcon;
 
-
     public FragmentAbsent(){}
 
     @Override
@@ -62,6 +63,8 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
         this.errorManager   = errorManager;
     }
 
+    //==============================================================================================
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +74,9 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater         inflater,
+                             @Nullable ViewGroup    container,
+                             @Nullable Bundle       savedInstanceState) {
         View view       =  inflater.inflate(R.layout.fragment_status_absent, null);
         recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerAbsentList);
         uploadButton    = getActivity().findViewById(R.id.uploadButton);
@@ -107,9 +112,17 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
     }
 
     private void initMVP(){
-        StatusAbsentPresenter presenter = new StatusAbsentPresenter(retakeIcon, this);
+        SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(getContext());
+        StatusAbsentPresenter presenter = new StatusAbsentPresenter(retakeIcon, preferences, this);
         presenter.setTaskModel(taskModel);
         this.taskPresenter              = presenter;
+    }
+
+    @Override
+    public void onResume() {
+        taskPresenter.onResume();
+        adapter.notifyDataSetChanged();
+        super.onResume();
     }
 
     @Override
@@ -118,6 +131,7 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
         super.onPause();
     }
 
+    //= Adapter Class ==============================================================================
 
     public class AbsentListAdapter extends RecyclerView.Adapter<CandidateDisplayHolder> {
 
@@ -137,6 +151,8 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
             return taskPresenter.getItemCount();
         }
     }
+
+    //= MVP View Interface Implementation ==========================================================
 
     @Override
     public void insertCandidate(int position) {

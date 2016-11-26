@@ -24,7 +24,6 @@
             android:summary="Check to enable vibration"
             android:defaultValue="false"
             android:icon="@drawable/scan_vibrate"/>
-
         <ListPreference
             android:title="Scanner Mode"
             android:key="ScannerMode"

@@ -24,6 +24,7 @@ public interface StatusFragmentMVP {
         CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType);
         void onBindViewHolder(CandidateDisplayHolder holder, int position);
         int getItemCount();
+        void onResume();
         void onPause();
         boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                        RecyclerView.ViewHolder target);
@@ -43,6 +44,7 @@ public interface StatusFragmentMVP {
         CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType);
         void onBindViewHolder(CandidateDisplayHolder holder, int position);
         int getItemCount();
+        void onResume();
         void onPause();
         boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                        RecyclerView.ViewHolder target);

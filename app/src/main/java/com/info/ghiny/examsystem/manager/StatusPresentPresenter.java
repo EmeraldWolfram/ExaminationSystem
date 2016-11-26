@@ -2,9 +2,7 @@ package com.info.ghiny.examsystem.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,7 +18,7 @@ import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
-
+import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -29,65 +27,66 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Created by user09 on 11/25/2016.
+ * Created by GhinY on 26/11/2016.
  */
 
-public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresenter {
+public class StatusPresentPresenter implements StatusFragmentMVP.PresentMvpPresenter {
 
     private Paint p;
-    private Bitmap retakeIcon;
+    private Bitmap undoAssignIcon;
     private Snackbar snackbar;
-    private ArrayList<Candidate> absentList;
-
-    private Candidate tempCandidate;
-    private int tempPosition;
-    private StatusFragmentMVP.AbsentMvpView taskView;
-    private SubmissionMVP.MvpModel taskModel;
-
+    private ArrayList<Candidate> presentList;
     private SharedPreferences preferences;
+
     private boolean prefGroup;
     private boolean prefAscend;
     private int prefSort;
 
-    public StatusAbsentPresenter(Bitmap retakeIcon, SharedPreferences preferences, StatusFragmentMVP.AbsentMvpView taskView){
-        this.p          = new Paint();
-        this.retakeIcon = retakeIcon;
-        this.taskView   = taskView;
-        this.preferences= preferences;
+    private Candidate tempCandidate;
+    private int tempPosition;
+    private StatusFragmentMVP.PresentMvpView taskView;
+    private SubmissionMVP.MvpModel taskModel;
+
+    public StatusPresentPresenter(Bitmap undoAssignIcon, SharedPreferences preferences,
+                                  StatusFragmentMVP.PresentMvpView taskView){
+        this.p              = new Paint();
+        this.taskView       = taskView;
+        this.undoAssignIcon = undoAssignIcon;
+        this.preferences    = preferences;
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
-        this.taskModel  = taskModel;
-        initAbsentList();
+        this.taskModel      = taskModel;
+        initPresentList();
     }
 
-    private void initAbsentList(){
+    private void initPresentList(){
         if(prefGroup){
             switch (prefSort){
                 case 1:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_ID, prefAscend);
                     break;
                 case 2:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_NAME, prefAscend);
                     break;
                 default:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_TABLE, prefAscend);
             }
         } else {
             switch (prefSort){
                 case 1:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_SORT_ID, prefAscend);
                     break;
                 case 2:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_SORT_NAME, prefAscend);
                     break;
                 default:
-                    this.absentList = taskModel.getCandidatesWith(Status.ABSENT,
+                    this.presentList = taskModel.getCandidatesWith(Status.PRESENT,
                             SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_TABLE, prefAscend);
             }
         }
@@ -98,7 +97,7 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
         prefGroup   = preferences.getBoolean("ProgrammeGrouping", true);
         prefAscend  = preferences.getBoolean("AscendingSort", true);
         prefSort    = Integer.parseInt(preferences.getString("CandidatesSorting", "3"));
-        initAbsentList();
+        initPresentList();
     }
 
     @Override
@@ -111,27 +110,39 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
     public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
-        return new CandidateDisplayHolder(context, v);
+        return new CandidateDisplayHolder(context, v, this);
     }
 
     @Override
     public void onBindViewHolder(CandidateDisplayHolder holder, int position) {
-        Candidate cdd   = absentList.get(position);
+        Candidate cdd   = presentList.get(position);
 
         holder.setCddName(cdd.getExamIndex());
         holder.setCddRegNum(cdd.getRegNum());
         holder.setCddPaperCode(cdd.getPaperCode());
         holder.setCddProgramme(cdd.getProgramme());
         holder.setCddTable(cdd.getTableNumber());
+        if(cdd.isLate()){
+            holder.setCddLateTag(true);
+        } else {
+            holder.setCddLateTag(false);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return absentList.size();
+        return presentList.size();
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    public void onLongPressed(int position, View view, boolean toggleToTrue) {
+        presentList.get(position).setLate(toggleToTrue);
+    }
+
+    @Override
+    public boolean onMove(RecyclerView            recyclerView,
+                          RecyclerView.ViewHolder viewHolder,
+                          RecyclerView.ViewHolder target) {
         return false;
     }
 
@@ -143,28 +154,28 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
         int position = viewHolder.getAdapterPosition();
         try{
             if (direction == ItemTouchHelper.LEFT){
-                tempCandidate   = absentList.remove(position);
-                taskView.removeCandidate(position, absentList.size());
-                taskModel.assignCandidate(tempCandidate);
-                String msg  = String.format(Locale.ENGLISH, "%s is now PRESENT",
-                        tempCandidate.getRegNum());
+                tempCandidate   = presentList.remove(position);
+                taskView.removeCandidate(position, presentList.size());
+                taskModel.unassignCandidate(position, tempCandidate);
                 tempPosition    = position;
+                String msg  = String.format(Locale.ENGLISH, "%s is now ABSENT",
+                        tempCandidate.getRegNum());
 
-                snackbar     = Snackbar.make(refView, msg, Snackbar.LENGTH_INDEFINITE);
+                snackbar = Snackbar.make(refView, msg, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction("UNDO", this);
                 snackbar.show();
             }
         } catch (ProcessException err) {
-            if(err.getErrorType() == ProcessException.MESSAGE_TOAST){
-                absentList.add(position, tempCandidate);
-                taskView.insertCandidate(position);
-            }
             taskView.displayError(err);
         }
     }
 
     @Override
-    public void onChildDraw(Canvas canvas, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(Canvas                  canvas,
+                            RecyclerView            recyclerView,
+                            RecyclerView.ViewHolder viewHolder,
+                            float dX, float dY, int actionState,
+                            boolean                 isCurrentlyActive) {
         if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
 
             View itemView = viewHolder.itemView;
@@ -172,7 +183,7 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
             float width = height / 3;
 
             if(dX < 0){
-                p.setColor(Color.parseColor("#00b500"));
+                p.setColor(Color.parseColor("#D32F2F"));
                 RectF background = new RectF(
                         (float) itemView.getRight() + dX,
                         (float) itemView.getTop(),
@@ -184,9 +195,7 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
                         (float) itemView.getRight()  - width,
                         (float) itemView.getBottom() - width);
                 canvas.drawRect(background,p);
-                if(retakeIcon != null){
-                    canvas.drawBitmap(retakeIcon, null, icon_dest, p);
-                }
+                canvas.drawBitmap(undoAssignIcon, null, icon_dest, p);
             }
         }
     }
@@ -194,8 +203,8 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
     @Override
     public void onClick(View v) {
         try{
-            taskModel.unassignCandidate(tempPosition, tempCandidate);
-            absentList.add(tempPosition, tempCandidate);
+            taskModel.assignCandidate(tempCandidate);
+            presentList.add(tempPosition, tempCandidate);
             taskView.insertCandidate(tempPosition);
         } catch (ProcessException err) {
             taskView.displayError(err);

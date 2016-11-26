@@ -15,9 +15,9 @@
     </string-array>
 
     <string-array name="sortEntries">
-        <item>Register Number of Candidate</item>
-        <item>Table Number Assigned to Candidate</item>
-        <item>Name of Candidate</item>
+        <item>Register Number</item>
+        <item>Name</item>
+        <item>Table Number</item>
     </string-array>
     <string-array name="sortValues">
         <item>1</item>
