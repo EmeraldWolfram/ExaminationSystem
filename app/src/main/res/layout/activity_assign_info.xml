@@ -66,7 +66,7 @@
 
         <ImageView
             android:id="@+id/takeAttdCrossHair"
-            app:srcCompat="@drawable/scan_frame"
+            app:srcCompat="@drawable/setting_1_cross_hair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

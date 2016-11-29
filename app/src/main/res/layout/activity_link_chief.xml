@@ -39,7 +39,7 @@
 
     <ImageView
         android:id="@+id/linkerCrossHair"
-        app:srcCompat="@drawable/scan_frame"
+        app:srcCompat="@drawable/setting_1_cross_hair"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_centerInParent="true"

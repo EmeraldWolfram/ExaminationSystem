@@ -18,7 +18,6 @@ import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.model.ProcessException;

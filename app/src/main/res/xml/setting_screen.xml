@@ -7,7 +7,7 @@
             android:key="CrossHair"
             android:summary="Check to enable target square"
             android:defaultValue="true"
-            android:icon="@drawable/scan_frame"/>
+            android:icon="@drawable/setting_1_cross_hair"/>
 
         <CheckBoxPreference
             android:id="@+id/beep"
@@ -15,7 +15,7 @@
             android:key="Beep"
             android:summary="Check to enable beep\nNOTE: Not applicable while taking attendance"
             android:defaultValue="false"
-            android:icon="@drawable/scan_beep"/>
+            android:icon="@drawable/setting_1_beep"/>
 
         <CheckBoxPreference
             android:id="@+id/vibrate"
@@ -23,7 +23,7 @@
             android:key="Vibrate"
             android:summary="Check to enable vibration"
             android:defaultValue="false"
-            android:icon="@drawable/scan_vibrate"/>
+            android:icon="@drawable/setting_1_vibrate"/>
         <ListPreference
             android:title="Scanner Mode"
             android:key="ScannerMode"
@@ -31,7 +31,7 @@
             android:entries="@array/modeEntries"
             android:entryValues="@array/modeValues"
             android:defaultValue="4"
-            android:icon="@drawable/scan_mode"/>
+            android:icon="@drawable/setting_1_mode"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Attendance List Group &amp; Sort" android:key="Sort">
         <CheckBoxPreference
@@ -40,14 +40,14 @@
             android:key="ProgrammeGrouping"
             android:summary="Group the attendance list according to Programme"
             android:defaultValue="true"
-            android:icon="@drawable/trash_icon"/>
+            android:icon="@drawable/setting_2_grouping"/>
         <CheckBoxPreference
             android:id="@+id/ascendingSort"
             android:title="Ascending Sort"
             android:key="AscendingSort"
             android:summary="Sort the attendance list in ascending order"
             android:defaultValue="true"
-            android:icon="@drawable/trash_icon"/>
+            android:icon="@drawable/setting_2_ascending"/>
         <ListPreference
             android:title="Candidates Sorting"
             android:key="CandidatesSorting"
@@ -55,7 +55,7 @@
             android:entries="@array/sortEntries"
             android:entryValues="@array/sortValues"
             android:defaultValue="2"
-            android:icon="@drawable/trash_icon"/>
+            android:icon="@drawable/setting_2_sorting"/>
 
     </PreferenceCategory>
 </PreferenceScreen>

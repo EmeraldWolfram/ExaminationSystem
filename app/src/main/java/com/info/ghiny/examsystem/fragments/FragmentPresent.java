@@ -1,17 +1,12 @@
 package com.info.ghiny.examsystem.fragments;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -20,20 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.manager.SortManager;
-import com.info.ghiny.examsystem.manager.StatusAbsentPresenter;
 import com.info.ghiny.examsystem.manager.StatusPresentPresenter;
 import com.info.ghiny.examsystem.model.ProcessException;
-
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by user09 on 11/22/2016.
