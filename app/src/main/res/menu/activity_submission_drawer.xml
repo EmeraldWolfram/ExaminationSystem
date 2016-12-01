@@ -4,23 +4,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_present"
-            android:icon="@drawable/icon_menu_present"
+            android:icon="@drawable/drawer_icon_present"
             android:title="PRESENT" />
         <item
             android:id="@+id/nav_absent"
-            android:icon="@drawable/icon_menu_absent"
+            android:icon="@drawable/drawer_icon_absent"
             android:title="ABSENT" />
         <item
             android:id="@+id/nav_barred"
-            android:icon="@drawable/icon_menu_barred"
+            android:icon="@drawable/drawer_icon_barred"
             android:title="BARRED" />
         <item
             android:id="@+id/nav_exempted"
-            android:icon="@drawable/icon_menu_barred"
+            android:icon="@drawable/drawer_icon_exempted"
             android:title="EXEMPTED" />
         <item
             android:id="@+id/nav_quarantined"
-            android:icon="@drawable/icon_menu_barred"
+            android:icon="@drawable/drawer_icon_quarantine"
             android:title="QUARANTINED" />
     </group>
 

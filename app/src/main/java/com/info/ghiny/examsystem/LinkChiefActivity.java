@@ -131,7 +131,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater   = this.getMenuInflater();
-        inflater.inflate(R.menu.home_option_menu, menu);
+        inflater.inflate(R.menu.action_menu, menu);
 
         return true;
     }
@@ -139,11 +139,11 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.setting:
+            case R.id.action_setting:
                 Intent setting  = new Intent(this, SettingActivity.class);
                 startActivity(setting);
                 return true;
-            case R.id.test:
+            case R.id.action_test:
                 TCPClient.setConnector(new Connector("192.168.0.1", 5432, "DUEL"));
                 ExternalDbLoader.setTcpClient(new TCPClient(null));
                 ExternalDbLoader.setConnectionTask(new ConnectionTask());

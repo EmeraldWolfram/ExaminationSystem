@@ -4,11 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +18,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.SubmissionPresenter;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.SubmissionModel;
 
@@ -39,6 +39,10 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     private ActionBarDrawerToggle drawerToggleButton;
     private DrawerLayout drawer;
     private NavigationView navigationView;
+
+    private TextView venue;
+    private TextView user;
+    private TextView session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,12 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
         navigationView  = (NavigationView)      findViewById(R.id.nav_view);
 
+        View header     = navigationView.getHeaderView(0);
+
+        user    = (TextView) header.findViewById(R.id.submitInChargeName);
+        venue   = (TextView) header.findViewById(R.id.submitInChargeVenue);
+        session = (TextView) header.findViewById(R.id.submitInChargeSession);
+
         drawerToggleButton = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -73,6 +83,14 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
         toolbar.setSubtitle("Present Candidates");
+
+        if(user == null){
+            Toast.makeText(this, "SOME", Toast.LENGTH_LONG).show();
+        }
+        StaffIdentity staff = LoginModel.getStaff();
+        user.setText(staff.getName());
+        venue.setText(staff.getExamVenue());
+        session.setText("AM");
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ft.replace(R.id.submitContainer, new FragmentPresent());
@@ -125,7 +143,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.submission, menu);
+        getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
     }
 
@@ -135,7 +153,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()){
-            case R.id.action_settings:
+            case R.id.action_setting:
                 Intent setting  = new Intent(this, SettingActivity.class);
                 startActivity(setting);
                 return true;

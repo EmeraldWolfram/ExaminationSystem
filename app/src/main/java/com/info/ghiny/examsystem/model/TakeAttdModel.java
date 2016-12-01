@@ -171,6 +171,13 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                 err.setListener(ProcessException.okayButton, taskPresenter);
                 err.setBackPressListener(taskPresenter);
                 throw err;
+            } else {
+                ProcessException err = new ProcessException(
+                        "Preparation complete.",
+                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+                err.setListener(ProcessException.okayButton, taskPresenter);
+                err.setBackPressListener(taskPresenter);
+                throw err;
             }
         } catch (ProcessException err){
             taskPresenter.onTimesOut(err);
