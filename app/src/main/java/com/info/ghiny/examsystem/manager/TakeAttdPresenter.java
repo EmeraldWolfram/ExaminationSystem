@@ -151,6 +151,11 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
+    public void onSwiped() {
+        taskModel.resetAttendanceAssignment();
+    }
+
+    @Override
     public void onSwipeLeft(){
         navigationFlag  = true;
         taskView.navigateActivity(ReportAttdActivity.class);

@@ -38,7 +38,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Collector"/>
+                android:text="@string/collector"/>
 
             <TextView
                 android:id="@+id/collectorId"

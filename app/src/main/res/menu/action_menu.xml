@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_test"
-        android:title="@string/testing" />
+        android:title="@string/testing"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_test_2"
+        android:title="Test Home Option"
+        app:showAsAction="never"/>
 
 </menu>

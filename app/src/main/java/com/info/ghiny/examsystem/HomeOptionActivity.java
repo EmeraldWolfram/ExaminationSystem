@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
@@ -27,11 +30,59 @@ import com.info.ghiny.examsystem.model.TakeAttdModel;
  */
 public class HomeOptionActivity extends AppCompatActivity {
 
+    public static final String FEATURE_INFO_GRAB    = "InfoGrab";
+    public static final String FEATURE_COLLECTION   = "Collection";
+    public static final String FEATURE_CONNECTION   = "Connection";
+    public static final String FEATURE_ATTENDANCE   = "Attendance";
+
+    private ImageView infoGrabButton;
+    private ImageView collectionButton;
+    private ImageView connectionButton;
+    private ImageView attendanceButton;
+
+    private boolean infoEnable;
+    private boolean collectionEnable;
+    private boolean connectionEnable;
+    private boolean attendanceEnable;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_option);
+
+        initView();
+        initMVP();
     }
+
+    private void initView(){
+        infoGrabButton      = (ImageView) findViewById(R.id.optionInfoGrab);
+        collectionButton    = (ImageView) findViewById(R.id.optionCollection);
+        connectionButton    = (ImageView) findViewById(R.id.optionConnection);
+        attendanceButton    = (ImageView) findViewById(R.id.optionAttendance);
+
+        Intent loginActivity    = getIntent();
+        infoEnable          = loginActivity.getBooleanExtra(FEATURE_INFO_GRAB, true);
+        collectionEnable    = loginActivity.getBooleanExtra(FEATURE_COLLECTION, false);
+        connectionEnable    = loginActivity.getBooleanExtra(FEATURE_CONNECTION, false);
+        attendanceEnable    = loginActivity.getBooleanExtra(FEATURE_ATTENDANCE, true);
+
+        infoGrabButton.setClickable(infoEnable);
+
+        collectionButton.setClickable(collectionEnable);
+        connectionButton.setClickable(connectionEnable);
+        connectionButton.setBackgroundColor(Color.GRAY);
+
+        attendanceButton.setClickable(attendanceEnable);
+
+    }
+
+    private void initMVP(){
+
+
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,11 +118,11 @@ public class HomeOptionActivity extends AppCompatActivity {
     }
 
     public void onCollection(View view){
-        Intent submitIntent = new Intent(this, CollectionActivity.class);
-        startActivity(submitIntent);
+        Intent collectionIntent = new Intent(this, CollectionActivity.class);
+        startActivity(collectionIntent);
     }
 
     public void onConnection(View view){
-
+        Toast.makeText(this, "CONNECTION Clicked", Toast.LENGTH_LONG).show();
     }
 }

@@ -24,6 +24,7 @@ import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
@@ -45,11 +46,12 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     private ProgressDialog progDialog;
     private TextView tableView;
-    private LinearLayout cddLayout;
     private TextView cddView;
     private TextView regNumView;
     private TextView paperView;
-    private RelativeLayout thisLayout;
+
+    private LinearLayout cddLayout;
+    private RelativeLayout bottomLayout;
 
     private int mode;
     private ImageView crossHairView;
@@ -85,19 +87,19 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private void initView(){
         barcodeView     = (BarcodeView) findViewById(R.id.assignScanner);
         errManager      = new ErrorManager(this);
-        thisLayout = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
-        cddLayout  = (LinearLayout)findViewById(R.id.tableInfoLayout);
-        cddView    = (TextView)findViewById(R.id.canddAssignText);
-        regNumView = (TextView)findViewById(R.id.regNumAssignText);
-        paperView  = (TextView)findViewById(R.id.paperAssignText);
-        tableView  = (TextView)findViewById(R.id.tableNumberText);
+        bottomLayout    = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
+        cddLayout       = (LinearLayout)findViewById(R.id.tableInfoLayout);
+        cddView         = (TextView)findViewById(R.id.canddAssignText);
+        regNumView      = (TextView)findViewById(R.id.regNumAssignText);
+        paperView       = (TextView)findViewById(R.id.paperAssignText);
+        tableView       = (TextView)findViewById(R.id.tableNumberText);
 
         scanInitiater   = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
         tagButton       = (FloatingActionButton) findViewById(R.id.lateTagButton);
         crossHairView   = (ImageView) findViewById(R.id.takeAttdCrossHair);
 
-        assert thisLayout != null;
-        thisLayout.setOnTouchListener(new OnSwipeListener(this){
+        cddLayout.setOnTouchListener(new OnSwipeAnimator(this, cddLayout, taskPresenter));
+        bottomLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeBottom(){
                 taskPresenter.onSwipeBottom();

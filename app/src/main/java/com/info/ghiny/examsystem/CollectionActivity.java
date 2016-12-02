@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import com.info.ghiny.examsystem.manager.CollectionPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.CollectionModel;
+import com.info.ghiny.examsystem.model.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -44,6 +46,8 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     private TextView bundlePaper;
     private TextView bundleProgramme;
     private TextView bundleVenue;
+
+    private LinearLayout infoContainer;
     private ProgressDialog progDialog;
     private BarcodeView barcodeView;
     private BarcodeCallback callback = new BarcodeCallback() {
@@ -86,14 +90,8 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
         bundleProgramme = (TextView) findViewById(R.id.bundleProgramme);
         bundleVenue     = (TextView) findViewById(R.id.bundleVenue);
 
-        RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.collectionLayout);
-        assert thisLayout != null;
-        thisLayout.setOnTouchListener(new OnSwipeListener(this){
-            @Override
-            public void onSwipeBottom() {
-                taskPresenter.onSwipeBottom();
-            }
-        });
+        infoContainer   = (LinearLayout) findViewById(R.id.collectionInfo);
+        infoContainer.setOnTouchListener(new OnSwipeAnimator(this, infoContainer, taskPresenter));
     }
 
     private void initMVP(){

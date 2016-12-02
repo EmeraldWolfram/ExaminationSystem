@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.view.View;
 
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.model.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -41,7 +42,8 @@ public interface TakeAttdMVP {
         void setTagButton(boolean showAntiTag);
     }
 
-    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {
+    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter,
+            OnSwipeAnimator.OnSwipeListener{
         void onBackPressed();   //Show dialog, prevent logout
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info

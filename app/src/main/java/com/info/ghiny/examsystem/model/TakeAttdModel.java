@@ -72,7 +72,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attdList    = dbLoader.queryAttendanceList();
             Candidate.setPaperList(dbLoader.queryPapers());
             updateAssignList();
-            initialized = true;
+            setInitialized(true);
         }
     }
 
@@ -88,7 +88,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         isDownloadComplete  = true;
         attdList    = JsonHelper.parseAttdList(chiefMessage);
         Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
-        initialized = true;
+        setInitialized(true);
         throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
                 IconManager.MESSAGE);
     }
@@ -104,7 +104,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         assgnList.clear();
 
         if(attdList == null){
-            if(initialized)
+            if(isInitialized())
                 throw new ProcessException("Attendance List is not initialize",
                         ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         } else {
@@ -164,7 +164,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void run() {
         try{
-            if(!isDownloadComplete && !initialized) {
+            if(!isDownloadComplete && !isInitialized()) {
                 ProcessException err = new ProcessException(
                         "Download failed. Response times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

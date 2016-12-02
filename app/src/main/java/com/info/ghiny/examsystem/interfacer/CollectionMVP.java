@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.view.View;
 
 import com.info.ghiny.examsystem.database.PaperBundle;
+import com.info.ghiny.examsystem.model.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -16,15 +17,8 @@ public interface CollectionMVP {
         void setCollector(String id);
     }
 
-    interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter {
-        /**
-         * onSwipeBottom()
-         *
-         * This method was called when the Layout view go through a swipe from top to bottom
-         * In here, it go to another activity when called(InfoGrabActivity)
-         */
-        void onSwipeBottom();
-
+    interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter,
+            OnSwipeAnimator.OnSwipeListener {
         void onTrash(android.view.View view);
     }
 

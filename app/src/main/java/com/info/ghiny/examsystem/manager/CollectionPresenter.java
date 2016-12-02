@@ -145,8 +145,12 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
     }
 
     @Override
-    public void onSwipeBottom(){
-        taskView.navigateActivity(InfoGrabActivity.class);
+    public void onSwiped() {
+        try{
+            taskModel.resetCollection();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
     }
 
     @Override
