@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_crop_free_black_150dp"
+        app:srcCompat="@drawable/button_cross_hair_icon"
         android:id="@+id/linkScanButton"
         android:layout_marginBottom="32dp"
         android:layout_alignParentBottom="true"

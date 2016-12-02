@@ -76,15 +76,19 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         if(!taskModel.isInitialized()){
             try{
                 taskModel.initAttendance();
-                if(!taskModel.isInitialized()){
-                    taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-                    handler.postDelayed(taskModel, 5000);
-                }
             } catch (ProcessException err) {
                 taskView.displayError(err);
             }
         }
         onResume();
+    }
+
+    @Override
+    public void onPostResume() {
+        if(!taskModel.isInitialized()){
+            taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
+            handler.postDelayed(taskModel, 5000);
+        }
     }
 
     @Override

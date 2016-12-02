@@ -64,7 +64,7 @@ public class PopUpLogin extends Activity {
             finish();
         } else {
             CustomToast toast   = new CustomToast(this);
-            toast.showCustomMessage("Please enter a password to proceed", R.drawable.warn_icon);
+            toast.showCustomMessage("Please enter a password to proceed", R.drawable.other_warn_icon);
         }
     }
 }

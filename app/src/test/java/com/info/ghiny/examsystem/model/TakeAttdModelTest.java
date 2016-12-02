@@ -584,7 +584,7 @@ public class TakeAttdModelTest {
         model.setDownloadComplete(true);
         model.setInitialized(true);
         model.run();
-        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+        verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
     @Test
@@ -592,7 +592,7 @@ public class TakeAttdModelTest {
         model.setDownloadComplete(false);
         model.setInitialized(true);
         model.run();
-        verify(taskPresenter, never()).onTimesOut(any(ProcessException.class));
+        verify(taskPresenter).onTimesOut(any(ProcessException.class));
     }
 
     @Test

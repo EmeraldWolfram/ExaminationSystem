@@ -64,7 +64,11 @@ public class SortManager {
         grpProgSortTable = new Comparator<Candidate>() {
             @Override
             public int compare(Candidate lhs, Candidate rhs) {
-                return lhs.getTableNumber().compareTo(rhs.getTableNumber());
+                int table = lhs.getTableNumber().compareTo(rhs.getTableNumber());
+                if(table != 0) {
+                    return table;
+                }
+                return lhs.getRegNum().compareTo(rhs.getRegNum());
             }
         };
 

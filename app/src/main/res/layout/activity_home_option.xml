@@ -28,17 +28,6 @@
         android:contentDescription="submission"/>
 
     <ImageButton
-        android:id="@+id/optionConnection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_below="@id/optionCollection"
-        android:layout_toRightOf="@id/optionInfoGrab"
-        app:srcCompat="@drawable/option_connection"
-        android:onClick="onConnection"
-        android:background="@drawable/custom_border"/>
-
-    <ImageButton
         android:id="@+id/optionInfoGrab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,5 +37,20 @@
         android:background="@drawable/custom_border"
         android:onClick="onInfo"
         android:contentDescription="candidate info"/>
+
+    <ImageButton
+        android:id="@+id/optionConnection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@id/optionCollection"
+        android:layout_toRightOf="@id/optionInfoGrab"
+        android:layout_toEndOf="@id/optionInfoGrab"
+        app:srcCompat="@drawable/option_connection"
+        android:onClick="onConnection"
+        android:background="@drawable/custom_border"
+        android:contentDescription="connection"/>
+
+
 
 </RelativeLayout>

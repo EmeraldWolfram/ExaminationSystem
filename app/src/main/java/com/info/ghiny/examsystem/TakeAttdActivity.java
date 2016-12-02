@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -125,6 +124,12 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     protected void onResume() {
         super.onResume();
         taskPresenter.onResume(errManager);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        taskPresenter.onPostResume();
     }
 
     @Override
@@ -270,7 +275,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     public void setTagButton(boolean showAntiTag) {
         if (showAntiTag){
-            tagButton.setImageResource(R.drawable.untag_icon);
+            tagButton.setImageResource(R.drawable.button_untag_icon);
         } else {
             tagButton.setImageResource(R.drawable.button_tag_icon);
         }

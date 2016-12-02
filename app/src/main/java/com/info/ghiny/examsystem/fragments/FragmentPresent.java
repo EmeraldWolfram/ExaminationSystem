@@ -54,7 +54,7 @@ public class FragmentPresent extends RootFragment implements StatusFragmentMVP.P
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        trashIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.trash_icon);
+        trashIcon   = BitmapFactory.decodeResource(getResources(), R.drawable.other_trash_icon);
         initMVP();
     }
 

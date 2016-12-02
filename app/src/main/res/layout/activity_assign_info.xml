@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:background="@color/colorDarkGreen">
         <TextView
             android:id="@+id/tableNumberText"
@@ -78,7 +79,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             app:fabSize="normal"
-            app:srcCompat="@drawable/ic_crop_free_black_150dp"
+            app:srcCompat="@drawable/button_cross_hair_icon"
             android:layout_marginBottom="32dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
@@ -94,6 +95,7 @@
             android:id="@+id/lateTagButton"
             android:layout_alignTop="@+id/takeAttdScanButton"
             android:layout_alignEnd="@+id/takeAttdCrossHair"
+            android:layout_alignRight="@id/takeAttdCrossHair"
             app:backgroundTint="@color/colorTagBlue" />
 
         <android.support.design.widget.FloatingActionButton
@@ -106,7 +108,8 @@
             android:id="@+id/undoAssignTrashButton"
             app:backgroundTint="@color/colorDarkRed"
             android:layout_alignTop="@+id/takeAttdScanButton"
-            android:layout_alignStart="@+id/takeAttdCrossHair" />
+            android:layout_alignStart="@+id/takeAttdCrossHair"
+            android:layout_alignLeft="@id/takeAttdCrossHair"/>
     </RelativeLayout>
 
 

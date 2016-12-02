@@ -1,40 +1,26 @@
 package com.info.ghiny.examsystem.fragments;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
-import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.manager.StatusAbsentPresenter;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.SubmissionModel;
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by user09 on 11/23/2016.
@@ -68,7 +54,7 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        retakeIcon  = BitmapFactory.decodeResource(getResources(), R.drawable.entry_icon);
+        retakeIcon  = BitmapFactory.decodeResource(getResources(), R.drawable.other_entry_icon);
         initMVP();
     }
 

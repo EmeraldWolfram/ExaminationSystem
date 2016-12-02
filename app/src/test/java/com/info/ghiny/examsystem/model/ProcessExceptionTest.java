@@ -63,7 +63,7 @@ public class ProcessExceptionTest {
         } catch(ProcessException e){
             assertEquals("Error Message",e.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_TOAST, e.getErrorType());
-            assertEquals(R.drawable.warn_icon, e.getErrorIcon());
+            assertEquals(R.drawable.other_warn_icon, e.getErrorIcon());
         }
     }
 
@@ -80,7 +80,7 @@ public class ProcessExceptionTest {
             assertEquals(ProcessException.MESSAGE_TOAST, e.getErrorType());
             assertNotNull(e.getErrorMsg());
             assertEquals("", e.getErrorMsg());
-            assertEquals(R.drawable.warn_icon, e.getErrorIcon());
+            assertEquals(R.drawable.other_warn_icon, e.getErrorIcon());
         }
     }
 
@@ -99,7 +99,7 @@ public class ProcessExceptionTest {
         } catch (ProcessException err){
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
-            assertEquals(R.drawable.msg_icon, err.getErrorIcon());
+            assertEquals(R.drawable.other_msg_icon, err.getErrorIcon());
             assertEquals(testListener1, err.getListener(ProcessException.okayButton));
             assertEquals(testListener2, err.getListener(ProcessException.cancelButton));
         }
@@ -119,7 +119,7 @@ public class ProcessExceptionTest {
         } catch (ProcessException err) {
             assertEquals("Something", err.getMessage());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
-            assertEquals(R.drawable.msg_icon, err.getErrorIcon());
+            assertEquals(R.drawable.other_msg_icon, err.getErrorIcon());
             assertNull(err.getListener("Whatever"));
     }
 }

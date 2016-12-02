@@ -10,28 +10,19 @@ public class IconManager {
     public static final int MESSAGE     = 1;
     public static final int ASSIGNED    = 2;
 
-    public static final int SWIPE_ICON_RETAKE   = 3;
-    public static final int SWIPE_ICON_TRASH    = 4;
-
     public IconManager(){}
 
     public int getIcon(int iconType){
         int icon;
         switch (iconType){
             case MESSAGE:
-                icon    = R.drawable.msg_icon;
+                icon    = R.drawable.other_msg_icon;
                 break;
             case ASSIGNED:
-                icon    = R.drawable.entry_icon_2;
-                break;
-            case SWIPE_ICON_RETAKE:
-                icon    = R.drawable.scroll_with_tick_icon;
-                break;
-            case SWIPE_ICON_TRASH:
-                icon    = R.drawable.trash_icon;
+                icon    = R.drawable.other_entry_icon_2;
                 break;
             default:
-                icon = R.drawable.warn_icon;
+                icon = R.drawable.other_warn_icon;
         }
         return icon;
     }
