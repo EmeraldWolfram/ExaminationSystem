@@ -35,7 +35,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     private ProgressDialog progDialog;
 
     private Toolbar toolbar;
-    private FloatingActionButton submitButton;
     private ActionBarDrawerToggle drawerToggleButton;
     private DrawerLayout drawer;
     private NavigationView navigationView;
@@ -46,11 +45,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("SOMETHING =============", "In On-Create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
-        Log.d("SOMETHING =============", "Created");
-
         initView();
         initMVP();
 
@@ -58,7 +54,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     private void initView(){
         toolbar         = (Toolbar)             findViewById(R.id.toolbar);
-        submitButton    = (FloatingActionButton)findViewById(R.id.uploadButton);
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
         navigationView  = (NavigationView)      findViewById(R.id.nav_view);
 
@@ -114,7 +109,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     protected void onResume() {
-        //taskPresenter.onResume(errorManager);
+        taskPresenter.onResume(errorManager);
         super.onResume();
     }
 

@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -250,10 +251,19 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attdList.removeCandidate(tempCdd.getRegNum());
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
                     tempCdd.getStatus(), tempCdd.getProgramme());
+            String str = String.format(Locale.ENGLISH,
+                    "%s was reset to ABSENT again!", tempCdd.getExamIndex());
+            taskPresenter.notifyUndone(str);
+        } else {
+            this.tempTable  = null;
+            this.tempCdd    = null;
         }
-        this.tempTable  = null;
-        this.tempCdd    = null;
         this.taskPresenter.notifyDisplayReset();
+    }
+
+    @Override
+    public void undoResetAttendanceAssignment() {
+        assignCandidate();
     }
 
     //= Setter & Getter ============================================================================

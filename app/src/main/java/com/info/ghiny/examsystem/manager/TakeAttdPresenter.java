@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.info.ghiny.examsystem.R;
@@ -26,6 +27,8 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
     private Handler handler;
+    private Snackbar snackbar;
+    private View refView;
 
     private SharedPreferences preferences;
     private boolean crossHair;
@@ -93,6 +96,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onPause(){
+        if(snackbar != null){
+            snackbar.dismiss();
+        }
         taskView.pauseScanning();
     }
 
@@ -109,17 +115,6 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
             taskView.securityPrompt(false);
         }
         navigationFlag  = false;
-    }
-
-    @Override
-    public void onBackPressed(){
-        taskView.pauseScanning();
-        ProcessException err    = new ProcessException("Confirm logout and exit?",
-                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
-        err.setBackPressListener(this);
-        err.setListener(ProcessException.yesButton, this);
-        err.setListener(ProcessException.noButton, this);
-        taskView.displayError(err);
     }
 
     @Override
@@ -141,6 +136,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onScan(String scanStr){
         try{
             taskView.pauseScanning();
+            if(snackbar != null){
+                snackbar.dismiss();
+            }
             taskModel.tryAssignScanValue(scanStr);
             taskView.resumeScanning();
         } catch (ProcessException err) {
@@ -151,8 +149,16 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
-    public void onSwiped() {
+    public void onSwiped(View refView) {
+        this.refView    = refView;
         taskModel.resetAttendanceAssignment();
+    }
+
+    @Override
+    public void notifyUndone(String message){
+        snackbar    = Snackbar.make(refView, message, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("UNDO", this);
+        snackbar.show();
     }
 
     @Override
@@ -235,15 +241,13 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
+    public void onClick(View v) {
+        taskModel.undoResetAttendanceAssignment();
+    }
+
+    @Override
     public void onClick(DialogInterface dialog, int which) {
-        switch(which){
-            case DialogInterface.BUTTON_POSITIVE:
-                taskView.finishActivity();
-                break;
-            default:
-                taskView.resumeScanning();
-                break;
-        }
+        taskView.resumeScanning();
         dialog.cancel();
     }
 

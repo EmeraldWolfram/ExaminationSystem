@@ -15,7 +15,7 @@ public interface TakeAttdMVP {
     byte TABLE_REASSIGN      = 0;
     byte CANDIDATE_REASSIGN  = 1;
 
-    interface View extends TaskScanView, TaskConnView, GeneralView {
+    interface View extends TaskScanView, TaskConnView, GeneralView,OnSwipeAnimator.OnSwipeListener {
         /**
          * setTableView(...)
          *
@@ -44,18 +44,19 @@ public interface TakeAttdMVP {
         void onTag(android.view.View view);
     }
 
-    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter,
-            OnSwipeAnimator.OnSwipeListener{
-        void onBackPressed();   //Show dialog, prevent logout
+    interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter {
+        void onSwiped(android.view.View refView);
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
         void onTag(android.view.View view);
         void onPostResume();
     }
 
-    interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+    interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener,
+            android.view.View.OnClickListener {
         void onTimesOut(ProcessException err);  //standard
 
+        void notifyUndone(String message);
         void notifyTableScanned(Integer tableNumber);
         void notifyCandidateScanned(Candidate cdd);
         void notifyDisplayReset();
@@ -115,6 +116,14 @@ public interface TakeAttdMVP {
          * If the set is partially filled or not filled, this method simply clear the view
          */
         void resetAttendanceAssignment();
+
+        /**
+         * undoResetAttendanceAssignment()
+         *
+         * The reverse of the previous method which is used to allow candidate to undo
+         * the reset
+         */
+        void undoResetAttendanceAssignment();
 
         /**
          * tagAsLateNot()

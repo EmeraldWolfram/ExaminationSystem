@@ -38,7 +38,7 @@ import java.util.List;
  * Created by GhinY on 13/05/2016.
  */
 public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.View{
-    private static final String TAG = TakeAttdActivity.class.getSimpleName();
+    public static final String TAG = TakeAttdActivity.class.getSimpleName();
 
     //Required Tools
     private TakeAttdMVP.VPresenter taskPresenter;
@@ -49,6 +49,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private TextView cddView;
     private TextView regNumView;
     private TextView paperView;
+    private ImageView tagIndicator;
 
     private LinearLayout cddLayout;
     private RelativeLayout bottomLayout;
@@ -93,12 +94,13 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         regNumView      = (TextView)findViewById(R.id.regNumAssignText);
         paperView       = (TextView)findViewById(R.id.paperAssignText);
         tableView       = (TextView)findViewById(R.id.tableNumberText);
+        tagIndicator    = (ImageView)findViewById(R.id.assignImageTag);
 
         scanInitiater   = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
         tagButton       = (FloatingActionButton) findViewById(R.id.lateTagButton);
         crossHairView   = (ImageView) findViewById(R.id.takeAttdCrossHair);
 
-        cddLayout.setOnTouchListener(new OnSwipeAnimator(this, cddLayout, taskPresenter));
+        cddLayout.setOnTouchListener(new OnSwipeAnimator(this, cddLayout, this));
         bottomLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
             public void onSwipeBottom(){
@@ -157,11 +159,6 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     @Override
-    public void onBackPressed() {
-        taskPresenter.onBackPressed();
-    }
-
-    @Override
     public void onInitiateScan(View view) {
         barcodeView.resume();
     }
@@ -172,6 +169,13 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     //= MVP Interface Method =======================================================================
+
+
+    @Override
+    public void onSwiped() {
+        taskPresenter.onSwiped(tagButton);
+    }
+
     @Override
     public void setTableView(String tableNum) {
         tableView.setTypeface(Typeface.createFromAsset(getAssets(), ConfigManager.THICK_FONT));
@@ -274,8 +278,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     public void setTagButton(boolean showAntiTag) {
         if (showAntiTag){
+            tagIndicator.setVisibility(View.VISIBLE);
             tagButton.setImageResource(R.drawable.button_untag_icon);
         } else {
+            tagIndicator.setVisibility(View.INVISIBLE);
             tagButton.setImageResource(R.drawable.button_tag_icon);
         }
     }

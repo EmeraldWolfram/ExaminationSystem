@@ -1,11 +1,11 @@
 package com.info.ghiny.examsystem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,27 +13,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.info.ghiny.examsystem.database.AttendanceList;
-import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.Connector;
-import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.LoginModel;
+import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
-import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 /**
  * Created by GhinY on 01/07/2016.
  */
-public class HomeOptionActivity extends AppCompatActivity {
+public class HomeOptionActivity extends AppCompatActivity
+        implements DialogInterface.OnCancelListener, DialogInterface.OnClickListener{
 
     public static final String FEATURE_INFO_GRAB    = "InfoGrab";
     public static final String FEATURE_COLLECTION   = "Collection";
     public static final String FEATURE_CONNECTION   = "Connection";
     public static final String FEATURE_ATTENDANCE   = "Attendance";
+
+    private ErrorManager errorManager;
 
     private ImageView infoGrabButton;
     private ImageView collectionButton;
@@ -78,7 +73,7 @@ public class HomeOptionActivity extends AppCompatActivity {
     }
 
     private void initMVP(){
-
+        errorManager    = new ErrorManager(this);
 
     }
 
@@ -105,7 +100,32 @@ public class HomeOptionActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        ProcessException err    = new ProcessException("Confirm logout and exit?",
+                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
+        err.setBackPressListener(this);
+        err.setListener(ProcessException.yesButton, this);
+        err.setListener(ProcessException.noButton, this);
+        errorManager.displayError(err);
+    }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        dialog.cancel();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        switch(which){
+            case DialogInterface.BUTTON_POSITIVE:
+                finish();
+                break;
+            default:
+                dialog.cancel();
+                break;
+        }
+    }
 
     public void onAttendance(View view){
         Intent assignIntent = new Intent(this, TakeAttdActivity.class);
