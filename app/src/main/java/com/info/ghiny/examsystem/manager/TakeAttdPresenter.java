@@ -269,9 +269,4 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onTag(View view) {
         taskModel.tagAsLateNot();
     }
-
-    @Override
-    public void onTrash(View view) {
-        taskModel.resetAttendanceAssignment();
-    }
 }

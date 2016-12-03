@@ -40,6 +40,8 @@ public interface TakeAttdMVP {
         void setAssignBackgroundColor(int color);
 
         void setTagButton(boolean showAntiTag);
+
+        void onTag(android.view.View view);
     }
 
     interface VPresenter extends TaskScanPresenter, TaskSecurePresenter, TaskConnPresenter,
@@ -48,7 +50,6 @@ public interface TakeAttdMVP {
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
         void onTag(android.view.View view);
-        void onTrash(android.view.View view);
         void onPostResume();
     }
 

@@ -271,19 +271,6 @@ public class CollectionPresenterTest {
         verify(taskView).securityPrompt(false);
     }
 
-    //= OnSwipeBottom() ============================================================================
-    /**
-     * onSwipeBottom()
-     *
-     * This method will be called when the CollectionActivity was swiped from top to bottom
-     * this method should start the InfoGrabActivity
-     */
-    @Test
-    public void testOnSwipeBottom() throws Exception {
-        manager.onSwipeBottom();
-        verify(taskView).navigateActivity(InfoGrabActivity.class);
-    }
-
     //= OnClick(...) ===============================================================================
     /**
      * onClick(...)
