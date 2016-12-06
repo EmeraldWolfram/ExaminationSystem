@@ -2,7 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import android.os.AsyncTask;
 
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -17,10 +17,10 @@ import java.util.Calendar;
 
 public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     private LinkChiefMVP.MPresenter taskPresenter;
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
     private ConnectionTask task;
 
-    public LinkChiefModel(CheckListLoader dbLoader, LinkChiefMVP.MPresenter taskPresenter){
+    public LinkChiefModel(LocalDbLoader dbLoader, LinkChiefMVP.MPresenter taskPresenter){
         this.dbLoader       = dbLoader;
         this.taskPresenter  = taskPresenter;
     }

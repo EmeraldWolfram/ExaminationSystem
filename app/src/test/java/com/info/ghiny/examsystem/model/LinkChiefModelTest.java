@@ -1,16 +1,14 @@
 package com.info.ghiny.examsystem.model;
 
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
-import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -30,7 +28,7 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
 public class LinkChiefModelTest {
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
     private LinkChiefMVP.MPresenter taskPresenter;
     private LinkChiefModel model;
     private ConnectionTask task;
@@ -39,7 +37,7 @@ public class LinkChiefModelTest {
 
     @Before
     public void setUp() throws Exception {
-        dbLoader        = Mockito.mock(CheckListLoader.class);
+        dbLoader        = Mockito.mock(LocalDbLoader.class);
         taskPresenter   = Mockito.mock(LinkChiefMVP.MPresenter.class);
         task            = Mockito.mock(ConnectionTask.class);
         staff           = new StaffIdentity("id", true, "name", "M4");

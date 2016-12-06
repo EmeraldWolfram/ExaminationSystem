@@ -1,6 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -31,7 +31,7 @@ public class LoginModelTest {
     private LoginModel helper;
     private StaffIdentity staffId;
     private LoginMVP.MPresenter taskPresenter;
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
     private TCPClient tcpClient;
     private String MESSAGE_FROM_CHIEF;
 
@@ -40,7 +40,7 @@ public class LoginModelTest {
         TCPClient.setConnector(null);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
 
-        dbLoader        = Mockito.mock(CheckListLoader.class);
+        dbLoader        = Mockito.mock(LocalDbLoader.class);
         taskPresenter   = Mockito.mock(LoginMVP.MPresenter.class);
         LoginModel.setStaff(null);
 

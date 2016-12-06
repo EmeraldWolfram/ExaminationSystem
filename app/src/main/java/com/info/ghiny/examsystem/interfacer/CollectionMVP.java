@@ -17,12 +17,10 @@ public interface CollectionMVP {
         void setCollector(String id);
     }
 
-    interface PresenterForView extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter,
-            OnSwipeAnimator.OnSwipeListener {
-        void onTrash(android.view.View view);
-    }
+    interface MvpVPresenter extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter,
+            OnSwipeAnimator.OnSwipeListener {}
 
-    interface PresenterForModel extends DialogInterface.OnClickListener,
+    interface MvpMPresenter extends DialogInterface.OnClickListener,
             DialogInterface.OnCancelListener {
         /**
          * onClick and onCancel

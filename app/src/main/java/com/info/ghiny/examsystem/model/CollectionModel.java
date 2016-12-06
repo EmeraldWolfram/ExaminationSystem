@@ -11,13 +11,13 @@ import com.info.ghiny.examsystem.manager.IconManager;
 
 public class CollectionModel implements CollectionMVP.Model {
 
-    private CollectionMVP.PresenterForModel taskPresenter;
+    private CollectionMVP.MvpMPresenter taskPresenter;
     private String staffIdentity;
     private PaperBundle bundle;
     private boolean acknowledgeCollection;
     private boolean acknowledgeUndoCollection;
 
-    public CollectionModel(CollectionMVP.PresenterForModel taskPresenter){
+    public CollectionModel(CollectionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.staffIdentity  = null;
         this.bundle         = null;

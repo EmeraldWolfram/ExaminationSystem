@@ -127,7 +127,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -194,7 +193,10 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, title, message);
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
     }
 
     @Override

@@ -15,6 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".LinkChiefActivity"
+            android:label="Connection Setup"
             android:screenOrientation="userPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,18 +25,22 @@
         </activity>
         <activity
             android:name=".MainLoginActivity"
+            android:label="Login Page"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".InfoGrabActivity"
+            android:label="Info Enquiry"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".TakeAttdActivity"
+            android:label="Attendance Collection"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".ReportAttdActivity"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".HomeOptionActivity"
+            android:label="Home"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".PopUpLogin"
@@ -43,13 +48,20 @@
             android:theme="@style/AppTheme.CustomTheme" />
         <activity
             android:name=".CollectionActivity"
+            android:label="Exam Papers Collection"
             android:screenOrientation="userPortrait" />
         <activity android:name=".InfoDisplayActivity" />
-        <activity android:name=".SettingActivity" />
+        <activity
+            android:name=".SettingActivity"
+            android:label="Setting"/>
         <activity
             android:name=".SubmissionActivity"
-            android:label="Attendance List"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:label="Attendance Report"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DistributionActivity"
+            android:label="Work Distribution"
+            android:screenOrientation="userPortrait"/>
     </application>
 
 </manifest>

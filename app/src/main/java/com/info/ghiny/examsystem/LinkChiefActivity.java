@@ -25,7 +25,7 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -97,7 +97,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     private void initMVP(){
         SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
         LinkChiefPresenter presenter= new LinkChiefPresenter(this, preferences);
-        CheckListLoader dbLoader    = new CheckListLoader(this);
+        LocalDbLoader dbLoader    = new LocalDbLoader(this);
         LinkChiefModel model        = new LinkChiefModel(dbLoader, presenter);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
@@ -175,7 +175,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
             case R.id.action_test_2:
                 Intent home = new Intent(this, HomeOptionActivity.class);
                 home.putExtra(HomeOptionActivity.FEATURE_INFO_GRAB, true);
-                home.putExtra(HomeOptionActivity.FEATURE_CONNECTION, false);
+                home.putExtra(HomeOptionActivity.FEATURE_CONNECTION, true);
                 home.putExtra(HomeOptionActivity.FEATURE_COLLECTION, true);
                 home.putExtra(HomeOptionActivity.FEATURE_ATTENDANCE, true);
                 startActivity(home);
@@ -263,7 +263,10 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, title, message);
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
     }
 
     @Override

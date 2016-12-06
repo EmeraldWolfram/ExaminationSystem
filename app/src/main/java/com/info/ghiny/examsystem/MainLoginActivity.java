@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.LoginPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -35,7 +35,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
 
     //private LoginPresenter loginManager;
     private LoginMVP.VPresenter taskPresenter;
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
     private ErrorManager errorManager;
     private BeepManager beepManager;
     private ProgressDialog progDialog;
@@ -82,7 +82,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     }
 
     private void initMVP(){
-        dbLoader        = new CheckListLoader(this);
+        dbLoader        = new LocalDbLoader(this);
         SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
         LoginPresenter presenter  = new LoginPresenter(this, preferences);
         LoginModel model       = new LoginModel(presenter, dbLoader);
@@ -179,7 +179,10 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, title, message);
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
     }
 
     @Override

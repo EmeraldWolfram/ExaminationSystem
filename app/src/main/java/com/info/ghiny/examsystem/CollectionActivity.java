@@ -13,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
@@ -24,7 +23,6 @@ import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.CollectionModel;
 import com.info.ghiny.examsystem.model.OnSwipeAnimator;
-import com.info.ghiny.examsystem.model.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -37,7 +35,7 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     private ErrorManager errorManager;
     private BeepManager beepManager;
-    private CollectionMVP.PresenterForView taskPresenter;
+    private CollectionMVP.MvpVPresenter taskPresenter;
 
     private int mode;
     private ImageView crossHairView;
@@ -203,7 +201,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, title, message);
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
     }
 
     @Override
@@ -232,10 +233,6 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     @Override
     public void onInitiateScan(View view) {
         barcodeView.resume();
-    }
-
-    public void onTrash(View view){
-        taskPresenter.onTrash(view);
     }
 
     @Override

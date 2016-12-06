@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -62,19 +63,24 @@ public class HomeOptionActivity extends AppCompatActivity
         connectionEnable    = loginActivity.getBooleanExtra(FEATURE_CONNECTION, false);
         attendanceEnable    = loginActivity.getBooleanExtra(FEATURE_ATTENDANCE, true);
 
-        infoGrabButton.setClickable(infoEnable);
-
-        collectionButton.setClickable(collectionEnable);
-        connectionButton.setClickable(connectionEnable);
-        connectionButton.setBackgroundColor(Color.GRAY);
-
-        attendanceButton.setClickable(attendanceEnable);
-
+        setupButton(infoEnable, infoGrabButton);
+        setupButton(collectionEnable, collectionButton);
+        setupButton(connectionEnable, connectionButton);
+        setupButton(attendanceEnable, attendanceButton);
     }
 
     private void initMVP(){
         errorManager    = new ErrorManager(this);
 
+    }
+
+    private void setupButton(boolean enable, ImageView button){
+        button.setClickable(enable);
+        if(enable){
+            button.setBackgroundResource(R.drawable.custom_border_enabled);
+        } else {
+            button.setBackgroundResource(R.drawable.custom_border_disabled);
+        }
     }
 
 
@@ -142,7 +148,8 @@ public class HomeOptionActivity extends AppCompatActivity
         startActivity(collectionIntent);
     }
 
-    public void onConnection(View view){
-        Toast.makeText(this, "CONNECTION Clicked", Toast.LENGTH_LONG).show();
+    public void onDistribution(View view){
+        Intent collectionIntent = new Intent(this, DistributionActivity.class);
+        startActivity(collectionIntent);
     }
 }

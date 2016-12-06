@@ -19,7 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.TakeAttdPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -75,7 +75,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assign_info);
+        setContentView(R.layout.activity_take_attd);
 
         initMVP();
         initView();
@@ -115,7 +115,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     private void initMVP(){
         SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
-        CheckListLoader dbLoader        = new CheckListLoader(this);
+        LocalDbLoader dbLoader        = new LocalDbLoader(this);
         TakeAttdPresenter presenter     = new TakeAttdPresenter(this, preferences);
         TakeAttdModel model             = new TakeAttdModel(presenter, dbLoader);
         presenter.setTaskModel(model);
@@ -257,7 +257,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     @Override
     public void openProgressWindow(String title, String message) {
-        progDialog  = ProgressDialog.show(this, title, message);
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
     }
 
     @Override

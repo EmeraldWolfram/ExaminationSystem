@@ -4,7 +4,7 @@ import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
@@ -21,7 +21,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private HashMap<Integer, String> assgnList;
     private static AttendanceList attdList;
     private TakeAttdMVP.MPresenter taskPresenter;
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
 
     private boolean tagNextLate;
     private boolean isDownloadComplete;
@@ -29,7 +29,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private Candidate tempCdd    = null;
     private Integer tempTable    = null;
 
-    public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter, CheckListLoader dbLoader){
+    public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter, LocalDbLoader dbLoader){
         this.taskPresenter      = taskPresenter;
         this.dbLoader           = dbLoader;
         this.initialized        = false;

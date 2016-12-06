@@ -28,7 +28,7 @@
         app:srcCompat="@drawable/option_attendance"
         android:background="@drawable/custom_border_enabled"
         android:onClick="onAttendance"
-        android:contentDescription="assign"/>
+        android:contentDescription="Attendance"/>
 
     <ImageButton
         android:id="@+id/optionCollection"
@@ -41,7 +41,7 @@
         app:srcCompat="@drawable/option_collection"
         android:background="@drawable/custom_border_enabled"
         android:onClick="onCollection"
-        android:contentDescription="submission"/>
+        android:contentDescription="Bundle Collection"/>
 
     <ImageButton
         android:id="@+id/optionInfoGrab"
@@ -54,7 +54,7 @@
         app:srcCompat="@drawable/option_info_grab"
         android:background="@drawable/custom_border_enabled"
         android:onClick="onInfo"
-        android:contentDescription="candidate info"/>
+        android:contentDescription="Info"/>
 
     <ImageButton
         android:id="@+id/optionConnection"
@@ -65,9 +65,9 @@
         android:layout_toRightOf="@id/centerHorizontal"
         android:layout_toEndOf="@id/centerHorizontal"
         app:srcCompat="@drawable/option_connection"
-        android:onClick="onConnection"
+        android:onClick="onDistribution"
         android:background="@drawable/custom_border_enabled"
-        android:contentDescription="connection"/>
+        android:contentDescription="Distribution"/>
 
 
 

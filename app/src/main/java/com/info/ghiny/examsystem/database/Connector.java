@@ -101,7 +101,7 @@ public class Connector {
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "$CHIEF:"
+        return String.format(Locale.ENGLISH, "$IN-CHARGE:"
                 + ipAddress     + ":"
                 + portNumber    + ":"
                 + duelMessage   + ":$");

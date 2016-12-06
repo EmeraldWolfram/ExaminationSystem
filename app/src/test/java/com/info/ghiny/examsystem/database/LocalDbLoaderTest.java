@@ -3,7 +3,6 @@ package com.info.ghiny.examsystem.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest= Config.NONE)
-public class CheckListLoaderTest {
+public class LocalDbLoaderTest {
 
     private static final String FILLED_DB_PATH  = "/database/FragListDb.db";
     private static final String EMPTY_DB_PATH   = "/database/EmptyListDb.db";
@@ -30,7 +29,7 @@ public class CheckListLoaderTest {
     private static final String FILLED_USER_PATH    = "/database/FilledUserDb.db";
 
     private String dbPath;
-    private CheckListLoader dbLoader;
+    private LocalDbLoader dbLoader;
 
     private String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
             "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme, Late) VALUES (";
@@ -38,7 +37,7 @@ public class CheckListLoaderTest {
     @Before
     public void setUp() throws Exception {
         Context context = Mockito.mock(Context.class);
-        dbLoader    = new CheckListLoader(context);
+        dbLoader    = new LocalDbLoader(context);
     }
 
     //= emptyAttdInDB() & emptyPapersInDB() ========================================================
@@ -58,7 +57,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertTrue(dbLoader.emptyAttdInDB());
         assertTrue(dbLoader.emptyPapersInDB());
@@ -73,7 +72,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertFalse(dbLoader.emptyAttdInDB());
         assertFalse(dbLoader.emptyPapersInDB());
@@ -97,7 +96,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         AttendanceList attdList = dbLoader.queryAttendanceList();
 
@@ -117,7 +116,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         AttendanceList attdList = dbLoader.queryAttendanceList();
 
@@ -166,7 +165,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         HashMap<String, ExamSubject> paperMap   = dbLoader.queryPapers();
 
@@ -182,7 +181,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         HashMap<String, ExamSubject> paperMap   = dbLoader.queryPapers();
 
@@ -214,7 +213,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         assertTrue(dbLoader.emptyAttdInDB());
@@ -246,7 +245,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertEquals(0, dbLoader.queryAttendanceList().getTotalNumberOfCandidates());
 
@@ -282,7 +281,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         assertEquals(0, dbLoader.queryPapers().size());
@@ -314,7 +313,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         assertTrue(dbLoader.emptyConnectorInDB());
         assertTrue(dbLoader.emptyUserInDB());
@@ -329,7 +328,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         assertFalse(dbLoader.emptyConnectorInDB());
         assertFalse(dbLoader.emptyUserInDB());
@@ -345,7 +344,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertTrue(dbLoader.emptyConnectorInDB());
         db.execSQL("INSERT INTO ConnectionTable (IP, Port, RegDate, Session) " +
@@ -366,7 +365,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertTrue(dbLoader.emptyUserInDB());
         db.execSQL("INSERT INTO StaffTable (IdNo, HashPass, Name, Venue, Status) " +
@@ -388,7 +387,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         Connector connector = dbLoader.queryConnector();
         assertNull(connector);
@@ -403,7 +402,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         Connector connector = dbLoader.queryConnector();
 
@@ -426,7 +425,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         assertTrue(dbLoader.emptyConnectorInDB());
         Connector connector = new Connector("127.0.0.1", 6666, null);
@@ -449,7 +448,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         StaffIdentity id = dbLoader.queryUser();
         assertNull(id);
@@ -464,7 +463,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         StaffIdentity id = dbLoader.queryUser();
 
@@ -486,7 +485,7 @@ public class CheckListLoaderTest {
         assertTrue(dbFile.exists());
         dbPath = dbFile.getAbsolutePath();
         SQLiteDatabase db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-        CheckListLoader.setDatabase(db);
+        LocalDbLoader.setDatabase(db);
 
         assertTrue(dbLoader.emptyUserInDB());
         StaffIdentity id    = new StaffIdentity("156666", true, "Staff2", "M2");

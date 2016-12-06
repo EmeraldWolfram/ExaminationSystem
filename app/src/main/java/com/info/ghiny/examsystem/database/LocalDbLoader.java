@@ -3,7 +3,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.style.TtsSpan;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * Created by GhinY on 22/07/2016.
  */
-public class CheckListLoader {
+public class LocalDbLoader {
     private static final int DATABASE_VERSION       = 6;
     private static final String DATABASE_NAME       = "FragListDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
@@ -45,13 +44,13 @@ public class CheckListLoader {
     private static SQLiteDatabase database;
     private static CheckListOpenHelper openHelper;
 
-    public CheckListLoader(Context context){
+    public LocalDbLoader(Context context){
         openHelper  = new CheckListOpenHelper(context);
         database    = openHelper.getWritableDatabase();
     }
 
     public static void setDatabase(SQLiteDatabase database) {
-        CheckListLoader.database = database;
+        LocalDbLoader.database = database;
     }
 
     //AVAILABLE METHOD ========================================================================

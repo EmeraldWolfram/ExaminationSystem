@@ -155,20 +155,6 @@ public class TakeAttdPresenterTest {
         verify(taskView).securityPrompt(false);
     }
 
-    //= OnBackPressed() ============================================================================
-    /**
-     * onBackPressed()
-     *
-     * ask the user for confirmation on logging out when called
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testOnBackPressed() throws Exception {
-        manager.onBackPressed();
-        verify(taskView).displayError(any(ProcessException.class));
-    }
-
     //= OnPause() ==================================================================================
     /**
      * onPause()
@@ -456,7 +442,7 @@ public class TakeAttdPresenterTest {
         manager.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
 
         verify(dialog).cancel();
-        verify(taskView).finishActivity();
+        verify(taskView).resumeScanning();
     }
 
     //= OnCancel(...) ==============================================================================

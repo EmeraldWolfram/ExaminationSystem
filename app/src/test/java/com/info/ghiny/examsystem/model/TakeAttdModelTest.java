@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CheckListLoader;
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 @Config(manifest= Config.NONE)
 public class TakeAttdModelTest {
 
-    private CheckListLoader dBLoader;
+    private LocalDbLoader dBLoader;
     private TakeAttdModel model;
     private TakeAttdMVP.MPresenter taskPresenter;
     private StaffIdentity staff;
@@ -100,7 +100,7 @@ public class TakeAttdModelTest {
         paperList.put(subject2.getPaperCode(), subject2);
         paperList.put(subject3.getPaperCode(), subject3);
 
-        dBLoader = Mockito.mock(CheckListLoader.class);
+        dBLoader = Mockito.mock(LocalDbLoader.class);
 
         taskPresenter = Mockito.mock(TakeAttdMVP.MPresenter.class);
         model   = new TakeAttdModel(taskPresenter, dBLoader);
@@ -1318,8 +1318,6 @@ public class TakeAttdModelTest {
         model.resetAttendanceAssignment();
 
         assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
-        assertNull(model.getTempCdd());
-        assertNull(model.getTempTable());
         verify(taskPresenter).notifyDisplayReset();
     }
 

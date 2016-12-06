@@ -7,20 +7,17 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.view.View;
 
-import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
-import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class CollectionPresenter implements CollectionMVP.PresenterForView, CollectionMVP.PresenterForModel {
+public class CollectionPresenter implements CollectionMVP.MvpVPresenter, CollectionMVP.MvpMPresenter {
     private CollectionMVP.View taskView;
     private CollectionMVP.Model taskModel;
     private Handler handler;
@@ -146,15 +143,6 @@ public class CollectionPresenter implements CollectionMVP.PresenterForView, Coll
 
     @Override
     public void onSwiped() {
-        try{
-            taskModel.resetCollection();
-        } catch (ProcessException err) {
-            taskView.displayError(err);
-        }
-    }
-
-    @Override
-    public void onTrash(View view) {
         try{
             taskModel.resetCollection();
         } catch (ProcessException err) {

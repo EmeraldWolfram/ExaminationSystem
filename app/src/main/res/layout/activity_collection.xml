@@ -107,16 +107,4 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/collectScanButton" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:onClick="onTrash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:fabSize="normal"
-        app:srcCompat="@drawable/button_trash_icon"
-        android:layout_alignBottom="@+id/collectScanButton"
-        android:layout_alignEnd="@+id/collectCrossHair"
-        android:id="@+id/collectTrashButton"
-        app:backgroundTint="@color/colorDarkRed" />
-
 </RelativeLayout>

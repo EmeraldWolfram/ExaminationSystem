@@ -18,7 +18,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by GhinY on 05/10/2016.
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class CollectionModelTest {
 
     private CollectionModel model;
-    private CollectionMVP.PresenterForModel presenterFace;
+    private CollectionMVP.MvpMPresenter presenterFace;
     private TCPClient tcpClient;
     private StaffIdentity staff;
 
@@ -42,7 +41,7 @@ public class CollectionModelTest {
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
         ExternalDbLoader.setTcpClient(tcpClient);
-        presenterFace   = Mockito.mock(CollectionMVP.PresenterForModel.class);
+        presenterFace   = Mockito.mock(CollectionMVP.MvpMPresenter.class);
 
         model   = new CollectionModel(presenterFace);
     }
