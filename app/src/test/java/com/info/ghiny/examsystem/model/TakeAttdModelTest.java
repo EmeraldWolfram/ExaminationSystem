@@ -753,43 +753,6 @@ public class TakeAttdModelTest {
         assertFalse(cdd2.isLate());
     }
 
-    //= CheckTable =================================================================================
-    /**
-     * checkTable()
-     *
-     * This method should not be called by outsider.
-     * Partial method of tryAssignScanValue(...) 1st piece of 6
-     *
-     * This method should verify the table is a valid table number in the venue
-     * and check if the string is all digits
-     *
-     * Tests:
-     * 1. Input string was a valid table
-     * 2. Input string was not a full digit number (not possible to be table)
-     *
-     */
-    @Test
-    public void testCheckTable1_ValidNumberString() throws Exception {
-        try{
-            model.checkTable("12");
-
-            assertNotNull(model.getTempTable());
-            assertEquals(12, model.getTempTable().intValue());
-        } catch (ProcessException err) {
-            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
-        }
-    }
-
-    @Test
-    public void testCheckTable2_NotFullDigitNumber() throws Exception {
-        try{
-            model.checkTable("3A");
-        } catch (ProcessException err) {
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Not a valid QR code", err.getErrorMsg());
-        }
-    }
-
     //= VerifyTable(...) ===========================================================================
     /**
      * verifyTable(...)
@@ -823,102 +786,6 @@ public class TakeAttdModelTest {
             assertNull(model.getTempTable());
         } catch (ProcessException err) {
             fail("Exception --" + err.getErrorMsg() + "-- is not expected");
-        }
-    }
-
-    //= CheckCandidate =============================================================================
-    /**
-     * checkCandidate()
-     *
-     * This method should NOT be called by outsider.
-     * Partial method of tryAssignScanValue(...) 2nd piece of 6
-     *
-     * This method used to verify the scan String is a candidate register number
-     * If verification passed, the candidate will be register into the candidate buffer
-     * Exception will be thrown if verification failed
-     *
-     * Tests:
-     * 2. Input String is a candidate, but not in attendance list. (Other venue maybe) Throw....
-     * 3. Input String is a candidate, but listed as EXEMPTED. Throw MESSAGE_TOAST
-     * 4. Input String is a candidate, but listed as BARRED. Throw MESSAGE_TOAST
-     * 5. Input String is a candidate, but listed as QUARANTINED. Throw MESSAGE_TOAST
-     * 6. Input String is a valid candidate, register into the buffer
-     * 7. Attendance List is not initialized yet, throw FATAL_MESSAGE
-     */
-    @Test
-    public void testCheckCandidate2_NotAListedCandidateThrowMessageToast() throws Exception{
-        try{
-            model.checkCandidate("15WAU22222");
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch(ProcessException err){
-            assertNull(model.getTempCdd());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("15WAU22222 doest not belong to this venue", err.getErrorMsg());
-        }
-    }
-
-    @Test
-    public void testCheckCandidate3_CandidateExemptedThrowMessageToast() throws Exception{
-        try{
-            model.checkCandidate("15WAU00005");
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch(ProcessException err){
-            assertNull(model.getTempCdd());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("The paper was exempted for Ms. Exm", err.getErrorMsg());
-        }
-    }
-
-    @Test
-    public void testCheckCandidate4_CandidateBarredThrowMessageToast() throws Exception {
-        try{
-            model.checkCandidate("15WAU00004");
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch(ProcessException err){
-            assertNull(model.getTempCdd());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Mr. Bar have been barred", err.getErrorMsg());
-        }
-    }
-
-    @Test
-    public void testCheckCandidate5_CandidateQuarantinedThrowMessageToast() throws Exception{
-        try{
-            model.checkCandidate("15WAR00006");
-
-            fail("Expected MESSAGE_TOAST but none thrown");
-        } catch(ProcessException err){
-            assertNull(model.getTempCdd());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("The paper was quarantized for Ms. Qua", err.getErrorMsg());
-        }
-    }
-
-    @Test
-    public void testCheckCandidate6_CandidateIsValid() throws Exception{
-        try{
-            model.checkCandidate("15WAU00001");
-
-            assertNotNull(model.getTempCdd());
-            assertEquals(model.getTempCdd(), cdd1);
-        } catch(ProcessException err){
-            fail("No error should be thrown but thrown ErrorMsg " + err.getErrorMsg());
-        }
-    }
-
-    @Test
-    public void testCheckCandidate7_AttendanceListNotInitializeYet() throws Exception{
-        try{
-            TakeAttdModel.setAttdList(null);
-            model.checkCandidate("15WAU00001");
-
-            fail("Expected MESSAGE_DIALOG but none thrown");
-        } catch(ProcessException err){
-            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
-            assertEquals("No Attendance List", err.getErrorMsg());
         }
     }
 
@@ -1161,12 +1028,12 @@ public class TakeAttdModelTest {
     public void testUpdateNewCandidate_ReassignTable() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
         model.tryAssignCandidate();
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00002");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00002"));
 
         model.updateNewAssignment();
 
@@ -1188,12 +1055,12 @@ public class TakeAttdModelTest {
     public void testUpdateNewCandidate_ReassignCandidate() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
 
-        model.checkTable("12");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(12);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
         model.tryAssignCandidate();
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
 
         model.updateNewAssignment();
 
@@ -1216,12 +1083,12 @@ public class TakeAttdModelTest {
     public void testCancelNewCandidate_ReassignCandidate() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
 
-        model.checkTable("12");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(12);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
         model.tryAssignCandidate();
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
 
         model.cancelNewAssign();
 
@@ -1243,12 +1110,12 @@ public class TakeAttdModelTest {
     public void testCancelNewAssign_ReassugnTable() throws Exception{
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00001");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00001"));
         model.tryAssignCandidate();
 
-        model.checkTable("14");
-        model.checkCandidate("15WAU00002");
+        model.setTempTable(14);
+        model.setTempCdd(attdList.getCandidate("15WAU00002"));
 
         model.cancelNewAssign();
 
@@ -1457,7 +1324,7 @@ public class TakeAttdModelTest {
         model.setTempCdd(cdd1);
         model.setTempTable(15);
 
-        model.assignCandidate();
+        model.assignCandidate("24680");
 
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));

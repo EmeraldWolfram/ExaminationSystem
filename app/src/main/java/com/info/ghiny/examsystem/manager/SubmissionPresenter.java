@@ -134,11 +134,11 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     }
 
     @Override
-    public boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item, ErrorManager errManager,
+    public boolean onNavigationItemSelected(Toolbar toolbar, int itemId, ErrorManager errManager,
                                             FragmentManager manager, DrawerLayout drawer) {
         RootFragment fragment;
 
-        switch (item.getItemId()){
+        switch (itemId){
             case R.id.nav_present:
                 fragment    = new FragmentPresent();
                 toolbar.setSubtitle("Present Candidates");

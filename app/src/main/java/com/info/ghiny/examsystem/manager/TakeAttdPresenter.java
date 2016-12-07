@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.SubmissionActivity;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -164,7 +165,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     @Override
     public void onSwipeLeft(){
         navigationFlag  = true;
-        taskView.navigateActivity(ReportAttdActivity.class);
+        taskView.navigateActivity(SubmissionActivity.class);
     }
 
     @Override

@@ -397,15 +397,5 @@ public class CollectionPresenterTest {
         verify(taskView).setCollector("");
     }
 
-    //= OnTrash() ==================================================================================
-    @Test
-    public void testOnTrash() throws Exception {
-        View v = Mockito.mock(View.class);
-
-        manager.onTrash(v);
-
-        verify(taskModel).resetCollection();
-    }
-
 
 }

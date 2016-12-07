@@ -50,7 +50,10 @@
             android:name=".CollectionActivity"
             android:label="Exam Papers Collection"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".InfoDisplayActivity" />
+        <activity
+            android:name=".InfoDisplayActivity"
+            android:label="Information"
+            android:screenOrientation="userPortrait"/>
         <activity
             android:name=".SettingActivity"
             android:label="Setting"/>

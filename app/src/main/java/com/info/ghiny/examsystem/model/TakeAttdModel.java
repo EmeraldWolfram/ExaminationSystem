@@ -6,6 +6,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
@@ -22,6 +23,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private static AttendanceList attdList;
     private TakeAttdMVP.MPresenter taskPresenter;
     private LocalDbLoader dbLoader;
+    private StaffIdentity user;
 
     private boolean tagNextLate;
     private boolean isDownloadComplete;
@@ -30,6 +32,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private Integer tempTable    = null;
 
     public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter, LocalDbLoader dbLoader){
+        this.user               = LoginModel.getStaff();
         this.taskPresenter      = taskPresenter;
         this.dbLoader           = dbLoader;
         this.initialized        = false;
@@ -79,7 +82,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     @Override
     public void matchPassword(String password) throws ProcessException {
-        if(!LoginModel.getStaff().matchPassword(password))
+        if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
@@ -129,6 +132,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         }
 
         if(tempCdd != null && tempTable != null) {
+            //Case: Currently displaying previous assigned candidate info
+            //At this point, a new scan result received
             if(verifyCandidate(scanStr)) {
                 this.tempTable   = null;
                 this.taskPresenter.notifyDisplayReset();
@@ -142,6 +147,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                         IconManager.MESSAGE);
             }
         } else {
+            //Case where the table and candidate weren't both ready yet
             if(verifyCandidate(scanStr)) {
                 this.taskPresenter.notifyCandidateScanned(tempCdd);
             } else if(verifyTable(scanStr)) {
@@ -219,6 +225,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attdList.removeCandidate(cdd.getRegNum());
             cdd.setTableNumber(0);
             cdd.setStatus(Status.ABSENT);
+            cdd.setCollector(null);
             attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
             assgnList.remove(tempTable);
         } else {
@@ -248,6 +255,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             assgnList.remove(tempTable);
             tempCdd.setStatus(Status.ABSENT);
             tempCdd.setTableNumber(0);
+            tempCdd.setCollector(null);
             attdList.removeCandidate(tempCdd.getRegNum());
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
                     tempCdd.getStatus(), tempCdd.getProgramme());
@@ -263,7 +271,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     @Override
     public void undoResetAttendanceAssignment() {
-        assignCandidate();
+        assignCandidate(user.getIdNo());
     }
 
     //= Setter & Getter ============================================================================
@@ -301,14 +309,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     //= Method for Assign process ==================================================================
-    /**
-     * checkTable()
-     *
-     * NOT FINISH YET - TODO: add checking mechanism for venue size
-     * This method register the table to the assignment
-     *
-     * @param scanString    Possible Table Number in the venue
-     */
+    /*
     void checkTable(String scanString) throws ProcessException{
         int length  = scanString.length();
 
@@ -325,7 +326,15 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             this.taskPresenter.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
         }
     }
-
+    */
+    /**
+     * verifyTable()
+     *
+     * NOT FINISH YET - TODO: add checking mechanism for venue size
+     * This method register the table to the assignment
+     *
+     * @param scanStr    Possible Table Number in the venue
+     */
     boolean verifyTable(String scanStr) throws ProcessException{
         int length  = scanStr.length();
         if(length > 0 && length < 5){
@@ -344,18 +353,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         return false;
     }
 
-    /**
-     * checkCandidate()
-     *
-     * This method check the input scanString
-     *
-     *  If scanString is a Candidate ID
-     *  It register the Candidate to the buffer tempCdd
-     *  else error will be thrown
-     *
-     * @param scanString            Possible Register Number of candidate
-     * @throws ProcessException
-     */
+    /*
     void checkCandidate(String scanString) throws ProcessException {
         ProcessException err;
 
@@ -381,7 +379,20 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             this.taskPresenter.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
         }
     }
+    */
 
+    /**
+     * verifyCandidate()
+     *
+     * This method check the input scanString
+     *
+     *  If scanString is a Candidate ID
+     *  It register the Candidate to the buffer tempCdd
+     *  else error will be thrown
+     *
+     * @param scanStr            Possible Register Number of candidate
+     * @throws ProcessException
+     */
     boolean verifyCandidate(String scanStr) throws ProcessException {
         ProcessException err;
         if(scanStr.length() == 10){
@@ -449,7 +460,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attemptNotMatch();
             attemptReassign();
 
-            assignCandidate();
+            assignCandidate(user.getIdNo());
             assigned    = true;
         }
 
@@ -487,9 +498,10 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    void assignCandidate(){
+    void assignCandidate(String collectorId){
         tempCdd.setTableNumber(tempTable);
         tempCdd.setStatus(Status.PRESENT);
+        tempCdd.setCollector(collectorId);
 
         attdList.removeCandidate(tempCdd.getRegNum());
         attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),

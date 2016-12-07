@@ -12,6 +12,7 @@ import java.util.Locale;
  * Created by GhinY on 14/05/2016.
  */
 public class Candidate {
+    public static final String CDD_COLLECTOR    = "AttdCollector";
     public static final String CDD_EXAM_INDEX   = "ExamIndex";
     public static final String CDD_REG_NUM      = "RegNum";
     public static final String CDD_STATUS       = "Status";
@@ -30,6 +31,7 @@ public class Candidate {
     private Boolean late;
     private static HashMap<String, ExamSubject> paperList;
     private Status status;
+    private String collector;
 
     //CONSTRUCTOR `````````````````````````````````````````````````````````````````````
     public Candidate(){
@@ -38,6 +40,7 @@ public class Candidate {
         regNum      = null;
         paperCode   = null;
         programme   = null;
+        collector   = null;
         late        = false;
         status      = Status.ABSENT;
     }
@@ -51,6 +54,7 @@ public class Candidate {
         this.paperCode      = paperCode;
         this.status         = status;
         this.late           = false;
+        this.collector      = null;
     }
 
     //Instance Method ---------------------------------------------------------------------
@@ -123,6 +127,13 @@ public class Candidate {
     public void setRegNum(String regNum) {this.regNum = regNum;}
     public String getRegNum() {
         return regNum;
+    }
+
+    public void setCollector(String collector) {
+        this.collector = collector;
+    }
+    public String getCollector() {
+        return collector;
     }
 
     //Static Method ----------------------------------------------------------------------------

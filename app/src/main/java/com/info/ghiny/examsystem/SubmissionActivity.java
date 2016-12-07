@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.SubmissionPresenter;
@@ -47,9 +48,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
-        initView();
         initMVP();
-
+        initView();
     }
 
     private void initView(){
@@ -87,9 +87,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         venue.setText(staff.getExamVenue());
         session.setText("AM");
 
-        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.replace(R.id.submitContainer, new FragmentPresent());
-        //ft.commit();
+        taskPresenter.onNavigationItemSelected(toolbar, R.id.nav_present, errorManager,
+                getSupportFragmentManager(), drawer);
     }
 
     @Override
@@ -208,7 +207,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        return taskPresenter.onNavigationItemSelected(toolbar, item, errorManager,
+
+        return taskPresenter.onNavigationItemSelected(toolbar, item.getItemId(), errorManager,
                                                         getSupportFragmentManager(), drawer);
     }
 

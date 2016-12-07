@@ -13,8 +13,8 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class LocalDbLoader {
-    private static final int DATABASE_VERSION       = 6;
-    private static final String DATABASE_NAME       = "FragListDb";
+    private static final int DATABASE_VERSION       = 1;
+    private static final String DATABASE_NAME       = "ExamSystemDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
     private static final String CONNECTOR_TABLE     = "ConnectionTable";
@@ -24,7 +24,8 @@ public class LocalDbLoader {
             + " (" + Candidate.CDD_EXAM_INDEX   + ", " + Candidate.CDD_REG_NUM
             + ", " + Candidate.CDD_TABLE        + ", " + Candidate.CDD_STATUS
             + ", " + Candidate.CDD_PAPER        + ", " + Candidate.CDD_PROG
-            + ", " + Candidate.CDD_LATE         + ") VALUES ('";
+            + ", " + Candidate.CDD_LATE         + ", " + Candidate.CDD_COLLECTOR
+            + ") VALUES ('";
 
     private static final String SAVE_PAPER      = "INSERT OR REPLACE INTO " + PAPERS_TABLE
             + " (" + ExamSubject.PAPER_CODE     + ", " + ExamSubject.PAPER_DESC
@@ -237,6 +238,9 @@ public class LocalDbLoader {
 
     //Save an instance of Candidate into the database
     private void saveAttendance(Candidate cdd){
+        String collector = cdd.getCollector();
+        boolean NULL = (collector == null);
+
         database.execSQL(SAVE_ATTENDANCE
                 + cdd.getExamIndex()    + "', '"
                 + cdd.getRegNum()       + "', "
@@ -244,7 +248,8 @@ public class LocalDbLoader {
                 + cdd.getStatus()       + "', '"
                 + cdd.getPaperCode()    + "', '"
                 + cdd.getProgramme()    + "', "
-                + cdd.getLate()         + ")");
+                + cdd.getLate()         + (NULL ? ", "  : ", '")
+                + cdd.getCollector()    + (NULL ? ")"   : "')"));
     }
 
     private void savePaper(ExamSubject paper){
@@ -265,6 +270,7 @@ public class LocalDbLoader {
         if(ptr.moveToFirst()){
             do{
                 Candidate cdd = new Candidate();
+                String collector;
 
                 cdd.setExamIndex(ptr.getString(ptr.getColumnIndex(Candidate.CDD_EXAM_INDEX)));
                 cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(Candidate.CDD_TABLE)));
@@ -273,6 +279,8 @@ public class LocalDbLoader {
                 cdd.setStatus(status);
                 cdd.setProgramme(ptr.getString(ptr.getColumnIndex(Candidate.CDD_PROG)));
                 cdd.setLate(ptr.getInt(ptr.getColumnIndex(Candidate.CDD_LATE)));
+                cdd.setCollector(ptr.getString(ptr.getColumnIndex(Candidate.CDD_COLLECTOR)));
+
                 candidates.add(cdd);
             }while (ptr.moveToNext());
         }
@@ -302,7 +310,8 @@ public class LocalDbLoader {
                     + Candidate.CDD_PAPER       + " TEXT    NOT NULL, "
                     + Candidate.CDD_PROG        + " TEXT    NOT NULL, "
                     + Candidate.CDD_TABLE       + " INTEGER NOT NULL, "
-                    + Candidate.CDD_LATE        + " INTEGER NOT NULL)");
+                    + Candidate.CDD_LATE        + " INTEGER NOT NULL, "
+                    + Candidate.CDD_COLLECTOR   + " TEXT)");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + PAPERS_TABLE + "( "
                     + ExamSubject.PAPER_DB_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "

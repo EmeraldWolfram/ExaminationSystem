@@ -31,7 +31,7 @@ public interface SubmissionMVP {
     interface MvpVPresenter extends DialogInterface.OnClickListener,
             TaskSecurePresenter, TaskConnPresenter {
         void onUpload();
-        boolean onNavigationItemSelected(Toolbar toolbar, MenuItem item, ErrorManager errManager,
+        boolean onNavigationItemSelected(Toolbar toolbar, int itemId, ErrorManager errManager,
                                          FragmentManager manager, DrawerLayout drawer);
     }
 

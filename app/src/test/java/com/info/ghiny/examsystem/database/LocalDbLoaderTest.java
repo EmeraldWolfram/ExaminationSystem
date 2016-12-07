@@ -32,7 +32,7 @@ public class LocalDbLoaderTest {
     private LocalDbLoader dbLoader;
 
     private String SAVE_ATTENDANCE = "INSERT INTO AttdTable " +
-            "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme, Late) VALUES (";
+            "(ExamIndex, RegNum, TableNo, Status, PaperCode, Programme, Late, AttdCollector) VALUES (";
 
     @Before
     public void setUp() throws Exception {
@@ -124,13 +124,16 @@ public class LocalDbLoaderTest {
         assertEquals(1, attdList.getNumberOfCandidates(Status.ABSENT));
         assertEquals(Status.ABSENT, attdList.getCandidate("15WAU00001").getStatus());
         assertFalse(attdList.getCandidate("15WAU00001").isLate());
+        assertNull(attdList.getCandidate("15WAU00001").getCollector());
 
         //= PRESENT ====
         assertEquals(2, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00002").getStatus());
+        assertEquals("12345", attdList.getCandidate("15WAU00002").getCollector());
         assertTrue(attdList.getCandidate("15WAU00002").isLate());
         assertEquals(Status.PRESENT, attdList.getCandidate("15WAU00003").getStatus());
         assertFalse(attdList.getCandidate("15WAU00003").isLate());
+        assertEquals("12345", attdList.getCandidate("15WAU00003").getCollector());
 
         //= BARRED ====
         assertEquals(1, attdList.getNumberOfCandidates(Status.BARRED));
@@ -141,6 +144,7 @@ public class LocalDbLoaderTest {
         assertEquals(1, attdList.getNumberOfCandidates(Status.EXEMPTED));
         assertEquals(Status.EXEMPTED, attdList.getCandidate("15WAU00005").getStatus());
         assertFalse(attdList.getCandidate("15WAU00005").isLate());
+        assertNull(attdList.getCandidate("15WAU00005").getCollector());
 
         //= QUARANTINED ====
         assertEquals(0, attdList.getNumberOfCandidates(Status.QUARANTINED));
@@ -218,7 +222,7 @@ public class LocalDbLoaderTest {
 
         assertTrue(dbLoader.emptyAttdInDB());
 
-        db.execSQL(SAVE_ATTENDANCE + "'Steven', '15WAU11111', 16, 'PRESENT', 'BAME 0001', 'RMB3', 0)");
+        db.execSQL(SAVE_ATTENDANCE + "'Steven', '15WAU11111', 16, 'PRESENT', 'BAME 0001', 'RMB3', 0, '24680')");
         assertFalse(dbLoader.emptyAttdInDB());
 
         dbLoader.clearDatabase();
@@ -253,14 +257,26 @@ public class LocalDbLoaderTest {
                 Status.ABSENT);
         Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001",
                 Status.ABSENT);
+        Candidate cdd3 = new Candidate(12, "RMB3", "Name 1", "15WAU00003", "BAME 0001",
+                Status.PRESENT);
+        cdd3.setCollector("24680");
+
         AttendanceList attdList = new AttendanceList();
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd1);
+        attdList.addCandidate(cdd2);
+        attdList.addCandidate(cdd3);
 
         dbLoader.saveAttendanceList(attdList);
-        assertEquals(2, dbLoader.queryAttendanceList().getTotalNumberOfCandidates());
+        assertEquals(3, dbLoader.queryAttendanceList().getTotalNumberOfCandidates());
 
+        AttendanceList testList = dbLoader.queryAttendanceList();
+
+
+        assertEquals("24680", testList.getCandidate("15WAU00003").getCollector());
+        assertNull(testList.getCandidate("15WAU00001").getCollector());
+        assertNull(testList.getCandidate("15WAU00002").getCollector());
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         dbLoader.clearDatabase();
         db.close();
     }
