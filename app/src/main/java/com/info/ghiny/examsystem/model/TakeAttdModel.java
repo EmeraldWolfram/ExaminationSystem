@@ -171,7 +171,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void run() {
         try{
-            if(!isDownloadComplete && !isInitialized()) {
+            if(attdList == null) {
                 ProcessException err = new ProcessException(
                         "Download failed. Response times out.",
                         ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);

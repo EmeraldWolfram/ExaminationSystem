@@ -22,9 +22,11 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
 
     private InfoDisplayMVP.ViewFace taskView;
     private InfoDisplayMVP.Model taskModel;
+    private boolean secureFlag;
 
     public InfoDisplayPresenter(InfoDisplayMVP.ViewFace taskView){
         this.taskView   = taskView;
+        this.secureFlag = false;
     }
 
     public void setTaskModel(InfoDisplayMVP.Model taskModel) {
@@ -44,17 +46,20 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
 
     @Override
     public void onRestart() {
+        secureFlag  = true;
         taskView.securityPrompt(false);
     }
 
     @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data) {
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            secureFlag  = false;
             String password = data.getStringExtra("Password");
             try{
                 taskModel.matchPassword(password);
             } catch(ProcessException err){
                 taskView.displayError(err);
+                secureFlag  = true;
                 taskView.securityPrompt(false);
             }
         }

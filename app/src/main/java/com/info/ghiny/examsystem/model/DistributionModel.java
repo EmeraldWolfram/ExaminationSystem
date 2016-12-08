@@ -6,6 +6,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -19,9 +20,11 @@ import static android.graphics.Color.WHITE;
 public class DistributionModel implements DistributionMVP.MvpModel{
 
     private DistributionMVP.MvpMPresenter taskPresenter;
+    private StaffIdentity user;
 
     public DistributionModel(DistributionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
+        this.user           = LoginModel.getStaff();
     }
 
     @Override
@@ -48,5 +51,12 @@ public class DistributionModel implements DistributionMVP.MvpModel{
         Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, w, 0, 0, w, h);
         return bitmap;
+    }
+
+    @Override
+    public void matchPassword(String password) throws ProcessException {
+        if(!user.matchPassword(password))
+            throw new ProcessException("Access denied. Incorrect Password",
+                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
 }

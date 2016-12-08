@@ -40,10 +40,12 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     private Handler handler;
     //private boolean sent;
     private boolean uploadFlag;
+    private boolean secureFlag;
 
     public SubmissionPresenter(SubmissionMVP.MvpView taskView){
         this.taskView   = taskView;
         this.uploadFlag = false;
+        this.secureFlag = false;
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -73,6 +75,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onRestart() {
         uploadFlag = false;
+        secureFlag = true;
         taskView.securityPrompt(false);
     }
 
@@ -103,6 +106,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data) {
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            secureFlag  = false;
             String password = data.getStringExtra("Password");
             try{
                 taskModel.matchPassword(password);
@@ -114,6 +118,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
                 }
             } catch(ProcessException err){
                 taskView.displayError(err);
+                secureFlag = true;
                 taskView.securityPrompt(uploadFlag);
             }
         }
@@ -180,6 +185,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         switch(which){
             case DialogInterface.BUTTON_POSITIVE:
                 uploadFlag = true;
+                secureFlag = true;
                 taskView.securityPrompt(true);
                 dialog.cancel();
                 break;

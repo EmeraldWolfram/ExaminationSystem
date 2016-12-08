@@ -25,6 +25,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     private Handler handler;
     private InfoGrabMVP.ViewFace taskView;
     private InfoGrabMVP.Model taskModel;
+    private boolean secureFlag;
 
     private SharedPreferences preferences;
     private boolean crossHair;
@@ -33,8 +34,9 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     private int mode;
 
     public InfoGrabPresenter(InfoGrabMVP.ViewFace taskView, SharedPreferences pref){
-        this.taskView   = taskView;
+        this.taskView       = taskView;
         this.preferences    = pref;
+        this.secureFlag     = false;
     }
 
     public void setTaskModel(InfoGrabMVP.Model taskModel) {
@@ -109,12 +111,14 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
 
     @Override
     public void onRestart() {
+        secureFlag  = true;
         taskView.securityPrompt(false);
     }
 
     @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data) {
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            secureFlag  = false;
             String password = data.getStringExtra("Password");
             try{
                 taskView.pauseScanning();
@@ -122,6 +126,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
                 taskView.resumeScanning();
             } catch(ProcessException err){
                 taskView.displayError(err);
+                secureFlag  = true;
                 taskView.securityPrompt(false);
             }
         }

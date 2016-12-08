@@ -12,11 +12,11 @@ public interface DistributionMVP {
     interface MvpView extends GeneralView {
         void setImageQr(Bitmap bitmap);
     }
-    interface MvpVPresenter{
+    interface MvpVPresenter extends TaskSecurePresenter{
         void onCreate();
     }
     interface MvpMPresenter{}
-    interface MvpModel{
+    interface MvpModel extends TaskSecureModel{
         Bitmap encodeQr() throws ProcessException;
     }
 }

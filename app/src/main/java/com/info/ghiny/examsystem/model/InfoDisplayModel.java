@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class InfoDisplayModel implements InfoDisplayMVP.Model {
 
     private List<ExamSubject> papers;
+    private StaffIdentity user;
 
     public InfoDisplayModel(){
         papers  = new ArrayList<>();
+        user    = LoginModel.getStaff();
     }
 
     public void setPapers(List<ExamSubject> papers) {
@@ -66,7 +69,7 @@ public class InfoDisplayModel implements InfoDisplayMVP.Model {
 
     @Override
     public void matchPassword(String password) throws ProcessException {
-        if(!LoginModel.getStaff().matchPassword(password))
+        if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }

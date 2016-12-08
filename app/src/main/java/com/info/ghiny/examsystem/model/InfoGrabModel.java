@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -10,9 +11,11 @@ import com.info.ghiny.examsystem.manager.IconManager;
 public class InfoGrabModel implements InfoGrabMVP.Model{
 
     private InfoGrabMVP.MPresenter taskPresenter;
+    private StaffIdentity user;
 
     public InfoGrabModel(InfoGrabMVP.MPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
+        this.user           = LoginModel.getStaff();
     }
 
     @Override
@@ -44,7 +47,7 @@ public class InfoGrabModel implements InfoGrabMVP.Model{
 
     @Override
     public void matchPassword(String password) throws ProcessException {
-        if(!LoginModel.getStaff().matchPassword(password))
+        if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }

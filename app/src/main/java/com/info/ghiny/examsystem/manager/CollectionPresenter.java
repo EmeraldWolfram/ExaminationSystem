@@ -21,6 +21,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     private CollectionMVP.View taskView;
     private CollectionMVP.Model taskModel;
     private Handler handler;
+    private boolean secureFlag;
     //private boolean acknowledgementComplete;
 
     private SharedPreferences preferences;
@@ -32,6 +33,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     public CollectionPresenter(CollectionMVP.View taskView, SharedPreferences pref){
         this.taskView       = taskView;
         this.preferences    = pref;
+        this.secureFlag     = false;
     }
 
     public void setTaskModel(CollectionMVP.Model taskModel) {
@@ -85,6 +87,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     @Override
     public void onRestart() {
         taskView.securityPrompt(false);
+        this.secureFlag = true;
     }
 
     @Override
@@ -102,6 +105,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data) {
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            this.secureFlag = false;
             String password = data.getStringExtra("Password");
             try{
                 taskView.pauseScanning();
@@ -110,6 +114,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
             } catch(ProcessException err){
                 taskView.displayError(err);
                 taskView.securityPrompt(false);
+                this.secureFlag = true;
             }
         }
     }

@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -16,11 +17,13 @@ public class CollectionModel implements CollectionMVP.Model {
     private PaperBundle bundle;
     private boolean acknowledgeCollection;
     private boolean acknowledgeUndoCollection;
+    private StaffIdentity user;
 
     public CollectionModel(CollectionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.staffIdentity  = null;
         this.bundle         = null;
+        this.user           = LoginModel.getStaff();
     }
 
     boolean isAcknowledgeCollection() {
@@ -104,7 +107,7 @@ public class CollectionModel implements CollectionMVP.Model {
 
     @Override
     public void matchPassword(String password) throws ProcessException {
-        if(!LoginModel.getStaff().matchPassword(password))
+        if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }

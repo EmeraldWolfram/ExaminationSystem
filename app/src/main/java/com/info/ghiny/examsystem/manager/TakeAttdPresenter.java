@@ -19,6 +19,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -30,6 +31,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private Handler handler;
     private Snackbar snackbar;
     private View refView;
+    private boolean secureFlag;
 
     private SharedPreferences preferences;
     private boolean crossHair;
@@ -41,6 +43,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         this.preferences    = pref;
         this.taskView       = taskView;
         this.navigationFlag = false;
+        this.secureFlag     = false;
     }
 
     public void setTaskModel(TakeAttdMVP.Model taskModel) {
@@ -89,7 +92,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onPostResume() {
-        if(!taskModel.isInitialized()){
+        if(!taskModel.isInitialized() && TakeAttdModel.getAttdList() != null){
             taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
             handler.postDelayed(taskModel, 5000);
         }
@@ -114,6 +117,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onRestart() {
         if(!navigationFlag){
             taskView.securityPrompt(false);
+            secureFlag  = true;
         }
         navigationFlag  = false;
     }
@@ -121,6 +125,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     @Override
     public void onPasswordReceived(int requestCode, int resultCode, Intent data){
         if(requestCode == PopUpLogin.PASSWORD_REQ_CODE && resultCode == Activity.RESULT_OK){
+            secureFlag  = false;
             String password = data.getStringExtra("Password");
             try{
                 taskView.pauseScanning();
@@ -129,6 +134,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
             } catch(ProcessException err){
                 taskView.displayError(err);
                 taskView.securityPrompt(false);
+                this.secureFlag = true;
             }
         }
     }

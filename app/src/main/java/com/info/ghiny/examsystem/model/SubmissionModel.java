@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
@@ -29,6 +30,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     private AttendanceList attendanceList;
     private SortManager sortManager;
     private List<String> regNumList;
+    private StaffIdentity user;
 
     public SubmissionModel(SubmissionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
@@ -55,7 +57,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
 
     @Override
     public void matchPassword(String password) throws ProcessException {
-        if(!LoginModel.getStaff().matchPassword(password))
+        if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
