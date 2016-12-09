@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SubmissionActivity;
@@ -80,22 +79,18 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 onChiefRespond(errManager, message);
             }
         });
-        if(!taskModel.isInitialized()){
+        if(TakeAttdModel.getAttdList() == null){
             try{
                 taskModel.initAttendance();
+                if(!taskModel.isInitialized()){
+                    taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
+                    handler.postDelayed(taskModel, 5000);
+                }
             } catch (ProcessException err) {
                 taskView.displayError(err);
             }
         }
         onResume();
-    }
-
-    @Override
-    public void onPostResume() {
-        if(!taskModel.isInitialized() && TakeAttdModel.getAttdList() != null){
-            taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-            handler.postDelayed(taskModel, 5000);
-        }
     }
 
     @Override
@@ -115,9 +110,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onRestart() {
-        if(!navigationFlag){
+        if(!navigationFlag && !secureFlag){
+            secureFlag = true;
             taskView.securityPrompt(false);
-            secureFlag  = true;
         }
         navigationFlag  = false;
     }

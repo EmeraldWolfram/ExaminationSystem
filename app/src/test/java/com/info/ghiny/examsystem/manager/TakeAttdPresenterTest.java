@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.ReportAttdActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SubmissionActivity;

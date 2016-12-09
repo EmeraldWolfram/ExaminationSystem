@@ -75,8 +75,10 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onRestart() {
         uploadFlag = false;
-        secureFlag = true;
-        taskView.securityPrompt(false);
+        if(!secureFlag){
+            secureFlag = true;
+            taskView.securityPrompt(false);
+        }
     }
 
     @Override

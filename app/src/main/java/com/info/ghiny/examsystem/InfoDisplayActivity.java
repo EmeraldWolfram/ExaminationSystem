@@ -99,7 +99,7 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return taskPresenter.getView(position, convertView, parent);
+            return taskPresenter.getView(InfoDisplayActivity.this, position, convertView, parent);
         }
 
         @Override

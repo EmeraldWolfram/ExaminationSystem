@@ -111,8 +111,10 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
 
     @Override
     public void onRestart() {
-        secureFlag  = true;
-        taskView.securityPrompt(false);
+        if(!secureFlag){
+            secureFlag = true;
+            taskView.securityPrompt(false);
+        }
     }
 
     @Override

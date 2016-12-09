@@ -131,12 +131,6 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        taskPresenter.onPostResume();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         taskPresenter.onPause();

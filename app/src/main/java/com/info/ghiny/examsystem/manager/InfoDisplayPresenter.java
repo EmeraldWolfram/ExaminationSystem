@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     @Override
     public void onCreate(Intent intent){
         try{
-            String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
+            String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST);
             taskModel.updateSubjects(message);
             taskView.notifyDataSetChanged();
         } catch (Exception err) {
@@ -46,8 +48,10 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
 
     @Override
     public void onRestart() {
-        secureFlag  = true;
-        taskView.securityPrompt(false);
+        if(!secureFlag){
+            secureFlag = true;
+            taskView.securityPrompt(false);
+        }
     }
 
     @Override
@@ -76,7 +80,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(Context context, int position, View convertView, ViewGroup parent) {
         if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(R.layout.exam_subject, parent, false);
@@ -99,6 +103,11 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
             dayLeft = "TOMORROW";
         else
             dayLeft = days.toString() + " days left";
+
+        examPaper.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
+        examDay.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
+        examVenue.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
+        examSes.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
 
         examPaper.setText(subject.toString());
         examDay.setText(dayLeft);

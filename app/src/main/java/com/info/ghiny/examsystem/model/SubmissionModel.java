@@ -5,6 +5,7 @@ import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.manager.SortManager;
@@ -39,6 +40,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         this.attendanceList = TakeAttdModel.getAttdList();
         this.sortManager    = new SortManager();
         this.regNumList     = attendanceList.getAllCandidateRegNumList();
+        this.user           = LoginModel.getStaff();
     }
 
     @Override

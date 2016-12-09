@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".LinkChiefActivity"
-            android:label="Connection Setup"
+            android:label="Exam System"
             android:screenOrientation="userPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,6 +59,7 @@
             android:label="Setting"/>
         <activity
             android:name=".SubmissionActivity"
+            android:screenOrientation="userPortrait"
             android:label="Attendance Report"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

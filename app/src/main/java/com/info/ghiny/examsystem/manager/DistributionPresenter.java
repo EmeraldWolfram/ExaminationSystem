@@ -39,8 +39,10 @@ public class DistributionPresenter
 
     @Override
     public void onRestart() {
-        this.secureFlag = true;
-        taskView.securityPrompt(false);
+        if(!secureFlag){
+            secureFlag = true;
+            taskView.securityPrompt(false);
+        }
     }
 
     @Override

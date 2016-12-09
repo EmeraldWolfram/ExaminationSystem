@@ -270,7 +270,6 @@ public class LocalDbLoader {
         if(ptr.moveToFirst()){
             do{
                 Candidate cdd = new Candidate();
-                String collector;
 
                 cdd.setExamIndex(ptr.getString(ptr.getColumnIndex(Candidate.CDD_EXAM_INDEX)));
                 cdd.setTableNumber(ptr.getInt(ptr.getColumnIndex(Candidate.CDD_TABLE)));

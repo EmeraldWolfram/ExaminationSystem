@@ -86,8 +86,10 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
 
     @Override
     public void onRestart() {
-        taskView.securityPrompt(false);
-        this.secureFlag = true;
+        if(!secureFlag){
+            secureFlag = true;
+            taskView.securityPrompt(false);
+        }
     }
 
     @Override

@@ -76,7 +76,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attdList    = dbLoader.queryAttendanceList();
             Candidate.setPaperList(dbLoader.queryPapers());
             updateAssignList();
-            setInitialized(true);
+            initialized = true;
         }
     }
 
@@ -108,9 +108,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         assgnList.clear();
 
         if(attdList == null){
-            if(isInitialized())
-                throw new ProcessException("Attendance List is not initialize",
-                        ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+            throw new ProcessException("Attendance List is not initialize",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         } else {
             List<String> cddList    = attdList.getAllCandidateRegNumList();
 
@@ -309,24 +308,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     //= Method for Assign process ==================================================================
-    /*
-    void checkTable(String scanString) throws ProcessException{
-        int length  = scanString.length();
-
-        for(int i = 0; i < length; i++){
-            if(!Character.isDigit(scanString.charAt(i))){
-                throw new ProcessException("Not a valid QR code", ProcessException.MESSAGE_TOAST,
-                        IconManager.WARNING);
-            }
-        }
-
-        this.tempTable = Integer.parseInt(scanString);
-        this.taskPresenter.notifyTableScanned(tempTable);
-        if(this.assgnList.containsKey(this.tempTable)){
-            this.taskPresenter.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
-        }
-    }
-    */
     /**
      * verifyTable()
      *
@@ -352,34 +333,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         }
         return false;
     }
-
-    /*
-    void checkCandidate(String scanString) throws ProcessException {
-        ProcessException err;
-
-        if(attdList == null || attdList.getAttendanceList() == null){
-            err = new ProcessException("No Attendance List",
-                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
-            err.setListener(ProcessException.okayButton, taskPresenter);
-            throw err;
-        }
-
-        Candidate candidate = attdList.getCandidate(scanString);
-
-        if(candidate == null){
-            throw new ProcessException(scanString + " doest not belong to this venue",
-                    ProcessException.MESSAGE_TOAST, IconManager.WARNING);
-        } else {
-            inspectCandidateEligibility(candidate);
-        }
-
-        this.tempCdd = candidate;
-        this.taskPresenter.notifyCandidateScanned(tempCdd);
-        if(this.assgnList.containsValue(this.tempCdd.getRegNum())){
-            this.taskPresenter.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
-        }
-    }
-    */
 
     /**
      * verifyCandidate()

@@ -41,6 +41,7 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
 
         cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
         cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
+        cddRegNum.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
         cddProgramme.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
         cddPaperCode.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
 

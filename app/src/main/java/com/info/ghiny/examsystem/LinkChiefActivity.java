@@ -34,6 +34,8 @@ import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.InfoDisplayModel;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LinkChiefModel;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -169,7 +171,9 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
                 startActivity(setting);
                 return true;
             case R.id.action_test:
-                Intent testing  = new Intent(this, SubmissionActivity.class);
+                Intent testing  = new Intent(this, InfoDisplayActivity.class);
+                testing.putExtra(JsonHelper.MINOR_KEY_PAPER_LIST,
+                        "{\"PaperList\":[{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 1\",\"PaperDate\":\"11/2/2016\",\"PaperCode\":\"BAME 0001\",\"PaperVenue\":\"H3\"},{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 2\",\"PaperDate\":\"11/2/2016\",\"PaperCode\":\"BAME 0002\",\"PaperVenue\":\"H4\"}],\"Result\":true}");
                 startActivity(testing);
                 return true;
             case R.id.action_test_2:

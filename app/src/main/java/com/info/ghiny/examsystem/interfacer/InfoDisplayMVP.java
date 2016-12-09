@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.interfacer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ public interface InfoDisplayMVP {
     interface Presenter extends TaskSecurePresenter {
         void onCreate(Intent intent);
         int getCount();
-        View getView(int position, android.view.View convertView, ViewGroup parent);
+        View getView(Context context, int position, android.view.View convertView, ViewGroup parent);
         long getItemId(int position);
         ExamSubject getItem(int position);
     }
