@@ -14,15 +14,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.manager.HomeOptionPresenter;
 import com.info.ghiny.examsystem.manager.IconManager;
+import com.info.ghiny.examsystem.model.HomeOptionModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
  * Created by GhinY on 01/07/2016.
  */
-public class HomeOptionActivity extends AppCompatActivity
-        implements DialogInterface.OnCancelListener, DialogInterface.OnClickListener{
+public class HomeOptionActivity extends AppCompatActivity implements HomeOptionMVP.MvpView{
 
     public static final String FEATURE_INFO_GRAB    = "InfoGrab";
     public static final String FEATURE_COLLECTION   = "Collection";
@@ -30,6 +32,7 @@ public class HomeOptionActivity extends AppCompatActivity
     public static final String FEATURE_ATTENDANCE   = "Attendance";
 
     private ErrorManager errorManager;
+    private HomeOptionMVP.MvpVPresenter taskPresenter;
 
     private ImageView infoGrabButton;
     private ImageView collectionButton;
@@ -47,8 +50,14 @@ public class HomeOptionActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_option);
 
-        initView();
         initMVP();
+        initView();
+    }
+
+    @Override
+    protected void onRestart() {
+        taskPresenter.onRestart();
+        super.onRestart();
     }
 
     private void initView(){
@@ -71,7 +80,10 @@ public class HomeOptionActivity extends AppCompatActivity
 
     private void initMVP(){
         errorManager    = new ErrorManager(this);
-
+        HomeOptionPresenter presenter = new HomeOptionPresenter(this);
+        HomeOptionModel model         = new HomeOptionModel(presenter);
+        presenter.setTaskModel(model);
+        taskPresenter   = presenter;
     }
 
     private void setupButton(boolean enable, ImageView button){
@@ -108,48 +120,45 @@ public class HomeOptionActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        ProcessException err    = new ProcessException("Confirm logout and exit?",
-                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
-        err.setBackPressListener(this);
-        err.setListener(ProcessException.yesButton, this);
-        err.setListener(ProcessException.noButton, this);
-        errorManager.displayError(err);
+        taskPresenter.onBackPressed();
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
-        dialog.cancel();
+    public void finishActivity() {
+        this.finish();
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
-        switch(which){
-            case DialogInterface.BUTTON_POSITIVE:
-                finish();
-                break;
-            default:
-                dialog.cancel();
-                break;
-        }
+    public void displayError(ProcessException err) {
+        this.errorManager.displayError(err);
+    }
+
+    @Override
+    public void navigateActivity(Class<?> cls) {
+        Intent next = new Intent(this, cls);
+        startActivity(next);
+    }
+
+    @Override
+    public void securityPrompt(boolean cancellable) {
+        Intent secure   = new Intent(this, PopUpLogin.class);
+        secure.putExtra("Cancellable", cancellable);
+        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
     }
 
     public void onAttendance(View view){
-        Intent assignIntent = new Intent(this, TakeAttdActivity.class);
-        startActivity(assignIntent);
+        taskPresenter.onAttendance();
     }
 
     public void onInfo(View view){
-        Intent infoIntent   = new Intent(this, InfoGrabActivity.class);
-        startActivity(infoIntent);
+        taskPresenter.onInfo();
     }
 
     public void onCollection(View view){
-        Intent collectionIntent = new Intent(this, CollectionActivity.class);
-        startActivity(collectionIntent);
+        taskPresenter.onCollection();
     }
 
     public void onDistribution(View view){
-        Intent collectionIntent = new Intent(this, DistributionActivity.class);
-        startActivity(collectionIntent);
+        taskPresenter.onDistribution();
     }
 }

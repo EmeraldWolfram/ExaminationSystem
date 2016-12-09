@@ -31,6 +31,12 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
         taskPresenter.onCreate();
     }
 
+    @Override
+    protected void onRestart() {
+        taskPresenter.onRestart();
+        super.onRestart();
+    }
+
     private void initView(){
         this.qrView = (ImageView) findViewById(R.id.distributeQR);
     }

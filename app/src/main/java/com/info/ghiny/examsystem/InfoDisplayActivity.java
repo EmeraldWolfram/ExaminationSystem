@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.manager.ConfigManager;
+import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.InfoDisplayPresenter;
 import com.info.ghiny.examsystem.model.InfoDisplayModel;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -18,6 +19,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 public class InfoDisplayActivity extends AppCompatActivity implements InfoDisplayMVP.ViewFace {
     private InfoDisplayMVP.Presenter taskPresenter;
     private DisplayListAdapter listAdapter;
+    private ErrorManager errorManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,15 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
         taskPresenter.onCreate(getIntent());
     }
 
+    @Override
+    protected void onRestart() {
+        taskPresenter.onRestart();
+        super.onRestart();
+    }
+
     private void initMVP(){
+        errorManager        = new ErrorManager(this);
+
         InfoDisplayPresenter presenter  = new InfoDisplayPresenter(this, new ConfigManager(this));
         InfoDisplayModel model  = new InfoDisplayModel();
         presenter.setTaskModel(model);
@@ -75,12 +85,13 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
 
     @Override
     public void displayError(ProcessException err) {
-
+        errorManager.displayError(err);
     }
 
     @Override
     public void navigateActivity(Class<?> cls) {
-
+        Intent next = new Intent(this, cls);
+        startActivity(next);
     }
 
     @Override
