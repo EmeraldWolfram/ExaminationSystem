@@ -1,5 +1,9 @@
 package com.info.ghiny.examsystem.manager;
 
+import android.content.Context;
+import android.graphics.Typeface;
+import android.renderscript.Type;
+
 /**
  * Created by GhinY on 05/08/2016.
  */
@@ -23,5 +27,15 @@ public class ConfigManager {
 
     public static void setThickFont(String thickFont) {
         THICK_FONT = thickFont;
+    }
+
+    private Context context;
+
+    public ConfigManager(Context context){
+        this.context    = context;
+    }
+
+    public Typeface getTypeface(String font){
+        return Typeface.createFromAsset(context.getAssets(), font);
     }
 }

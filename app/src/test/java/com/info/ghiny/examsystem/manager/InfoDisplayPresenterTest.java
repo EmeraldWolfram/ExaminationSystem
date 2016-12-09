@@ -1,7 +1,10 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,6 +20,7 @@ import com.info.ghiny.examsystem.model.ProcessException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -26,6 +30,7 @@ import java.util.Calendar;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -43,6 +48,9 @@ public class InfoDisplayPresenterTest {
     private InfoDisplayMVP.ViewFace taskView;
     private InfoDisplayMVP.Model taskModel;
     private String MESSAGE_FROM_CHIEF;
+
+    private ConfigManager configManager;
+    private Typeface typeface;
 
     private View view;
     private ViewGroup parent;
@@ -64,7 +72,10 @@ public class InfoDisplayPresenterTest {
         venueView   = Mockito.mock(TextView.class);
         dayView     = Mockito.mock(TextView.class);
 
-        manager = new InfoDisplayPresenter(taskView);
+        configManager   = Mockito.mock(ConfigManager.class);
+        typeface        = Mockito.mock(Typeface.class);
+
+        manager = new InfoDisplayPresenter(taskView, configManager);
         manager.setTaskModel(taskModel);
 
     }
@@ -88,7 +99,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate1_PositiveTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST)).thenReturn(MESSAGE_FROM_CHIEF);
 
         manager.onCreate(intent);
 
@@ -102,7 +113,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate2_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST)).thenReturn(MESSAGE_FROM_CHIEF);
         doThrow(new ProcessException(ProcessException.MESSAGE_TOAST))
                 .when(taskModel).updateSubjects(MESSAGE_FROM_CHIEF);
 
@@ -117,7 +128,7 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate3_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        doThrow(new NullPointerException()).when(intent).getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
+        doThrow(new NullPointerException()).when(intent).getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST);
 
         manager.onCreate(intent);
 
@@ -219,6 +230,8 @@ public class InfoDisplayPresenterTest {
         when(view.findViewById(R.id.paperVenueText)).thenReturn(venueView);
         when(view.findViewById(R.id.paperSessionText)).thenReturn(sessionView);
 
+        when(configManager.getTypeface(anyString())).thenReturn(typeface);
+
         manager.getView(0, view, parent);
 
         verify(paperView).setText(subject1.toString());
@@ -234,6 +247,7 @@ public class InfoDisplayPresenterTest {
 
         when(taskModel.getSubjectAt(0)).thenReturn(subject1);
         when(taskModel.getDaysLeft(any(Calendar.class))).thenReturn(-1);
+        when(configManager.getTypeface(anyString())).thenReturn(typeface);
 
         when(view.findViewById(R.id.paperCodeNameText)).thenReturn(paperView);
         when(view.findViewById(R.id.paperDayText)).thenReturn(dayView);
@@ -255,6 +269,7 @@ public class InfoDisplayPresenterTest {
 
         when(taskModel.getSubjectAt(0)).thenReturn(subject1);
         when(taskModel.getDaysLeft(any(Calendar.class))).thenReturn(1);
+        when(configManager.getTypeface(anyString())).thenReturn(typeface);
 
         when(view.findViewById(R.id.paperCodeNameText)).thenReturn(paperView);
         when(view.findViewById(R.id.paperDayText)).thenReturn(dayView);
@@ -276,6 +291,7 @@ public class InfoDisplayPresenterTest {
 
         when(taskModel.getSubjectAt(0)).thenReturn(subject1);
         when(taskModel.getDaysLeft(any(Calendar.class))).thenReturn(2);
+        when(configManager.getTypeface(anyString())).thenReturn(typeface);
 
         when(view.findViewById(R.id.paperCodeNameText)).thenReturn(paperView);
         when(view.findViewById(R.id.paperDayText)).thenReturn(dayView);

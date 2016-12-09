@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.model;
+package com.info.ghiny.examsystem.view_holder;
 
 import android.app.Activity;
 import android.graphics.Typeface;

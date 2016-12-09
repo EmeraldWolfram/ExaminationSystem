@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.database;
+package com.info.ghiny.examsystem.view_holder;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -19,8 +19,6 @@ import org.w3c.dom.Text;
 
 public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
 
-    private OnLongPressed pressListener;
-
     private TextView cddName;
     private TextView cddRegNum;
     private TextView cddProgramme;
@@ -30,7 +28,6 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
 
     public CandidateDisplayHolder(Context context, View view, final OnLongPressed pressListener) {
         super(view);
-        this.pressListener   = pressListener;
         this.cddName         = (TextView) view.findViewById(R.id.assignedCddText);
         this.cddRegNum       = (TextView) view.findViewById(R.id.assignedRegNumText);
         this.cddProgramme    = (TextView) view.findViewById(R.id.assignedPrgText);
@@ -39,11 +36,13 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
         this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
         view.findViewById(R.id.uncheckPresent).setVisibility(View.INVISIBLE);
 
-        cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
-        cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
-        cddRegNum.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
-        cddProgramme.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
-        cddPaperCode.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
+        ConfigManager configManager = new ConfigManager(context);
+
+        cddTable.setTypeface(configManager.getTypeface(ConfigManager.THICK_FONT));
+        cddName.setTypeface(configManager.getTypeface(ConfigManager.BOLD_FONT));
+        cddRegNum.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
+        cddProgramme.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
+        cddPaperCode.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
 
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

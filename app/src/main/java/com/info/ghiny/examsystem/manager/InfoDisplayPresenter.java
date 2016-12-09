@@ -25,10 +25,12 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     private InfoDisplayMVP.ViewFace taskView;
     private InfoDisplayMVP.Model taskModel;
     private boolean secureFlag;
+    private ConfigManager configManager;
 
-    public InfoDisplayPresenter(InfoDisplayMVP.ViewFace taskView){
-        this.taskView   = taskView;
-        this.secureFlag = false;
+    public InfoDisplayPresenter(InfoDisplayMVP.ViewFace taskView, ConfigManager configManager){
+        this.taskView       = taskView;
+        this.secureFlag     = false;
+        this.configManager  = configManager;
     }
 
     public void setTaskModel(InfoDisplayMVP.Model taskModel) {
@@ -80,7 +82,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     }
 
     @Override
-    public View getView(Context context, int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(R.layout.exam_subject, parent, false);
@@ -104,10 +106,10 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
         else
             dayLeft = days.toString() + " days left";
 
-        examPaper.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
-        examDay.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
-        examVenue.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));
-        examSes.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.DEFAULT_FONT));
+        examPaper.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
+        examDay.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
+        examVenue.setTypeface(configManager.getTypeface(ConfigManager.BOLD_FONT));
+        examSes.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
 
         examPaper.setText(subject.toString());
         examDay.setText(dayLeft);

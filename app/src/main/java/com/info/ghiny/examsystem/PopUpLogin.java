@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.info.ghiny.examsystem.manager.ConfigManager;
-import com.info.ghiny.examsystem.model.CustomToast;
+import com.info.ghiny.examsystem.view_holder.CustomToast;
 import com.info.ghiny.examsystem.model.LoginModel;
 
 /**

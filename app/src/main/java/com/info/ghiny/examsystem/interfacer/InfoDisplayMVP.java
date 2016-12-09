@@ -22,7 +22,7 @@ public interface InfoDisplayMVP {
     interface Presenter extends TaskSecurePresenter {
         void onCreate(Intent intent);
         int getCount();
-        View getView(Context context, int position, android.view.View convertView, ViewGroup parent);
+        View getView(int position, android.view.View convertView, ViewGroup parent);
         long getItemId(int position);
         ExamSubject getItem(int position);
     }

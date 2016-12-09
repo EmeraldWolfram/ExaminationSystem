@@ -1,11 +1,12 @@
 package com.info.ghiny.examsystem.interfacer;
 
 import android.content.DialogInterface;
-import android.view.View;
 
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.model.OnSwipeAnimator;
+import com.info.ghiny.examsystem.view_holder.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.ProcessException;
+
+import java.util.ArrayList;
 
 /**
  * Created by GhinY on 07/10/2016.
@@ -70,6 +71,8 @@ public interface TakeAttdMVP {
         void saveAttendance();  //save before destroy
         void updateAssignList() throws ProcessException;    //update the assigned list
         //================================================================================
+
+        void attendanceUpdateFrom(String staffId, ArrayList<Candidate> presentCandidates);
 
         /**
          * tryAssignScanValue()

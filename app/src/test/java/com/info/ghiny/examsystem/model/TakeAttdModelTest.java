@@ -82,12 +82,12 @@ public class TakeAttdModelTest {
         cdd5 = new Candidate(0, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
         cdd6 = new Candidate(0, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
 
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
-        attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
-        attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
-        attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+        attdList.addCandidate(cdd1);
+        attdList.addCandidate(cdd2);
+        attdList.addCandidate(cdd3);
+        attdList.addCandidate(cdd4);
+        attdList.addCandidate(cdd5);
+        attdList.addCandidate(cdd6);
 
         paperList   = new HashMap<>();
         subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10, Calendar.getInstance(), 20,
@@ -157,6 +157,7 @@ public class TakeAttdModelTest {
     public void testInitAttendance3_RequiredInfoAvailableDB() throws Exception {
         when(dBLoader.emptyAttdInDB()).thenReturn(false);
         when(dBLoader.emptyPapersInDB()).thenReturn(false);
+        when(dBLoader.queryAttendanceList()).thenReturn(attdList);
 
         model.initAttendance();
 
@@ -1179,12 +1180,15 @@ public class TakeAttdModelTest {
         assertNotNull(model.getTempTable());
         assertNotNull(model.getTempCdd());
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.removeCandidate(cdd1.getRegNum());
+        attdList.addCandidate(cdd1);
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
 
         model.resetAttendanceAssignment();
 
         assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
+        assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
         verify(taskPresenter).notifyDisplayReset();
     }
 
@@ -1321,10 +1325,8 @@ public class TakeAttdModelTest {
         assertEquals(0, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
         assertFalse(model.getAssgnList().containsValue(cdd1.getRegNum()));
-        model.setTempCdd(cdd1);
-        model.setTempTable(15);
 
-        model.assignCandidate("24680");
+        model.assignCandidate("24680", cdd1.getRegNum(), 15);
 
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));

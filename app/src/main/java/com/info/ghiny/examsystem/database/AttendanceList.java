@@ -181,12 +181,17 @@ public class AttendanceList {
         }
     }
 
-    public void removeCandidate(String regNum){
+    public Candidate removeCandidate(String regNum){
         assert regNum != null;
+        Candidate cdd;
         for(Map.Entry<Status, HashMap<String, HashMap<String, HashMap<String, Candidate>>>> s:
                 attendanceList.entrySet()){
-            fromPaperRemoveCandidate(regNum, s.getValue());
+            cdd = fromPaperRemoveCandidate(regNum, s.getValue());
+            if(cdd != null){
+                return cdd;
+            }
         }
+        return null;
     }
 
     public Candidate getCandidate(String regNum){
@@ -247,30 +252,41 @@ public class AttendanceList {
     }
 
     //========================================================================================
-    private void fromPaperRemoveCandidate(String regNum, HashMap<String, HashMap<String,
+    private Candidate fromPaperRemoveCandidate(String regNum, HashMap<String, HashMap<String,
             HashMap<String, Candidate>>> paperMap){
         assert regNum != null;
         assert paperMap != null;
+        Candidate cdd;
 
         for(Map.Entry<String, HashMap<String, HashMap<String, Candidate>>> s:paperMap.entrySet()){
-            fromProgrammeRemoveCandidate(regNum, s.getValue());
+            cdd = fromProgrammeRemoveCandidate(regNum, s.getValue());
+            if(cdd != null){
+                return cdd;
+            }
         }
+        return null;
     }
 
-    private void fromProgrammeRemoveCandidate(String regNum, HashMap<String,
+    private Candidate fromProgrammeRemoveCandidate(String regNum, HashMap<String,
             HashMap<String, Candidate>> map){
         assert regNum != null;
         assert map != null;
+        Candidate cdd;
 
         for(Map.Entry<String, HashMap<String, Candidate>> s: map.entrySet()){
-            fromCandidatesRemoveCandidate(regNum, s.getValue());
+            cdd = fromCandidatesRemoveCandidate(regNum, s.getValue());
+            if(cdd != null){
+                return cdd;
+            }
         }
+
+        return null;
     }
 
-    private void fromCandidatesRemoveCandidate(String regNum, HashMap<String, Candidate> map){
+    private Candidate fromCandidatesRemoveCandidate(String regNum, HashMap<String, Candidate> map){
         assert regNum != null;
         assert map != null;
-        map.remove(regNum);
+        return map.remove(regNum);
     }
     //=========================================================================================
     private Candidate fromPaperFindCandidate(String regNum, HashMap<String,

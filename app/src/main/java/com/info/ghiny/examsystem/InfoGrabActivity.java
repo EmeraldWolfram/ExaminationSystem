@@ -20,12 +20,11 @@ import com.info.ghiny.examsystem.manager.InfoGrabPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.InfoGrabModel;
 import com.info.ghiny.examsystem.model.JsonHelper;
-import com.info.ghiny.examsystem.model.OnSwipeListener;
+import com.info.ghiny.examsystem.view_holder.OnSwipeListener;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import java.util.List;
 

@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
+import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.InfoDisplayPresenter;
 import com.info.ghiny.examsystem.model.InfoDisplayModel;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -30,7 +31,7 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
     }
 
     private void initMVP(){
-        InfoDisplayPresenter presenter  = new InfoDisplayPresenter(this);
+        InfoDisplayPresenter presenter  = new InfoDisplayPresenter(this, new ConfigManager(this));
         InfoDisplayModel model  = new InfoDisplayModel();
         presenter.setTaskModel(model);
         this.taskPresenter  = presenter;
@@ -99,7 +100,7 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return taskPresenter.getView(InfoDisplayActivity.this, position, convertView, parent);
+            return taskPresenter.getView(position, convertView, parent);
         }
 
         @Override

@@ -22,7 +22,7 @@ import com.info.ghiny.examsystem.manager.CollectionPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.CollectionModel;
-import com.info.ghiny.examsystem.model.OnSwipeAnimator;
+import com.info.ghiny.examsystem.view_holder.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;

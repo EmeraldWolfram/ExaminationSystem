@@ -11,6 +11,7 @@ import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -252,10 +253,10 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     public void resetAttendanceAssignment() {
         if(this.tempCdd != null && this.tempTable != null){
             assgnList.remove(tempTable);
+            tempCdd = attdList.removeCandidate(tempCdd.getRegNum());
             tempCdd.setStatus(Status.ABSENT);
             tempCdd.setTableNumber(0);
             tempCdd.setCollector(null);
-            attdList.removeCandidate(tempCdd.getRegNum());
             attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
                     tempCdd.getStatus(), tempCdd.getProgramme());
             String str = String.format(Locale.ENGLISH,
@@ -270,7 +271,15 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     @Override
     public void undoResetAttendanceAssignment() {
-        assignCandidate(user.getIdNo());
+        assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable);
+    }
+
+    @Override
+    public void attendanceUpdateFrom(String staffId, ArrayList<Candidate> presentCandidates) {
+        for(int i=0; i < presentCandidates.size(); i++){
+            Candidate cdd = presentCandidates.get(i);
+            assignCandidate(staffId, cdd.getRegNum(), cdd.getTableNumber());
+        }
     }
 
     //= Setter & Getter ============================================================================
@@ -413,7 +422,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attemptNotMatch();
             attemptReassign();
 
-            assignCandidate(user.getIdNo());
+            assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable);
             assigned    = true;
         }
 
@@ -451,14 +460,12 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    void assignCandidate(String collectorId){
-        tempCdd.setTableNumber(tempTable);
-        tempCdd.setStatus(Status.PRESENT);
-        tempCdd.setCollector(collectorId);
-
-        attdList.removeCandidate(tempCdd.getRegNum());
-        attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
-                tempCdd.getProgramme());
-        assgnList.put(tempTable, tempCdd.getRegNum());
+    void assignCandidate(String collectorId, String cddRegNum, Integer table){
+        Candidate cdd = attdList.removeCandidate(cddRegNum);
+        cdd.setTableNumber(table);
+        cdd.setStatus(Status.PRESENT);
+        cdd.setCollector(collectorId);
+        attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+        assgnList.put(table, cdd.getRegNum());
     }
 }

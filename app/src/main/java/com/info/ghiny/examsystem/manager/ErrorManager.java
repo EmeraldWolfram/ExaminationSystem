@@ -3,9 +3,8 @@ package com.info.ghiny.examsystem.manager;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DialogTitle;
 
-import com.info.ghiny.examsystem.model.CustomToast;
+import com.info.ghiny.examsystem.view_holder.CustomToast;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**

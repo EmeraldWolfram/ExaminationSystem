@@ -1,10 +1,9 @@
 package com.info.ghiny.examsystem.interfacer;
 
 import android.content.DialogInterface;
-import android.view.View;
 
 import com.info.ghiny.examsystem.database.PaperBundle;
-import com.info.ghiny.examsystem.model.OnSwipeAnimator;
+import com.info.ghiny.examsystem.view_holder.OnSwipeAnimator;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**

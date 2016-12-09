@@ -2,9 +2,7 @@ package com.info.ghiny.examsystem.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,7 +16,7 @@ import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
+import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
 
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;

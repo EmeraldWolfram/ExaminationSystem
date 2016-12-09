@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
+import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**

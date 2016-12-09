@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
-import com.info.ghiny.examsystem.database.CandidateDisplayHolder;
+import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.interfacer.StatusFragmentMVP;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;

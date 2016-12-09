@@ -1,4 +1,4 @@
-package com.info.ghiny.examsystem.model;
+package com.info.ghiny.examsystem.view_holder;
 
 import android.content.Context;
 import android.view.GestureDetector;
