@@ -53,7 +53,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         this.handler = handler;
     }
 
-    public void setNavigationFlag(boolean navigationFlag) {
+    void setNavigationFlag(boolean navigationFlag) {
         this.navigationFlag = navigationFlag;
     }
 

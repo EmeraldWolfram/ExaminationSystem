@@ -56,8 +56,8 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
 
     @Override
     protected void onRestart() {
-        taskPresenter.onRestart();
         super.onRestart();
+        taskPresenter.onRestart();
     }
 
     private void initView(){

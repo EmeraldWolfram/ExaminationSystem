@@ -19,12 +19,14 @@ import com.info.ghiny.examsystem.model.ProcessException;
 public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOptionMVP.MvpMPresenter {
 
     private boolean secureFlag;
+    private boolean navFlag;
     private HomeOptionMVP.MvpView taskView;
     private HomeOptionMVP.MvpModel taskModel;
 
     public HomeOptionPresenter(HomeOptionMVP.MvpView taskView){
         this.taskView   = taskView;
         this.secureFlag = false;
+        this.navFlag    = false;
     }
 
     public void setTaskModel(HomeOptionMVP.MvpModel taskModel) {
@@ -33,10 +35,11 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
 
     @Override
     public void onRestart() {
-        if(!secureFlag){
+        if(!secureFlag && !navFlag){
             secureFlag = true;
             taskView.securityPrompt(false);
         }
+        navFlag = false;
     }
 
     @Override
@@ -61,21 +64,25 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
 
     @Override
     public void onAttendance() {
+        navFlag = true;
         taskView.navigateActivity(TakeAttdActivity.class);
     }
 
     @Override
     public void onCollection() {
+        navFlag = true;
         taskView.navigateActivity(CollectionActivity.class);
     }
 
     @Override
     public void onDistribution() {
+        navFlag = true;
         taskView.navigateActivity(DistributionActivity.class);
     }
 
     @Override
     public void onInfo() {
+        navFlag = true;
         taskView.navigateActivity(InfoGrabActivity.class);
     }
 
