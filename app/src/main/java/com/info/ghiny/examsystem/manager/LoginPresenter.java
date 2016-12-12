@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
@@ -120,7 +121,16 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
             ConnectionTask.setCompleteFlag(true);
             Role role = taskModel.checkLoginResult(message);
 
-            taskView.navToHome(true, true, true, (role == Role.IN_CHARGE));
+            if(role != null){
+                taskView.navToHome(true, true, true, (role == Role.IN_CHARGE));
+            } else {
+                ProcessException err = new ProcessException("Thank you for using Exam System!\n" +
+                        "Your attendance (" + LoginModel.getStaff().getIdNo() + ") is collected",
+                        ProcessException.MESSAGE_DIALOG,
+                        IconManager.ASSIGNED);
+                taskView.displayError(err);
+            }
+
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errorManager, err);
         }

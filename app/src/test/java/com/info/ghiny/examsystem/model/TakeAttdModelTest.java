@@ -215,12 +215,14 @@ public class TakeAttdModelTest {
      *
      * 1. Chief respond with the attendance list and exam papers, parse the message and assign
      * 2. Chief respond with negative message due to some reason, throw an error
+     * 3. In-Charge respond with Attendance Update from another Client
+     * 4. In-Charge respond with Attendance Update but format was wrong, throw an error
      *
      * @throws Exception
      */
     @Test
     public void testCheckDownloadResult1_PositiveRespondFromChief() throws Exception {
-        MESSAGE_FROM_CHIEF = "{\"AttendanceList\":[" +
+        MESSAGE_FROM_CHIEF = "{\"Type\":\"VenueInfo\",\"AttendanceList\":[" +
                 "{\"ExamIndex\":\"W0001AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00001\",\"Programme\":\"RMB3\"}," +
                 "{\"ExamIndex\":\"W0002AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00002\",\"Programme\":\"RMB3\"}," +
                 "{\"ExamIndex\":\"W0003AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00003\",\"Programme\":\"RMB3\"}," +
@@ -251,7 +253,7 @@ public class TakeAttdModelTest {
 
     @Test
     public void testCheckDownloadResult2_NegativeRespondFromChief() throws Exception {
-        MESSAGE_FROM_CHIEF = "{\"Result\":false}";
+        MESSAGE_FROM_CHIEF = "{\"Result\":false,\"Type\":\"VenueInfo\"}";
         try{
             assertFalse(model.isInitialized());
             assertEquals(paperList, Candidate.getPaperList());
@@ -265,7 +267,49 @@ public class TakeAttdModelTest {
             assertEquals(paperList, Candidate.getPaperList());
             assertEquals(attdList, TakeAttdModel.getAttdList());
         }
+    }
 
+    @Test
+    public void testCheckDownloadResult3_RespondFromInCharge() throws Exception {
+        String MESSAGE = "{\"Type\":\"AttendanceUpdate\",\"UpdateList\":[" +
+                "{\"Attendance\":\"PRESENT\",\"AttdCollector\":\"145675\",\"Late\":false," +
+                "\"TableNo\":1,\"RegNum\":\"15WAU00001\"},{\"Attendance\":\"ABSENT\"," +
+                "\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00002\"},]}";
+        try{
+            assertNotNull(TakeAttdModel.getAttdList());
+            assertEquals(0, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.PRESENT));
+            assertEquals(3, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.ABSENT));
+
+            model.checkDownloadResult(MESSAGE);
+
+            assertEquals(1, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.PRESENT));
+            assertEquals(2, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.ABSENT));
+            assertEquals("145675", cdd1.getCollector());
+            assertFalse(cdd1.isLate());
+            assertEquals(Status.PRESENT, cdd1.getStatus());
+
+        } catch (Exception err) {
+            fail("Exception --" + err.getMessage() + "-- was not expected");
+        }
+    }
+
+    @Test
+    public void testCheckDownloadResult4_WrongRespondFromInCharge() throws Exception {
+        String MESSAGE = "{\"Type\":\"AttendanceUpdate\",\"UpdateList\":[" +
+                "{\"Attentor\":\"145675\",\"Late\":false}]}";
+        try{
+            assertNotNull(TakeAttdModel.getAttdList());
+            assertEquals(0, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.PRESENT));
+            assertEquals(3, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.ABSENT));
+
+            model.checkDownloadResult(MESSAGE);
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+            assertEquals("Update Data Corrupted\nPlease consult developer!", err.getErrorMsg());
+
+            assertEquals(0, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.PRESENT));
+            assertEquals(3, TakeAttdModel.getAttdList().getNumberOfCandidates(Status.ABSENT));
+        }
     }
 
     //= SaveAttendance() ===========================================================================
@@ -1326,11 +1370,42 @@ public class TakeAttdModelTest {
         assertEquals(3, attdList.getNumberOfCandidates(Status.ABSENT));
         assertFalse(model.getAssgnList().containsValue(cdd1.getRegNum()));
 
-        model.assignCandidate("24680", cdd1.getRegNum(), 15);
+        model.assignCandidate("24680", cdd1.getRegNum(), 15, false);
 
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
         assertEquals(2, attdList.getNumberOfCandidates(Status.ABSENT));
         assertTrue(model.getAssgnList().containsValue(cdd1.getRegNum()));
+    }
+
+    //=== RxAttendanceUpdate =======================================================================
+    /**
+     * rxAttendanceUpdate(...)
+     *
+     * This method process the update received from any Client
+     * TODO: Not complete yet - store in preUpdateList
+     *
+     */
+    @Test
+    public void testRxAttendanceUpdate1_PositiveTest() throws Exception {
+
+    }
+
+    @Test
+    public void testRxAttendanceUpdate2_NegativeTest() throws Exception {
+
+    }
+
+    //=== TxAttendanceUpdate =======================================================================
+    /**
+     * txAttendanceUpdate(...)
+     *
+     * This method send out the newly collected attendance out
+     * TODO: Clear the preUpdateList and interval for updating
+     *
+     */
+    @Test
+    public void testTxAttendanceUpdate() throws Exception {
+
     }
 
 }

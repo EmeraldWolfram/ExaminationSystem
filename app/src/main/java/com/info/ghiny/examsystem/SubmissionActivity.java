@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
@@ -37,6 +38,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggleButton;
+    private FloatingActionButton uploadButton;
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
@@ -56,6 +58,15 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         toolbar         = (Toolbar)             findViewById(R.id.toolbar);
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
         navigationView  = (NavigationView)      findViewById(R.id.nav_view);
+        uploadButton    = (FloatingActionButton)findViewById(R.id.uploadButton);
+
+        //======================================================
+        if(LoginModel.getStaff().getRole() == Role.IN_CHARGE){
+            uploadButton.setVisibility(View.VISIBLE);
+        } else {
+            uploadButton.setVisibility(View.INVISIBLE);
+        }
+        //======================================================
 
         View header     = navigationView.getHeaderView(0);
 

@@ -17,6 +17,8 @@ public enum Status {
 
     public static Status parseStatus(String statusString){
         switch (statusString){
+            case "PRESENT":
+                return Status.PRESENT;
             case "BARRED":
                 return Status.BARRED;
             case "EXEMPTED":

@@ -27,6 +27,7 @@ public class JsonHelper {
     public static final String MAJOR_KEY_TYPE_TX    = "Type";
     public static final String MAJOR_KEY_ERROR      = "Error";
 
+    //=== BTW ANDROID & PC ========================================================================
     public static final String TYPE_RECONNECTION    = "Reconnection";
     public static final String TYPE_IDENTIFICATION  = "Identification";
     public static final String TYPE_COLLECTION      = "Collection";
@@ -36,7 +37,6 @@ public class JsonHelper {
     public static final String TYPE_SUBMISSION      = "Submission";
     //============================================
     public static final String TYPE_PAPERS_VENUE    = "Papers";
-    //public static final
 
     //Client to Host
     public static final String MINOR_KEY_VALUE      = "Value";
@@ -54,6 +54,10 @@ public class JsonHelper {
     public static final String LIST_SIZE    = "Size";
     public static final String LIST_VENUE   = "Venue";
     public static final String LIST_INVI    = "In-Charge";
+
+    //=== BTW ANDROID & ANDROID ===================================================================
+    public static final String TYPE_ATTENDANCE_UP   = "AttendanceUpdate";
+    public static final String MINOR_KEY_UPDATE     = "UpdateList";
 
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
@@ -97,11 +101,11 @@ public class JsonHelper {
                         && cdd.getStatus() != Status.QUARANTINED
                         && cdd.getStatus() != Status.ABSENT){
                     cddObj = new JSONObject();
-                    cddObj.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
-                    cddObj.put(Candidate.CDD_PAPER, cdd.getPaperCode());
-                    cddObj.put(Candidate.CDD_TABLE, cdd.getTableNumber().toString());
-                    cddObj.put(Candidate.CDD_ATTENDAND, cdd.getStatus().toString());
-                    cddObj.put(Candidate.CDD_LATE, cdd.isLate());
+                    cddObj.put(Candidate.CDD_EXAM_INDEX,    cdd.getExamIndex());
+                    cddObj.put(Candidate.CDD_PAPER,         cdd.getPaperCode());
+                    cddObj.put(Candidate.CDD_TABLE,         cdd.getTableNumber());
+                    cddObj.put(Candidate.CDD_ATTENDANCE,    cdd.getStatus().toString());
+                    cddObj.put(Candidate.CDD_LATE,          cdd.isLate());
                     cddList.put(cddObj);
                 }
             }
@@ -151,6 +155,32 @@ public class JsonHelper {
         }
     }
 
+    public static String formatAttendanceUpdate(ArrayList<Candidate> candidates){
+        JSONObject jsonObject   = new JSONObject();
+        JSONArray jArrayList    = new JSONArray();
+
+        try{
+            for(int i = 0; i < candidates.size(); i++){
+                JSONObject candidate = new JSONObject();
+                Candidate cdd   = candidates.get(i);
+                candidate.put(Candidate.CDD_REG_NUM,    cdd.getRegNum());
+                candidate.put(Candidate.CDD_TABLE,      cdd.getTableNumber());
+                candidate.put(Candidate.CDD_ATTENDANCE, cdd.getStatus().toString());
+                candidate.put(Candidate.CDD_COLLECTOR,  cdd.getCollector());
+                candidate.put(Candidate.CDD_LATE,       cdd.isLate());
+
+                jArrayList.put(candidate);
+            }
+
+            jsonObject.put(MAJOR_KEY_TYPE_TX, TYPE_ATTENDANCE_UP);
+            jsonObject.put(MINOR_KEY_UPDATE, jArrayList);
+
+            return jsonObject.toString();
+        } catch(Exception err){
+            return null;
+        }
+    }
+
     //==============================================================================================
 
     public static StaffIdentity parseStaffIdentity(String inStr, int attp) throws ProcessException{
@@ -170,11 +200,6 @@ public class JsonHelper {
                 staffId.setIdNo(idNo);
                 staffId.setExamVenue(venue);
                 staffId.setRole(role);
-                //JSONArray roles = staff.getJSONArray(StaffIdentity.STAFF_ROLE);
-
-                //for(int i = 0; i < roles.length(); i++){
-                //    staffId.setRole(roles.getString(i));
-                //}
 
                 return staffId;
             } else {
@@ -327,5 +352,34 @@ public class JsonHelper {
             throw new ProcessException("Failed to read data from Chief\nPlease consult developer!",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
+    }
+
+    public static ArrayList<Candidate> parseUpdateList(String inStr) throws ProcessException{
+        ArrayList<Candidate> candidates = new ArrayList<>();
+
+        try{
+            JSONObject cddsObj  = new JSONObject(inStr);
+            JSONArray cddsArr   = cddsObj.getJSONArray(MINOR_KEY_UPDATE);
+
+            for(int i=0; i < cddsArr.length(); i++){
+                JSONObject jCdd = cddsArr.getJSONObject(i);
+                Candidate candidate = new Candidate();
+                candidate.setStatus(Status.parseStatus(jCdd.getString(Candidate.CDD_ATTENDANCE)));
+                if(candidate.getStatus() == Status.PRESENT){
+                    candidate.setCollector(jCdd.getString(Candidate.CDD_COLLECTOR));
+                }
+                candidate.setLate(jCdd.getBoolean(Candidate.CDD_LATE));
+                candidate.setTableNumber(jCdd.getInt(Candidate.CDD_TABLE));
+                candidate.setRegNum(jCdd.getString(Candidate.CDD_REG_NUM));
+
+                candidates.add(candidate);
+            }
+
+            return candidates;
+        } catch (JSONException err) {
+            throw new ProcessException("Update Data Corrupted\nPlease consult developer!",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
+
     }
 }

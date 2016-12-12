@@ -7,6 +7,8 @@ import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
+import java.util.ArrayList;
+
 /**
  * Created by GhinY on 07/07/2016.
  */
@@ -103,4 +105,17 @@ public class ExternalDbLoader {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
+
+    //Android Android Communication
+    public static void updateAttendance(ArrayList<Candidate> candidates) throws ProcessException {
+        if(tcpClient != null && candidates != null){
+            String str = JsonHelper.formatAttendanceUpdate(candidates);
+            tcpClient.sendMessage(str);
+        } else {
+            throw new ProcessException("Fail to send out update!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+
+    }
+
 }

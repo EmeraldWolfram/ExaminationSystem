@@ -13,6 +13,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -453,4 +454,56 @@ public class ExternalDbLoaderTest {
             verify(tcpClient, never()).sendMessage(anyString());
         }
     }
+
+    //= UpdateAttendance ===========================================================================
+    /**
+     * updateAttendance(...)
+     *
+     * Send out the newly collected attendance in JSON format
+     * This is to synchronize with others attendance collector
+     *
+     * Tests:
+     *  1. the tcpClient is not null, send out the removing collector and bundle
+     *  2. the tcpClient is null, throw error
+     *  3. input param is null, throw error
+     *
+     */
+    @Test
+    public void testUpdateAttendance1_TcpNotNull() throws Exception {
+        try{
+            ArrayList<Candidate> candidates = new ArrayList<>();
+            ExternalDbLoader.updateAttendance(candidates);
+
+            verify(tcpClient).sendMessage(anyString());
+        } catch (ProcessException err){
+            fail("No Exception expected but thrown " + err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testUpdateAttendance2_NullTcpShouldThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.setTcpClient(null);
+            ArrayList<Candidate> candidates = new ArrayList<>();
+            ExternalDbLoader.updateAttendance(candidates);
+
+        } catch (ProcessException err) {
+            assertEquals("Fail to send out update!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
+    @Test
+    public void testUpdateAttendance3_NullInputShouldThrowFATAL() throws Exception {
+        try{
+            ExternalDbLoader.updateAttendance(null);
+
+        } catch (ProcessException err) {
+            assertEquals("Fail to send out update!\nPlease consult developer", err.getErrorMsg());
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            verify(tcpClient, never()).sendMessage(anyString());
+        }
+    }
+
 }

@@ -9,13 +9,17 @@ import com.info.ghiny.examsystem.database.Status;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import dalvik.annotation.TestTargetClass;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +30,17 @@ import static org.junit.Assert.*;
 @Config(manifest= Config.NONE)
 public class JsonHelperTest {
 
+    Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.PRESENT);
+    Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+    Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+    Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+    Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+    Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
 
+    @Before
+    public void setup() throws Exception {
+        cdd1.setCollector("145675");
+    }
     //= FormatString() =============================================================================
     /**
      *  formatString(String type, String valueStr)
@@ -54,12 +68,7 @@ public class JsonHelperTest {
     @Test
     public void testFormatAttdList() throws Exception {
         AttendanceList attdList = new AttendanceList();
-        Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
-        Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
-        Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
-        Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
-        Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
-        Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
+
 
         attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
         attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
@@ -75,10 +84,10 @@ public class JsonHelperTest {
         assertEquals("Submission", obj.getString("Type"));
         assertEquals("H1", obj.getString("Venue"));
         assertEquals("246260", obj.getString("In-Charge"));
-        assertEquals(0, obj.getInt("Size"));
+        assertEquals(1, obj.getInt("Size"));
 
         JSONArray jArr = obj.getJSONArray("AttendanceList");
-        assertEquals(0, jArr.length());
+        assertEquals(1, jArr.length());
     }
 
     //= FormatCollection() =========================================================================
@@ -558,6 +567,76 @@ public class JsonHelperTest {
         }
     }
 
+    //##################### Android Android Protocol ###############################################
+    //= FormatAttendanceUpdate =====================================================================
+    /**
+     * formatAttendanceUpdate(...)
+     *
+     * Create a JSON String with all the new scanned Candidate
+     */
+    @Test
+    public void testFormatAttendanceUpdate() throws Exception {
 
+        ArrayList<Candidate> arr = new ArrayList<>();
+        arr.add(cdd1);
+        arr.add(cdd2);
+        arr.add(cdd3);
+        arr.add(cdd4);
+        arr.add(cdd5);
+
+        assertEquals("{\"Type\":\"AttendanceUpdate\",\"UpdateList\":[" + "{\"Attendance\":\"PRESENT\"," +
+                "\"AttdCollector\":\"145675\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00001\"}," +
+                "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00002\"}," +
+                "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00003\"}," +
+                "{\"Attendance\":\"BARRED\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00004\"}," +
+                "{\"Attendance\":\"EXEMPTED\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00005\"}" +
+                "]}", JsonHelper.formatAttendanceUpdate(arr));
+    }
+
+    //= ParseAttendanceUpdate ======================================================================
+    /**
+     * parseAttendanceUpdate(...)
+     *
+     * Parse the JSON Object from Client and form an ArrayList<Candidate>
+     *
+     * Tests:
+     * 1. If the result is true, return ArrayList
+     * 2. If the result have wrong format, throw MESSAGE_DIALOG
+     */
+    @Test
+    public void testParseAttendanceUpdate1_PositiveTest() throws Exception {
+        try{
+            String MESSAGE = "{\"Type\":\"AttendanceUpdate\",\"UpdateList\":[" + "{\"Attendance\":\"PRESENT\"," +
+                    "\"AttdCollector\":\"145675\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00001\"}," +
+                    "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00002\"}," +
+                    "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00003\"}," +
+                    "{\"Attendance\":\"BARRED\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00004\"}," +
+                    "{\"Attendance\":\"EXEMPTED\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00005\"}" +
+                    "]}";
+            String type                 = JsonHelper.parseType(MESSAGE);
+            ArrayList<Candidate> list   = JsonHelper.parseUpdateList(MESSAGE);
+
+            assertEquals(JsonHelper.TYPE_ATTENDANCE_UP, type);
+            assertEquals(5, list.size());
+            assertEquals(cdd1.getRegNum(), list.get(0).getRegNum());
+            assertEquals(cdd2.getRegNum(), list.get(1).getRegNum());
+            assertEquals(cdd3.getRegNum(), list.get(2).getRegNum());
+            assertEquals(cdd4.getRegNum(), list.get(3).getRegNum());
+            assertEquals(cdd5.getRegNum(), list.get(4).getRegNum());
+
+        } catch (Exception err){
+            fail("Exception --" + err.getMessage() + "-- is Not Expected!");
+        }
+    }
+
+    @Test
+    public void testParseAttendanceUpdate2_NegativeTest() throws Exception {
+        try{
+            JsonHelper.parseUpdateList("{\"Result\":true}");
+        } catch (ProcessException err){
+            assertEquals("Update Data Corrupted\nPlease consult developer!", err.getErrorMsg());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
+        }
+    }
 
 }

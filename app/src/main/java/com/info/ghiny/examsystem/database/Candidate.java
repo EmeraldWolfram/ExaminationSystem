@@ -16,7 +16,7 @@ public class Candidate {
     public static final String CDD_EXAM_INDEX   = "ExamIndex";
     public static final String CDD_REG_NUM      = "RegNum";
     public static final String CDD_STATUS       = "Status";
-    public static final String CDD_ATTENDAND    = "Attendance";
+    public static final String CDD_ATTENDANCE   = "Attendance";
     public static final String CDD_PROG         = "Programme";
     public static final String CDD_TABLE        = "TableNo";
     public static final String CDD_PAPER        = "PaperCode";

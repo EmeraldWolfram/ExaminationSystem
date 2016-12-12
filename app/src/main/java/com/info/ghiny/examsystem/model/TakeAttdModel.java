@@ -6,6 +6,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
@@ -90,12 +91,19 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     @Override
     public void checkDownloadResult(String chiefMessage) throws ProcessException {
-        isDownloadComplete  = true;
-        attdList    = JsonHelper.parseAttdList(chiefMessage);
-        Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
-        setInitialized(true);
-        throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
-                IconManager.MESSAGE);
+
+        String type = JsonHelper.parseType(chiefMessage);
+        if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
+            ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(chiefMessage);
+            rxAttendanceUpdate(candidates);
+        } else {
+            isDownloadComplete  = true;
+            attdList    = JsonHelper.parseAttdList(chiefMessage);
+            Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
+            setInitialized(true);
+            throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
+                    IconManager.MESSAGE);
+        }
     }
 
     @Override
@@ -104,6 +112,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         dbLoader.savePaperList(Candidate.getPaperList());
     }
 
+    //TODO: Also put into preUpdateList
     @Override
     public void updateAssignList() throws ProcessException{
         assgnList.clear();
@@ -216,7 +225,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     //= Methods for abnormal cases =================================================================
-
     @Override
     public void updateNewAssignment() {
         if(assgnList.containsKey(tempTable)){
@@ -271,14 +279,40 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     @Override
     public void undoResetAttendanceAssignment() {
-        assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable);
+        assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable, tempCdd.isLate());
     }
 
+    /**
+     * TODO: Add a HashMap<> preUpdateList
+     * Continuously update the list
+     * Once it was send, clear the list
+     * REMEMBER: Master List stay with In-Charge
+     **/
     @Override
-    public void attendanceUpdateFrom(String staffId, ArrayList<Candidate> presentCandidates) {
-        for(int i=0; i < presentCandidates.size(); i++){
-            Candidate cdd = presentCandidates.get(i);
-            assignCandidate(staffId, cdd.getRegNum(), cdd.getTableNumber());
+    public void rxAttendanceUpdate(ArrayList<Candidate> modifyList) {
+        for(int i=0; i < modifyList.size(); i++){
+            Candidate cdd = modifyList.get(i);
+            if(cdd.getStatus() == Status.PRESENT){
+                assignCandidate(cdd.getCollector(), cdd.getRegNum(),
+                        cdd.getTableNumber(), cdd.isLate());
+            } else {
+                unassignCandidate(cdd.getRegNum());
+            }
+            /**
+             if(user.getRole() == Role.IN_CHARGE){
+             //TODO: Put it into preUpdateList
+             }
+             **/
+        }
+    }
+
+    //TODO: Prepare Synchronizer class
+    @Override
+    public void txAttendanceUpdate(ArrayList<Candidate> modifyList) throws ProcessException{
+        if(user.getRole() == Role.INVIGILATOR){
+            ExternalDbLoader.updateAttendance(modifyList);
+        } else {
+            //MULTI_DB_CLASS.UPDATE_ATTENDANCE
         }
     }
 
@@ -422,7 +456,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attemptNotMatch();
             attemptReassign();
 
-            assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable);
+            assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable, tempCdd.isLate());
             assigned    = true;
         }
 
@@ -460,12 +494,24 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    void assignCandidate(String collectorId, String cddRegNum, Integer table){
+    void assignCandidate(String collectorId, String cddRegNum, Integer table, boolean late){
         Candidate cdd = attdList.removeCandidate(cddRegNum);
+
         cdd.setTableNumber(table);
         cdd.setStatus(Status.PRESENT);
         cdd.setCollector(collectorId);
+        cdd.setLate(late);
         attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
         assgnList.put(table, cdd.getRegNum());
+    }
+
+    void unassignCandidate(String cddRegNum){
+        Candidate cdd = attdList.removeCandidate(cddRegNum);
+
+        assgnList.remove(cdd.getTableNumber());
+        cdd.setTableNumber(0);
+        cdd.setCollector(null);
+        cdd.setStatus(Status.ABSENT);
+        attdList.addCandidate(cdd);
     }
 }

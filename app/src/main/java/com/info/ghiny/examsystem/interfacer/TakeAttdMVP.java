@@ -73,7 +73,8 @@ public interface TakeAttdMVP {
         void updateAssignList() throws ProcessException;    //update the assigned list
         //================================================================================
 
-        void attendanceUpdateFrom(String staffId, ArrayList<Candidate> presentCandidates);
+        void rxAttendanceUpdate(ArrayList<Candidate> modifyList);
+        void txAttendanceUpdate(ArrayList<Candidate> modifyList) throws ProcessException;
 
         /**
          * tryAssignScanValue()
