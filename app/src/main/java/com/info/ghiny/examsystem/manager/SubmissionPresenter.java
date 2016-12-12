@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
+import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
@@ -41,11 +42,13 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     //private boolean sent;
     private boolean uploadFlag;
     private boolean secureFlag;
+    private boolean navFlag;
 
     public SubmissionPresenter(SubmissionMVP.MvpView taskView){
         this.taskView   = taskView;
         this.uploadFlag = false;
         this.secureFlag = false;
+        this.navFlag    = false;
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -75,10 +78,11 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onRestart() {
         uploadFlag = false;
-        if(!secureFlag){
+        if(!secureFlag && !navFlag){
             secureFlag = true;
             taskView.securityPrompt(false);
         }
+        navFlag = false;
     }
 
     @Override
@@ -183,6 +187,13 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     }
 
     @Override
+    public boolean onSetting() {
+        navFlag = true;
+        taskView.navigateActivity(SettingActivity.class);
+        return true;
+    }
+
+    @Override
     public void onClick(DialogInterface dialog, int which) {
         switch(which){
             case DialogInterface.BUTTON_POSITIVE:
@@ -196,7 +207,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         }
     }
 
-    //= MPresenter =================================================================================
+    //= MvpMPresenter =================================================================================
 
     @Override
     public void onCancel(DialogInterface dialog) {

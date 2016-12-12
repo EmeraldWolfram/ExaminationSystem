@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.TakeAttdActivity;
+import com.info.ghiny.examsystem.HomeOptionActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -17,9 +18,9 @@ import com.info.ghiny.examsystem.model.TCPClient;
 /**
  * Created by GhinY on 08/08/2016.
  */
-public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter {
-    private LoginMVP.View taskView;
-    private LoginMVP.Model taskModel;
+public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPresenter {
+    private LoginMVP.MvpView taskView;
+    private LoginMVP.MvpModel taskModel;
     private Handler handler;
     private boolean dlFlag = false;
 
@@ -29,12 +30,12 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
     private boolean vibrate;
     private int mode;
 
-    public LoginPresenter(LoginMVP.View taskView, SharedPreferences pref){
+    public LoginPresenter(LoginMVP.MvpView taskView, SharedPreferences pref){
         this.preferences    = pref;
         this.taskView       = taskView;
     }
 
-    public void setTaskModel(LoginMVP.Model taskModel) {
+    public void setTaskModel(LoginMVP.MvpModel taskModel) {
         this.taskModel = taskModel;
     }
 
@@ -77,16 +78,8 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
 
     @Override
     public void onDestroy(){
-        //try {
         taskView.closeProgressWindow();
         handler.removeCallbacks(taskModel);
-            //ExternalDbLoader.getTcpClient().sendMessage("Termination");
-            //ExternalDbLoader.getTcpClient().stopClient();
-            //ExternalDbLoader.getConnectionTask().cancel(true);
-            //ExternalDbLoader.setConnectionTask(null);
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        //}
     }
 
     @Override
@@ -123,16 +116,11 @@ public class LoginPresenter implements LoginMVP.VPresenter, LoginMVP.MPresenter 
     @Override
     public void onChiefRespond(ErrorManager errorManager, String message){
         try {
-            //if(!dlFlag){
             taskView.closeProgressWindow();
             ConnectionTask.setCompleteFlag(true);
-            taskModel.checkLoginResult(message);
-            //    dlFlag = true;
-            //} else {
-            //    loginModel.checkDetail(message);
-            //    dlFlag = false;
-            taskView.navigateActivity(TakeAttdActivity.class);
-            //}
+            Role role = taskModel.checkLoginResult(message);
+
+            taskView.navToHome(true, true, true, (role == Role.IN_CHARGE));
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errorManager, err);
         }

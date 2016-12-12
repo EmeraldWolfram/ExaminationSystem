@@ -10,31 +10,47 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
+import com.info.ghiny.examsystem.database.AttendanceList;
+import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
+import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.LoginPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.HomeOptionModel;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 
-public class MainLoginActivity extends AppCompatActivity implements LoginMVP.View {
+public class MainLoginActivity extends AppCompatActivity implements LoginMVP.MvpView {
     private static final String TAG = MainLoginActivity.class.getSimpleName();
 
     //private LoginPresenter loginManager;
-    private LoginMVP.VPresenter taskPresenter;
+    private LoginMVP.MvpVPresenter taskPresenter;
     private LocalDbLoader dbLoader;
     private ErrorManager errorManager;
     private BeepManager beepManager;
@@ -117,6 +133,63 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater   = this.getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        StaffIdentity staff;
+        staff = new StaffIdentity("123456", true, "Staff 1", "M4");
+        staff.setPassword("1");
+        try{
+            staff.setHashPass(staff.hmacSha("1", "DUEL"));
+        } catch (ProcessException err) {
+            Log.d("HMAC Error", err.getErrorMsg());
+        }
+
+        LoginModel.setStaff(staff);
+        AttendanceList attdList = new AttendanceList();
+        attdList.addCandidate(new Candidate(12, "RMB3", "Candidate A", "15WAU00001", "BAME0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(15, "RMB3", "Candidate B", "15WAU00002", "BAME0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(14, "RMB3", "Candidate C", "15WAU00003", "BAME0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(13, "RMB3", "Candidate D", "15WAU00004", "BAME0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate E", "15WAU00005", "BAME0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate F", "15WAU00006", "BAME0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate G", "15WAU00007", "BAME0001", Status.BARRED));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate H", "15WAU00008", "BAME0001", Status.EXEMPTED));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate I", "15WAU00009", "BAME0001", Status.QUARANTINED));
+        TakeAttdModel.setAttdList(attdList);
+
+        switch (item.getItemId()){
+            case R.id.action_setting:
+                Intent setting  = new Intent(this, SettingActivity.class);
+                startActivity(setting);
+                return true;
+            case R.id.action_test:
+                staff.setRole(Role.INVIGILATOR);
+                navToHome(true, true, true, false);
+                /*taskPresenter.onChiefRespond(errorManager, "{\"Role\":\"INVIGILATOR\"," +
+                        "\"Venue\":\"M5\",\"Result\":true," +
+                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");*/
+                return true;
+            case R.id.action_test_2:
+                staff.setRole(Role.IN_CHARGE);
+                navToHome(true, true, true, true);
+                /*taskPresenter.onChiefRespond(errorManager, "{\"Role\":\"IN_CHARGE\"," +
+                        "\"Venue\":\"M5\",\"Result\":true," +
+                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");*/
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
     public void onInitiateScan(View view) {
         barcodeView.resume();
     }
@@ -126,7 +199,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
         taskPresenter.onPasswordReceived(reqCode, resCode, data);
     }
 
-    //Interface of View ============================================================================
+    //Interface of MvpView ============================================================================
     @Override
     public void displayError(ProcessException err) {
         errorManager.displayError(err);
@@ -136,6 +209,16 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Vie
     public void navigateActivity(Class<?> cls) {
         Intent nextAct  = new Intent(this, cls);
         startActivity(nextAct);
+    }
+
+    @Override
+    public void navToHome(Boolean attendance, Boolean bundle, Boolean info, Boolean distribution) {
+        Intent tasks    = new Intent(this, HomeOptionActivity.class);
+        tasks.putExtra(HomeOptionActivity.FEATURE_INFO_GRAB,  info);
+        tasks.putExtra(HomeOptionActivity.FEATURE_ATTENDANCE, attendance);
+        tasks.putExtra(HomeOptionActivity.FEATURE_COLLECTION, bundle);
+        tasks.putExtra(HomeOptionActivity.FEATURE_CONNECTION, distribution);
+        startActivity(tasks);
     }
 
     @Override

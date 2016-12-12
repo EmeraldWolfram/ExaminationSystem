@@ -169,11 +169,11 @@ public class JsonHelper {
                 staffId.setName(name);
                 staffId.setIdNo(idNo);
                 staffId.setExamVenue(venue);
-                staffId.addRole(role);
+                staffId.setRole(role);
                 //JSONArray roles = staff.getJSONArray(StaffIdentity.STAFF_ROLE);
 
                 //for(int i = 0; i < roles.length(); i++){
-                //    staffId.addRole(roles.getString(i));
+                //    staffId.setRole(roles.getString(i));
                 //}
 
                 return staffId;

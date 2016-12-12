@@ -88,8 +88,8 @@ public class InfoDisplayPresenterTest {
      * by taking the string passed by the previous activity
      *
      * Tests:
-     * 1. Model did not complain about the message, update the list and notify changes
-     * 2. Model complain about the message, finish the activity
+     * 1. MvpModel did not complain about the message, update the list and notify changes
+     * 2. MvpModel complain about the message, finish the activity
      *    (As this activity is use for display purposes)
      * 3. Fail to retrieve a message from previous activity, finish the activity
      *    (Not possible, pre-handle in previous activity)
@@ -310,7 +310,7 @@ public class InfoDisplayPresenterTest {
     /**
      * getItem(...)
      *
-     * This method use to return an ExamSubject used by the BaseAdapter in View
+     * This method use to return an ExamSubject used by the BaseAdapter in MvpView
      *
      * Test:
      * To call taskModel and find the examsubject with the given index

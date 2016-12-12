@@ -11,6 +11,7 @@ import android.view.View;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.SubmissionActivity;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
@@ -154,6 +155,13 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onSwiped(View refView) {
         this.refView    = refView;
         taskModel.resetAttendanceAssignment();
+    }
+
+    @Override
+    public boolean onSetting() {
+        navigationFlag = true;
+        taskView.navigateActivity(SettingActivity.class);
+        return true;
     }
 
     @Override

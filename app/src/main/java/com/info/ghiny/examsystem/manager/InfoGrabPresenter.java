@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import com.info.ghiny.examsystem.InfoDisplayActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
@@ -26,6 +27,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     private InfoGrabMVP.ViewFace taskView;
     private InfoGrabMVP.Model taskModel;
     private boolean secureFlag;
+    private boolean navFlag;
 
     private SharedPreferences preferences;
     private boolean crossHair;
@@ -37,6 +39,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
         this.taskView       = taskView;
         this.preferences    = pref;
         this.secureFlag     = false;
+        this.navFlag        = false;
     }
 
     public void setTaskModel(InfoGrabMVP.Model taskModel) {
@@ -111,10 +114,11 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
 
     @Override
     public void onRestart() {
-        if(!secureFlag){
+        if(!secureFlag && !navFlag){
             secureFlag = true;
             taskView.securityPrompt(false);
         }
+        navFlag = false;
     }
 
     @Override
@@ -137,6 +141,13 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     @Override
     public void onSwipeTop() {
         taskView.finishActivity();
+    }
+
+    @Override
+    public boolean onSetting() {
+        navFlag = true;
+        taskView.navigateActivity(SettingActivity.class);
+        return true;
     }
 
     @Override

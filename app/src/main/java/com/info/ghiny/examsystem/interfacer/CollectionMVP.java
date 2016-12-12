@@ -17,7 +17,9 @@ public interface CollectionMVP {
     }
 
     interface MvpVPresenter extends TaskConnPresenter, TaskScanPresenter, TaskSecurePresenter,
-            OnSwipeAnimator.OnSwipeListener {}
+            OnSwipeAnimator.OnSwipeListener {
+        boolean onSetting();
+    }
 
     interface MvpMPresenter extends DialogInterface.OnClickListener,
             DialogInterface.OnCancelListener {

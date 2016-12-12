@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
@@ -14,17 +15,17 @@ import com.info.ghiny.examsystem.manager.IconManager;
  * mobile.
  */
 
-public class LoginModel implements LoginMVP.Model{
+public class LoginModel implements LoginMVP.MvpModel {
     private static StaffIdentity staff;
     private int loginCount = 3;
-    private LoginMVP.MPresenter taskPresenter;
+    private LoginMVP.MvpMPresenter taskPresenter;
     private LocalDbLoader dbLoader;
 
     private String qrStaffID;
     private String inputPW;
     private String hashCode;
 
-    public LoginModel(LoginMVP.MPresenter taskPresenter, LocalDbLoader dbLoader){
+    public LoginModel(LoginMVP.MvpMPresenter taskPresenter, LocalDbLoader dbLoader){
         this.taskPresenter  = taskPresenter;
         this.dbLoader       = dbLoader;
     }
@@ -97,9 +98,8 @@ public class LoginModel implements LoginMVP.Model{
     }
 
     @Override
-    public void checkLoginResult(String msgFromChief) throws ProcessException{
+    public Role checkLoginResult(String msgFromChief) throws ProcessException{
         loginCount--;
-        //String pw   = staff.getPassword();
 
         if(loginCount < 1){
             try{
@@ -115,35 +115,10 @@ public class LoginModel implements LoginMVP.Model{
         staff.setHashPass(this.hashCode);
 
         dbLoader.saveUser(staff);
-
         loginCount  = 3;
 
-        //AttendanceList attdList = JsonHelper.parseAttdList(msgFromChief);
-        //TakeAttdModel.setAttdList(attdList);
-
-        //HashMap<String, ExamSubject> papers = JsonHelper.parsePaperMap(msgFromChief);
-        //Candidate.setPaperList(papers);
-
-        //ExternalDbLoader.dlPaperList();
+        return staff.getRole();
     }
-
-    /*String hmacSha(String password, String duelMessage) throws ProcessException{
-        String hash;
-        Mac shaHMAC;
-
-        try {
-            shaHMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKey = new SecretKeySpec(password.getBytes(), "HmacSHA256");
-            shaHMAC.init(secretKey);
-            hash = Base64.encodeToString(shaHMAC.doFinal(duelMessage.getBytes()), Base64.DEFAULT);
-        } catch (Exception err) {
-            throw new ProcessException("Encryption library not found\nPlease contact developer!",
-                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
-        }
-
-        return hash;
-    }*/
-
 
     @Override
     public void run() {

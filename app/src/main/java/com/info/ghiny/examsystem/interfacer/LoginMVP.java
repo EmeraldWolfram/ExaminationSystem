@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.interfacer;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -10,9 +11,25 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface LoginMVP {
-    interface View extends TaskScanView, TaskConnView, GeneralView {}
+    interface MvpView extends TaskScanView, TaskConnView, GeneralView {
+        /**
+         * navToHome(...)
+         *
+         * This method navigate to the home screen to allow the user to start doing their task
+         * However, different user have different role and different responsibility
+         * Therefore the four parameter is the four feature that can be used by user
+         * depending on their role
+         *
+         * @param attendance    Enable attendance collection feature
+         * @param bundle        Enable bundle collection feature
+         * @param info          Enable info grabbing feature
+         * @param distribution  Enable multi-attendance collection
+         */
 
-    interface VPresenter extends TaskScanPresenter, TaskConnPresenter {
+        void navToHome(Boolean attendance, Boolean bundle, Boolean info, Boolean distribution);
+    }
+
+    interface MvpVPresenter extends TaskScanPresenter, TaskConnPresenter {
         /**
          * onPasswordReceived(...)
          *
@@ -29,7 +46,7 @@ public interface LoginMVP {
         void onPasswordReceived(int reqCode, int resCode, Intent intent);
     }
 
-    interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+    interface MvpMPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
         /**
          * onClick and onCancel
          *
@@ -54,12 +71,13 @@ public interface LoginMVP {
          * @param err   The message in form of exception to be display to the user
          */
         void onTimesOut(ProcessException err);
+
     }
 
-    interface Model extends Runnable {
+    interface MvpModel extends Runnable {
         void checkQrId(String scanStr) throws ProcessException;
         void matchStaffPw(String inputPw) throws ProcessException;
-        void checkLoginResult(String msgFromChief) throws ProcessException;
+        Role checkLoginResult(String msgFromChief) throws ProcessException;
     }
 
 }

@@ -147,7 +147,7 @@ public class JsonHelperTest {
     @Test
     public void testParseStaffIdentity_True_Result_return_StaffIdentity() throws Exception {
         StaffIdentity staff = JsonHelper.parseStaffIdentity(
-                "{\"Status\":[\"Collector\",\"Chief\"]," +
+                "{\"Role\":\"INVIGILATOR\"," +
                         "\"Venue\":\"M5\",\"Result\":true," +
                         "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}", 3);
         assertNotNull(staff);

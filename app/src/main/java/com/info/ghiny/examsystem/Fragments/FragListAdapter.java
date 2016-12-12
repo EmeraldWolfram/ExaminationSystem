@@ -89,7 +89,7 @@ public class FragListAdapter extends BaseExpandableListAdapter {
         //    @Override
         //    public void onSwipeRight() {
         //        ReportAttdModel.resetCandidate(Integer.parseInt(tableNumView.getText().toString()));
-        //        assignResult.setVisibility(View.GONE);
+        //        assignResult.setVisibility(MvpView.GONE);
         //        notifyDataSetChanged();
         //    }
         //});

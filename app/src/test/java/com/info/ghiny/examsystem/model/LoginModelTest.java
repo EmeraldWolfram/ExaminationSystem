@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.verify;
 public class LoginModelTest {
     private LoginModel helper;
     private StaffIdentity staffId;
-    private LoginMVP.MPresenter taskPresenter;
+    private LoginMVP.MvpMPresenter taskPresenter;
     private LocalDbLoader dbLoader;
     private TCPClient tcpClient;
     private String MESSAGE_FROM_CHIEF;
@@ -41,7 +42,7 @@ public class LoginModelTest {
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
 
         dbLoader        = Mockito.mock(LocalDbLoader.class);
-        taskPresenter   = Mockito.mock(LoginMVP.MPresenter.class);
+        taskPresenter   = Mockito.mock(LoginMVP.MvpMPresenter.class);
         LoginModel.setStaff(null);
 
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
@@ -195,7 +196,7 @@ public class LoginModelTest {
     @Test
     public void testCheckLoginResult1_CorrectPassword() throws Exception {
         try{
-            MESSAGE_FROM_CHIEF = "{\"Status\":\"Invigilator\",\"Venue\":\"M4\"," +
+            MESSAGE_FROM_CHIEF = "{\"Role\":\"Invigilator\",\"Venue\":\"M4\"," +
                             "\"IdNo\":\"012345\",\"Result\":true,\"Name\":\"STAFF_NAME\"}";
 
             helper.setLoginCount(3);
@@ -208,7 +209,7 @@ public class LoginModelTest {
             assertEquals(3, helper.getLoginCount());
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
-            assertEquals("Invigilator", LoginModel.getStaff().getRole().get(0));
+            assertEquals(Role.INVIGILATOR, LoginModel.getStaff().getRole());
             assertEquals("M4",          LoginModel.getStaff().getExamVenue());
             assertEquals("Password",    LoginModel.getStaff().getPassword());
         } catch (ProcessException err){
@@ -219,7 +220,7 @@ public class LoginModelTest {
     @Test
     public void testCheckLoginResult2_CorrectPassword() throws Exception {
         try{
-            MESSAGE_FROM_CHIEF = "{\"Status\":\"Invigilator\",\"Venue\":\"M4\"," +
+            MESSAGE_FROM_CHIEF = "{\"Role\":\"INVIGILATOR\",\"Venue\":\"M4\"," +
                     "\"IdNo\":\"012345\",\"Result\":true,\"Name\":\"STAFF_NAME\"}";
 
             helper.setLoginCount(1);
@@ -232,7 +233,7 @@ public class LoginModelTest {
             assertEquals(3, helper.getLoginCount());
             assertEquals("STAFF_NAME",  LoginModel.getStaff().getName());
             assertEquals("012345",      LoginModel.getStaff().getIdNo());
-            assertEquals("Invigilator", LoginModel.getStaff().getRole().get(0));
+            assertEquals(Role.INVIGILATOR, LoginModel.getStaff().getRole());
             assertEquals("M4",          LoginModel.getStaff().getExamVenue());
             assertEquals("Password",    LoginModel.getStaff().getPassword());
         } catch (ProcessException err){

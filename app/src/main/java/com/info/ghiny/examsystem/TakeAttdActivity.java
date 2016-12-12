@@ -12,6 +12,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -122,6 +125,22 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         presenter.setHandler(new Handler());
 
         taskPresenter   = presenter;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_setting:
+                return taskPresenter.onSetting();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

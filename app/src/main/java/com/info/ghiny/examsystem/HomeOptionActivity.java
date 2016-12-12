@@ -99,9 +99,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater   = this.getMenuInflater();
-        inflater.inflate(R.menu.action_menu, menu);
-
+        getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
     }
 
@@ -109,9 +107,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_setting:
-                Intent setting  = new Intent(this, SettingActivity.class);
-                startActivity(setting);
-                return true;
+                return taskPresenter.onSetting();
             default:
                 return super.onOptionsItemSelected(item);
 

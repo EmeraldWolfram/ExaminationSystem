@@ -50,6 +50,7 @@ public interface TakeAttdMVP {
         void onSwipeLeft();     //to display
         void onSwipeBottom();   //to info
         void onTag(android.view.View view);
+        boolean onSetting();
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener,

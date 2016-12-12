@@ -384,7 +384,7 @@ public class LocalDbLoaderTest {
         LocalDbLoader.setDatabase(db);
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         assertTrue(dbLoader.emptyUserInDB());
-        db.execSQL("INSERT INTO StaffTable (IdNo, HashPass, Name, Venue, Status) " +
+        db.execSQL("INSERT INTO StaffTable (IdNo, HashPass, Name, Venue, Role) " +
                 "VALUES ('158888', 'aXlespfeaasSD', 'Staff1', 'M1', 'In-Charge')");
         assertFalse(dbLoader.emptyUserInDB());
 
@@ -488,7 +488,7 @@ public class LocalDbLoaderTest {
         assertEquals("aXsjPaeQ9=O9s!lks+", id.getHashPass());
         assertEquals("Staff1", id.getName());
         assertEquals("M1", id.getExamVenue());
-        assertEquals("In-Charge", id.getRole().get(0));
+        assertEquals(Role.IN_CHARGE, id.getRole());
 
         db.close();
     }
@@ -506,7 +506,7 @@ public class LocalDbLoaderTest {
         assertTrue(dbLoader.emptyUserInDB());
         StaffIdentity id    = new StaffIdentity("156666", true, "Staff2", "M2");
         id.setHashPass("feiKs9/wfSnn0dE2");
-        id.addRole("In-Charge");
+        id.setRole(Role.IN_CHARGE);
 
         dbLoader.saveUser(id);
 

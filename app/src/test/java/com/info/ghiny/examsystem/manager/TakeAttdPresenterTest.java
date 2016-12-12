@@ -73,9 +73,9 @@ public class TakeAttdPresenterTest {
      * onScan()
      *
      * Always pause the scanner and resume the scanner
-     * 1. Model did not throw any error
-     * 2. Model throw a MESSAGE_TOAST error
-     * 3. Model throw a MESSAGE_DIALOG error
+     * 1. MvpModel did not throw any error
+     * 2. MvpModel throw a MESSAGE_TOAST error
+     * 3. MvpModel throw a MESSAGE_DIALOG error
      *
      * @throws Exception
      */
@@ -120,7 +120,7 @@ public class TakeAttdPresenterTest {
      *
      * 1. when the password is correct, pause the scanning and resume the scanning
      * 2. when the password is incorrect, pause the scanning, display the error,
-     *    control View to prompt the user password again and never resume scanning
+     *    control MvpView to prompt the user password again and never resume scanning
      *
      * @throws Exception
      */
@@ -329,10 +329,10 @@ public class TakeAttdPresenterTest {
     /**
      * notifyTableScanned()
      *
-     * Set TextView (tableNum) in the View
+     * Set TextView (tableNum) in the MvpView
      *
-     * 1. When the table is 0, set the View to empty string
-     * 2. When the table is not 0, set the View to the respective string
+     * 1. When the table is 0, set the MvpView to empty string
+     * 2. When the table is not 0, set the MvpView to the respective string
      *
      * @throws Exception
      */
@@ -354,7 +354,7 @@ public class TakeAttdPresenterTest {
     /**
      * notifyCandidateScanned(Candidate)
      *
-     * Set all the TextView related to Candidate (Index, RegNum, Paper ...) in the View
+     * Set all the TextView related to Candidate (Index, RegNum, Paper ...) in the MvpView
      *
      * 1. If the received candidate have all the field ready, set it successfully
      * 2. If the received candidate is null or having any null field, display the error

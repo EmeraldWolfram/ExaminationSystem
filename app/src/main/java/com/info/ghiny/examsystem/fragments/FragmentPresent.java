@@ -137,7 +137,7 @@ public class FragmentPresent extends RootFragment implements StatusFragmentMVP.P
         }
     }
 
-    //= MVP View Interface Implementation ==========================================================
+    //= MVP MvpView Interface Implementation ==========================================================
 
     @Override
     public void insertCandidate(int position) {

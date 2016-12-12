@@ -62,9 +62,9 @@ public class InfoGrabPresenterTest {
     /**
      * onScan()
      *
-     * 1. No complain from Model, pause the scanner, and start the delay
-     * 2. Complain from Model, pause the scanner, toast error and resume the scanner
-     * 3. Complain from Model, pause the scanner, show error dialog and did not resume
+     * 1. No complain from MvpModel, pause the scanner, and start the delay
+     * 2. Complain from MvpModel, pause the scanner, toast error and resume the scanner
+     * 3. Complain from MvpModel, pause the scanner, show error dialog and did not resume
      *
      * @throws Exception
      */
@@ -182,7 +182,7 @@ public class InfoGrabPresenterTest {
     /**
      * onDestroy()
      *
-     * notify by the View when the View is going to be destroy
+     * notify by the MvpView when the MvpView is going to be destroy
      * remove the callback of the timer started after sending the data to chief
      *
      * @throws Exception

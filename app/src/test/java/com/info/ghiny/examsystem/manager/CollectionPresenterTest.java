@@ -145,8 +145,8 @@ public class CollectionPresenterTest {
      * onScan()
      *
      * 1. The scanner was paused and not resumed if nothing wrong with the scan string
-     * 2. The scanner was paused and resumed after display toast error thrown by Model
-     * 3. The scanner was paused and resumed after display dialog error thrown by Model
+     * 2. The scanner was paused and resumed after display toast error thrown by MvpModel
+     * 3. The scanner was paused and resumed after display dialog error thrown by MvpModel
      *
      * @throws Exception
      */
@@ -360,7 +360,7 @@ public class CollectionPresenterTest {
     /**
      * notifyBundleScanned(...)
      *
-     * This method use to set the bundle object from model to the View layer
+     * This method use to set the bundle object from model to the MvpView layer
      *
      */
     @Test

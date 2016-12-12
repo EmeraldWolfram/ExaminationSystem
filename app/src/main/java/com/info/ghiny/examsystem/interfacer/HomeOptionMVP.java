@@ -17,6 +17,7 @@ public interface HomeOptionMVP {
         void onCollection();
         void onInfo();
         void onDistribution();
+        boolean onSetting();
     }
 
     interface MvpMPresenter extends DialogInterface.OnCancelListener, DialogInterface.OnClickListener{}

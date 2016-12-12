@@ -68,12 +68,12 @@ public class LinkChiefPresenterTest {
     /**
      * onScan(String scanStr)
      *
-     * Pass the QR scanned to Model
-     * Control the View to navigate to another View when Chief address correct
-     * Response according to the result from the Model
+     * Pass the QR scanned to MvpModel
+     * Control the MvpView to navigate to another MvpView when Chief address correct
+     * Response according to the result from the MvpModel
      *
-     * 1. First test, Model show that result is positive
-     * 2. Second test, Model throw error due to incorrect format
+     * 1. First test, MvpModel show that result is positive
+     * 2. Second test, MvpModel throw error due to incorrect format
      * @throws Exception
      */
     @Test
@@ -215,9 +215,9 @@ public class LinkChiefPresenterTest {
     /**
      * onChiefRespond()
      *
-     * 1. control View to navigate to Login when the message is positive
-     * 2. control View to display error and resume the scanning when the message is negative
-     * 3. control View to display dialog and resume scanning after dialog ended when message
+     * 1. control MvpView to navigate to Login when the message is positive
+     * 2. control MvpView to display error and resume the scanning when the message is negative
+     * 3. control MvpView to display dialog and resume scanning after dialog ended when message
      *    is negative
      */
     @Test

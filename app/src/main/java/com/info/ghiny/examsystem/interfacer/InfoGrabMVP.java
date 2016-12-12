@@ -20,6 +20,8 @@ public interface InfoGrabMVP {
          * In this part, it was used to terminate the activity
          */
         void onSwipeTop();
+
+        boolean onSetting();
     }
 
     interface MPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener{

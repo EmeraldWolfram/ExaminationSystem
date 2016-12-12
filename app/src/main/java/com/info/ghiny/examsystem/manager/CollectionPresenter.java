@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
@@ -22,6 +23,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     private CollectionMVP.Model taskModel;
     private Handler handler;
     private boolean secureFlag;
+    private boolean navFlag;
     //private boolean acknowledgementComplete;
 
     private SharedPreferences preferences;
@@ -34,6 +36,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
         this.taskView       = taskView;
         this.preferences    = pref;
         this.secureFlag     = false;
+        this.navFlag        = false;
     }
 
     public void setTaskModel(CollectionMVP.Model taskModel) {
@@ -54,7 +57,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
         this.acknowledgementComplete = acknowledgementComplete;
     }*/
 
-    //= For View ===================================================================================
+    //= For MvpView ===================================================================================
     @Override
     public void onPause(){
         taskView.pauseScanning();
@@ -86,10 +89,11 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
 
     @Override
     public void onRestart() {
-        if(!secureFlag){
+        if(!secureFlag && !navFlag){
             secureFlag = true;
             taskView.securityPrompt(false);
         }
+        navFlag = false;
     }
 
     @Override
@@ -157,7 +161,14 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
         }
     }
 
-    //= For Model ==================================================================================
+    @Override
+    public boolean onSetting() {
+        navFlag = true;
+        taskView.navigateActivity(SettingActivity.class);
+        return true;
+    }
+
+    //= For MvpModel ==================================================================================
 
 
     @Override

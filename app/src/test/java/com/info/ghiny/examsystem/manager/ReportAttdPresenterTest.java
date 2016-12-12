@@ -76,7 +76,7 @@ public class ReportAttdPresenterTest {
     /**
      * signToUpload()
      *
-     * navigate the View to prompt user for password when called
+     * navigate the MvpView to prompt user for password when called
      *
      */
     @Test
@@ -90,8 +90,8 @@ public class ReportAttdPresenterTest {
     /**
      * onPasswordReceived()
      *
-     * 1. Model notify a Positive Result, tell Model to upload attendance and start timer
-     * 2. Model notify a Negative Result, display the error thrown by Model
+     * 1. MvpModel notify a Positive Result, tell MvpModel to upload attendance and start timer
+     * 2. MvpModel notify a Negative Result, display the error thrown by MvpModel
      * 3. Extended: Receive Correct Password, prompt because of inactivity
      * 4. Extended: Receive Wrong Password, prompt because of inactivity
      */
@@ -220,7 +220,7 @@ public class ReportAttdPresenterTest {
      * Undo assign or redo assign depend on the current state
      *
      * When current state is ASSIGNED
-     * 1. set status to unassign, set text to chalky and call unassign function in Model
+     * 1. set status to unassign, set text to chalky and call unassign function in MvpModel
      * 2. display error when unassign function in model throw an error
      */
     @Test
@@ -265,7 +265,7 @@ public class ReportAttdPresenterTest {
      * toggleUnassign()
      *
      * When current state is UNASSIGNED
-     * 1. set status to assign, set text to clear and call assign function in Model
+     * 1. set status to assign, set text to clear and call assign function in MvpModel
      * 2. display error when assign function in model throw an error
      *
      */

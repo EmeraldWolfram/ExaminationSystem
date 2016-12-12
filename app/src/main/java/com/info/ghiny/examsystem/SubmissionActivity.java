@@ -135,21 +135,15 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()){
             case R.id.action_setting:
-                Intent setting  = new Intent(this, SettingActivity.class);
-                startActivity(setting);
-                return true;
+                return taskPresenter.onSetting();
             default:
                 return drawerToggleButton.onOptionsItemSelected(item);
         }

@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.HomeOptionActivity;
 import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -17,7 +19,6 @@ import com.info.ghiny.examsystem.model.TCPClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -39,8 +40,8 @@ import static org.mockito.Mockito.verify;
 @Config(manifest= Config.NONE)
 public class LoginPresenterTest {
     private LoginPresenter manager;
-    private LoginMVP.Model taskModel;
-    private LoginMVP.View taskView;
+    private LoginMVP.MvpModel taskModel;
+    private LoginMVP.MvpView taskView;
     private Handler handler;
     private Intent password;
     private DialogInterface dialog;
@@ -48,8 +49,8 @@ public class LoginPresenterTest {
 
     @Before
     public void setUp() throws Exception {
-        taskView    = Mockito.mock(LoginMVP.View.class);
-        taskModel   = Mockito.mock(LoginMVP.Model.class);
+        taskView    = Mockito.mock(LoginMVP.MvpView.class);
+        taskModel   = Mockito.mock(LoginMVP.MvpModel.class);
         handler     = Mockito.mock(Handler.class);
         password    = Mockito.mock(Intent.class);
         dialog      = Mockito.mock(DialogInterface.class);
@@ -64,9 +65,9 @@ public class LoginPresenterTest {
     /**
      * onScan()
      *
-     * 1. prompt user to key-in password if Model didn't throw any error
-     * 2. display the error and resume scanning if Model throw Toast error
-     * 3. display dialog error but no resume scanning if Model throw Dialog error
+     * 1. prompt user to key-in password if MvpModel didn't throw any error
+     * 2. display the error and resume scanning if MvpModel throw Toast error
+     * 3. display dialog error but no resume scanning if MvpModel throw Dialog error
      *
      * @throws Exception
      */
@@ -110,10 +111,10 @@ public class LoginPresenterTest {
     /**
      * onPasswordReceived()
      *
-     * 1. View notify user input password, pause the Scanning and request Model to verify
-     * 2. View notify user input password, model complain with Toast, pause the scanning
+     * 1. MvpView notify user input password, pause the Scanning and request MvpModel to verify
+     * 2. MvpView notify user input password, model complain with Toast, pause the scanning
      *    display the error and resume the scanning
-     * 3. View notify user input password, model complain with Fatal, pause the scanning
+     * 3. MvpView notify user input password, model complain with Fatal, pause the scanning
      *    display the error, did not resume
      * 4. Do nothing when the result is RESULT_CANCELLED
      * @throws Exception
@@ -176,7 +177,7 @@ public class LoginPresenterTest {
     /**
      * onPause()
      *
-     * control the View to stop scanning when called
+     * control the MvpView to stop scanning when called
      *
      * @throws Exception
      */
@@ -192,7 +193,7 @@ public class LoginPresenterTest {
      * onResume()
      *
      * setListener to ExternalDbLoader.ConnectionTask
-     * control View to resume scanning
+     * control MvpView to resume scanning
      *
      * @throws Exception
      */
@@ -216,10 +217,11 @@ public class LoginPresenterTest {
     /**
      * onChiefRespond()
      *
-     * 1. control View to navigate to another View when the message is positive
-     * 2. control View to display error and resume the scanning when the message is negative
-     * 3. control View to display dialog and resume scanning after dialog ended when message
+     * 1. control MvpView to navigate to another MvpView when the message is positive (Invigilator)
+     * 2. control MvpView to display error and resume the scanning when the message is negative
+     * 3. control MvpView to display dialog and resume scanning after dialog ended when message
      *    is negative
+     * 4. control MvpView to navigate to another MvpView when the message is positive (In-Charge)
      *
      * @throws Exception
      */
@@ -228,11 +230,11 @@ public class LoginPresenterTest {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
-        doNothing().when(taskModel).checkLoginResult("Message");
+        when(taskModel.checkLoginResult("Message")).thenReturn(Role.INVIGILATOR);
 
         manager.onChiefRespond(errorManager, "Message");
 
-        verify(taskView).navigateActivity(TakeAttdActivity.class);
+        verify(taskView).navToHome(true, true, true, false);
     }
 
     @Test
@@ -269,6 +271,18 @@ public class LoginPresenterTest {
         verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
+    }
+
+    @Test
+    public void testOnChiefRespond4_withInCharge() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        ExternalDbLoader.setConnectionTask(new ConnectionTask());
+
+        when(taskModel.checkLoginResult("Message")).thenReturn(Role.IN_CHARGE);
+
+        manager.onChiefRespond(errorManager, "Message");
+
+        verify(taskView).navToHome(true, true, true, true);
     }
 
     //= OnClick(...) ===============================================================================

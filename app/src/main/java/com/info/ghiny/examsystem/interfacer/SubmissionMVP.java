@@ -33,6 +33,7 @@ public interface SubmissionMVP {
         void onUpload();
         boolean onNavigationItemSelected(Toolbar toolbar, int itemId, ErrorManager errManager,
                                          FragmentManager manager, DrawerLayout drawer);
+        boolean onSetting();
     }
 
     interface MvpMPresenter extends DialogInterface.OnClickListener, DialogInterface.OnCancelListener {

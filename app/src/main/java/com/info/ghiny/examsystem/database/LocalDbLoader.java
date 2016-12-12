@@ -13,7 +13,7 @@ import java.util.List;
  * Created by GhinY on 22/07/2016.
  */
 public class LocalDbLoader {
-    private static final int DATABASE_VERSION       = 1;
+    private static final int DATABASE_VERSION       = 2;
     private static final String DATABASE_NAME       = "ExamSystemDb";
     private static final String ATTENDANCE_TABLE    = "AttdTable";
     private static final String PAPERS_TABLE        = "PaperTable";
@@ -143,8 +143,8 @@ public class LocalDbLoader {
                 + staffIdentity.getIdNo()           + "', '"
                 + staffIdentity.getHashPass()       + "', '"
                 + staffIdentity.getName()           + "', '"
-                + staffIdentity.getExamVenue()  + "', '"
-                + staffIdentity.getRole().get(0)    + "')");
+                + staffIdentity.getExamVenue()      + "', '"
+                + staffIdentity.getRole().toString()+ "')");
     }
 
     //Retrieve an attendanceList from the database
@@ -224,7 +224,7 @@ public class LocalDbLoader {
 
             user    = new StaffIdentity(userId, true, userName, userVenue);
             user.setHashPass(userHPass);
-            user.addRole(userRole);
+            user.setRole(userRole);
         }
 
         ptr.close();
@@ -337,10 +337,10 @@ public class LocalDbLoader {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXIST " + ATTENDANCE_TABLE);
-            db.execSQL("DROP TABLE IF EXIST " + PAPERS_TABLE);
-            db.execSQL("DROP TABLE IF EXIST " + CONNECTOR_TABLE);
-            db.execSQL("DROP TABLE IF EXIST " + USER_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + ATTENDANCE_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + PAPERS_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + CONNECTOR_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
             onCreate(db);
         }
     }

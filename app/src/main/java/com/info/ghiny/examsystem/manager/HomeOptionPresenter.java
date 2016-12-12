@@ -8,6 +8,7 @@ import com.info.ghiny.examsystem.CollectionActivity;
 import com.info.ghiny.examsystem.DistributionActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -60,6 +61,13 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
     @Override
     public void onBackPressed() {
         taskView.displayError(taskModel.prepareLogout());
+    }
+
+    @Override
+    public boolean onSetting() {
+        navFlag = true;
+        taskView.navigateActivity(SettingActivity.class);
+        return true;
     }
 
     @Override
