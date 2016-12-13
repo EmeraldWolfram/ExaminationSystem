@@ -108,6 +108,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         candidate.setTableNumber(0);
         attendanceList.removeCandidate(candidate.getRegNum());
         attendanceList.addCandidate(candidate);
+        TakeAttdModel.updateAbsentForUpdatingList(candidate);
     }
 
     @Override
@@ -127,6 +128,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         candidate.setTableNumber(table);
         candidate.setStatus(Status.PRESENT);
         attendanceList.addCandidate(candidate);
+        TakeAttdModel.updatePresentForUpdatingList(candidate);
     }
 
     @Override

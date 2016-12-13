@@ -74,7 +74,7 @@ public interface TakeAttdMVP {
         //================================================================================
 
         void rxAttendanceUpdate(ArrayList<Candidate> modifyList);
-        void txAttendanceUpdate(ArrayList<Candidate> modifyList) throws ProcessException;
+        void txAttendanceUpdate() throws ProcessException;
 
         /**
          * tryAssignScanValue()

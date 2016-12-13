@@ -9,6 +9,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
+import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -21,7 +22,8 @@ import java.util.Locale;
  * Created by GhinY on 08/08/2016.
  */
 public class TakeAttdModel implements TakeAttdMVP.Model {
-    private HashMap<Integer, String> assgnList;
+    private static HashMap<Integer, String> assgnList = new HashMap<>();
+    private static ArrayList<Candidate> updatingList = new ArrayList<>();
     private static AttendanceList attdList;
     private TakeAttdMVP.MPresenter taskPresenter;
     private LocalDbLoader dbLoader;
@@ -40,7 +42,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         this.initialized        = false;
         this.isDownloadComplete = false;
         this.tagNextLate        = false;
-        this.assgnList          = new HashMap<>();
     }
 
     void setInitialized(boolean initialized){
@@ -112,7 +113,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         dbLoader.savePaperList(Candidate.getPaperList());
     }
 
-    //TODO: Also put into preUpdateList
     @Override
     public void updateAssignList() throws ProcessException{
         assgnList.clear();
@@ -167,12 +167,9 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             }
 
             if(tryAssignCandidate()){
-
-                ProcessException err = new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
+                throw new ProcessException(tempCdd.getExamIndex()+ " Assigned to "
                         + tempTable.toString(), ProcessException.MESSAGE_TOAST,
                         IconManager.ASSIGNED);
-
-                throw err;
             }
         }
     }
@@ -230,24 +227,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         if(assgnList.containsKey(tempTable)){
             //Table reassign, reset the previous assigned candidate in the list to ABSENT
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
-            attdList.removeCandidate(cdd.getRegNum());
-            cdd.setTableNumber(0);
-            cdd.setStatus(Status.ABSENT);
-            cdd.setCollector(null);
-            attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
-            assgnList.remove(tempTable);
+            unassignCandidate(cdd.getRegNum());
+            updateAbsentForUpdatingList(cdd);
         } else {
             //Candidate reassign, remove the previously assignment
-            assgnList.remove(tempCdd.getTableNumber());
+            unassignCandidate(tempCdd.getRegNum());
+            updateAbsentForUpdatingList(tempCdd);
         }
 
-        tempCdd.setStatus(Status.PRESENT);
-        tempCdd.setTableNumber(tempTable);
-
-        attdList.removeCandidate(tempCdd.getRegNum());
-        attdList.addCandidate(tempCdd, tempCdd.getPaperCode(), tempCdd.getStatus(),
-                tempCdd.getProgramme());
-        assgnList.put(tempTable, tempCdd.getRegNum());
+        assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable, tempCdd.isLate());
+        updatePresentForUpdatingList(tempCdd);
     }
 
     @Override
@@ -260,15 +249,10 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void resetAttendanceAssignment() {
         if(this.tempCdd != null && this.tempTable != null){
-            assgnList.remove(tempTable);
-            tempCdd = attdList.removeCandidate(tempCdd.getRegNum());
-            tempCdd.setStatus(Status.ABSENT);
-            tempCdd.setTableNumber(0);
-            tempCdd.setCollector(null);
-            attdList.addCandidate(tempCdd, tempCdd.getPaperCode(),
-                    tempCdd.getStatus(), tempCdd.getProgramme());
-            String str = String.format(Locale.ENGLISH,
-                    "%s was reset to ABSENT again!", tempCdd.getExamIndex());
+            unassignCandidate(tempCdd.getRegNum());
+            updateAbsentForUpdatingList(tempCdd);
+            String str = String.format(Locale.ENGLISH, "%s was reset to ABSENT again!",
+                    tempCdd.getExamIndex());
             taskPresenter.notifyUndone(str);
         } else {
             this.tempTable  = null;
@@ -280,39 +264,32 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     @Override
     public void undoResetAttendanceAssignment() {
         assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable, tempCdd.isLate());
+        updatePresentForUpdatingList(tempCdd);
     }
 
-    /**
-     * TODO: Add a HashMap<> preUpdateList
-     * Continuously update the list
-     * Once it was send, clear the list
-     * REMEMBER: Master List stay with In-Charge
-     **/
+    //This is only for Client as Server side will handle in TaskSynchronizer
     @Override
     public void rxAttendanceUpdate(ArrayList<Candidate> modifyList) {
         for(int i=0; i < modifyList.size(); i++){
             Candidate cdd = modifyList.get(i);
             if(cdd.getStatus() == Status.PRESENT){
-                assignCandidate(cdd.getCollector(), cdd.getRegNum(),
-                        cdd.getTableNumber(), cdd.isLate());
+                assignCandidate(cdd.getCollector(), cdd.getRegNum(), cdd.getTableNumber(), cdd.isLate());
             } else {
                 unassignCandidate(cdd.getRegNum());
             }
-            /**
-             if(user.getRole() == Role.IN_CHARGE){
-             //TODO: Put it into preUpdateList
-             }
-             **/
         }
+
     }
 
-    //TODO: Prepare Synchronizer class
+    //TODO: Start a timer and send when time comes
     @Override
-    public void txAttendanceUpdate(ArrayList<Candidate> modifyList) throws ProcessException{
+    public void txAttendanceUpdate() throws ProcessException{
         if(user.getRole() == Role.INVIGILATOR){
-            ExternalDbLoader.updateAttendance(modifyList);
+            ExternalDbLoader.updateAttendance(updatingList);
         } else {
-            //MULTI_DB_CLASS.UPDATE_ATTENDANCE
+            if(TasksSynchronizer.isDistributed()){
+                TasksSynchronizer.updateAttendance(updatingList);
+            }
         }
     }
 
@@ -334,8 +311,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         return attdList;
     }
 
-    void setAssgnList(HashMap<Integer, String> assgnList) {
-        this.assgnList = assgnList;
+    static void setAssgnList(HashMap<Integer, String> assgnList) {
+        TakeAttdModel.assgnList = assgnList;
     }
 
     HashMap<Integer, String> getAssgnList() {
@@ -369,7 +346,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             }
 
             this.tempTable = Integer.parseInt(scanStr);
-            if(this.assgnList.containsKey(this.tempTable)){
+            if(assgnList.containsKey(this.tempTable)){
                 this.taskPresenter.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
             }
             return true;
@@ -414,7 +391,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             }
 
             this.tempCdd = cdd;
-            if(this.assgnList.containsValue(this.tempCdd.getRegNum())){
+            if(assgnList.containsValue(this.tempCdd.getRegNum())){
                 this.taskPresenter.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
             }
             return true;
@@ -457,6 +434,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             attemptReassign();
 
             assignCandidate(user.getIdNo(), tempCdd.getRegNum(), tempTable, tempCdd.isLate());
+            updatePresentForUpdatingList(tempCdd);
             assigned    = true;
         }
 
@@ -494,7 +472,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
     }
 
-    void assignCandidate(String collectorId, String cddRegNum, Integer table, boolean late){
+    public static void assignCandidate(String collectorId, String cddRegNum, Integer table, boolean late){
         Candidate cdd = attdList.removeCandidate(cddRegNum);
 
         cdd.setTableNumber(table);
@@ -505,7 +483,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         assgnList.put(table, cdd.getRegNum());
     }
 
-    void unassignCandidate(String cddRegNum){
+    public static void unassignCandidate(String cddRegNum){
         Candidate cdd = attdList.removeCandidate(cddRegNum);
 
         assgnList.remove(cdd.getTableNumber());
@@ -513,5 +491,15 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         cdd.setCollector(null);
         cdd.setStatus(Status.ABSENT);
         attdList.addCandidate(cdd);
+    }
+
+    public static void updatePresentForUpdatingList(Candidate cdd){
+        updatingList.add(cdd);
+    }
+
+    public static void updateAbsentForUpdatingList(Candidate cdd){
+        if(!updatingList.remove(cdd)){
+            updatingList.add(cdd);
+        }
     }
 }

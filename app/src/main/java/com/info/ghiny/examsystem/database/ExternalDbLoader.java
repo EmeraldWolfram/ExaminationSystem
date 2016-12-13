@@ -111,6 +111,7 @@ public class ExternalDbLoader {
         if(tcpClient != null && candidates != null){
             String str = JsonHelper.formatAttendanceUpdate(candidates);
             tcpClient.sendMessage(str);
+            candidates.clear();
         } else {
             throw new ProcessException("Fail to send out update!\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
