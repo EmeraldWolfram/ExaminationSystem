@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public interface TakeAttdMVP {
     byte TABLE_REASSIGN      = 0;
     byte CANDIDATE_REASSIGN  = 1;
+    byte NO_REASSIGN         = 2;
 
     interface View extends TaskScanView, TaskConnView, GeneralView,OnSwipeAnimator.OnSwipeListener {
         /**
@@ -62,6 +63,7 @@ public interface TakeAttdMVP {
         void notifyCandidateScanned(Candidate cdd);
         void notifyDisplayReset();
         void notifyReassign(int whichReassigned);   //true means table, false mean cdd
+        void notifyNotMatch();
         void notifyTagUntag(boolean showAntiTag);
     }
 

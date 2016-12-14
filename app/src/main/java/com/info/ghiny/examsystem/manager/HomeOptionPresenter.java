@@ -27,7 +27,7 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
     public HomeOptionPresenter(HomeOptionMVP.MvpView taskView){
         this.taskView   = taskView;
         this.secureFlag = false;
-        this.navFlag    = false;
+        this.navFlag    = true;
     }
 
     public void setTaskModel(HomeOptionMVP.MvpModel taskModel) {

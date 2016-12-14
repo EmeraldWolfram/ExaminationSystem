@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.model;
 
 import android.content.DialogInterface;
+import android.util.Log;
 
+import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
@@ -146,10 +148,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             if(verifyCandidate(scanStr)) {
                 this.tempTable   = null;
                 this.taskPresenter.notifyDisplayReset();
+                taskPresenter.notifyReassign((assgnList.containsValue(tempCdd.getRegNum())
+                        || assgnList.containsKey(this.tempTable)) ?
+                        TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyCandidateScanned(tempCdd);
             } else if(verifyTable(scanStr)) {
                 this.tempCdd     = null;
                 this.taskPresenter.notifyDisplayReset();
+                taskPresenter.notifyReassign((assgnList.containsValue(tempCdd.getRegNum())
+                        || assgnList.containsKey(this.tempTable)) ?
+                        TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyTableScanned(tempTable);
             } else {
                 throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
@@ -158,8 +166,16 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         } else {
             //Case where the table and candidate weren't both ready yet
             if(verifyCandidate(scanStr)) {
+                taskPresenter.notifyReassign((assgnList.containsValue(tempCdd.getRegNum())
+                        || assgnList.containsKey(this.tempTable)) ?
+                        TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyCandidateScanned(tempCdd);
             } else if(verifyTable(scanStr)) {
+                taskPresenter.notifyReassign(((tempCdd != null) ?
+                        assgnList.containsValue(tempCdd.getRegNum())
+                                || assgnList.containsKey(this.tempTable)
+                        : assgnList.containsKey(this.tempTable)) ?
+                        TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyTableScanned(tempTable);
             } else {
                 throw new ProcessException("Not a valid QR", ProcessException.MESSAGE_TOAST,
@@ -229,7 +245,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             Candidate cdd = attdList.getCandidate(assgnList.get(tempTable));
             unassignCandidate(cdd.getRegNum());
             updateAbsentForUpdatingList(cdd);
-        } else {
+        }
+        if(assgnList.containsValue(tempCdd.getRegNum())){
             //Candidate reassign, remove the previously assignment
             unassignCandidate(tempCdd.getRegNum());
             updateAbsentForUpdatingList(tempCdd);
@@ -344,11 +361,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     return false;
                 }
             }
-
             this.tempTable = Integer.parseInt(scanStr);
-            if(assgnList.containsKey(this.tempTable)){
-                this.taskPresenter.notifyReassign(TakeAttdMVP.TABLE_REASSIGN);
-            }
             return true;
         }
         return false;
@@ -389,11 +402,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                 cdd.setLate(true);
                 this.tagNextLate = false;
             }
-
             this.tempCdd = cdd;
-            if(assgnList.containsValue(this.tempCdd.getRegNum())){
-                this.taskPresenter.notifyReassign(TakeAttdMVP.CANDIDATE_REASSIGN);
-            }
             return true;
         }
         return false;
@@ -466,10 +475,13 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     void attemptNotMatch() throws ProcessException{
-        if(!tempCdd.getPaper().isValidTable(tempTable))
+        if(!tempCdd.getPaper().isValidTable(tempTable)){
+            tempTable   = null;
+            taskPresenter.notifyNotMatch();
             throw new ProcessException(tempCdd.getExamIndex() + " should not sit here\n"
                     + "Suggest to Table " + tempCdd.getPaper().getStartTableNum(),
                     ProcessException.MESSAGE_TOAST, IconManager.WARNING);
+        }
     }
 
     public static void assignCandidate(String collectorId, String cddRegNum, Integer table, boolean late){

@@ -24,9 +24,11 @@ import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
+import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
@@ -44,6 +46,8 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainLoginActivity extends AppCompatActivity implements LoginMVP.MvpView {
@@ -153,16 +157,22 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
 
         LoginModel.setStaff(staff);
         AttendanceList attdList = new AttendanceList();
-        attdList.addCandidate(new Candidate(12, "RMB3", "Candidate A", "15WAU00001", "BAME0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(15, "RMB3", "Candidate B", "15WAU00002", "BAME0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(14, "RMB3", "Candidate C", "15WAU00003", "BAME0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(13, "RMB3", "Candidate D", "15WAU00004", "BAME0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate E", "15WAU00005", "BAME0001", Status.ABSENT));
-        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate F", "15WAU00006", "BAME0001", Status.ABSENT));
-        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate G", "15WAU00007", "BAME0001", Status.BARRED));
-        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate H", "15WAU00008", "BAME0001", Status.EXEMPTED));
-        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate I", "15WAU00009", "BAME0001", Status.QUARANTINED));
+        attdList.addCandidate(new Candidate(12, "RMB3", "Candidate A", "15WAR00001", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(15, "RMB3", "Candidate B", "15WAR00002", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(14, "RMB3", "Candidate C", "15WAR00003", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(13, "RMB3", "Candidate D", "15WAR00004", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate E", "15WAR00005", "BAME 0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate F", "15WAR00006", "BAME 0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate G", "15WAR00007", "BAME 0001", Status.BARRED));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate H", "15WAR00008", "BAME 0001", Status.EXEMPTED));
+        attdList.addCandidate(new Candidate(0, "RMB3", "Candidate I", "15WAR00009", "BAME 0001", Status.QUARANTINED));
         TakeAttdModel.setAttdList(attdList);
+
+        ExamSubject examSubject = new ExamSubject("BAME 0001", "SUBJECT 1",
+                10, Calendar.getInstance(), 20, "M4", Session.AM);
+        HashMap<String, ExamSubject> papers = new HashMap<>();
+        papers.put("BAME 0001", examSubject);
+        Candidate.setPaperList(papers);
 
         switch (item.getItemId()){
             case R.id.action_setting:
@@ -172,16 +182,10 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
             case R.id.action_test:
                 staff.setRole(Role.INVIGILATOR);
                 navToHome(true, true, true, false);
-                /*taskPresenter.onChiefRespond(errorManager, "{\"Role\":\"INVIGILATOR\"," +
-                        "\"Venue\":\"M5\",\"Result\":true," +
-                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");*/
                 return true;
             case R.id.action_test_2:
                 staff.setRole(Role.IN_CHARGE);
                 navToHome(true, true, true, true);
-                /*taskPresenter.onChiefRespond(errorManager, "{\"Role\":\"IN_CHARGE\"," +
-                        "\"Venue\":\"M5\",\"Result\":true," +
-                        "\"Name\":\"TESTER 1\",\"IdNo\":\"246810\"}");*/
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

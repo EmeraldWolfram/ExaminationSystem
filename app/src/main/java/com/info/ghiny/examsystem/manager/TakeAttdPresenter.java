@@ -224,6 +224,11 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     }
 
     @Override
+    public void notifyNotMatch(){
+        taskView.setTableView("");
+    }
+
+    @Override
     public void notifyDisplayReset(){
         taskView.pauseScanning();
         taskView.setTableView("");
@@ -241,6 +246,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 break;
             case TakeAttdMVP.CANDIDATE_REASSIGN:
                 taskView.setAssignBackgroundColor(R.color.colorDarkRed);
+                break;
+            case TakeAttdMVP.NO_REASSIGN:
+                taskView.setAssignBackgroundColor(R.color.colorDarkGreen);
                 break;
         }
     }
