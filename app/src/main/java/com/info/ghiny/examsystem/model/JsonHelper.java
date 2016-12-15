@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by GhinY on 06/06/2016.
@@ -181,6 +183,51 @@ public class JsonHelper {
         }
     }
 
+    public static String formatVenueInfo(AttendanceList attdList,
+                                         HashMap<String, ExamSubject> paperMap){
+        JSONObject jInfo    = new JSONObject();
+        JSONArray jAttdList = new JSONArray();
+        JSONArray jPaperMap = new JSONArray();
+
+        try{
+
+            List<String> candidateRegNumList = attdList.getAllCandidateRegNumList();
+            for(int i = 0; i < candidateRegNumList.size(); i++){
+                Candidate cdd = attdList.getCandidate(candidateRegNumList.get(i));
+                JSONObject jCandidate = new JSONObject();
+
+                jCandidate.put(Candidate.CDD_EXAM_INDEX, cdd.getExamIndex());
+                jCandidate.put(Candidate.CDD_STATUS, cdd.getStatus().toString());
+                jCandidate.put(Candidate.CDD_REG_NUM, cdd.getRegNum());
+                jCandidate.put(Candidate.CDD_TABLE, cdd.getTableNumber().intValue());
+                jCandidate.put(Candidate.CDD_PAPER, cdd.getPaperCode());
+                jCandidate.put(Candidate.CDD_PROG, cdd.getProgramme());
+
+                jAttdList.put(jCandidate);
+            }
+
+            for(ExamSubject subject : paperMap.values()){
+                JSONObject jSubject = new JSONObject();
+
+                jSubject.put(ExamSubject.PAPER_CODE, subject.getPaperCode());
+                jSubject.put(ExamSubject.PAPER_DESC, subject.getPaperDesc());
+                jSubject.put(ExamSubject.PAPER_START_NO, subject.getStartTableNum().intValue());
+                jSubject.put(ExamSubject.PAPER_TOTAL_CDD, subject.getNumOfCandidate().intValue());
+
+                jPaperMap.put(jSubject);
+            }
+
+            jInfo.put(MAJOR_KEY_TYPE_TX, TYPE_VENUE_INFO);
+            jInfo.put(MAJOR_KEY_TYPE_RX, true);
+            jInfo.put(MINOR_KEY_CANDIDATES, jAttdList);
+            jInfo.put(MINOR_KEY_PAPER_MAP, jPaperMap);
+
+            return jInfo.toString();
+        } catch (Exception err){
+            return null;
+        }
+    }
+
     //==============================================================================================
 
     public static StaffIdentity parseStaffIdentity(String inStr, int attp) throws ProcessException{
@@ -251,10 +298,10 @@ public class JsonHelper {
 
                     cdd.setExamIndex(jsonCdd.getString(Candidate.CDD_EXAM_INDEX));
                     cdd.setRegNum(jsonCdd.getString(Candidate.CDD_REG_NUM));
-
                     String status   = jsonCdd.getString(Candidate.CDD_STATUS);
                     cdd.setStatus(Status.parseStatus(status));
-                    cdd.setTableNumber(0);
+                    cdd.setTableNumber((jsonCdd.has(Candidate.CDD_TABLE)) ?
+                            jsonCdd.getInt(Candidate.CDD_TABLE) : 0);
                     cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
                     cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
 

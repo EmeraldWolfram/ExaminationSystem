@@ -4,6 +4,7 @@ import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.PaperBundle;
+import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
 
@@ -16,6 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -637,6 +639,29 @@ public class JsonHelperTest {
             assertEquals("Update Data Corrupted\nPlease consult developer!", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
+    }
+
+    //= FormatVenueInfo ============================================================================
+
+    // Test if the format written can be decoded as AttendanceList and PaperMap
+
+    @Test
+    public void testFormatVenueInfo() throws Exception {
+        AttendanceList attendanceList = new AttendanceList();
+        attendanceList.addCandidate(cdd1);
+        attendanceList.addCandidate(cdd2);
+
+        HashMap<String, ExamSubject> paperMap   = new HashMap<>();
+        paperMap.put("BAME 0001", new ExamSubject("BAME 0001", "SUBJECT 1", 10, Calendar.getInstance(), 20, "M4", Session.AM));
+
+        String messageOut   = JsonHelper.formatVenueInfo(attendanceList, paperMap);
+        assertEquals(JsonHelper.TYPE_VENUE_INFO, JsonHelper.parseType(messageOut));
+
+        AttendanceList testList = JsonHelper.parseAttdList(messageOut);
+        assertEquals(2, testList.getTotalNumberOfCandidates());
+
+        HashMap<String, ExamSubject> testMap    = JsonHelper.parsePaperMap(messageOut);
+        assertEquals(1, testMap.size());
     }
 
 }
