@@ -1,5 +1,6 @@
 package com.info.ghiny.examsystem.model;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.info.ghiny.examsystem.DistributionActivity;
@@ -10,6 +11,7 @@ import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
 import org.json.JSONException;
@@ -17,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -37,6 +40,9 @@ public class AndroidClient extends Thread {
     private int localPort;
     private boolean running = false;
 
+    private DistributionMVP.MvpView tempView;
+    private DistributionMVP.MvpModel tempModel;
+
     private PrintWriter out = null;
     private BufferedReader in = null;
 
@@ -46,8 +52,20 @@ public class AndroidClient extends Thread {
 
     public AndroidClient(){}
 
+    public void setTempView(DistributionMVP.MvpView tempView) {
+        this.tempView = tempView;
+    }
+
+    public void setTempModel(DistributionMVP.MvpModel tempModel) {
+        this.tempModel = tempModel;
+    }
+
     public boolean isRunning() {
         return running;
+    }
+
+    public int getLocalPort() {
+        return localPort;
     }
 
     public Connector getConnector() {
@@ -67,6 +85,13 @@ public class AndroidClient extends Thread {
 
     public void stopClient(){
         running = false;
+        try{
+            if(serverSocket != null){
+                serverSocket.close();
+            }
+        } catch (IOException err){
+            Log.d(DistributionActivity.TAG, err.getMessage());
+        }
     }
 
     @Override
@@ -76,9 +101,14 @@ public class AndroidClient extends Thread {
         try {
             serverSocket    = new ServerSocket(0);
             localPort       = serverSocket.getLocalPort();
+            if(tempView != null && tempModel != null){
+                tempView.setImageQr(tempModel.encodeQr(localPort));
+            }
             socket          = serverSocket.accept();
-            connector   = new Connector(socket.getInetAddress().toString(),
+            connector       = new Connector(socket.getInetAddress().toString(),
                     socket.getPort(), TCPClient.getConnector().getDuelMessage());
+
+            TasksSynchronizer.notifyClientConnected(this);
 
             try {
                 out = new PrintWriter(
@@ -124,8 +154,6 @@ public class AndroidClient extends Thread {
         }
     }
 
-
-
     void onExtraReq(String inStr){
         try{
             JSONObject jsonObject   = new JSONObject(inStr);
@@ -136,7 +164,6 @@ public class AndroidClient extends Thread {
             Log.d(DistributionActivity.TAG, err.getMessage());
         }
     }
-
 
     void onReqVenueInfo(){
         AttendanceList attdList                 = TakeAttdModel.getAttdList();
@@ -161,7 +188,13 @@ public class AndroidClient extends Thread {
                 }
             }
 
-            //ToDo: Send it to everybody
+            HashMap<Integer, AndroidClient> clients = TasksSynchronizer.getClientsMap();
+            for(AndroidClient client : clients.values()){
+                if(client.getLocalPort() != localPort){
+                    sendMessage(inStr);
+                }
+            }
+
         } catch (ProcessException err) {
             Log.d(DistributionActivity.TAG, err.getErrorMsg());
         }

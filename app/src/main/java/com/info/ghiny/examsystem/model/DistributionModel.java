@@ -1,6 +1,10 @@
 package com.info.ghiny.examsystem.model;
 
+import android.app.Service;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -28,9 +32,9 @@ public class DistributionModel implements DistributionMVP.MvpModel{
     }
 
     @Override
-    public Bitmap encodeQr() throws ProcessException {
+    public Bitmap encodeQr(int localPort) throws ProcessException {
 
-        Connector connector = taskPresenter.getMyConnector();
+        Connector connector = taskPresenter.getMyConnector(localPort);
         BitMatrix result;
         try {
             result = new MultiFormatWriter().encode(connector.toString(),

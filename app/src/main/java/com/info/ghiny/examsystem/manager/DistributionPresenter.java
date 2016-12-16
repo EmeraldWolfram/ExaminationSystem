@@ -1,13 +1,17 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
+import com.info.ghiny.examsystem.model.AndroidClient;
 import com.info.ghiny.examsystem.model.DistributionModel;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -37,14 +41,10 @@ public class DistributionPresenter
 
     @Override
     public void onCreate(Context context) {
-        try{
-            if(!TasksSynchronizer.isRunning()){
-                context.startService(new Intent(context, TasksSynchronizer.class));
-            }
-            taskView.setImageQr(taskModel.encodeQr());
-        } catch (ProcessException err){
-            taskView.displayError(err);
+        if(!TasksSynchronizer.isRunning()){
+            context.startService(new Intent(context, TasksSynchronizer.class));
         }
+        TasksSynchronizer.startNewThread(taskView, taskModel);
     }
 
     @Override
@@ -53,6 +53,11 @@ public class DistributionPresenter
             secureFlag = true;
             taskView.securityPrompt(false);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        TasksSynchronizer.removeUnconnectedThread();
     }
 
     @Override
@@ -70,15 +75,13 @@ public class DistributionPresenter
         }
     }
 
-
     @Override
-    public Connector getMyConnector() {
+    public Connector getMyConnector(int localPort) {
         try{
             InetAddress address = InetAddress.getLocalHost();
 
-            Connector userConnector = new Connector(address.getHostAddress(), 8080, TCPClient.getConnector().getDuelMessage());
-
-            return userConnector;
+            return new Connector(
+                    address.getHostAddress(), localPort, TCPClient.getConnector().getDuelMessage());
         } catch (Exception err){
             return null;
         }

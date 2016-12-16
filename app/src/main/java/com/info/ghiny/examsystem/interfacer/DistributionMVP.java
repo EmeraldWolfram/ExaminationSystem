@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.model.AndroidClient;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -16,13 +17,12 @@ public interface DistributionMVP {
     }
     interface MvpVPresenter extends TaskSecurePresenter{
         void onCreate(Context context);
+        void onDestroy();
     }
     interface MvpMPresenter{
-        Connector getMyConnector();
-
+        Connector getMyConnector(int localPort);
     }
     interface MvpModel extends TaskSecureModel{
-
-        Bitmap encodeQr() throws ProcessException;
+        Bitmap encodeQr(int localPort) throws ProcessException;
     }
 }
