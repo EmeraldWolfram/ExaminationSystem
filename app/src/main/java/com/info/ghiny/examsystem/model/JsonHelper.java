@@ -27,6 +27,7 @@ import java.util.Objects;
 public class JsonHelper {
     public static final String MAJOR_KEY_TYPE_RX    = "Result";
     public static final String MAJOR_KEY_TYPE_TX    = "Type";
+    public static final String MAJOR_KEY_TYPE_ID    = "DeviceId";
     public static final String MAJOR_KEY_ERROR      = "Error";
 
     //=== BTW ANDROID & PC ========================================================================
@@ -65,6 +66,7 @@ public class JsonHelper {
         JSONObject object = new JSONObject();
         try{
             object.put(MAJOR_KEY_TYPE_TX, type);
+            object.put(MAJOR_KEY_TYPE_ID, 0);
             object.put(MINOR_KEY_VALUE, valueStr);
             return object.toString();
         } catch(Exception err){
@@ -76,6 +78,7 @@ public class JsonHelper {
         JSONObject object = new JSONObject();
         try{
             object.put(MAJOR_KEY_TYPE_TX, TYPE_IDENTIFICATION);
+            object.put(MAJOR_KEY_TYPE_ID, 0);
             object.put(MINOR_KEY_ID_NO, idNo);
             object.put(MINOR_KEY_HASH_CODE, hashCode);
 
@@ -113,6 +116,7 @@ public class JsonHelper {
             }
             list.put(MINOR_KEY_CANDIDATES, cddList);
             list.put(LIST_SIZE, cddList.length());
+            list.put(MAJOR_KEY_TYPE_ID, 0);
             return list.toString();
         } catch(Exception err){
             return null;
@@ -129,6 +133,7 @@ public class JsonHelper {
             jBundle.put(PaperBundle.BUNDLE_PAPER,   bundle.getColPaperCode());
 
             object.put(MAJOR_KEY_TYPE_TX, TYPE_COLLECTION);
+            object.put(MAJOR_KEY_TYPE_ID, 0);
             object.put(MINOR_KEY_COLLECTOR, staffId);
             object.put(MINOR_KEY_BUNDLE, jBundle);
 
@@ -148,6 +153,7 @@ public class JsonHelper {
             jBundle.put(PaperBundle.BUNDLE_PAPER,   bundle.getColPaperCode());
 
             object.put(MAJOR_KEY_TYPE_TX, TYPE_UNDO_COLLECTION);
+            object.put(MAJOR_KEY_TYPE_ID, 0);
             object.put(MINOR_KEY_COLLECTOR, staffId);
             object.put(MINOR_KEY_BUNDLE, jBundle);
 
@@ -175,6 +181,7 @@ public class JsonHelper {
             }
 
             jsonObject.put(MAJOR_KEY_TYPE_TX, TYPE_ATTENDANCE_UP);
+            jsonObject.put(MAJOR_KEY_TYPE_ID, 0);
             jsonObject.put(MINOR_KEY_UPDATE, jArrayList);
 
             return jsonObject.toString();
@@ -219,6 +226,7 @@ public class JsonHelper {
 
             jInfo.put(MAJOR_KEY_TYPE_TX, TYPE_VENUE_INFO);
             jInfo.put(MAJOR_KEY_TYPE_RX, true);
+            jInfo.put(MAJOR_KEY_TYPE_ID, 0);
             jInfo.put(MINOR_KEY_CANDIDATES, jAttdList);
             jInfo.put(MINOR_KEY_PAPER_MAP, jPaperMap);
 
@@ -266,6 +274,16 @@ public class JsonHelper {
             JSONObject obj = new JSONObject(inStr);
             return obj.getString(MAJOR_KEY_TYPE_TX);
         } catch (JSONException err) {
+            throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+    }
+
+    public static long parseClientId(String inStr) throws ProcessException {
+        try {
+            JSONObject jMsg = new JSONObject(inStr);
+            return jMsg.getLong(MAJOR_KEY_TYPE_ID);
+        } catch (JSONException err){
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }

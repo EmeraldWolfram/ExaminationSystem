@@ -1,12 +1,19 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.model.DistributionModel;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
+
+import java.net.InetAddress;
 
 /**
  * Created by FOONG on 6/12/2016.
@@ -29,8 +36,11 @@ public class DistributionPresenter
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate(Context context) {
         try{
+            if(!TasksSynchronizer.isRunning()){
+                context.startService(new Intent(context, TasksSynchronizer.class));
+            }
             taskView.setImageQr(taskModel.encodeQr());
         } catch (ProcessException err){
             taskView.displayError(err);
@@ -57,6 +67,20 @@ public class DistributionPresenter
                 taskView.securityPrompt(false);
                 this.secureFlag = true;
             }
+        }
+    }
+
+
+    @Override
+    public Connector getMyConnector() {
+        try{
+            InetAddress address = InetAddress.getLocalHost();
+
+            Connector userConnector = new Connector(address.getHostAddress(), 8080, TCPClient.getConnector().getDuelMessage());
+
+            return userConnector;
+        } catch (Exception err){
+            return null;
         }
     }
 }

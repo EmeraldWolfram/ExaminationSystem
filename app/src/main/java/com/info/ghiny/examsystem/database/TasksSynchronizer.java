@@ -1,15 +1,25 @@
 package com.info.ghiny.examsystem.database;
 
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
 import android.nfc.TagLostException;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.support.annotation.Nullable;
 
+import com.info.ghiny.examsystem.DistributionActivity;
+import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TCPClient;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,9 +29,35 @@ import java.util.HashMap;
  * Created by user09 on 12/13/2016.
  */
 
-public class TasksSynchronizer {
+public class TasksSynchronizer extends Service{
 
+    private PowerManager powerManager;
+    private PowerManager.WakeLock wakeLock;
+
+    private static boolean running = false;
     private static boolean distributed;
+
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        running = true;
+
+        powerManager    = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock        = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, DistributionActivity.TAG);
+    }
+
+
+    public static boolean isRunning() {
+        return running;
+    }
 
     /**
      * Check Client Request <Live in Receiver Client Thread>
@@ -87,6 +123,7 @@ public class TasksSynchronizer {
     public TasksSynchronizer() {
         Thread socketServerThread = new Thread(new SocketServerThread());
         socketServerThread.start();
+
     }
 
     public void onDestroy() {
@@ -106,7 +143,7 @@ public class TasksSynchronizer {
         public void run() {
             try {
                 // create ServerSocket using specified port
-                serverSocket = new ServerSocket(8080);
+                serverSocket = new ServerSocket(0);
 
                 while (true) {
                     // block the call until connection is created and return

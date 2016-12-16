@@ -1,7 +1,9 @@
 package com.info.ghiny.examsystem.interfacer;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -13,10 +15,14 @@ public interface DistributionMVP {
         void setImageQr(Bitmap bitmap);
     }
     interface MvpVPresenter extends TaskSecurePresenter{
-        void onCreate();
+        void onCreate(Context context);
     }
-    interface MvpMPresenter{}
+    interface MvpMPresenter{
+        Connector getMyConnector();
+
+    }
     interface MvpModel extends TaskSecureModel{
+
         Bitmap encodeQr() throws ProcessException;
     }
 }

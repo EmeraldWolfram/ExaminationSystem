@@ -30,7 +30,7 @@ public class DistributionModel implements DistributionMVP.MvpModel{
     @Override
     public Bitmap encodeQr() throws ProcessException {
 
-        Connector connector = new Connector("192.168.0.1", 5457, "DUEL");
+        Connector connector = taskPresenter.getMyConnector();
         BitMatrix result;
         try {
             result = new MultiFormatWriter().encode(connector.toString(),
@@ -59,4 +59,7 @@ public class DistributionModel implements DistributionMVP.MvpModel{
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
+
+
+
 }

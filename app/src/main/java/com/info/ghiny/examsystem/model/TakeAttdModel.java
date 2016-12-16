@@ -148,15 +148,13 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
             if(verifyCandidate(scanStr)) {
                 this.tempTable   = null;
                 this.taskPresenter.notifyDisplayReset();
-                taskPresenter.notifyReassign((assgnList.containsValue(tempCdd.getRegNum())
-                        || assgnList.containsKey(this.tempTable)) ?
+                taskPresenter.notifyReassign(assgnList.containsValue(tempCdd.getRegNum()) ?
                         TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyCandidateScanned(tempCdd);
             } else if(verifyTable(scanStr)) {
                 this.tempCdd     = null;
                 this.taskPresenter.notifyDisplayReset();
-                taskPresenter.notifyReassign((assgnList.containsValue(tempCdd.getRegNum())
-                        || assgnList.containsKey(this.tempTable)) ?
+                taskPresenter.notifyReassign(assgnList.containsKey(this.tempTable) ?
                         TakeAttdMVP.TABLE_REASSIGN : TakeAttdMVP.NO_REASSIGN);
                 this.taskPresenter.notifyTableScanned(tempTable);
             } else {

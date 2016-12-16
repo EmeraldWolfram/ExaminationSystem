@@ -25,8 +25,8 @@ public class TCPClient implements Runnable{
     //public static String SERVERIP = "192.168.0.112"; // your computer IP address
     //public static int SERVERPORT = 5657;
     private static Connector connector;
-    private OnMessageReceived mMessageListener = null;
-    private boolean mRun = false;
+    private OnMessageReceived msgListener = null;
+    private boolean running = false;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -35,7 +35,7 @@ public class TCPClient implements Runnable{
      *  Constructor of the class. OnMessagedReceived listens for the messages received from server
      */
     public TCPClient(final OnMessageReceived listener) {
-        mMessageListener = listener;
+        msgListener = listener;
     }
 
     /*public static void setServerIp(String ipAddress){
@@ -53,8 +53,8 @@ public class TCPClient implements Runnable{
         return connector;
     }
 
-    public void setMessageListener(OnMessageReceived mMessageListener) {
-        this.mMessageListener = mMessageListener;
+    public void setMessageListener(OnMessageReceived messageListener) {
+        this.msgListener = messageListener;
     }
 
     /**
@@ -69,12 +69,12 @@ public class TCPClient implements Runnable{
     }
 
     public void stopClient(){
-        mRun = false;
+        running = false;
     }
 
     @Override
     public void run(){
-        mRun = true;
+        running = true;
 
         try {
             //here you must put your computer's IP address.
@@ -84,16 +84,7 @@ public class TCPClient implements Runnable{
 
             //create a socket to make the connection with the server
             //Socket socket = new Socket(serverAddr, SERVERPORT);
-            //Socket socket = new Socket(serverAddr, connector.getPortNumber());
-            Socket socket = new Socket();
-            try {
-                socket.connect(address, 5000);
-
-                //Log.d(LinkChiefActivity.TAG, String.format("%s", socket.getRemoteSocketAddress().toString()));
-            } catch (Exception err){
-                //Log.d(LinkChiefActivity.TAG, err.getMessage());
-            }
-
+            Socket socket = new Socket(serverAddr, connector.getPortNumber());
 
             //Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
             try {
@@ -107,11 +98,11 @@ public class TCPClient implements Runnable{
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 //in this while the client listens for the messages sent by the server
-                while (mRun) {
+                while (running) {
                     serverMessage = in.readLine();
 
-                    if (serverMessage != null && mMessageListener != null) {
-                        mMessageListener.messageReceived(serverMessage);
+                    if (serverMessage != null && msgListener != null) {
+                        msgListener.messageReceived(serverMessage);
                     }
                     serverMessage = null;
                 }

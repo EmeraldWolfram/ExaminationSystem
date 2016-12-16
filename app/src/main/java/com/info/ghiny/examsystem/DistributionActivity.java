@@ -14,6 +14,7 @@ import com.info.ghiny.examsystem.model.DistributionModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 public class DistributionActivity extends AppCompatActivity implements DistributionMVP.MvpView {
+    public static final String TAG = DistributionActivity.class.getSimpleName();
 
     private DistributionMVP.MvpVPresenter taskPresenter;
     private ErrorManager errorManager;
@@ -28,7 +29,7 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
         initView();
         initMVP();
 
-        taskPresenter.onCreate();
+        taskPresenter.onCreate(this);
     }
 
     @Override
