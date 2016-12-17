@@ -97,10 +97,19 @@ public final class TasksSynchronizer extends Service{
     }
 
     public static void updateAttendance(ArrayList<Candidate> updatingList){
-        String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
+        if(clientsMap.size() > 0){
+            String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
 
-        for(AndroidClient client : clientsMap.values()){
-            client.sendMessage(msgUpdate);
+            for(AndroidClient client : clientsMap.values()){
+                client.sendMessage(msgUpdate);
+            }
+        }
+    }
+
+    public static void passMessageBack(int deviceId, String inStr){
+        AndroidClient targetClient  = clientsMap.get(deviceId);
+        if(targetClient != null){
+            targetClient.sendMessage(inStr);
         }
     }
 

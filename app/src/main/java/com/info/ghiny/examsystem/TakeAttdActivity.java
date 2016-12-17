@@ -123,6 +123,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         TakeAttdModel model             = new TakeAttdModel(presenter, dbLoader);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
+        presenter.setSynTimer(new Handler());
 
         taskPresenter   = presenter;
     }

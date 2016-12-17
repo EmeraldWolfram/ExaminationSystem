@@ -29,6 +29,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
     private Handler handler;
+    private Handler synTimer;
     private Snackbar snackbar;
     private View refView;
     private boolean secureFlag;
@@ -52,6 +53,11 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public void setSynTimer(Handler synTimer) {
+        this.synTimer = synTimer;
+        this.synTimer.postDelayed(taskSyn, 8000);
     }
 
     void setNavigationFlag(boolean navigationFlag) {
@@ -107,6 +113,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         taskModel.saveAttendance();
         taskView.closeProgressWindow();
         handler.removeCallbacks(taskModel);
+        synTimer.removeCallbacks(taskSyn);
     }
 
     @Override
@@ -291,4 +298,15 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     public void onTag(View view) {
         taskModel.tagAsLateNot();
     }
+
+    private Runnable taskSyn    = new Runnable() {
+        @Override
+        public void run() {
+            try{
+                taskModel.txAttendanceUpdate();
+            } catch (ProcessException err){
+                taskView.displayError(err);
+            }
+        }
+    };
 }

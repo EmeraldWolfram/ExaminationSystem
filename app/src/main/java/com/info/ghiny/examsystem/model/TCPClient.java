@@ -2,6 +2,7 @@ package com.info.ghiny.examsystem.model;
 
 
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.io.BufferedReader;
@@ -77,31 +78,26 @@ public class TCPClient implements Runnable{
         running = true;
 
         try {
-            //here you must put your computer's IP address.
-            //InetAddress serverAddr = InetAddress.getByName(SERVERIP);
             InetAddress serverAddr = InetAddress.getByName(connector.getIpAddress());
             SocketAddress address   = new InetSocketAddress(serverAddr, connector.getPortNumber());
 
             //create a socket to make the connection with the server
-            //Socket socket = new Socket(serverAddr, SERVERPORT);
             Socket socket = new Socket(serverAddr, connector.getPortNumber());
 
             //Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
             try {
-                //out = sender
-                //out = new PrintWriter(new BufferedWriter(
-                //        new OutputStreamWriter(socket.getOutputStream())), true);
                 out = new PrintWriter(
                         new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-
-                //in = receiver
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 //in this while the client listens for the messages sent by the server
                 while (running) {
                     serverMessage = in.readLine();
 
-                    if (serverMessage != null && msgListener != null) {
+                    int deviceId    = JsonHelper.parseClientId(serverMessage);
+                    if(deviceId != 0 && serverMessage != null){
+                        TasksSynchronizer.passMessageBack(deviceId, serverMessage);
+                    } else if (serverMessage != null && msgListener != null) {
                         msgListener.messageReceived(serverMessage);
                     }
                     serverMessage = null;

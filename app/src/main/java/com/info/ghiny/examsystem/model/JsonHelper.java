@@ -279,10 +279,10 @@ public class JsonHelper {
         }
     }
 
-    public static long parseClientId(String inStr) throws ProcessException {
+    public static int parseClientId(String inStr) throws ProcessException {
         try {
             JSONObject jMsg = new JSONObject(inStr);
-            return jMsg.getLong(MAJOR_KEY_TYPE_ID);
+            return jMsg.getInt(MAJOR_KEY_TYPE_ID);
         } catch (JSONException err){
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
