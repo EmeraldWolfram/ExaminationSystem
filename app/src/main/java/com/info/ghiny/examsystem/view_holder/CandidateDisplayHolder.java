@@ -34,7 +34,6 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
         this.cddPaperCode    = (TextView) view.findViewById(R.id.assignedPaperText);
         this.cddTable        = (TextView) view.findViewById(R.id.assignedTableText);
         this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
-        view.findViewById(R.id.uncheckPresent).setVisibility(View.INVISIBLE);
 
         ConfigManager configManager = new ConfigManager(context);
 
@@ -67,7 +66,6 @@ public class CandidateDisplayHolder extends RecyclerView.ViewHolder {
         this.cddPaperCode    = (TextView) view.findViewById(R.id.assignedPaperText);
         this.cddTable        = (TextView) view.findViewById(R.id.assignedTableText);
         this.cddLateTag      = (ImageView)view.findViewById(R.id.assignedLateTag);
-        view.findViewById(R.id.uncheckPresent).setVisibility(View.INVISIBLE);
 
         cddTable.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.THICK_FONT));
         cddName.setTypeface(Typeface.createFromAsset(context.getAssets(), ConfigManager.BOLD_FONT));

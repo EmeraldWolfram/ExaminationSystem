@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -36,9 +37,6 @@
             android:label="Attendance Collection"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".ReportAttdActivity"
-            android:screenOrientation="userPortrait" />
-        <activity
             android:name=".HomeOptionActivity"
             android:label="Home"
             android:screenOrientation="userPortrait" />
@@ -66,6 +64,9 @@
             android:name=".DistributionActivity"
             android:label="Work Distribution"
             android:screenOrientation="userPortrait"/>
+
+        <service android:name=".database.TasksSynchronizer"/>
+
     </application>
 
 </manifest>

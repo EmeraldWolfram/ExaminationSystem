@@ -54,29 +54,11 @@
             android:textColor="#156039"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/checkboxStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/uncheckPresent"
-        android:layout_toLeftOf="@id/uncheckPresent"/>
-
-    <CheckBox
-        android:id="@+id/uncheckPresent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:text=""
-        android:onClick="onUncheck" />
-
     <ImageView
         android:id="@+id/assignedLateTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/button_tag_icon"
+        app:srcCompat="@drawable/other_late_indicator"
         android:visibility="invisible"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"

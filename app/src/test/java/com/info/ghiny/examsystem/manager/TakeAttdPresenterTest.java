@@ -254,6 +254,8 @@ public class TakeAttdPresenterTest {
      */
     @Test
     public void testOnDestroy() throws Exception {
+        manager.setSynTimer(handler);
+
         manager.onDestroy();
 
         verify(taskView).closeProgressWindow();

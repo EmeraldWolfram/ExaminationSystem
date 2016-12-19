@@ -107,7 +107,7 @@ public class JsonHelperTest {
 
         assertEquals("{\"Type\":\"Collection\",\"PaperBundle\":" +
                 "{\"BundleId\":\"14352\",\"BundleProgramme\":\"RMB3\",\"BundleVenue\":\"M4\"," +
-                "\"BundlePaperCode\":\"BAME 0001\"},\"Collector\":\"246260\"}", str);
+                "\"BundlePaperCode\":\"BAME 0001\"},\"DeviceId\":0,\"Collector\":\"246260\"}", str);
     }
 
     //= FormatUndoCollection() =========================================================================
@@ -125,7 +125,7 @@ public class JsonHelperTest {
 
         assertEquals("{\"Type\":\"UndoCollection\",\"PaperBundle\":" +
                 "{\"BundleId\":\"14352\",\"BundleProgramme\":\"RMB3\",\"BundleVenue\":\"M4\"," +
-                "\"BundlePaperCode\":\"BAME 0001\"},\"Collector\":\"246260\"}", str);
+                "\"BundlePaperCode\":\"BAME 0001\"},\"DeviceId\":0,\"Collector\":\"246260\"}", str);
     }
 
     //= ParseStaffIdentity() =======================================================================
@@ -448,7 +448,7 @@ public class JsonHelperTest {
     public void testFormatPassword() throws Exception {
         String str = JsonHelper.formatStaff("246800", "0123");
 
-        assertEquals("{\"Type\":\"Identification\",\"HashPass\":\"0123\",\"IdNo\":\"246800\"}", str);
+        assertEquals("{\"Type\":\"Identification\",\"HashPass\":\"0123\",\"DeviceId\":0,\"IdNo\":\"246800\"}", str);
 
         JSONObject obj = new JSONObject(str);
         assertNotNull(obj);
@@ -586,7 +586,7 @@ public class JsonHelperTest {
         arr.add(cdd4);
         arr.add(cdd5);
 
-        assertEquals("{\"Type\":\"AttendanceUpdate\",\"UpdateList\":[" + "{\"Attendance\":\"PRESENT\"," +
+        assertEquals("{\"Type\":\"AttendanceUpdate\",\"DeviceId\":0,\"UpdateList\":[" + "{\"Attendance\":\"PRESENT\"," +
                 "\"AttdCollector\":\"145675\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00001\"}," +
                 "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00002\"}," +
                 "{\"Attendance\":\"ABSENT\",\"Late\":false,\"TableNo\":1,\"RegNum\":\"15WAU00003\"}," +
