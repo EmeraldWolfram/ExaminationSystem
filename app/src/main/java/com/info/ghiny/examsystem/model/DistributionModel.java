@@ -11,6 +11,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -34,13 +35,14 @@ public class DistributionModel implements DistributionMVP.MvpModel{
     @Override
     public Bitmap encodeQr(int localPort) throws ProcessException {
 
-        Connector connector = taskPresenter.getMyConnector(localPort);
+        String ip           = TasksSynchronizer.getThisIpv4();
+        Connector connector = new Connector(ip, localPort, TCPClient.getConnector().getDuelMessage());
         BitMatrix result;
         try {
-            result = new MultiFormatWriter().encode(connector.toString(),
-                    BarcodeFormat.QR_CODE, 400, 400, null);
+            result = new MultiFormatWriter().encode(connector.toString(), BarcodeFormat.QR_CODE,
+                    400, 400, null);
         } catch (Exception err) {
-            throw new ProcessException("QR Encrytion failed\nPlease consult developer!",
+            throw new ProcessException("QR Encode Failed\nPlease consult developer!",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         int w = result.getWidth();

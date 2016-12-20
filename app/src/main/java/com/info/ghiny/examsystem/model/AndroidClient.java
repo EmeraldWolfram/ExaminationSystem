@@ -1,6 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
 import android.content.Intent;
+import android.os.PowerManager;
 import android.util.Log;
 
 import com.info.ghiny.examsystem.DistributionActivity;
@@ -42,6 +43,7 @@ public class AndroidClient extends Thread {
 
     private DistributionMVP.MvpView tempView;
     private DistributionMVP.MvpModel tempModel;
+    private PowerManager.WakeLock wakeLock;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -50,7 +52,9 @@ public class AndroidClient extends Thread {
      *  Constructor of the class. OnMessagedReceived listens for the messages received from server
      */
 
-    public AndroidClient(){}
+    public AndroidClient(PowerManager.WakeLock wakeLock){
+        this.wakeLock   = wakeLock;
+    }
 
     public void setTempView(DistributionMVP.MvpView tempView) {
         this.tempView = tempView;
@@ -101,12 +105,25 @@ public class AndroidClient extends Thread {
         try {
             serverSocket    = new ServerSocket(0);
             localPort       = serverSocket.getLocalPort();
+
+
             if(tempView != null && tempModel != null){
-                tempView.setImageQr(tempModel.encodeQr(localPort));
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            tempView.setImageQr(tempModel.encodeQr(localPort));
+                        } catch (ProcessException err) {
+                            tempView.displayError(err);
+                        }
+                    }
+                });
             }
             socket          = serverSocket.accept();
             connector       = new Connector(socket.getInetAddress().toString(),
                     socket.getPort(), TCPClient.getConnector().getDuelMessage());
+
+            Log.d(DistributionActivity.TAG, "First Connection");
 
             TasksSynchronizer.notifyClientConnected(this);
 
@@ -117,6 +134,8 @@ public class AndroidClient extends Thread {
 
                 while (running) {
                     serverMessage = in.readLine();
+                    wakeLock.acquire(3000);
+                    Log.d("#### RECEIVED ###: ", serverMessage);
 
                     if (serverMessage != null) {
                         onReceiveClientMessage(serverMessage);

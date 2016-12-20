@@ -23,9 +23,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +38,8 @@ import java.util.Map;
 
 public final class TasksSynchronizer extends Service{
 
-    private PowerManager powerManager;
-    private PowerManager.WakeLock wakeLock;
+    private static PowerManager powerManager;
+    private static PowerManager.WakeLock wakeLock;
 
     private static boolean running = false;
     private static boolean distributed = false;
@@ -71,8 +74,12 @@ public final class TasksSynchronizer extends Service{
 
         running = true;
 
-        powerManager    = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock        = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, DistributionActivity.TAG);
+        if(powerManager == null){
+            powerManager    = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        }
+        if(wakeLock == null){
+            wakeLock        = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, DistributionActivity.TAG);
+        }
     }
 
     @Override
@@ -86,7 +93,7 @@ public final class TasksSynchronizer extends Service{
     }
 
     public static void startNewThread(DistributionMVP.MvpView view, DistributionMVP.MvpModel model){
-        waitingThread    = new AndroidClient();
+        waitingThread    = new AndroidClient(wakeLock);
         TasksSynchronizer.view  = view;
         TasksSynchronizer.model = model;
 
@@ -124,6 +131,32 @@ public final class TasksSynchronizer extends Service{
         if(waitingThread != null){
             waitingThread.stopClient();
             waitingThread   = null;
+        }
+    }
+
+    public static String getThisIpv4() throws ProcessException {
+        String ip = "";
+        try {
+            Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface
+                    .getNetworkInterfaces();
+            while (enumNetworkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = enumNetworkInterfaces
+                        .nextElement();
+                Enumeration<InetAddress> enumInetAddress = networkInterface
+                        .getInetAddresses();
+                while (enumInetAddress.hasMoreElements()) {
+                    InetAddress inetAddress = enumInetAddress
+                            .nextElement();
+
+                    if (inetAddress.isSiteLocalAddress()) {
+                        ip = inetAddress.getHostAddress();
+                    }
+                }
+            }
+            return ip;
+        } catch (SocketException e) {
+            throw new ProcessException("Network Error. Unable to generate Host IP",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
     }
 }

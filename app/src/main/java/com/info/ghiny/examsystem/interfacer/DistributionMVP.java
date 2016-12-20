@@ -14,14 +14,16 @@ import com.info.ghiny.examsystem.model.ProcessException;
 public interface DistributionMVP {
     interface MvpView extends GeneralView {
         void setImageQr(Bitmap bitmap);
+        void runItSeparate(Runnable runner);
     }
+
     interface MvpVPresenter extends TaskSecurePresenter{
         void onCreate(Context context);
         void onDestroy();
     }
-    interface MvpMPresenter{
-        Connector getMyConnector(int localPort);
-    }
+
+    interface MvpMPresenter{}
+
     interface MvpModel extends TaskSecureModel{
         Bitmap encodeQr(int localPort) throws ProcessException;
     }

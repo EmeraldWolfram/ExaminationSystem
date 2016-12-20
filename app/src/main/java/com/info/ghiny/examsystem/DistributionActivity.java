@@ -67,6 +67,11 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void displayError(ProcessException err) {
         this.errorManager.displayError(err);
     }

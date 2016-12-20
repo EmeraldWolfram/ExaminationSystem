@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.info.ghiny.examsystem.DistributionActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
@@ -18,6 +20,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TCPClient;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  * Created by FOONG on 6/12/2016.
@@ -72,18 +77,6 @@ public class DistributionPresenter
                 taskView.securityPrompt(false);
                 this.secureFlag = true;
             }
-        }
-    }
-
-    @Override
-    public Connector getMyConnector(int localPort) {
-        try{
-            InetAddress address = InetAddress.getLocalHost();
-
-            return new Connector(
-                    address.getHostAddress(), localPort, TCPClient.getConnector().getDuelMessage());
-        } catch (Exception err){
-            return null;
         }
     }
 }
