@@ -1,6 +1,9 @@
 package com.info.ghiny.examsystem.model;
 
 
+import android.util.Log;
+
+import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.manager.IconManager;
@@ -14,11 +17,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by GhinY on 08/07/2016.
  */
-public class TCPClient implements Runnable{
+public class JavaHost implements Runnable{
     private String serverMessage;
     /**
      * Specify the Server Ip Address here. Whereas our Socket Server is started.
@@ -27,27 +32,35 @@ public class TCPClient implements Runnable{
     //public static int SERVERPORT = 5657;
     private static Connector connector;
     private OnMessageReceived msgListener = null;
-    private boolean running = false;
+    private boolean running;
+    private boolean sending;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
 
+    private ReentrantLock mutex;
+    private ArrayList<String> msgQueue;
+
     /**
      *  Constructor of the class. OnMessagedReceived listens for the messages received from server
      */
-    public TCPClient(final OnMessageReceived listener) {
+    public JavaHost(final OnMessageReceived listener) {
         msgListener = listener;
+        mutex       = new ReentrantLock(true);
+        msgQueue    = new ArrayList<>();
+        running     = false;
+        sending     = false;
     }
 
     /*public static void setServerIp(String ipAddress){
-        TCPClient.SERVERIP = ipAddress;
+        JavaHost.SERVERIP = ipAddress;
     }
     public static void setServerPort(int portNumber){
-        TCPClient.SERVERPORT = portNumber;
+        JavaHost.SERVERPORT = portNumber;
     }*/
 
     public static void setConnector(Connector connector) {
-        TCPClient.connector = connector;
+        JavaHost.connector = connector;
     }
 
     public static Connector getConnector() {
@@ -58,11 +71,36 @@ public class TCPClient implements Runnable{
         this.msgListener = messageListener;
     }
 
+    public void putMessageIntoSendQueue(String message) {
+        mutex.lock();
+        msgQueue.add(message);
+        mutex.unlock();
+
+        if(!sending){
+            sending = true;
+            Thread sendOutThread    = new Thread(){
+                @Override
+                public void run() {
+                    while (msgQueue.size() > 0) {
+                        try {
+                            sendMessage(msgQueue.remove(0));
+                            Thread.sleep(500);
+                        } catch (final InterruptedException e) {
+                            Log.d(LinkChiefActivity.TAG, e.getMessage());
+                        }
+                    }
+                    sending = false;
+                }
+            };
+            sendOutThread.start();
+        }
+    }
+
     /**
      * Sends the message entered by client to the server
      * @param message text entered by client
      */
-    public void sendMessage(String message){
+    private void sendMessage(String message){
         if (out != null && !out.checkError()) {
             out.println(message);
             out.flush();
