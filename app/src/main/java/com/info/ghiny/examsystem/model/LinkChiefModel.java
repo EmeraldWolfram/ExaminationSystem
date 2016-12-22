@@ -11,6 +11,7 @@ import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by GhinY on 05/10/2016.
@@ -38,7 +39,7 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
                     Integer.parseInt(chiefArr[2]), chiefArr[3]);
 
             dbLoader.saveConnector(connector);
-            TCPClient.setConnector(connector);
+            JavaHost.setConnector(connector);
             task    = new ConnectionTask();
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ExternalDbLoader.setConnectionTask(task);
@@ -60,7 +61,7 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
                     && now.get(Calendar.MONTH) == connector.getDate().get(Calendar.MONTH)
                     && now.get(Calendar.DAY_OF_MONTH) == connector.getDate().get(Calendar.DAY_OF_MONTH)){
 
-                TCPClient.setConnector(connector);
+                JavaHost.setConnector(connector);
                 task    = new ConnectionTask();
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 ExternalDbLoader.setConnectionTask(task);
@@ -77,18 +78,25 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     @Override
     public void onChallengeMessageReceived(String messageRx) throws ProcessException {
         String challengeMsg = JsonHelper.parseChallengeMessage(messageRx);
-        TCPClient.getConnector().setDuelMessage(challengeMsg);
+        JavaHost.getConnector().setDuelMessage(challengeMsg);
     }
 
     @Override
     public void closeConnection() throws Exception{
-        if(ExternalDbLoader.getTcpClient() != null){
-            ExternalDbLoader.getTcpClient().sendMessage("Termination");
-            ExternalDbLoader.getTcpClient().stopClient();
+        if(ExternalDbLoader.getJavaHost() != null){
+            ExternalDbLoader.getJavaHost().stopClient();
         }
         if(ExternalDbLoader.getConnectionTask() != null){
             ExternalDbLoader.getConnectionTask().cancel(true);
             ExternalDbLoader.setConnectionTask(null);
+        }
+        if(TasksSynchronizer.isRunning()){
+            HashMap<Integer, AndroidClient> map = TasksSynchronizer.getClientsMap();
+            if(map != null){
+                while(map.size() > 0){
+                    map.remove(0).stopClient();
+                }
+            }
         }
     }
 

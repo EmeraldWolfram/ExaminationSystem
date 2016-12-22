@@ -88,7 +88,7 @@ public class LoginModel implements LoginMVP.MvpModel {
             } else {
                 ConnectionTask.setCompleteFlag(false);
 
-                String duelMsg  = TCPClient.getConnector().getDuelMessage();
+                String duelMsg  = JavaHost.getConnector().getDuelMessage();
                 StaffIdentity staffIdentity = new StaffIdentity();
                 this.hashCode   = staffIdentity.hmacSha(this.inputPW, duelMsg);
 

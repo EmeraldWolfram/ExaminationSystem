@@ -45,7 +45,7 @@ public class TakeAttdModelTest {
     private StaffIdentity staff;
 
     private ConnectionTask connectionTask;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private String MESSAGE_FROM_CHIEF;
     private DialogInterface dialog;
 
@@ -66,13 +66,13 @@ public class TakeAttdModelTest {
     public void setUp() throws Exception{
         staff           = new StaffIdentity("id", true, "name", "M4");
         LoginModel.setStaff(staff);
-        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        JavaHost.setConnector(new Connector("add", 7032, "DUEL"));
         connectionTask  = Mockito.mock(ConnectionTask.class);
-        tcpClient       = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         dialog          = Mockito.mock(DialogInterface.class);
 
         ExternalDbLoader.setConnectionTask(connectionTask);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
 
         attdList = new AttendanceList();
         cdd1 = new Candidate(0, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.ABSENT);
@@ -134,7 +134,7 @@ public class TakeAttdModelTest {
 
         model.initAttendance();
 
-        verify(tcpClient).sendMessage(anyString());
+        verify(javaHost).putMessageIntoSendQueue(anyString());
         verify(dBLoader, never()).queryAttendanceList();
         verify(dBLoader, never()).queryPapers();
         assertFalse(model.isInitialized());
@@ -147,7 +147,7 @@ public class TakeAttdModelTest {
 
         model.initAttendance();
 
-        verify(tcpClient).sendMessage(anyString());
+        verify(javaHost).putMessageIntoSendQueue(anyString());
         verify(dBLoader, never()).queryAttendanceList();
         verify(dBLoader, never()).queryPapers();
         assertFalse(model.isInitialized());
@@ -161,7 +161,7 @@ public class TakeAttdModelTest {
 
         model.initAttendance();
 
-        verify(tcpClient, never()).sendMessage(anyString());
+        verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         verify(dBLoader).queryAttendanceList();
         verify(dBLoader).queryPapers();
         assertTrue(model.isInitialized());

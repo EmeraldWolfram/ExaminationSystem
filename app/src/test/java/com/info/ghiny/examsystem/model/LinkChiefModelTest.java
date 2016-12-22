@@ -32,7 +32,7 @@ public class LinkChiefModelTest {
     private LinkChiefMVP.MPresenter taskPresenter;
     private LinkChiefModel model;
     private ConnectionTask task;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private StaffIdentity staff;
 
     @Before
@@ -46,7 +46,7 @@ public class LinkChiefModelTest {
         model           = new LinkChiefModel(dbLoader, taskPresenter);
         model.setTask(task);
 
-        TCPClient.setConnector(null);
+        JavaHost.setConnector(null);
         ExternalDbLoader.setConnectionTask(null);
     }
 
@@ -64,14 +64,14 @@ public class LinkChiefModelTest {
     @Test
     public void testTryConnectWithQR_If_correct_String_format() throws Exception{
         try{
-            assertNull(TCPClient.getConnector());
+            assertNull(JavaHost.getConnector());
             assertNull(ExternalDbLoader.getConnectionTask());
 
             model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:$");
 
             verify(dbLoader).saveConnector(any(Connector.class));
-            assertEquals("192.168.0.1", TCPClient.getConnector().getIpAddress());
-            assertEquals(Integer.valueOf(5000), TCPClient.getConnector().getPortNumber());
+            assertEquals("192.168.0.1", JavaHost.getConnector().getIpAddress());
+            assertEquals(Integer.valueOf(5000), JavaHost.getConnector().getPortNumber());
             assertNotNull(ExternalDbLoader.getConnectionTask());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
@@ -81,14 +81,14 @@ public class LinkChiefModelTest {
     @Test
     public void testTryConnectWithQR_If_wrong_String_format() throws Exception{
         try{
-            assertNull(TCPClient.getConnector());
+            assertNull(JavaHost.getConnector());
             assertNull(ExternalDbLoader.getConnectionTask());
 
             model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:");
 
             fail("Expected MESSAFE TOAST Exception but none were thrown");
         } catch (ProcessException err){
-            assertNull(TCPClient.getConnector());
+            assertNull(JavaHost.getConnector());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a chief address", err.getErrorMsg());
             verify(dbLoader, never()).saveConnector(any(Connector.class));
@@ -148,20 +148,19 @@ public class LinkChiefModelTest {
     /**
      * closeConnection()
      *
-     * 1. When ConnectTask = null, TCPClient = null, do nothing
-     * 2. When ConnectTask != null, TCPClient = null, cancel ConnectTask
-     * 3. When ConnectTask = null, TCPClient != null, stop TCPClient
-     * 4. When ConnectTask != null, TCPClient != null, stop TCP and cancel ConnectTask
+     * 1. When ConnectTask = null, JavaHost = null, do nothing
+     * 2. When ConnectTask != null, JavaHost = null, cancel ConnectTask
+     * 3. When ConnectTask = null, JavaHost != null, stop JavaHost
+     * 4. When ConnectTask != null, JavaHost != null, stop TCP and cancel ConnectTask
      */
     @Test
     public void testCloseConnection_BothNull() throws Exception {
         ConnectionTask task = Mockito.mock(ConnectionTask.class);
-        TCPClient client    = Mockito.mock(TCPClient.class);
+        JavaHost client    = Mockito.mock(JavaHost.class);
 
         model.closeConnection();
 
         verify(client, never()).stopClient();
-        verify(client, never()).sendMessage("Termination");
         verify(task, never()).cancel(true);
         assertNull(ExternalDbLoader.getConnectionTask());
     }
@@ -169,13 +168,12 @@ public class LinkChiefModelTest {
     @Test
     public void testCloseConnection_TaskNotNull() throws Exception {
         ConnectionTask task = Mockito.mock(ConnectionTask.class);
-        TCPClient client    = Mockito.mock(TCPClient.class);
+        JavaHost client    = Mockito.mock(JavaHost.class);
         ExternalDbLoader.setConnectionTask(task);
 
         model.closeConnection();
 
         verify(client, never()).stopClient();
-        verify(client, never()).sendMessage("Termination");
         verify(task).cancel(true);
         assertNull(ExternalDbLoader.getConnectionTask());
     }
@@ -183,13 +181,12 @@ public class LinkChiefModelTest {
     @Test
     public void testCloseConnection_TCPClientNotNull() throws Exception {
         ConnectionTask task = Mockito.mock(ConnectionTask.class);
-        TCPClient client    = Mockito.mock(TCPClient.class);
-        ExternalDbLoader.setTcpClient(client);
+        JavaHost client    = Mockito.mock(JavaHost.class);
+        ExternalDbLoader.setJavaHost(client);
 
         model.closeConnection();
 
         verify(client).stopClient();
-        verify(client).sendMessage("Termination");
         verify(task, never()).cancel(true);
         assertNull(ExternalDbLoader.getConnectionTask());
     }
@@ -197,14 +194,13 @@ public class LinkChiefModelTest {
     @Test
     public void testCloseConnection_BothNotNull() throws Exception {
         ConnectionTask task = Mockito.mock(ConnectionTask.class);
-        TCPClient client    = Mockito.mock(TCPClient.class);
-        ExternalDbLoader.setTcpClient(client);
+        JavaHost client    = Mockito.mock(JavaHost.class);
+        ExternalDbLoader.setJavaHost(client);
         ExternalDbLoader.setConnectionTask(task);
 
         model.closeConnection();
 
         verify(client).stopClient();
-        verify(client).sendMessage("Termination");
         verify(task).cancel(true);
         assertNull(ExternalDbLoader.getConnectionTask());
     }
@@ -222,12 +218,12 @@ public class LinkChiefModelTest {
     @Test
     public void testOnChallengeMessage1_PositiveTest() throws Exception {
         try{
-            tcpClient = Mockito.mock(TCPClient.class);
+            javaHost = Mockito.mock(JavaHost.class);
             task = Mockito.mock(ConnectionTask.class);
             Connector connector = Mockito.mock(Connector.class);
             ExternalDbLoader.setConnectionTask(task);
-            ExternalDbLoader.setTcpClient(tcpClient);
-            TCPClient.setConnector(connector);
+            ExternalDbLoader.setJavaHost(javaHost);
+            JavaHost.setConnector(connector);
 
             model.onChallengeMessageReceived("{\"Result\":true, \"DuelMsg\":\"AxPS9a0dvwde\"}");
 
@@ -240,11 +236,11 @@ public class LinkChiefModelTest {
     @Test
     public void testOnChallengeMessage2_NegativeTest() throws Exception {
         task = Mockito.mock(ConnectionTask.class);
-        tcpClient = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         Connector connector = Mockito.mock(Connector.class);
         ExternalDbLoader.setConnectionTask(task);
-        ExternalDbLoader.setTcpClient(tcpClient);
-        TCPClient.setConnector(connector);
+        ExternalDbLoader.setJavaHost(javaHost);
+        JavaHost.setConnector(connector);
 
         try{
             model.onChallengeMessageReceived("{\"Result\":true}");
@@ -272,28 +268,28 @@ public class LinkChiefModelTest {
     @Test
     public void testReconnect1_PositiveTest() throws Exception {
         task = Mockito.mock(ConnectionTask.class);
-        tcpClient = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         ExternalDbLoader.setConnectionTask(task);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         when(dbLoader.emptyUserInDB()).thenReturn(false);
         when(dbLoader.queryUser()).thenReturn(staff);
 
         assertTrue(model.reconnect());
 
-        verify(tcpClient).sendMessage(anyString());
+        verify(javaHost).putMessageIntoSendQueue(anyString());
     }
 
     @Test
     public void testReconnect2_NegativeTest() throws Exception {
         task = Mockito.mock(ConnectionTask.class);
-        tcpClient = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         ExternalDbLoader.setConnectionTask(task);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         when(dbLoader.emptyUserInDB()).thenReturn(true);
 
         assertFalse(model.reconnect());
 
-        verify(tcpClient, never()).sendMessage(anyString());
+        verify(javaHost, never()).putMessageIntoSendQueue(anyString());
     }
 
     //= Run() ======================================================================================

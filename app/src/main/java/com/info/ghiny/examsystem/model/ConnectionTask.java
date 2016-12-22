@@ -8,7 +8,7 @@ import com.info.ghiny.examsystem.manager.ErrorManager;
 /**
  * Created by GhinY on 08/07/2016.
  */
-public class ConnectionTask extends AsyncTask<String, String, TCPClient> {
+public class ConnectionTask extends AsyncTask<String, String, JavaHost> {
 
     private static boolean completeFlag = false;
     private ErrorManager errorManager;
@@ -30,15 +30,15 @@ public class ConnectionTask extends AsyncTask<String, String, TCPClient> {
     }
 
     @Override
-    protected TCPClient doInBackground(String... params) {
+    protected JavaHost doInBackground(String... params) {
 
-        TCPClient tcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
+        JavaHost javaHost = new JavaHost(new JavaHost.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {}
         });
-        ExternalDbLoader.setTcpClient(tcpClient);
-        if(tcpClient != null)
-            tcpClient.run();
+        ExternalDbLoader.setJavaHost(javaHost);
+        if(javaHost != null)
+            javaHost.run();
         return null;
     }
 

@@ -3,34 +3,23 @@ package com.info.ghiny.examsystem.database;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.TagLostException;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.info.ghiny.examsystem.DistributionActivity;
-import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.AndroidClient;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
-import com.info.ghiny.examsystem.model.TakeAttdModel;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by user09 on 12/13/2016.
@@ -78,7 +67,8 @@ public final class TasksSynchronizer extends Service{
             powerManager    = (PowerManager) getSystemService(Context.POWER_SERVICE);
         }
         if(wakeLock == null){
-            wakeLock        = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, DistributionActivity.TAG);
+            wakeLock        = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                    DistributionActivity.TAG);
         }
     }
 
@@ -108,7 +98,7 @@ public final class TasksSynchronizer extends Service{
             String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
 
             for(AndroidClient client : clientsMap.values()){
-                client.sendMessage(msgUpdate);
+                client.putMessageIntoSendQueue(msgUpdate);
             }
         }
     }
@@ -116,7 +106,7 @@ public final class TasksSynchronizer extends Service{
     public static void passMessageBack(int deviceId, String inStr){
         AndroidClient targetClient  = clientsMap.get(deviceId);
         if(targetClient != null){
-            targetClient.sendMessage(inStr);
+            targetClient.putMessageIntoSendQueue(inStr);
         }
     }
 

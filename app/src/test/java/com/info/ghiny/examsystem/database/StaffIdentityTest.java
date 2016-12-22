@@ -1,7 +1,7 @@
 package com.info.ghiny.examsystem.database;
 
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.JavaHost;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class StaffIdentityTest {
     @Before
     public void setup() throws Exception{
         id  = new StaffIdentity();
-        TCPClient.setConnector(new Connector("Address", 7032, "DUEL"));
+        JavaHost.setConnector(new Connector("Address", 7032, "DUEL"));
 
     }
 
@@ -94,7 +94,7 @@ public class StaffIdentityTest {
     public void testMatchPasswordGivenSameIdShouldReturnTrue() throws Exception {
         StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
         actualId.setPassword("0000");
-        actualId.setHashPass(id.hmacSha("0000", TCPClient.getConnector().getDuelMessage()));
+        actualId.setHashPass(id.hmacSha("0000", JavaHost.getConnector().getDuelMessage()));
 
         boolean returnItem = actualId.matchPassword("0000");
         assertTrue(returnItem);
@@ -104,7 +104,7 @@ public class StaffIdentityTest {
     public void testMatchPasswordGivenDiffIdShouldReturnFalse() throws Exception {
         StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
         actualId.setPassword("0000");
-        actualId.setHashPass(id.hmacSha("0000", TCPClient.getConnector().getDuelMessage()));
+        actualId.setHashPass(id.hmacSha("0000", JavaHost.getConnector().getDuelMessage()));
 
         boolean returnItem = actualId.matchPassword("0001");
         assertFalse(returnItem);
@@ -114,7 +114,7 @@ public class StaffIdentityTest {
     public void testMatchPasswordGivenDiffPassShouldReturnFalse() throws Exception {
         StaffIdentity actualId   = new StaffIdentity("15WAU09184", true, "FOONG", "H1");
         actualId.setPassword("0000");
-        actualId.setHashPass(id.hmacSha("0000", TCPClient.getConnector().getDuelMessage()));
+        actualId.setHashPass(id.hmacSha("0000", JavaHost.getConnector().getDuelMessage()));
 
         boolean returnItem = actualId.matchPassword(null);
         assertFalse(returnItem);

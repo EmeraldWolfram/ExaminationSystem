@@ -27,19 +27,19 @@ import static org.mockito.Mockito.verify;
 public class InfoGrabModelTest {
     private InfoGrabMVP.MPresenter taskPresenter;
     private InfoGrabModel model;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private StaffIdentity staff;
 
     @Before
     public void setUp() throws Exception {
-        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        JavaHost.setConnector(new Connector("add", 7032, "DUEL"));
         staff           = new StaffIdentity("id", true, "name", "M4");
         LoginModel.setStaff(staff);
 
-        tcpClient = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
 
         taskPresenter   = Mockito.mock(InfoGrabMVP.MPresenter.class);
 
@@ -61,7 +61,7 @@ public class InfoGrabModelTest {
             assertEquals("Not a candidate ID", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
 
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -75,7 +75,7 @@ public class InfoGrabModelTest {
         try{
             model.reqCandidatePapers("15WAU00001");
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but " +  err.getErrorMsg() + " was thrown");
         }

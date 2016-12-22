@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.HomeOptionActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
@@ -14,7 +13,7 @@ import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.JavaHost;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -64,9 +63,9 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
 
     @Override
     public void onResume(final ErrorManager errorManager){
-        while(ExternalDbLoader.getTcpClient() == null){}
+        while(ExternalDbLoader.getJavaHost() == null){}
 
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
             public void messageReceived(String message) {

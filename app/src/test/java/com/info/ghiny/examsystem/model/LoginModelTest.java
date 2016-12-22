@@ -33,12 +33,12 @@ public class LoginModelTest {
     private StaffIdentity staffId;
     private LoginMVP.MvpMPresenter taskPresenter;
     private LocalDbLoader dbLoader;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private String MESSAGE_FROM_CHIEF;
 
     @Before
     public void setUp() throws Exception{
-        TCPClient.setConnector(null);
+        JavaHost.setConnector(null);
         staffId = new StaffIdentity("12WW", true, "MR. TEST", "H3");
 
         dbLoader        = Mockito.mock(LocalDbLoader.class);
@@ -46,10 +46,10 @@ public class LoginModelTest {
         LoginModel.setStaff(null);
 
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
-        tcpClient   = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
 
         ExternalDbLoader.setConnectionTask(connectionTask);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         helper  = new LoginModel(taskPresenter, dbLoader);
     }
 
@@ -109,7 +109,7 @@ public class LoginModelTest {
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
             assertEquals("Input ID is null", err.getErrorMsg());
 
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -132,7 +132,7 @@ public class LoginModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Please enter a password to proceed", err.getErrorMsg());
 
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -155,7 +155,7 @@ public class LoginModelTest {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Please enter a password to proceed", err.getErrorMsg());
 
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -169,11 +169,11 @@ public class LoginModelTest {
     public void testMatchStaffPw_Valid_PW_should_send_message() throws Exception{
         try{
             helper.setQrStaffID(staffId.getIdNo());
-            TCPClient.setConnector(new Connector("Address", 7032, "DUEL"));
+            JavaHost.setConnector(new Connector("Address", 7032, "DUEL"));
 
             helper.matchStaffPw("ABCD");
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }

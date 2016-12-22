@@ -17,7 +17,7 @@ import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.JavaHost;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,8 +33,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by GhinY on 12/08/2016.
  */
@@ -43,7 +41,7 @@ public class TakeAttdPresenterTest {
     private TakeAttdMVP.View taskView;
     private TakeAttdMVP.Model taskModel;
     private ConnectionTask task;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private Handler handler;
     private DialogInterface dialog;
     private SharedPreferences preferences;
@@ -54,12 +52,12 @@ public class TakeAttdPresenterTest {
         taskModel   = Mockito.mock(TakeAttdMVP.Model.class);
         handler     = Mockito.mock(Handler.class);
         dialog      = Mockito.mock(DialogInterface.class);
-        tcpClient   = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         task        = Mockito.mock(ConnectionTask.class);
         preferences = Mockito.mock(SharedPreferences.class);
 
         ExternalDbLoader.setConnectionTask(task);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         ConnectionTask.setCompleteFlag(false);
 
         manager = new TakeAttdPresenter(taskView, preferences);
@@ -206,7 +204,7 @@ public class TakeAttdPresenterTest {
      * onResume(ErrorManager errManager)
      *
      * Tests:
-     * Set message listener to TCPClient and call onResume
+     * Set message listener to JavaHost and call onResume
      *
      */
     @Test
@@ -215,7 +213,7 @@ public class TakeAttdPresenterTest {
         when(preferences.getString(anyString(), anyString())).thenReturn("4");
         manager.onResume(errorManager);
 
-        verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
+        verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskView).resumeScanning();
     }
 

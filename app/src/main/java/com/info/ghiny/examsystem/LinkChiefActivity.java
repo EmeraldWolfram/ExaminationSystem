@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -23,24 +22,17 @@ import android.widget.ImageView;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
-import com.info.ghiny.examsystem.database.AttendanceList;
-import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.model.ConnectionTask;
-import com.info.ghiny.examsystem.model.InfoDisplayModel;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LinkChiefModel;
-import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
-import com.info.ghiny.examsystem.model.TakeAttdModel;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
@@ -140,8 +132,8 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        TCPClient.setConnector(new Connector("192.168.0.1", 5432, "DUEL"));
-        ExternalDbLoader.setTcpClient(new TCPClient(null));
+        JavaHost.setConnector(new Connector("192.168.0.1", 5432, "DUEL"));
+        ExternalDbLoader.setJavaHost(new JavaHost(null));
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
         switch (item.getItemId()){

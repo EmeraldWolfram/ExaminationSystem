@@ -12,9 +12,9 @@ import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -68,7 +68,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
 
     @Override
     public void onResume(final ErrorManager errManager){
-        ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+        ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {
                 onChiefRespond(errManager, message);

@@ -6,15 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
-import com.info.ghiny.examsystem.HomeOptionActivity;
 import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -200,15 +199,15 @@ public class LoginPresenterTest {
     @Test
     public void testOnResume() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
-        TCPClient tcpClient = Mockito.mock(TCPClient.class);
+        JavaHost javaHost = Mockito.mock(JavaHost.class);
 
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
         when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errorManager);
 
-        verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
+        verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskView).resumeScanning();
     }
 

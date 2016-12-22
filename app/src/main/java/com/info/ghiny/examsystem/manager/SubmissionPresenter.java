@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
@@ -25,9 +24,9 @@ import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.fragments.FragmentQuarantined;
 import com.info.ghiny.examsystem.fragments.RootFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 /**
@@ -65,8 +64,8 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     @Override
     public void onResume(final ErrorManager errManager) {
-        if(ExternalDbLoader.getTcpClient() != null){
-            ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+        if(ExternalDbLoader.getJavaHost() != null){
+            ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
                 @Override
                 public void messageReceived(String message) {
                     onChiefRespond(errManager, message);

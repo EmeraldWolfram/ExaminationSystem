@@ -3,15 +3,14 @@ package com.info.ghiny.examsystem.manager;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -79,7 +78,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     @Override
     public void onResume(final ErrorManager errManager) {
         if(reconnect){
-            while(ExternalDbLoader.getTcpClient() == null){}
+            while(ExternalDbLoader.getJavaHost() == null){}
 
             try{
                 if(taskModel.reconnect()){
@@ -91,7 +90,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
                 taskView.displayError(err);
             }
 
-            ExternalDbLoader.getTcpClient().setMessageListener(new TCPClient.OnMessageReceived() {
+            ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
                 //here the messageReceived method is implemented
                 @Override
                 public void messageReceived(String message) {

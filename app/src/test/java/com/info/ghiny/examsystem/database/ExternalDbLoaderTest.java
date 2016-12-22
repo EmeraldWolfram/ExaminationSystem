@@ -3,7 +3,7 @@ package com.info.ghiny.examsystem.database;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
+import com.info.ghiny.examsystem.model.JavaHost;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +14,6 @@ import org.robolectric.annotation.Config;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -29,14 +27,14 @@ import static org.mockito.Mockito.verify;
 @Config(manifest= Config.NONE)
 public class ExternalDbLoaderTest {
     private StaffIdentity staff;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
 
     @Before
     public void setUp() throws Exception {
-        tcpClient           = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         ConnectionTask task = Mockito.mock(ConnectionTask.class);
 
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         ExternalDbLoader.setConnectionTask(task);
         staff   = new StaffIdentity("246800", true, "Dr. TDD", "H3");
     }
@@ -50,15 +48,15 @@ public class ExternalDbLoaderTest {
      * Therefore, this method send out a request to the Chief for a Duel Message
      *
      * Tests:
-     * 1. the tcpClient is not null, send out the input
-     * 2. the tcpClient is null, throw error
+     * 1. the javaHost is not null, send out the input
+     * 2. the javaHost is null, throw error
      */
     @Test
     public void testRequestDuelMessage1_TcpNotNull() throws Exception {
         try{
             ExternalDbLoader.requestDuelMessage("Staff ID");
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -67,14 +65,14 @@ public class ExternalDbLoaderTest {
     @Test
     public void testRequestDuelMessage2_TcpNull() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             ExternalDbLoader.requestDuelMessage("Staff ID");
 
         } catch (ProcessException err){
             assertEquals("Fail to request duel message!" +
                     "\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -86,8 +84,8 @@ public class ExternalDbLoaderTest {
      * send out staff Id Number and the input password through socket
      *
      * Tests:
-     * 1. the tcpClient is not null, send out the input
-     * 2. the tcpClient is null, throw error
+     * 1. the javaHost is not null, send out the input
+     * 2. the javaHost is null, throw error
      * 3. null input, throw error
      */
     @Test
@@ -95,7 +93,7 @@ public class ExternalDbLoaderTest {
         try{
             ExternalDbLoader.tryLogin("246800", "0123");
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -104,13 +102,13 @@ public class ExternalDbLoaderTest {
     @Test
     public void testTryLogin2_NullTCPShouldThrowFatalMessage() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             ExternalDbLoader.tryLogin("246800", "0123");
 
         } catch (ProcessException err){
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -122,7 +120,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -134,8 +132,8 @@ public class ExternalDbLoaderTest {
      * Send out the JSON Object
      *
      * Tests:
-     * 1. the tcpClient is not null, send out the input
-     * 2. the tcpClient is null, throw error
+     * 1. the javaHost is not null, send out the input
+     * 2. the javaHost is null, throw error
      * 3. staff is not register (null), throw error - Actually Not possible to happen
      */
     @Test
@@ -161,7 +159,7 @@ public class ExternalDbLoaderTest {
 
             ExternalDbLoader.dlAttendanceList();
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -170,7 +168,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testDlAttendanceList2_TcpIsNull() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             LoginModel.setStaff(staff);    //To set the venue to H3
             AttendanceList attdList = new AttendanceList();
 
@@ -193,7 +191,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             assertEquals("Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -222,7 +220,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             assertEquals("Fail to request attendance list!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -263,8 +261,8 @@ public class ExternalDbLoaderTest {
      *  message, the id is send out to request for paper
      *
      *  Tests:
-     *  1. the tcpClient is not null, send out the input
-     *  2. the tcpClient is null, throw error
+     *  1. the javaHost is not null, send out the input
+     *  2. the javaHost is null, throw error
      *  3. input param is null, throw error
      *
      */
@@ -273,7 +271,7 @@ public class ExternalDbLoaderTest {
         try{
             ExternalDbLoader.getPapersExamineByCdd("15WAU00001");
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -282,12 +280,12 @@ public class ExternalDbLoaderTest {
     @Test
     public void testGetPapersExamineByCdd2_NullTCPShouldThrowFatalError() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             ExternalDbLoader.getPapersExamineByCdd("15WAU00001");
         } catch (ProcessException err){
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -298,7 +296,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err){
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -310,8 +308,8 @@ public class ExternalDbLoaderTest {
      * send out the JSON Object in string format
      *
      *  Tests:
-     *  1. the tcpClient is not null, send out the attendance list
-     *  2. the tcpClient is null, throw error
+     *  1. the javaHost is not null, send out the attendance list
+     *  2. the javaHost is null, throw error
      *  3. input param is null, throw error
      *
      */
@@ -320,7 +318,7 @@ public class ExternalDbLoaderTest {
         try{
             ExternalDbLoader.updateAttendanceList(new AttendanceList());
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err) {
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -329,12 +327,12 @@ public class ExternalDbLoaderTest {
     @Test
     public void testUpdateAttdList2_NullTcpThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             ExternalDbLoader.updateAttendanceList(new AttendanceList());
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -345,7 +343,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -357,8 +355,8 @@ public class ExternalDbLoaderTest {
      *  this is to acknowledge the collection of bundle
      *
      *  Tests:
-     *  1. the tcpClient is not null, send out the collector and bundle
-     *  2. the tcpClient is null, throw error
+     *  1. the javaHost is not null, send out the collector and bundle
+     *  2. the javaHost is null, throw error
      *  3. input param is null, throw error
      *
      */
@@ -369,7 +367,7 @@ public class ExternalDbLoaderTest {
             bundle.parseBundle("M4/BAME 0001/RMB3");
             ExternalDbLoader.acknowledgeCollection("246810", bundle);
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -378,7 +376,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testAcknowledgeCollection2_NullTcpShouldThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             PaperBundle bundle  = new PaperBundle();
             bundle.parseBundle("M4/BAME 0001/RMB3");
             ExternalDbLoader.acknowledgeCollection("246810", bundle);
@@ -386,7 +384,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -398,7 +396,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -410,8 +408,8 @@ public class ExternalDbLoaderTest {
      *  this is to acknowledge the collection of bundle
      *
      *  Tests:
-     *  1. the tcpClient is not null, send out the removing collector and bundle
-     *  2. the tcpClient is null, throw error
+     *  1. the javaHost is not null, send out the removing collector and bundle
+     *  2. the javaHost is null, throw error
      *  3. input param is null, throw error
      *
      */
@@ -422,7 +420,7 @@ public class ExternalDbLoaderTest {
             bundle.parseBundle("M4/BAME 0001/RMB3");
             ExternalDbLoader.undoCollection("246810", bundle);
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -431,7 +429,7 @@ public class ExternalDbLoaderTest {
     @Test
     public void testAcknowledgeUndoCollection2_NullTcpShouldThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             PaperBundle bundle  = new PaperBundle();
             bundle.parseBundle("M4/BAME 0001/RMB3");
             ExternalDbLoader.undoCollection("246810", bundle);
@@ -439,7 +437,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -451,7 +449,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out request!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -463,8 +461,8 @@ public class ExternalDbLoaderTest {
      * This is to synchronize with others attendance collector
      *
      * Tests:
-     *  1. the tcpClient is not null, send out the removing collector and bundle
-     *  2. the tcpClient is null, throw error
+     *  1. the javaHost is not null, send out the removing collector and bundle
+     *  2. the javaHost is null, throw error
      *  3. input param is null, throw error
      *
      */
@@ -474,7 +472,7 @@ public class ExternalDbLoaderTest {
             ArrayList<Candidate> candidates = new ArrayList<>();
             ExternalDbLoader.updateAttendance(candidates);
 
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
         } catch (ProcessException err){
             fail("No Exception expected but thrown " + err.getErrorMsg());
         }
@@ -483,14 +481,14 @@ public class ExternalDbLoaderTest {
     @Test
     public void testUpdateAttendance2_NullTcpShouldThrowFATAL() throws Exception {
         try{
-            ExternalDbLoader.setTcpClient(null);
+            ExternalDbLoader.setJavaHost(null);
             ArrayList<Candidate> candidates = new ArrayList<>();
             ExternalDbLoader.updateAttendance(candidates);
 
         } catch (ProcessException err) {
             assertEquals("Fail to send out update!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 
@@ -502,7 +500,7 @@ public class ExternalDbLoaderTest {
         } catch (ProcessException err) {
             assertEquals("Fail to send out update!\nPlease consult developer", err.getErrorMsg());
             assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         }
     }
 

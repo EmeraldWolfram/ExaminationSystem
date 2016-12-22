@@ -1,6 +1,5 @@
 package com.info.ghiny.examsystem.model;
 
-import android.content.Intent;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -28,6 +27,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by user09 on 12/16/2016.
@@ -39,11 +39,15 @@ public class AndroidClient extends Thread {
     private ServerSocket serverSocket;
     private Connector connector;
     private int localPort;
-    private boolean running = false;
+    private boolean running;
+    private boolean sending;
+
 
     private DistributionMVP.MvpView tempView;
     private DistributionMVP.MvpModel tempModel;
     private PowerManager.WakeLock wakeLock;
+    private Semaphore binarySem;
+    private ArrayList<String> messageQueue;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -54,6 +58,10 @@ public class AndroidClient extends Thread {
 
     public AndroidClient(PowerManager.WakeLock wakeLock){
         this.wakeLock   = wakeLock;
+        this.binarySem  = new Semaphore(1, true);
+        this.messageQueue   = new ArrayList<>();
+        this.running        = false;
+        this.sending        = false;
     }
 
     public void setTempView(DistributionMVP.MvpView tempView) {
@@ -76,6 +84,53 @@ public class AndroidClient extends Thread {
         return connector;
     }
 
+    public void putMessageIntoSendQueue(String message){
+        try{
+            binarySem.acquire();
+            messageQueue.add(message);
+        } catch (final InterruptedException err) {
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(new ProcessException(err.getMessage(),
+                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
+                    }
+                });
+            }
+        } finally {
+            binarySem.release();
+        }
+
+        if(!sending){
+            sending = true;
+
+            final Thread sendOutThread = new Thread(){
+                @Override
+                public void run() {
+                    while (messageQueue.size() > 0) {
+                        try {
+                            sendMessage(messageQueue.remove(0));
+                            Thread.sleep(500);
+                        } catch (final InterruptedException e) {
+                            if(tempView != null){
+                                tempView.runItSeparate(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tempView.displayError(new ProcessException(e.getMessage(),
+                                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    sending = false;
+                }
+            };
+            sendOutThread.start();
+        }
+    }
+
     /**
      * Sends the message entered by client to the server
      * @param message text entered by client
@@ -93,8 +148,16 @@ public class AndroidClient extends Thread {
             if(serverSocket != null){
                 serverSocket.close();
             }
-        } catch (IOException err){
-            Log.d(DistributionActivity.TAG, err.getMessage());
+        } catch (final IOException err){
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(new ProcessException(err.getMessage(),
+                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
+                    }
+                });
+            }
         }
     }
 
@@ -121,7 +184,7 @@ public class AndroidClient extends Thread {
             }
             socket          = serverSocket.accept();
             connector       = new Connector(socket.getInetAddress().toString(),
-                    socket.getPort(), TCPClient.getConnector().getDuelMessage());
+                    socket.getPort(), JavaHost.getConnector().getDuelMessage());
 
             Log.d(DistributionActivity.TAG, "First Connection");
 
@@ -134,7 +197,7 @@ public class AndroidClient extends Thread {
 
                 while (running) {
                     serverMessage = in.readLine();
-                    wakeLock.acquire(3000);
+                    wakeLock.acquire();
                     Log.d("#### RECEIVED ###: ", serverMessage);
 
                     if (serverMessage != null) {
@@ -148,8 +211,16 @@ public class AndroidClient extends Thread {
             } finally {
                 socket.close();
             }
-        } catch (Exception err) {
-            err.printStackTrace();
+        } catch (final Exception err) {
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(new ProcessException(err.getMessage(),
+                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
+                    }
+                });
+            }
         }
     }
 
@@ -168,8 +239,17 @@ public class AndroidClient extends Thread {
                     break;
             }
 
-        } catch (ProcessException err) {
-            Log.d(DistributionActivity.TAG, err.getErrorMsg());
+        } catch (final ProcessException err) {
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(err);
+                    }
+                });
+            }
+        } finally {
+            wakeLock.release();
         }
     }
 
@@ -178,9 +258,17 @@ public class AndroidClient extends Thread {
             JSONObject jsonObject   = new JSONObject(inStr);
             jsonObject.remove(JsonHelper.MAJOR_KEY_TYPE_ID);
             jsonObject.put(JsonHelper.MAJOR_KEY_TYPE_ID, localPort);
-            sendMessage(jsonObject.toString());
-        } catch (JSONException err){
-            Log.d(DistributionActivity.TAG, err.getMessage());
+            ExternalDbLoader.getJavaHost().putMessageIntoSendQueue(jsonObject.toString());
+        } catch (final JSONException err){
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(new ProcessException(err.getMessage(),
+                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
+                    }
+                });
+            }
         }
     }
 
@@ -189,7 +277,7 @@ public class AndroidClient extends Thread {
         HashMap<String, ExamSubject> subjects   = Candidate.getPaperList();
 
         String messageOut   = JsonHelper.formatVenueInfo(attdList, subjects);
-        sendMessage(messageOut);
+        putMessageIntoSendQueue(messageOut);
     }
 
     void onAttendanceUpdateFromClients(String inStr){
@@ -210,12 +298,19 @@ public class AndroidClient extends Thread {
             HashMap<Integer, AndroidClient> clients = TasksSynchronizer.getClientsMap();
             for(AndroidClient client : clients.values()){
                 if(client.getLocalPort() != localPort){
-                    sendMessage(inStr);
+                    client.putMessageIntoSendQueue(inStr);
                 }
             }
 
-        } catch (ProcessException err) {
-            Log.d(DistributionActivity.TAG, err.getErrorMsg());
+        } catch (final ProcessException err) {
+            if(tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(err);
+                    }
+                });
+            }
         }
     }
 

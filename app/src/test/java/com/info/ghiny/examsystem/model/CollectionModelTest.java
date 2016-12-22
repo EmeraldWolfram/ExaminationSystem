@@ -28,19 +28,19 @@ public class CollectionModelTest {
 
     private CollectionModel model;
     private CollectionMVP.MvpMPresenter presenterFace;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private StaffIdentity staff;
 
     @Before
     public void setUp() throws Exception {
-        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        JavaHost.setConnector(new Connector("add", 7032, "DUEL"));
         staff           = new StaffIdentity("id", true, "name", "M4");
         LoginModel.setStaff(staff);
 
-        tcpClient = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         ConnectionTask connectionTask   = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(connectionTask);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         presenterFace   = Mockito.mock(CollectionMVP.MvpMPresenter.class);
 
         model   = new CollectionModel(presenterFace);
@@ -167,7 +167,7 @@ public class CollectionModelTest {
 
             assertNull(model.getBundle());
             assertEquals("246810", model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -186,7 +186,7 @@ public class CollectionModelTest {
 
             assertNotNull(model.getBundle());
             assertNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -209,7 +209,7 @@ public class CollectionModelTest {
             assertNotNull(model.getBundle());
             assertNotNull(model.getStaffIdentity());
             assertFalse(model.isAcknowledgeCollection());
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -230,7 +230,7 @@ public class CollectionModelTest {
             assertNotNull(model.getBundle());
             assertNotNull(model.getStaffIdentity());
             assertFalse(model.isAcknowledgeCollection());
-            verify(tcpClient).sendMessage(anyString());
+            verify(javaHost).putMessageIntoSendQueue(anyString());
             verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -253,7 +253,7 @@ public class CollectionModelTest {
 
             assertNull(model.getBundle());
             assertEquals("123456", model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace).notifyClearance();
             verify(presenterFace).notifyCollectorScanned(anyString());
@@ -276,7 +276,7 @@ public class CollectionModelTest {
 
             assertEquals("14562/H3/BAME 0002/RIS3", model.getBundle().toString());
             assertNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace).notifyClearance();
             verify(presenterFace).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
@@ -298,7 +298,7 @@ public class CollectionModelTest {
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
             assertNull(model.getBundle());
             assertNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -322,7 +322,7 @@ public class CollectionModelTest {
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
             assertNotNull(model.getBundle());
             assertNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -344,7 +344,7 @@ public class CollectionModelTest {
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
             assertNull(model.getBundle());
             assertNotNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -369,7 +369,7 @@ public class CollectionModelTest {
             assertEquals("The decrypted QR code is neither Staff ID or Bundle", err.getErrorMsg());
             assertNotNull(model.getBundle());
             assertNotNull(model.getStaffIdentity());
-            verify(tcpClient, never()).sendMessage(anyString());
+            verify(javaHost, never()).putMessageIntoSendQueue(anyString());
             verify(presenterFace, never()).notifyBundleScanned(any(PaperBundle.class));
             verify(presenterFace, never()).notifyCollectorScanned(anyString());
             verify(presenterFace, never()).notifyClearance();
@@ -467,7 +467,7 @@ public class CollectionModelTest {
 
         model.resetCollection();
 
-        verify(tcpClient).sendMessage(anyString());
+        verify(javaHost).putMessageIntoSendQueue(anyString());
         assertFalse(model.isAcknowledgeUndoCollection());
         assertNull(model.getBundle());
         assertNull(model.getStaffIdentity());
@@ -481,7 +481,7 @@ public class CollectionModelTest {
 
         model.resetCollection();
 
-        verify(tcpClient, never()).sendMessage(anyString());
+        verify(javaHost, never()).putMessageIntoSendQueue(anyString());
         assertNull(model.getBundle());
         assertNull(model.getStaffIdentity());
         verify(presenterFace).notifyClearance();

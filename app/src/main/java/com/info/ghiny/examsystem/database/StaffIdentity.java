@@ -3,11 +3,8 @@ package com.info.ghiny.examsystem.database;
 import android.util.Base64;
 
 import com.info.ghiny.examsystem.manager.IconManager;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -100,8 +97,8 @@ public class StaffIdentity {
                     IconManager.WARNING);
 
         String newEntry = null;
-        if(password != null && TCPClient.getConnector().getDuelMessage() != null)
-             newEntry   = hmacSha(password, TCPClient.getConnector().getDuelMessage());
+        if(password != null && JavaHost.getConnector().getDuelMessage() != null)
+             newEntry   = hmacSha(password, JavaHost.getConnector().getDuelMessage());
 
         return this.hashPass.equals(newEntry);
     }

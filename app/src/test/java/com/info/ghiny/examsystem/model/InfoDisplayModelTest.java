@@ -34,7 +34,7 @@ public class InfoDisplayModelTest {
 
     @Before
     public void setUp() throws Exception {
-        TCPClient.setConnector(new Connector("add", 7032, "DUEL"));
+        JavaHost.setConnector(new Connector("add", 7032, "DUEL"));
         staff           = new StaffIdentity("id", true, "name", "M4");
         LoginModel.setStaff(staff);
 

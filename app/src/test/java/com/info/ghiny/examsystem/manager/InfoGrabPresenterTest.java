@@ -10,8 +10,8 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -135,32 +135,32 @@ public class InfoGrabPresenterTest {
     /**
      * onResume()
      *
-     * set the Listener to the running TCPClient object and resume the scanner
+     * set the Listener to the running JavaHost object and resume the scanner
      *
      * @throws Exception
      */
     @Test
     public void testOnResume_ScannerOnResume() throws Exception {
-        TCPClient tcpClient     = Mockito.mock(TCPClient.class);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        JavaHost javaHost = Mockito.mock(JavaHost.class);
+        ExternalDbLoader.setJavaHost(javaHost);
         when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume();
 
-        verify(tcpClient, never()).setMessageListener(any(TCPClient.OnMessageReceived.class));
+        verify(javaHost, never()).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskView).resumeScanning();
     }
 
     @Test
     public void testOnResume_ConnectionOnResume() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        TCPClient tcpClient     = Mockito.mock(TCPClient.class);
-        ExternalDbLoader.setTcpClient(tcpClient);
+        JavaHost javaHost = Mockito.mock(JavaHost.class);
+        ExternalDbLoader.setJavaHost(javaHost);
         when(preferences.getString(anyString(), anyString())).thenReturn("4");
 
         manager.onResume(errManager);
 
-        verify(tcpClient).setMessageListener(any(TCPClient.OnMessageReceived.class));
+        verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskView).resumeScanning();
     }
 

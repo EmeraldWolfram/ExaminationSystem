@@ -8,8 +8,8 @@ import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
-import com.info.ghiny.examsystem.model.TCPClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class LinkChiefPresenterTest {
     private ProcessException err;
     private Handler handler;
     private SharedPreferences preferences;
-    private TCPClient tcpClient;
+    private JavaHost javaHost;
     private ConnectionTask task;
     private DialogInterface dialog;
 
@@ -51,12 +51,12 @@ public class LinkChiefPresenterTest {
         genView     = Mockito.mock(LinkChiefMVP.ViewFace.class);
         genModel    = Mockito.mock(LinkChiefMVP.ModelFace.class);
         handler     = Mockito.mock(Handler.class);
-        tcpClient   = Mockito.mock(TCPClient.class);
+        javaHost = Mockito.mock(JavaHost.class);
         task        = Mockito.mock(ConnectionTask.class);
         dialog      = Mockito.mock(DialogInterface.class);
         preferences = Mockito.mock(SharedPreferences.class);
 
-        ExternalDbLoader.setTcpClient(tcpClient);
+        ExternalDbLoader.setJavaHost(javaHost);
         ExternalDbLoader.setConnectionTask(task);
 
         manager     = new LinkChiefPresenter(genView, preferences);
