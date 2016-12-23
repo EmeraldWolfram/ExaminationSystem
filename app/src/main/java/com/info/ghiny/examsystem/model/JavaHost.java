@@ -8,6 +8,8 @@ import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.manager.IconManager;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -133,9 +135,10 @@ public class JavaHost implements Runnable{
                     serverMessage = in.readLine();
 
                     int deviceId    = JsonHelper.parseClientId(serverMessage);
-                    if(deviceId != 0 && serverMessage != null){
+                    if(deviceId != 0){
+                        serverMessage   = JsonHelper.modifyDeviceId(serverMessage, 0);
                         TasksSynchronizer.passMessageBack(deviceId, serverMessage);
-                    } else if (serverMessage != null && msgListener != null) {
+                    } else if (msgListener != null) {
                         msgListener.messageReceived(serverMessage);
                     }
                     serverMessage = null;

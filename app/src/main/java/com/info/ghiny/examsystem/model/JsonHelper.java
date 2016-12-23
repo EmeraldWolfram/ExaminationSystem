@@ -38,6 +38,7 @@ public class JsonHelper {
     public static final String TYPE_VENUE_INFO      = "VenueInfo";
     public static final String TYPE_CANDIDATE_INFO  = "CandidateInfo";
     public static final String TYPE_SUBMISSION      = "Submission";
+    public static final String TYPE_TERMINATION     = "Termination";
     //============================================
     public static final String TYPE_PAPERS_VENUE    = "Papers";
 
@@ -282,7 +283,11 @@ public class JsonHelper {
     public static int parseClientId(String inStr) throws ProcessException {
         try {
             JSONObject jMsg = new JSONObject(inStr);
-            return jMsg.getInt(MAJOR_KEY_TYPE_ID);
+            if(jMsg.has(MAJOR_KEY_TYPE_ID)){
+                return jMsg.getInt(MAJOR_KEY_TYPE_ID);
+            } else {
+                return -1;
+            }
         } catch (JSONException err){
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
@@ -323,8 +328,7 @@ public class JsonHelper {
                     cdd.setPaperCode(jsonCdd.getString(Candidate.CDD_PAPER));
                     cdd.setProgramme(jsonCdd.getString(Candidate.CDD_PROG));
 
-                    attdList.addCandidate(cdd, cdd.getPaperCode(),
-                            cdd.getStatus(), cdd.getProgramme());
+                    attdList.addCandidate(cdd);
                 }
                 return attdList;
             } else {
@@ -445,6 +449,19 @@ public class JsonHelper {
             throw new ProcessException("Update Data Corrupted\nPlease consult developer!",
                     ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
         }
+    }
 
+    //==============================================================================================
+    public static String modifyDeviceId(String inStr, int idToSet) throws ProcessException {
+        try{
+            JSONObject jsonObject   = new JSONObject(inStr);
+            jsonObject.remove(MAJOR_KEY_TYPE_ID);
+            jsonObject.put(MAJOR_KEY_TYPE_ID, idToSet);
+
+            return jsonObject.toString();
+        } catch (JSONException err) {
+            throw new ProcessException("Fail to modify Device ID\nPlease consult developer!",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
     }
 }

@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import dalvik.annotation.TestTargetClass;
-
 import static org.junit.Assert.*;
 
 /**
@@ -32,15 +30,21 @@ import static org.junit.Assert.*;
 @Config(manifest= Config.NONE)
 public class JsonHelperTest {
 
-    Candidate cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.PRESENT);
-    Candidate cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
-    Candidate cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
-    Candidate cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
-    Candidate cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
-    Candidate cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
+    private Candidate cdd1;
+    private Candidate cdd2;
+    private Candidate cdd3;
+    private Candidate cdd4;
+    private Candidate cdd5;
+    private Candidate cdd6;
 
     @Before
     public void setup() throws Exception {
+        cdd1 = new Candidate(1, "RMB3", "FGY", "15WAU00001", "BAME 0001", Status.PRESENT);
+        cdd2 = new Candidate(1, "RMB3", "NYN", "15WAU00002", "BAME 0001", Status.ABSENT);
+        cdd3 = new Candidate(1, "RMB3", "LHN", "15WAU00003", "BAME 0001", Status.ABSENT);
+        cdd4 = new Candidate(1, "RMB3", "Mr. Bar", "15WAU00004", "BAME 0002", Status.BARRED);
+        cdd5 = new Candidate(1, "RMB3", "Ms. Exm", "15WAU00005", "BAME 0003", Status.EXEMPTED);
+        cdd6 = new Candidate(1, "RMB3", "Ms. Qua", "15WAR00006", "BAME 0001", Status.QUARANTINED);
         cdd1.setCollector("145675");
     }
     //= FormatString() =============================================================================
@@ -72,12 +76,12 @@ public class JsonHelperTest {
         AttendanceList attdList = new AttendanceList();
 
 
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
-        attdList.addCandidate(cdd4, cdd4.getPaperCode(), cdd4.getStatus(), cdd4.getProgramme());
-        attdList.addCandidate(cdd5, cdd5.getPaperCode(), cdd5.getStatus(), cdd5.getProgramme());
-        attdList.addCandidate(cdd6, cdd6.getPaperCode(), cdd6.getStatus(), cdd6.getProgramme());
+        attdList.addCandidate(cdd1);
+        attdList.addCandidate(cdd2);
+        attdList.addCandidate(cdd3);
+        attdList.addCandidate(cdd4);
+        attdList.addCandidate(cdd5);
+        attdList.addCandidate(cdd6);
 
         String str = JsonHelper.formatAttendanceList(
                 new StaffIdentity("246260", true, "Dr. Smart", "H1"), attdList);
@@ -436,7 +440,7 @@ public class JsonHelperTest {
         }
     }
 
-    //= FormatPassword() ===========================================================================
+    //= FormatStaff() ===========================================================================
     /**
      *  formatStaff(String id, String password)
      *
@@ -445,7 +449,7 @@ public class JsonHelperTest {
      *
      */
     @Test
-    public void testFormatPassword() throws Exception {
+    public void testFormatStaff() throws Exception {
         String str = JsonHelper.formatStaff("246800", "0123");
 
         assertEquals("{\"Type\":\"Identification\",\"HashPass\":\"0123\",\"DeviceId\":0,\"IdNo\":\"246800\"}", str);
@@ -489,6 +493,8 @@ public class JsonHelperTest {
      *  parseBoolean(String str)
      *
      *  parse str to get a boolean of true or false
+     *
+     *  Tests:
      *  1. If the result is true, return true
      *  2. If the result is false, throw MESSAGE_DIALOG
      *  3. If the result have wrong format, throw FATAL
@@ -500,7 +506,7 @@ public class JsonHelperTest {
     }
 
     @Test
-    public void testParseBoolean_FalseAcknowledgement_should_throw_FATAL() throws Exception {
+    public void testParseBoolean_FalseAcknowledgement_should_throw_MESSAGE_DIALOG() throws Exception {
         try{
             assertFalse(JsonHelper.parseBoolean("{\"Result\":false}"));
         } catch (ProcessException err){
@@ -525,7 +531,7 @@ public class JsonHelperTest {
     /**
      * parseChallengeMessage(...)
      *
-     *  parse str to get a boolean of true or false
+     *  parse str to get a new ChallengeMessage <This method use in Reconnection>
      *
      *  Tests:
      *  1. If the result is true, return true
@@ -604,6 +610,7 @@ public class JsonHelperTest {
      * Tests:
      * 1. If the result is true, return ArrayList
      * 2. If the result have wrong format, throw MESSAGE_DIALOG
+     * 3. If the result have empty array, return empty ArrayList
      */
     @Test
     public void testParseAttendanceUpdate1_PositiveTest() throws Exception {
@@ -641,9 +648,27 @@ public class JsonHelperTest {
         }
     }
 
+    @Test
+    public void testParseAttendanceUpdate3_EmptyArrayTest() throws Exception {
+        try{
+            String MESSAGE = JsonHelper.formatAttendanceUpdate(new ArrayList<Candidate>());
+            String type                 = JsonHelper.parseType(MESSAGE);
+            ArrayList<Candidate> list   = JsonHelper.parseUpdateList(MESSAGE);
+
+            assertEquals(JsonHelper.TYPE_ATTENDANCE_UP, type);
+            assertEquals(0, list.size());
+        } catch (Exception err){
+            fail("Exception --" + err.getMessage() + "-- is Not Expected!");
+        }
+    }
+
     //= FormatVenueInfo ============================================================================
 
-    // Test if the format written can be decoded as AttendanceList and PaperMap
+    /**
+     * formatVenueInfo(...)
+     *
+     * format the attendance list and paper map into a JSONObject
+     */
 
     @Test
     public void testFormatVenueInfo() throws Exception {
@@ -652,7 +677,8 @@ public class JsonHelperTest {
         attendanceList.addCandidate(cdd2);
 
         HashMap<String, ExamSubject> paperMap   = new HashMap<>();
-        paperMap.put("BAME 0001", new ExamSubject("BAME 0001", "SUBJECT 1", 10, Calendar.getInstance(), 20, "M4", Session.AM));
+        paperMap.put("BAME 0001", new ExamSubject("BAME 0001", "SUBJECT 1", 10,
+                Calendar.getInstance(), 20, "M4", Session.AM));
 
         String messageOut   = JsonHelper.formatVenueInfo(attendanceList, paperMap);
         assertEquals(JsonHelper.TYPE_VENUE_INFO, JsonHelper.parseType(messageOut));
@@ -664,4 +690,78 @@ public class JsonHelperTest {
         assertEquals(1, testMap.size());
     }
 
+    //= ModifyDeviceId =============================================================================
+    /**
+     * modifyDeviceId(...)
+     *
+     * This method change the device ID field of the message
+     *
+     * Tests:
+     * 1. Change the device id field value
+     * 2. No Device Id field in there, add a device Id field into it
+     */
+
+    @Test
+    public void testModifyDeviceId_1_ChangeTheIdSuccessfully() throws Exception {
+        String testStr  = "{\"DeviceId\":12}";
+        String actualStr= JsonHelper.modifyDeviceId(testStr, 0);
+
+        assertEquals("{\"DeviceId\":0}", actualStr);
+    }
+
+    @Test
+    public void testModifyDeviceId_2_NoDeviceIdFieldInTheMessage() throws Exception {
+        String testStr  = "{}";
+        String actualStr= JsonHelper.modifyDeviceId(testStr, 0);
+
+        assertEquals("{\"DeviceId\":0}", actualStr);
+    }
+
+    //= ParseClientId ==============================================================================
+    /**
+     * parseClientId(...)
+     *
+     * This method take in the message receive from Chief and return the deviceId number
+     *
+     * Tests:
+     * 1. When the message is valid with Device ID field, return the ID
+     * 2. When the message is invalid with no ID field, return -1
+     * 3. When the message is unreadable, throw FATAL
+     */
+    @Test
+    public void testParseClientId_1_PositiveTest() throws Exception {
+        try{
+            String string   = JsonHelper.formatString(JsonHelper.TYPE_COLLECTION, "SomeValue");
+            int deviceId    = JsonHelper.parseClientId(string);
+
+            assertEquals(0, deviceId);
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testParseClientId_2_NoRequiredField() throws Exception {
+        try{
+            String string   = "{}";
+            int deviceId    = JsonHelper.parseClientId(string);
+
+            assertEquals(-1, deviceId);
+        } catch (ProcessException err) {
+            fail("Exception --" + err.getErrorMsg() + "-- is not expected");
+        }
+    }
+
+    @Test
+    public void testParseClientId_3_WrongFormat() throws Exception {
+        try{
+            String string   = "{\"DeviceId\":}";
+            int deviceId    = JsonHelper.parseClientId(string);
+        } catch (ProcessException err) {
+            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals("FATAL: Data from Chief corrupted\nPlease consult developer",
+                    err.getErrorMsg());
+        }
+
+    }
 }

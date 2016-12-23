@@ -98,21 +98,6 @@ public class ExamSubjectTest {
         }
     }
 
-    //= ParseSession ===============================================================================
-    @Test
-    public void testParseSession() throws Exception{
-        ExamSubject subject = new ExamSubject();
-
-        Session am = Session.parseSession("AM");
-        Session pm = Session.parseSession("PM");
-        Session vm = Session.parseSession("VM");
-
-        assertEquals(Session.AM, am);
-        assertEquals(Session.PM, pm);
-        assertEquals(Session.VM, vm);
-
-    }
-
     //= ParseStringToDate(...) =====================================================================
 
     @Test

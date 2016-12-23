@@ -168,6 +168,12 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     @Override
+    protected void onDestroy() {
+        taskPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }

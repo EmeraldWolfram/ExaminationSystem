@@ -36,7 +36,7 @@ public class Candidate {
     //CONSTRUCTOR `````````````````````````````````````````````````````````````````````
     public Candidate(){
         tableNumber = 0;
-        examIndex = null;
+        examIndex   = null;
         regNum      = null;
         paperCode   = null;
         programme   = null;
@@ -99,17 +99,6 @@ public class Candidate {
         return paperCode;
     }
 
-    public ExamSubject getPaper() throws ProcessException {
-        ExamSubject subject = getExamSubject(paperCode);
-        if(subject == null){
-            //throw new ProcessException("There is no suitable paper for this candidate in this room",
-            throw new ProcessException(String.format(Locale.ENGLISH, "Paper " + paperCode
-                    + " is not in the initialize List that have %d subjects", paperList.size()),
-                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
-        }
-        return subject;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -117,26 +106,35 @@ public class Candidate {
         this.status = status;
     }
 
-    public void setExamIndex(String examIndex) {
-        this.examIndex = examIndex;
-    }
     public String getExamIndex() {
         return examIndex;
     }
+    public void setExamIndex(String examIndex) {
+        this.examIndex = examIndex;
+    }
 
-    public void setRegNum(String regNum) {this.regNum = regNum;}
     public String getRegNum() {
         return regNum;
     }
+    public void setRegNum(String regNum) {this.regNum = regNum;}
 
-    public void setCollector(String collector) {
-        this.collector = collector;
-    }
     public String getCollector() {
         return collector;
     }
-
+    public void setCollector(String collector) {
+        this.collector = collector;
+    }
     //Static Method ----------------------------------------------------------------------------
+
+    public ExamSubject getPaper() throws ProcessException {
+        ExamSubject subject = getExamSubject(paperCode);
+        if(subject == null){
+            throw new ProcessException(String.format(Locale.ENGLISH, "Paper " + paperCode
+                    + " is not in the initialize List that have %d subjects", paperList.size()),
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
+        return subject;
+    }
 
     public static void setPaperList(HashMap<String, ExamSubject> papers){
         Candidate.paperList = papers;

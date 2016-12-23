@@ -84,6 +84,8 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     @Override
     public void closeConnection() throws Exception{
         if(ExternalDbLoader.getJavaHost() != null){
+            String end = JsonHelper.formatString(JsonHelper.TYPE_TERMINATION, "Terminate");
+            ExternalDbLoader.getJavaHost().putMessageIntoSendQueue(end);
             ExternalDbLoader.getJavaHost().stopClient();
         }
         if(ExternalDbLoader.getConnectionTask() != null){

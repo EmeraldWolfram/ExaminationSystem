@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
@@ -83,6 +84,15 @@ public class AndroidClient extends Thread {
     public Connector getConnector() {
         return connector;
     }
+
+    public DistributionMVP.MvpView getTempView(){
+        return tempView;
+    }
+
+    public DistributionMVP.MvpModel getTempModel() {
+        return tempModel;
+    }
+
 
     public void putMessageIntoSendQueue(String message){
         try{
@@ -149,15 +159,7 @@ public class AndroidClient extends Thread {
                 serverSocket.close();
             }
         } catch (final IOException err){
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(new ProcessException(err.getMessage(),
-                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
-                    }
-                });
-            }
+            Log.d(DistributionActivity.TAG, err.getMessage());
         }
     }
 
@@ -197,21 +199,26 @@ public class AndroidClient extends Thread {
 
                 while (running) {
                     serverMessage = in.readLine();
-                    wakeLock.acquire();
-                    Log.d("#### RECEIVED ###: ", serverMessage);
-
+                    if(wakeLock != null){
+                        wakeLock.acquire();
+                    }
                     if (serverMessage != null) {
+                        Log.d("#### RECEIVED ###: ", serverMessage);
                         onReceiveClientMessage(serverMessage);
                     }
                     serverMessage = null;
                 }
-            } catch (Exception e) {
+            } catch (SocketException e) {
                 throw new ProcessException(e.getMessage(), ProcessException.FATAL_MESSAGE,
                         IconManager.WARNING);
             } finally {
                 socket.close();
             }
+        } catch (SocketException err){
+            Log.d(DistributionActivity.TAG, err.getMessage());
         } catch (final Exception err) {
+            Log.d(DistributionActivity.TAG, "Error catch in run() - big");
+            err.printStackTrace();
             if(tempView != null){
                 tempView.runItSeparate(new Runnable() {
                     @Override
@@ -228,6 +235,9 @@ public class AndroidClient extends Thread {
         try{
             String type = JsonHelper.parseType(clientMsg);
             switch (type) {
+                case JsonHelper.TYPE_TERMINATION:
+                    serverSocket.close();
+                    break;
                 case JsonHelper.TYPE_ATTENDANCE_UP:
                     onAttendanceUpdateFromClients(clientMsg);
                     break;
@@ -239,6 +249,8 @@ public class AndroidClient extends Thread {
                     break;
             }
 
+        } catch (IOException err) {
+            Log.d(DistributionActivity.TAG, err.getMessage());
         } catch (final ProcessException err) {
             if(tempView != null){
                 tempView.runItSeparate(new Runnable() {
@@ -249,7 +261,9 @@ public class AndroidClient extends Thread {
                 });
             }
         } finally {
-            wakeLock.release();
+            if(wakeLock != null && wakeLock.isHeld()){
+                wakeLock.release();
+            }
         }
     }
 

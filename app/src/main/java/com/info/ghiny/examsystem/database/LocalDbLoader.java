@@ -160,8 +160,7 @@ public class LocalDbLoader {
         for(int j = 0; j < statusList.size(); j++){
             List<Candidate> cdds = getCandidatesWithStatus(statusList.get(j));
             for(int i = 0; i < cdds.size(); i ++ ){
-                attdList.addCandidate(cdds.get(i), cdds.get(i).getPaperCode(),
-                        cdds.get(i).getStatus(), cdds.get(i).getProgramme());
+                attdList.addCandidate(cdds.get(i));
             }
         }
         return attdList;

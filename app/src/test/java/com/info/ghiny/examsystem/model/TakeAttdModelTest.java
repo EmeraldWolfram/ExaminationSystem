@@ -348,9 +348,9 @@ public class TakeAttdModelTest {
         model.setInitialized(true);
         cdd1.setTableNumber(12);
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
-        attdList.addCandidate(cdd3, cdd3.getPaperCode(), cdd3.getStatus(), cdd3.getProgramme());
+        attdList.addCandidate(cdd1);
+        attdList.addCandidate(cdd2);
+        attdList.addCandidate(cdd3);
         TakeAttdModel.setAttdList(attdList);
 
         HashMap<Integer, String> map = model.getAssgnList();
@@ -667,7 +667,7 @@ public class TakeAttdModelTest {
         attdList.removeCandidate(cdd1.getRegNum());
         cdd1.setTableNumber(13);
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
         model.getAssgnList().put(13, cdd1.getRegNum());
         model.setTempTable(13);
         model.setTempCdd(cdd2);
@@ -687,7 +687,7 @@ public class TakeAttdModelTest {
         attdList.removeCandidate(cdd1.getRegNum());
         cdd1.setTableNumber(13);
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
         model.getAssgnList().put(13, cdd1.getRegNum());
         model.setTempTable(13);
         model.setTempCdd(cdd2);
@@ -707,7 +707,7 @@ public class TakeAttdModelTest {
         attdList.removeCandidate(cdd1.getRegNum());
         cdd1.setTableNumber(13);
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
         model.getAssgnList().put(13, cdd1.getRegNum());
         model.setTempTable(13);
         model.setTempCdd(cdd2);
@@ -1006,7 +1006,7 @@ public class TakeAttdModelTest {
         attdList.removeCandidate(cdd2.getRegNum());
         cdd2.setStatus(Status.PRESENT);
         cdd2.setTableNumber(12);
-        attdList.addCandidate(cdd2, cdd2.getPaperCode(), cdd2.getStatus(), cdd2.getProgramme());
+        attdList.addCandidate(cdd2);
         model.getAssgnList().put(12, cdd2.getRegNum());
 
         try{
@@ -1028,7 +1028,7 @@ public class TakeAttdModelTest {
         attdList.removeCandidate(cdd1.getRegNum());
         cdd1.setStatus(Status.PRESENT);
         cdd1.setTableNumber(14);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
         model.getAssgnList().put(14, cdd1.getRegNum());
 
         try{
@@ -1193,7 +1193,7 @@ public class TakeAttdModelTest {
         assertNull(model.getTempTable());
         assertNotNull(model.getTempCdd());
         cdd1.setStatus(Status.PRESENT);
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
         assertEquals(1, attdList.getNumberOfCandidates(Status.PRESENT));
 
         model.resetAttendanceAssignment();
@@ -1277,7 +1277,7 @@ public class TakeAttdModelTest {
         attdList.getCandidate("15WAU00001").setTableNumber(14);
         attdList.getCandidate("15WAU00001").setStatus(Status.PRESENT);
         attdList.removeCandidate(cdd1.getRegNum());
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
 
         try{
             model.setTempTable(12);
@@ -1297,7 +1297,7 @@ public class TakeAttdModelTest {
         attdList.getCandidate("15WAU00001").setTableNumber(14);
         attdList.getCandidate("15WAU00001").setStatus(Status.PRESENT);
         attdList.removeCandidate(cdd1.getRegNum());
-        attdList.addCandidate(cdd1, cdd1.getPaperCode(), cdd1.getStatus(), cdd1.getProgramme());
+        attdList.addCandidate(cdd1);
 
         try{
             model.setTempTable(12);

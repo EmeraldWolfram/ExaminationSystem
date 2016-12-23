@@ -39,6 +39,8 @@ public final class TasksSynchronizer extends Service{
 
     private static AndroidClient waitingThread;
 
+    //==============================================================================================
+
     public static boolean isRunning() {
         return running;
     }
@@ -50,6 +52,36 @@ public final class TasksSynchronizer extends Service{
     public static HashMap<Integer, AndroidClient> getClientsMap() {
         return clientsMap;
     }
+
+    static void setRunning(boolean running){
+        TasksSynchronizer.running   = running;
+    }
+
+    static void setDistributed(boolean distributed){
+        TasksSynchronizer.distributed   = distributed;
+    }
+
+    static void setClientsMap(HashMap<Integer, AndroidClient> testMap){
+        clientsMap  = testMap;
+    }
+
+    static void setWaitingThread(AndroidClient waitingThread) {
+        TasksSynchronizer.waitingThread = waitingThread;
+    }
+
+    static AndroidClient getWaitingThread() {
+        return waitingThread;
+    }
+
+    static void setPowerManager(PowerManager powerManager){
+        TasksSynchronizer.powerManager    = powerManager;
+    }
+
+    static void setWakeLock(PowerManager.WakeLock wakeLock){
+        TasksSynchronizer.wakeLock    = wakeLock;
+    }
+
+    //==============================================================================================
 
     @Nullable
     @Override
@@ -83,18 +115,20 @@ public final class TasksSynchronizer extends Service{
     }
 
     public static void startNewThread(DistributionMVP.MvpView view, DistributionMVP.MvpModel model){
-        waitingThread    = new AndroidClient(wakeLock);
-        TasksSynchronizer.view  = view;
-        TasksSynchronizer.model = model;
+        if(view != null && model != null){
+            waitingThread    = new AndroidClient(wakeLock);
+            TasksSynchronizer.view  = view;
+            TasksSynchronizer.model = model;
 
-        waitingThread.setTempView(view);
-        waitingThread.setTempModel(model);
+            waitingThread.setTempView(view);
+            waitingThread.setTempModel(model);
 
-        waitingThread.start();
+            waitingThread.start();
+        }
     }
 
     public static void updateAttendance(ArrayList<Candidate> updatingList){
-        if(clientsMap.size() > 0){
+        if(clientsMap.size() > 0 && updatingList.size() > 0){
             String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
 
             for(AndroidClient client : clientsMap.values()){

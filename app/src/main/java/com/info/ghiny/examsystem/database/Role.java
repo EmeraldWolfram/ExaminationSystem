@@ -5,6 +5,7 @@ package com.info.ghiny.examsystem.database;
  */
 
 public enum Role {
+    CHIEF,
     INVIGILATOR,
     IN_CHARGE;
 
@@ -15,6 +16,8 @@ public enum Role {
 
     public static Role parseRole(String role){
         switch(role){
+            case "CHIEF":
+                return CHIEF;
             case "IN_CHARGE":
                 return IN_CHARGE;
             default:

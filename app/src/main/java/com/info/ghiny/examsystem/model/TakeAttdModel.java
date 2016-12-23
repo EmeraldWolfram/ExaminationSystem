@@ -489,7 +489,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         cdd.setStatus(Status.PRESENT);
         cdd.setCollector(collectorId);
         cdd.setLate(late);
-        attdList.addCandidate(cdd, cdd.getPaperCode(), cdd.getStatus(), cdd.getProgramme());
+        attdList.addCandidate(cdd);
         assgnList.put(table, cdd.getRegNum());
     }
 

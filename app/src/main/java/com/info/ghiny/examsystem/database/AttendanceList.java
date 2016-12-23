@@ -47,29 +47,29 @@ public class AttendanceList {
 
     //Inherit Methods
     public HashMap<String, HashMap<String, HashMap<String, Candidate>>> getPaperList(Status status){
-        assert status != null;
         return attendanceList.get(status);
     }
 
     public HashMap<String,HashMap<String,Candidate>> getProgrammeList(Status status, String paperCode){
-        assert status != null;
-        assert paperCode != null;
-
-        HashMap<String, HashMap<String, Candidate>> prgList = new HashMap<>();
+        if(status == null || paperCode == null){
+            return null;
+        }
+        HashMap<String, HashMap<String, Candidate>> prgList;
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> paperMap = getPaperList(status);
 
-        if(!paperMap.containsKey(paperCode))
+        if(!paperMap.containsKey(paperCode)){
+            prgList = new HashMap<>();
             paperMap.put(paperCode, prgList);
-        else
+        } else
             prgList = paperMap.get(paperCode);
 
         return prgList;
     }
 
     public HashMap<String, Candidate> getCandidateList(Status status, String paperCode, String programme){
-        assert status != null;
-        assert paperCode != null;
-        assert programme != null;
+        if(status == null || paperCode == null || programme == null){
+            return null;
+        }
 
         HashMap<String, Candidate> cddList = new HashMap<>();
         HashMap<String, HashMap<String, Candidate>> prgMap = getProgrammeList(status, paperCode);
@@ -102,10 +102,16 @@ public class AttendanceList {
     }
 
     public int getNumberOfPaper(Status status){
+        if(status == null){
+            return 0;
+        }
         return attendanceList.get(status).size();
     }
 
     public int getNumberOfProgramme(Status status, String paperCode){
+        if(status == null || paperCode == null){
+            return 0;
+        }
         int size = 0;
         if(attendanceList.get(status).containsKey(paperCode))
             size = attendanceList.get(status).get(paperCode).size();
@@ -119,8 +125,7 @@ public class AttendanceList {
     public int getNumberOfCandidates(Status status){
         int size = 0;
         HashMap<String, HashMap<String, HashMap<String, Candidate>>> s1 = getPaperList(status);
-        for(Map.Entry<String, HashMap<String, HashMap<String, Candidate>>> s2:
-                s1.entrySet()){
+        for(Map.Entry<String, HashMap<String, HashMap<String, Candidate>>> s2: s1.entrySet()){
             for(Map.Entry<String, HashMap<String, Candidate>> s3: s2.getValue().entrySet()){
                 size = size + s3.getValue().size();
             }
@@ -142,26 +147,6 @@ public class AttendanceList {
     }
 
     //------------------- Major Attendance Taking Tools --------------------------------------
-    public void addCandidate(Candidate cdd, String paperCode, Status status, String programme){
-        assert cdd      != null : "Input Candidate argument cannot be null";
-        assert paperCode!= null : "Input PaperCode argument cannot be null";
-        assert status   != null : "Input Status argument cannot be null";
-
-        try{
-            HashMap<String, Candidate> cddList = getCandidateList(status, paperCode, programme);
-            if(cddList.isEmpty()) {
-                cddList.put(cdd.getRegNum(), cdd);
-            } else {
-                cdd.setStatus(status);
-                cddList.put(cdd.getRegNum(), cdd);
-            }
-
-        }catch (Exception e){
-            Log.d("EXAM System", e.getMessage());
-            //DO SOMETHING, the requested paper was empty
-        }
-    }
-
     public void addCandidate(Candidate cdd){
         String paperCode    = cdd.getPaperCode();
         Status status       = cdd.getStatus();
