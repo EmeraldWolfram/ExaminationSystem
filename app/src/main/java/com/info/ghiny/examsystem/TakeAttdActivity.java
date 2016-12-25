@@ -3,14 +3,20 @@ package com.info.ghiny.examsystem;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +60,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private TextView paperView;
     private ImageView tagIndicator;
 
-    private LinearLayout cddLayout;
+    private RelativeLayout cddLayout;
     private RelativeLayout bottomLayout;
 
     private int mode;
@@ -92,7 +98,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         barcodeView     = (BarcodeView) findViewById(R.id.assignScanner);
         errManager      = new ErrorManager(this);
         bottomLayout    = (RelativeLayout)findViewById(R.id.assignInfoBarcodeLayout);
-        cddLayout       = (LinearLayout)findViewById(R.id.tableInfoLayout);
+        cddLayout       = (RelativeLayout)findViewById(R.id.tableInfoLayout);
         cddView         = (TextView)findViewById(R.id.canddAssignText);
         regNumView      = (TextView)findViewById(R.id.regNumAssignText);
         paperView       = (TextView)findViewById(R.id.paperAssignText);
@@ -106,10 +112,6 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         cddLayout.setOnTouchListener(new OnSwipeAnimator(this, cddLayout, this));
         bottomLayout.setOnTouchListener(new OnSwipeListener(this){
             @Override
-            public void onSwipeBottom(){
-                taskPresenter.onSwipeBottom();
-            }
-            @Override
             public void onSwipeLeft() {
                 taskPresenter.onSwipeLeft();
             }
@@ -118,11 +120,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     private void initMVP(){
         SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
-        LocalDbLoader dbLoader        = new LocalDbLoader(this);
+        LocalDbLoader dbLoader          = new LocalDbLoader(this);
         TakeAttdPresenter presenter     = new TakeAttdPresenter(this, preferences);
-        TakeAttdModel model             = new TakeAttdModel(presenter, dbLoader);
+        TakeAttdModel model             = new TakeAttdModel(presenter);
         presenter.setTaskModel(model);
-        presenter.setHandler(new Handler());
         presenter.setSynTimer(new Handler());
 
         taskPresenter   = presenter;
@@ -291,10 +292,12 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     @Override
     public void setAssignBackgroundColor(int color) {
+        GradientDrawable bg = (GradientDrawable) cddLayout.getBackground();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cddLayout.setBackgroundColor(getResources().getColor(color, null));
+            bg.setColor(getResources().getColor(color, null));
         } else {
-            cddLayout.setBackgroundColor(getResources().getColor(color));
+            bg.setColor(getResources().getColor(color));
         }
     }
 

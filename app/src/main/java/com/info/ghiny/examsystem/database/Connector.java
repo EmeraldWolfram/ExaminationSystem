@@ -19,6 +19,7 @@ public class Connector {
     private Calendar date;
     private Session session;
     private String duelMessage;
+    private Role myHost;
 
     public Connector(String ipAddress, Integer portNumber, String duelMessage){
         this.ipAddress     = ipAddress;
@@ -36,7 +37,13 @@ public class Connector {
         }
     }
 
+    public void setMyHost(Role myHost) {
+        this.myHost = myHost;
+    }
 
+    public Role getMyHost() {
+        return myHost;
+    }
 
     public String getIpAddress() {
         return ipAddress;

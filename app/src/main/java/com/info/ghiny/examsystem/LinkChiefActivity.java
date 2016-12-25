@@ -25,6 +25,7 @@ import com.google.zxing.client.android.BeepManager;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.LinkChiefPresenter;
 import com.info.ghiny.examsystem.manager.ErrorManager;
@@ -133,6 +134,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         JavaHost.setConnector(new Connector("192.168.0.1", 5432, "DUEL"));
+        JavaHost.getConnector().setMyHost(Role.IN_CHARGE);
         ExternalDbLoader.setJavaHost(new JavaHost(null));
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 

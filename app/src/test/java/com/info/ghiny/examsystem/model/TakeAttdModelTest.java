@@ -103,7 +103,7 @@ public class TakeAttdModelTest {
         dBLoader = Mockito.mock(LocalDbLoader.class);
 
         taskPresenter = Mockito.mock(TakeAttdMVP.MPresenter.class);
-        model   = new TakeAttdModel(taskPresenter, dBLoader);
+        model   = new TakeAttdModel(taskPresenter);
 
         TakeAttdModel.setAttdList(attdList);
 
@@ -111,60 +111,6 @@ public class TakeAttdModelTest {
         model.setTempTable(null);
         model.setAssgnList(new HashMap<Integer, String>());
         Candidate.setPaperList(paperList);
-    }
-
-    //= InitAttendance() ===========================================================================
-    /**
-     * initAttendance()
-     *
-     * This method prepare the attendance list and exam subjects info for the
-     * attendance taking process.
-     *
-     * It prepare by loading database or query from chief
-     *
-     * Tests:
-     * 1. When database have no attendance list, send request to chief and start timer
-     * 2. When database have no exam papers info, send request to chief and start timer
-     * 3. When database have attendance list and exam papers info, load from the database
-     */
-    @Test
-    public void testInitAttendance1_NoAttendanceListInDB() throws Exception {
-        when(dBLoader.emptyAttdInDB()).thenReturn(true);
-        when(dBLoader.emptyPapersInDB()).thenReturn(false);
-
-        model.initAttendance();
-
-        verify(javaHost).putMessageIntoSendQueue(anyString());
-        verify(dBLoader, never()).queryAttendanceList();
-        verify(dBLoader, never()).queryPapers();
-        assertFalse(model.isInitialized());
-    }
-
-    @Test
-    public void testInitAttendance2_NoExamPapersInfoInDB() throws Exception {
-        when(dBLoader.emptyAttdInDB()).thenReturn(false);
-        when(dBLoader.emptyPapersInDB()).thenReturn(true);
-
-        model.initAttendance();
-
-        verify(javaHost).putMessageIntoSendQueue(anyString());
-        verify(dBLoader, never()).queryAttendanceList();
-        verify(dBLoader, never()).queryPapers();
-        assertFalse(model.isInitialized());
-    }
-
-    @Test
-    public void testInitAttendance3_RequiredInfoAvailableDB() throws Exception {
-        when(dBLoader.emptyAttdInDB()).thenReturn(false);
-        when(dBLoader.emptyPapersInDB()).thenReturn(false);
-        when(dBLoader.queryAttendanceList()).thenReturn(attdList);
-
-        model.initAttendance();
-
-        verify(javaHost, never()).putMessageIntoSendQueue(anyString());
-        verify(dBLoader).queryAttendanceList();
-        verify(dBLoader).queryPapers();
-        assertTrue(model.isInitialized());
     }
 
     //= MatchPassword(...) =========================================================================
@@ -213,61 +159,11 @@ public class TakeAttdModelTest {
      * During initAttendance(), request for attendance list and papers was sent to chief
      * This method was used to read the chief respond and take action accordingly
      *
-     * 1. Chief respond with the attendance list and exam papers, parse the message and assign
-     * 2. Chief respond with negative message due to some reason, throw an error
      * 3. In-Charge respond with Attendance Update from another Client
      * 4. In-Charge respond with Attendance Update but format was wrong, throw an error
      *
      * @throws Exception
      */
-    @Test
-    public void testCheckDownloadResult1_PositiveRespondFromChief() throws Exception {
-        MESSAGE_FROM_CHIEF = "{\"Type\":\"VenueInfo\",\"AttendanceList\":[" +
-                "{\"ExamIndex\":\"W0001AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00001\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0002AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00002\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0003AAAA\",\"Status\":\"LEGAL\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00003\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0004AAAA\",\"Status\":\"BARRED\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00004\",\"Programme\":\"RMB3\"}," +
-                "{\"ExamIndex\":\"W0005AAAA\",\"Status\":\"EXEMPTED\",\"PaperCode\":\"MPU3123\",\"RegNum\":\"15WAR00005\",\"Programme\":\"RMB3\"}]," +
-                "\"PaperMap\":[" +
-                "{\"PaperStartNo\":45,\"PaperDesc\":\"Mathematic\",\"PaperCode\":\"BABE2203\",\"PaperTotalCdd\":4}," +
-                "{\"PaperStartNo\":32,\"PaperDesc\":\"Hubungan Etnik\",\"PaperCode\":\"MPU3123\",\"PaperTotalCdd\":9}]," +
-                "\"Result\":true}";
-
-        try{
-            assertFalse(model.isInitialized());
-            assertEquals(paperList, Candidate.getPaperList());
-            assertEquals(attdList, TakeAttdModel.getAttdList());
-
-            model.checkDownloadResult(MESSAGE_FROM_CHIEF);
-
-            fail("Expected MESSAGE_TOAST but none was thrown!");
-        } catch (ProcessException err) {
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("Download Complete", err.getErrorMsg());
-
-            assertTrue(model.isInitialized());
-            assertNotEquals(paperList, Candidate.getPaperList());
-            assertNotEquals(attdList, TakeAttdModel.getAttdList());
-        }
-    }
-
-    @Test
-    public void testCheckDownloadResult2_NegativeRespondFromChief() throws Exception {
-        MESSAGE_FROM_CHIEF = "{\"Result\":false,\"Type\":\"VenueInfo\"}";
-        try{
-            assertFalse(model.isInitialized());
-            assertEquals(paperList, Candidate.getPaperList());
-            assertEquals(attdList, TakeAttdModel.getAttdList());
-
-            model.checkDownloadResult(MESSAGE_FROM_CHIEF);
-        } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
-            assertEquals("Unable to download Attendance List\nPlease retry login",err.getErrorMsg());
-            //Make no changes to PaperList and AttdList
-            assertEquals(paperList, Candidate.getPaperList());
-            assertEquals(attdList, TakeAttdModel.getAttdList());
-        }
-    }
 
     @Test
     public void testCheckDownloadResult3_RespondFromInCharge() throws Exception {
@@ -312,25 +208,6 @@ public class TakeAttdModelTest {
         }
     }
 
-    //= SaveAttendance() ===========================================================================
-
-    /**
-     * saveAttendance()
-     *
-     * This method is used to save the attendance list into the database before
-     * the activity was destroyed.
-     *
-     * Test
-     * Check if method called to save data into database
-     */
-    @Test
-    public void testSaveAttendance() throws Exception {
-        model.saveAttendance();
-
-        verify(dBLoader).saveAttendanceList(attdList);
-        verify(dBLoader).savePaperList(paperList);
-    }
-
     //= UpdateAssignList() =========================================================================
     /**
      * updateAssignList()
@@ -345,7 +222,6 @@ public class TakeAttdModelTest {
     @Test
     public void testUpdateAssignList1_PositiveTest() throws Exception {
         attdList = new AttendanceList();
-        model.setInitialized(true);
         cdd1.setTableNumber(12);
         cdd1.setStatus(Status.PRESENT);
         attdList.addCandidate(cdd1);
@@ -366,7 +242,6 @@ public class TakeAttdModelTest {
     public void testUpdateAssignList2_NegativeTest() throws Exception {
         try{
             TakeAttdModel.setAttdList(null);
-            model.setInitialized(true);
 
             model.updateAssignList();
 
@@ -381,7 +256,6 @@ public class TakeAttdModelTest {
     @Test
     public void testUpdateAssignList3_NegativeTest() throws Exception {
         TakeAttdModel.setAttdList(attdList);
-        model.setInitialized(true);
 
         assertEquals(0, model.getAssgnList().size());
         model.updateAssignList();
@@ -616,37 +490,6 @@ public class TakeAttdModelTest {
         }
     }
 
-    //= Run() ======================================================================================
-    /**
-     * run()
-     *
-     * 1. When ConnectionTask is complete, do nothing
-     * 2. Initialize using database, no times out should be thrown
-     * 3. When ConnectionTask is not complete, throw an error and the presenter shall handle
-     */
-    @Test
-    public void testRun_ChiefDoRespond() throws Exception {
-        model.setDownloadComplete(true);
-        model.setInitialized(true);
-        model.run();
-        verify(taskPresenter).onTimesOut(any(ProcessException.class));
-    }
-
-    @Test
-    public void testRun_ChiefNoRespond() throws Exception {
-        model.setDownloadComplete(false);
-        model.setInitialized(true);
-        model.run();
-        verify(taskPresenter).onTimesOut(any(ProcessException.class));
-    }
-
-    @Test
-    public void testRun_UsedDatabaseRespond() throws Exception {
-        model.setInitialized(false);
-        model.setDownloadComplete(false);
-        model.run();
-        verify(taskPresenter).onTimesOut(any(ProcessException.class));
-    }
 
     //= OnClick(...) ===============================================================================
     /**

@@ -1,11 +1,14 @@
 package com.info.ghiny.examsystem.view_holder;
 
 import android.content.Context;
+import android.text.Layout;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.info.ghiny.examsystem.R;
 
@@ -22,7 +25,7 @@ public class OnSwipeAnimator implements View.OnTouchListener {
     private Animation enterFromRight, enterFromLeft;
     private OnSwipeListener swipeListener;
 
-    public OnSwipeAnimator(Context context, final LinearLayout containerLayout, OnSwipeListener swipeListener){
+    public OnSwipeAnimator(Context context, final ViewGroup containerLayout, OnSwipeListener swipeListener){
         exitToLeft      = AnimationUtils.loadAnimation(context, R.anim.slide_out_at_left);
         exitToRight     = AnimationUtils.loadAnimation(context, R.anim.slide_out_at_right);
         enterFromLeft   = AnimationUtils.loadAnimation(context, R.anim.slide_in_from_left);

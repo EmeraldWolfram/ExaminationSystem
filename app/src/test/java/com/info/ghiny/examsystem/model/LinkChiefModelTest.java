@@ -4,8 +4,10 @@ import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 
+import org.apache.tools.ant.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +51,7 @@ public class LinkChiefModelTest {
         JavaHost.setConnector(null);
         ExternalDbLoader.setConnectionTask(null);
     }
-
+    
     //= TryConnectWithQR() =========================================================================
     /**
      *  tryConnectWithQR()

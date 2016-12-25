@@ -1,10 +1,12 @@
 package com.info.ghiny.examsystem;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.HomeOptionPresenter;
@@ -38,6 +41,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     private ImageView collectionButton;
     private ImageView connectionButton;
     private ImageView attendanceButton;
+    private ProgressDialog progDialog;
 
     private boolean infoEnable;
     private boolean collectionEnable;
@@ -55,9 +59,21 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     }
 
     @Override
+    protected void onResume() {
+        taskPresenter.onResume(errorManager);
+        super.onResume();
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         taskPresenter.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        taskPresenter.onDestroy();
+        super.onDestroy();
     }
 
     private void initView(){
@@ -81,7 +97,8 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     private void initMVP(){
         errorManager    = new ErrorManager(this);
         HomeOptionPresenter presenter = new HomeOptionPresenter(this);
-        HomeOptionModel model         = new HomeOptionModel(presenter);
+        presenter.setHandler(new Handler());
+        HomeOptionModel model         = new HomeOptionModel(presenter, new LocalDbLoader(this));
         presenter.setTaskModel(model);
         taskPresenter   = presenter;
     }
@@ -112,6 +129,11 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        taskPresenter.onPasswordReceived(requestCode, resultCode, data);
     }
 
     @Override
@@ -156,5 +178,19 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
 
     public void onDistribution(View view){
         taskPresenter.onDistribution();
+    }
+
+    @Override
+    public void openProgressWindow(String title, String message) {
+        progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
+        progDialog.setMessage(message);
+        progDialog.setTitle(title);
+        progDialog.show();
+    }
+
+    @Override
+    public void closeProgressWindow() {
+        if(progDialog != null)
+            progDialog.dismiss();
     }
 }

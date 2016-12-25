@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
@@ -35,10 +36,18 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     public void tryConnectWithQR(String scanStr) throws ProcessException{
         String[] chiefArr   = scanStr.split(":");
         if(chiefArr.length == 5 && scanStr.endsWith("$") && scanStr.startsWith("$")){
-            Connector connector     = new Connector(chiefArr[1],
-                    Integer.parseInt(chiefArr[2]), chiefArr[3]);
 
-            dbLoader.saveConnector(connector);
+            Role host       = Role.parseRole(chiefArr[0].substring(1));
+            String ip       = chiefArr[1];
+            Integer port    = Integer.parseInt(chiefArr[2]);
+            String msg      = chiefArr[3];
+
+            Connector connector     = new Connector(ip, port, msg);
+            connector.setMyHost(host);
+
+            if(connector.getMyHost() == Role.CHIEF){
+                dbLoader.saveConnector(connector);
+            }
             JavaHost.setConnector(connector);
             task    = new ConnectionTask();
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -15,6 +15,7 @@ public interface DistributionMVP {
     interface MvpView extends GeneralView {
         void setImageQr(Bitmap bitmap);
         void runItSeparate(Runnable runner);
+        boolean stillInForeground();
     }
 
     interface MvpVPresenter extends TaskSecurePresenter{

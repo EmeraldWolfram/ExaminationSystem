@@ -109,6 +109,7 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
     public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
+        v.setBackgroundResource(R.drawable.custom_attendance_absent);
         return new CandidateDisplayHolder(context, v);
     }
 

@@ -9,9 +9,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface HomeOptionMVP {
-    interface MvpView extends GeneralView {}
+    interface MvpView extends GeneralView, TaskConnView {}
 
-    interface MvpVPresenter extends TaskSecurePresenter {
+    interface MvpVPresenter extends TaskSecurePresenter, TaskConnPresenter {
         void onBackPressed();
         void onAttendance();
         void onCollection();
@@ -20,9 +20,15 @@ public interface HomeOptionMVP {
         boolean onSetting();
     }
 
-    interface MvpMPresenter extends DialogInterface.OnCancelListener, DialogInterface.OnClickListener{}
+    interface MvpMPresenter extends DialogInterface.OnCancelListener, DialogInterface.OnClickListener{
+        void onTimesOut(ProcessException err);
+    }
 
-    interface MvpModel extends TaskSecureModel{
+    interface MvpModel extends TaskSecureModel, Runnable{
+        boolean isInitialized();
+        void initAttendance() throws ProcessException;  //prepare the Attd & papers (download or db)
+        void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
+        void saveAttendance();  //save before destroy
         ProcessException prepareLogout();
     }
 }

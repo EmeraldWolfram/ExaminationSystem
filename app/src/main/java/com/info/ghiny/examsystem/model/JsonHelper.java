@@ -175,6 +175,9 @@ public class JsonHelper {
                 candidate.put(Candidate.CDD_REG_NUM,    cdd.getRegNum());
                 candidate.put(Candidate.CDD_TABLE,      cdd.getTableNumber());
                 candidate.put(Candidate.CDD_ATTENDANCE, cdd.getStatus().toString());
+                if(cdd.getStatus() == Status.PRESENT && cdd.getCollector() == null){
+                    cdd.setCollector(LoginModel.getStaff().getIdNo());
+                }
                 candidate.put(Candidate.CDD_COLLECTOR,  cdd.getCollector());
                 candidate.put(Candidate.CDD_LATE,       cdd.isLate());
 

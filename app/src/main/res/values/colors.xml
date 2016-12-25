@@ -6,16 +6,22 @@
     <color name="colorGreen">#ceffce</color>
 
     <color name="colorDarkerGreen">#008C00</color>
+    <color name="colorDarkerBlue">#00007C</color>
+
     <color name="colorDarkGreen">#00b500</color>
+    <color name="colorDarkRed">#b50000</color>
+
+
     <color name="colorLightGreen">#D0FFD0</color>
     <color name="colorLightRed">#FFD0D0</color>
+    <color name="colorLightBlue">#D0D0FF</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="colorDarkRed">#b50000</color>
     <color name="colorTagBlue">#771188</color>
 
+    <color name="grey">#BBBBBB</color>
     <color name="tableNo">#61616161</color>
     <color name="colorDarkestRed">#3c0000</color>
 </resources>

@@ -67,6 +67,7 @@ public class FragmentQuarantined extends RootFragment{
         public CandidateDisplayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             View v = LayoutInflater.from(context).inflate(R.layout.attendance_body, parent, false);
+            v.setBackgroundResource(R.drawable.custom_attendance_grey_out);
             return new CandidateDisplayHolder(context, v);
         }
 

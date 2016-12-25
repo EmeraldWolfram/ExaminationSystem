@@ -10,38 +10,46 @@
 
     <TextView
         android:id="@+id/paperCodeNameText"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:padding="5dp"
         android:layout_gravity="start"
         android:layout_column="0"
         android:layout_row="0"
         android:layout_columnSpan="5"
-        android:textColor="@color/colorDarkestRed" />
+        android:textColor="@color/colorDarkerBlue" />
 
     <TextView
         android:id="@+id/paperVenueText"
         android:textSize="28sp"
         android:padding="10dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
         android:layout_gravity="end"
         android:layout_column="5"
         android:layout_row="0"
         android:layout_rowSpan="2"
-        android:textColor="@color/colorDarkestRed"/>
+        android:textColor="@color/colorDarkerBlue"/>
 
     <TextView
         android:id="@+id/paperDayText"
         android:textSize="12sp"
         android:padding="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:layout_gravity="start"
         android:layout_column="0"
         android:layout_row="1"
         android:layout_columnSpan="3"
-        android:textColor="@color/colorDarkestRed"/>
+        android:textColor="@color/colorDarkerBlue"/>
 
     <TextView
         android:id="@+id/paperSessionText"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:textSize="12sp"
         android:layout_column="4"
         android:layout_row="1"
-        android:textColor="@color/colorDarkestRed"/>
+        android:textColor="@color/colorDarkerBlue"/>
 
 </GridLayout>

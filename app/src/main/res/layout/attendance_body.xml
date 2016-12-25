@@ -31,34 +31,34 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:paddingBottom="2sp"
-            android:textColor="#156039" />
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/assignedRegNumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="#156039"/>
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/assignedPrgText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="#156039" />
+            android:textColor="@color/black" />
         <TextView
             android:id="@+id/assignedPaperText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="#156039"/>
+            android:textColor="@color/black"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/assignedLateTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/other_late_indicator"
+        app:srcCompat="@drawable/other_late_tag"
         android:visibility="invisible"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"

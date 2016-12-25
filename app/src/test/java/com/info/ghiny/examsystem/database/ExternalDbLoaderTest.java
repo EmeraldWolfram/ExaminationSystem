@@ -224,34 +224,6 @@ public class ExternalDbLoaderTest {
         }
     }
 
-    //= DlPaperList() ===============================================================================
-    /**
-     * dlPaperList(String venue)
-     *
-     * format venue into JSON Object
-     * Send out the JSON Object
-     * Wait for JSON Object
-     * Parse to HashMap<String, ExamSubject> format
-     * return as HashMap<String, ExamSubject>
-     *
-     *//*
-    @Test
-    public void testDlPaperList() throws Exception {
-        LoginModel.setStaff(staff);    //Set the venue to H3
-
-        HashMap<String, ExamSubject> paperList   = new HashMap<>();
-        ExamSubject subject1    = new ExamSubject("BAME 0001", "SUBJECT 1", 10,
-                Calendar.getInstance(), 20, "H1", Session.AM);
-        ExamSubject subject2    = new ExamSubject("BAME 0002", "SUBJECT 2", 30,
-                Calendar.getInstance(), 20, "H2", Session.PM);
-        ExamSubject subject3    = new ExamSubject("BAME 0003", "SUBJECT 3", 50,
-                Calendar.getInstance(), 20, "H3", Session.VM);
-        paperList.put(subject1.getPaperCode(), subject1);
-        paperList.put(subject2.getPaperCode(), subject2);
-        paperList.put(subject3.getPaperCode(), subject3);
-
-        ExternalDbLoader.dlPaperList();
-    }*/
 
     //= GetPapersExamineByCdd() ====================================================================
     /**

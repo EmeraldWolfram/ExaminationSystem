@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 import com.info.ghiny.examsystem.R;
@@ -13,6 +14,7 @@ import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.SubmissionActivity;
+import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
@@ -28,7 +30,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     private TakeAttdMVP.View taskView;
     private TakeAttdMVP.Model taskModel;
     private boolean navigationFlag;
-    private Handler handler;
+    //private Handler handler;
     private Handler synTimer;
     private Snackbar snackbar;
     private View refView;
@@ -51,9 +53,9 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         this.taskModel = taskModel;
     }
 
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
+    //public void setHandler(Handler handler) {
+    //    this.handler = handler;
+    //}
 
     public void setSynTimer(Handler synTimer) {
         this.synTimer = synTimer;
@@ -86,16 +88,11 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
                 onChiefRespond(errManager, message);
             }
         });
-        if(TakeAttdModel.getAttdList() == null){
-            try{
-                taskModel.initAttendance();
-                if(!taskModel.isInitialized()){
-                    taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-                    handler.postDelayed(taskModel, 5000);
-                }
-            } catch (ProcessException err) {
-                taskView.displayError(err);
-            }
+        //=========================================================================
+        try{
+            taskModel.updateAssignList();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
         }
         onResume();
     }
@@ -110,10 +107,12 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onDestroy() {
-        taskModel.saveAttendance();
-        taskView.closeProgressWindow();
-        handler.removeCallbacks(taskModel);
-        synTimer.removeCallbacks(taskSyn);
+        try{
+            taskModel.txAttendanceUpdate();
+            synTimer.removeCallbacks(taskSyn);
+        } catch (ProcessException err){
+            Log.d(TakeAttdActivity.TAG, err.getErrorMsg());
+        }
     }
 
     @Override

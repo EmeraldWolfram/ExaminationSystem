@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -33,6 +34,7 @@ public class JavaHost implements Runnable{
     //public static String SERVERIP = "192.168.0.112"; // your computer IP address
     //public static int SERVERPORT = 5657;
     private static Connector connector;
+    private static Role myHost;
     private OnMessageReceived msgListener = null;
     private boolean running;
     private boolean sending;

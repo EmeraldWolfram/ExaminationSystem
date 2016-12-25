@@ -12,20 +12,11 @@
     tools:context="com.info.ghiny.examsystem.CollectionActivity"
     android:background="#000000">
 
-    <TextView
-        android:id="@+id/collectionTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cl_text"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
-        android:textColor="#FFFFFF" />
 
     <LinearLayout
         android:id="@+id/collectionInfo"
         android:orientation="horizontal"
-        android:layout_below="@id/collectionTitle"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/collection_collector_bundle_shape">

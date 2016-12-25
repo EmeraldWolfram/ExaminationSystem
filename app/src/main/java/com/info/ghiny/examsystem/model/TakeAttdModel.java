@@ -28,35 +28,19 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     private static ArrayList<Candidate> updatingList = new ArrayList<>();
     private static AttendanceList attdList;
     private TakeAttdMVP.MPresenter taskPresenter;
-    private LocalDbLoader dbLoader;
     private StaffIdentity user;
 
     private boolean tagNextLate;
-    private boolean isDownloadComplete;
-    private boolean initialized;
     private Candidate tempCdd    = null;
     private Integer tempTable    = null;
 
-    public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter, LocalDbLoader dbLoader){
+    public TakeAttdModel(TakeAttdMVP.MPresenter taskPresenter){
         this.user               = LoginModel.getStaff();
         this.taskPresenter      = taskPresenter;
-        this.dbLoader           = dbLoader;
-        this.initialized        = false;
-        this.isDownloadComplete = false;
         this.tagNextLate        = false;
     }
 
-    void setInitialized(boolean initialized){
-        this.initialized    = initialized;
-    }
 
-    void setDownloadComplete(boolean downloadComplete) {
-        isDownloadComplete = downloadComplete;
-    }
-
-    boolean isDownloadComplete() {
-        return isDownloadComplete;
-    }
 
     boolean isTagNextLate() {
         return tagNextLate;
@@ -66,24 +50,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         this.tagNextLate = tagNextLate;
     }
 
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
     //==============================================================================================
-    @Override
-    public void initAttendance() throws ProcessException {
-        if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
-            isDownloadComplete = false;
-            ExternalDbLoader.dlAttendanceList();
-        } else {
-            attdList    = dbLoader.queryAttendanceList();
-            Candidate.setPaperList(dbLoader.queryPapers());
-            updateAssignList();
-            initialized = true;
-        }
-    }
 
     @Override
     public void matchPassword(String password) throws ProcessException {
@@ -99,21 +66,9 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
             ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(chiefMessage);
             rxAttendanceUpdate(candidates);
-        } else {
-            isDownloadComplete  = true;
-            attdList    = JsonHelper.parseAttdList(chiefMessage);
-            Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
-            setInitialized(true);
-            throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
-                    IconManager.MESSAGE);
         }
     }
 
-    @Override
-    public void saveAttendance() {
-        dbLoader.saveAttendanceList(attdList);
-        dbLoader.savePaperList(Candidate.getPaperList());
-    }
 
     @Override
     public void updateAssignList() throws ProcessException{
@@ -185,29 +140,6 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                         + tempTable.toString(), ProcessException.MESSAGE_TOAST,
                         IconManager.ASSIGNED);
             }
-        }
-    }
-
-    @Override
-    public void run() {
-        try{
-            if(attdList == null) {
-                ProcessException err = new ProcessException(
-                        "Download failed. Response times out.",
-                        ProcessException.MESSAGE_DIALOG, IconManager.MESSAGE);
-                err.setListener(ProcessException.okayButton, taskPresenter);
-                err.setBackPressListener(taskPresenter);
-                throw err;
-            } else {
-                ProcessException err = new ProcessException(
-                        "Preparation complete.",
-                        ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-                err.setListener(ProcessException.okayButton, taskPresenter);
-                err.setBackPressListener(taskPresenter);
-                throw err;
-            }
-        } catch (ProcessException err){
-            taskPresenter.onTimesOut(err);
         }
     }
 
@@ -452,19 +384,19 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         ProcessException err;
         if(assgnList.containsKey(tempTable)){
             if(!assgnList.get(tempTable).equals(tempCdd.getRegNum())) {
-                err = new ProcessException("Previous: Table " + tempTable + " assigned to "
+                err = new ProcessException("Previous: \nTable " + tempTable + " assigned to "
                         + attdList.getCandidate(assgnList.get(tempTable)).getExamIndex()
-                        + "\nNew: Table " + tempTable + " assign to " + tempCdd.getExamIndex(),
+                        + "\nNew: \nTable " + tempTable + " assign to " + tempCdd.getExamIndex(),
                         ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
                 err.setListener(ProcessException.updateButton, this);
                 err.setListener(ProcessException.cancelButton, this);
                 throw err;
             }
         } else if(assgnList.containsValue(tempCdd.getRegNum())){
-            err = new ProcessException("Previous: " + tempCdd.getExamIndex()
+            err = new ProcessException("Previous: \n" + tempCdd.getExamIndex()
                     + " assigned to Table "
                     + attdList.getCandidate(tempCdd.getRegNum()).getTableNumber()
-                    + "\nNew: " + tempCdd.getExamIndex() + " assign to " + tempTable,
+                    + "\nNew: \n" + tempCdd.getExamIndex() + " assign to " + tempTable,
                     ProcessException.UPDATE_PROMPT, IconManager.MESSAGE);
             err.setListener(ProcessException.updateButton, this);
             err.setListener(ProcessException.cancelButton, this);

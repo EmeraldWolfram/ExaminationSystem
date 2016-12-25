@@ -62,7 +62,6 @@ public class TakeAttdPresenterTest {
 
         manager = new TakeAttdPresenter(taskView, preferences);
         manager.setTaskModel(taskModel);
-        manager.setHandler(handler);
     }
 
 
@@ -256,9 +255,9 @@ public class TakeAttdPresenterTest {
 
         manager.onDestroy();
 
-        verify(taskView).closeProgressWindow();
-        verify(taskModel).saveAttendance();
-        verify(handler).removeCallbacks(taskModel);
+        verify(taskModel).txAttendanceUpdate();
+        verify(handler).removeCallbacks(any(Runnable.class));
+
     }
 
     //= onSwipeLeft() ==============================================================================

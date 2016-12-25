@@ -98,16 +98,8 @@ public class AndroidClient extends Thread {
         try{
             binarySem.acquire();
             messageQueue.add(message);
-        } catch (final InterruptedException err) {
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(new ProcessException(err.getMessage(),
-                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
-                    }
-                });
-            }
+        } catch (InterruptedException err) {
+            Log.d(DistributionActivity.TAG, err.getMessage());
         } finally {
             binarySem.release();
         }
@@ -115,23 +107,15 @@ public class AndroidClient extends Thread {
         if(!sending){
             sending = true;
 
-            final Thread sendOutThread = new Thread(){
+            Thread sendOutThread = new Thread(){
                 @Override
                 public void run() {
                     while (messageQueue.size() > 0) {
                         try {
                             sendMessage(messageQueue.remove(0));
                             Thread.sleep(500);
-                        } catch (final InterruptedException e) {
-                            if(tempView != null){
-                                tempView.runItSeparate(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tempView.displayError(new ProcessException(e.getMessage(),
-                                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
-                                    }
-                                });
-                            }
+                        } catch (InterruptedException e) {
+                            Log.d(DistributionActivity.TAG, e.getMessage());
                         }
                     }
                     sending = false;
@@ -184,11 +168,22 @@ public class AndroidClient extends Thread {
                     }
                 });
             }
+
             socket          = serverSocket.accept();
             connector       = new Connector(socket.getInetAddress().toString(),
                     socket.getPort(), JavaHost.getConnector().getDuelMessage());
 
-            Log.d(DistributionActivity.TAG, "First Connection");
+            if (tempView != null){
+                tempView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        tempView.displayError(new ProcessException(connector.getIpAddress()
+                                + " Connected", ProcessException.MESSAGE_TOAST,
+                                IconManager.ASSIGNED));
+
+                    }
+                });
+            }
 
             TasksSynchronizer.notifyClientConnected(this);
 
@@ -214,20 +209,8 @@ public class AndroidClient extends Thread {
             } finally {
                 socket.close();
             }
-        } catch (SocketException err){
+        } catch (Exception err){
             Log.d(DistributionActivity.TAG, err.getMessage());
-        } catch (final Exception err) {
-            Log.d(DistributionActivity.TAG, "Error catch in run() - big");
-            err.printStackTrace();
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(new ProcessException(err.getMessage(),
-                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
-                    }
-                });
-            }
         }
     }
 
@@ -249,17 +232,8 @@ public class AndroidClient extends Thread {
                     break;
             }
 
-        } catch (IOException err) {
+        } catch (Exception err) {
             Log.d(DistributionActivity.TAG, err.getMessage());
-        } catch (final ProcessException err) {
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(err);
-                    }
-                });
-            }
         } finally {
             if(wakeLock != null && wakeLock.isHeld()){
                 wakeLock.release();
@@ -274,15 +248,7 @@ public class AndroidClient extends Thread {
             jsonObject.put(JsonHelper.MAJOR_KEY_TYPE_ID, localPort);
             ExternalDbLoader.getJavaHost().putMessageIntoSendQueue(jsonObject.toString());
         } catch (final JSONException err){
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(new ProcessException(err.getMessage(),
-                                ProcessException.FATAL_MESSAGE, IconManager.WARNING));
-                    }
-                });
-            }
+            Log.d(DistributionActivity.TAG, err.getMessage());
         }
     }
 
@@ -316,15 +282,8 @@ public class AndroidClient extends Thread {
                 }
             }
 
-        } catch (final ProcessException err) {
-            if(tempView != null){
-                tempView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempView.displayError(err);
-                    }
-                });
-            }
+        } catch (ProcessException err) {
+            Log.d(DistributionActivity.TAG, err.getErrorMsg());
         }
     }
 

@@ -6,65 +6,71 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/tableInfoLayout"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:background="@color/colorDarkGreen">
+        android:layout_margin="6dp"
+        android:background="@drawable/attendance_table_candidate_shape">
+
         <TextView
             android:id="@+id/tableNumberText"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_margin="4sp"
+            android:layout_margin="6dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="45sp"
             android:elevation="8dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:background="@drawable/rounded_table"/>
 
-        <LinearLayout
-            android:id="@+id/assignInfoLinearLayout"
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/canddAssignText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tableNumberText"
+            android:layout_toEndOf="@id/tableNumberText"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF" />
 
-            <TextView
-                android:id="@+id/canddAssignText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="#FFFFFF"/>
+        <TextView
+            android:id="@+id/regNumAssignText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/canddAssignText"
+            android:layout_toRightOf="@id/tableNumberText"
+            android:layout_toEndOf="@id/tableNumberText" />
 
-            <TextView
-                android:id="@+id/regNumAssignText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="#FFFFFF"/>
-            <TextView
-                android:id="@+id/paperAssignText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#FFFFFF"/>
-            <ImageView
-                android:id="@+id/assignImageTag"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="250dp"
-                android:paddingLeft="250dp"
-                android:paddingEnd="0dp"
-                android:paddingRight="0dp"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/other_late_indicator"
-                android:contentDescription="@string/late"/>
-        </LinearLayout>
+        <TextView
+            android:id="@+id/paperAssignText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/regNumAssignText"
+            android:layout_toRightOf="@id/tableNumberText"
+            android:layout_toEndOf="@id/tableNumberText" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/assignImageTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/tableNumberText"
+            app:srcCompat="@drawable/other_late_tag"
+            android:visibility="invisible"
+            android:contentDescription="@string/late"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/assignInfoBarcodeLayout"

@@ -76,9 +76,6 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     }
 
     private void initView(){
-        TextView head2 = (TextView)findViewById(R.id.collectionTitle);
-        head2.setTypeface(Typeface.createFromAsset(this.getAssets(), ConfigManager.DEFAULT_FONT));
-
         errorManager    = new ErrorManager(this);
         beepManager     = new BeepManager(this);
         barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);

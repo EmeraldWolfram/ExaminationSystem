@@ -20,6 +20,7 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
     private ErrorManager errorManager;
 
     private ImageView qrView;
+    private boolean inForeground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +34,21 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
     }
 
     @Override
+    protected void onStart() {
+        inForeground    = true;
+        super.onStart();
+    }
+
+    @Override
     protected void onRestart() {
         taskPresenter.onRestart();
         super.onRestart();
+    }
+
+    @Override
+    protected void onStop() {
+        inForeground    = false;
+        super.onStop();
     }
 
     @Override
@@ -55,6 +68,11 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
         presenter.setTaskModel(model);
 
         this.taskPresenter  = presenter;
+    }
+
+    @Override
+    public boolean stillInForeground() {
+        return inForeground;
     }
 
     @Override

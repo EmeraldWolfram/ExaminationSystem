@@ -56,6 +56,7 @@ public class ErrorManager {
                 getListener(err, ProcessException.updateButton));
         dialog.setNegativeButton(ProcessException.cancelButton,
                 getListener(err, ProcessException.cancelButton));
+        dialog.setIcon(err.getErrorIcon());
 
         AlertDialog alert = dialog.create();
         alert.show();
@@ -64,6 +65,7 @@ public class ErrorManager {
     private void showMessageDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setTitle("ERROR");
+        dialog.setIcon(err.getErrorIcon());
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());
@@ -77,6 +79,7 @@ public class ErrorManager {
     private void showFatalError(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setTitle("FATAL ERROR");
+        dialog.setIcon(err.getErrorIcon());
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());
@@ -95,6 +98,7 @@ public class ErrorManager {
     private void showYesNoDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
         dialog.setTitle("MESSAGE");
+        dialog.setIcon(err.getErrorIcon());
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);
         dialog.setOnCancelListener(err.getBackPressListener());

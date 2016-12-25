@@ -121,7 +121,7 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
             Role role = taskModel.checkLoginResult(message);
 
             if(role != null){
-                taskView.navToHome(true, true, true, (role == Role.IN_CHARGE));
+                taskView.navToHome(!(role == Role.CHIEF), true, true, (role == Role.IN_CHARGE));
             } else {
                 ProcessException err = new ProcessException("Thank you for using Exam System!\n" +
                         "Your attendance (" + LoginModel.getStaff().getIdNo() + ") is collected",

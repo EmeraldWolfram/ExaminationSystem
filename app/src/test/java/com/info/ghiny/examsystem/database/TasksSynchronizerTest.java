@@ -63,7 +63,7 @@ public class TasksSynchronizerTest {
 
     @After
     public void tearDown() throws Exception {
-
+        TasksSynchronizer.setClientsMap(null);
     }
 
     //= OnCreate() =================================================================================
