@@ -12,12 +12,14 @@ import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.TakeAttdActivity;
+import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,12 +66,11 @@ public class HomeOptionPresenterTest {
         manager = new HomeOptionPresenter(taskView);
         manager.setTaskModel(taskModel);
         manager.setHandler(handler);
+        TakeAttdModel.setAttdList(null);
     }
 
     @After
-    public void tearDown() throws Exception {
-
-    }
+    public void tearDown() throws Exception {}
 
     //= OnResume(...) ==============================================================================
     /**
@@ -78,24 +79,41 @@ public class HomeOptionPresenterTest {
      * Tests:
      * 1. Set message listener to JavaHost and download the attendance list (org is null)
      * 2. Set message listener to JavaHost and do nothing (attendance list is not null)
+     * 3. Set message listener to JavaHost and retrieve attendance list from db (org is null)
      *
      */
     @Test
     public void testOnResume1_AttdListIsNull_Download() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        TakeAttdModel.setAttdList(null);
         when(taskModel.isInitialized()).thenReturn(false);
 
         manager.onResume(errorManager);
 
         verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskModel).initAttendance();
-        verify(taskView).openProgressWindow(anyString(), anyString());
+        verify(taskView).openProgressWindow("Preparing Attendance List:", "Retrieving data...");
         verify(handler).postDelayed(any(Runnable.class), anyInt());
     }
 
     @Test
     public void testOnResume2_AttdListNotNull_DoNothing() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        TakeAttdModel.setAttdList(new AttendanceList());
+        when(taskModel.isInitialized()).thenReturn(true);
+
+        manager.onResume(errorManager);
+
+        verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
+        verify(taskModel, never()).initAttendance();
+        verify(taskView, never()).openProgressWindow(anyString(), anyString());
+        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+    }
+
+    @Test
+    public void testOnResume3_AttdListIsNull_LoadDatabase() throws Exception {
+        ErrorManager errorManager = Mockito.mock(ErrorManager.class);
+        TakeAttdModel.setAttdList(null);
         when(taskModel.isInitialized()).thenReturn(true);
 
         manager.onResume(errorManager);
@@ -293,10 +311,10 @@ public class HomeOptionPresenterTest {
     /**
      * onClick(...)
      *
-     * Whenever a message window pop out, the camera scanner at the back will be paused
-     * Test if the scanner is resumed, when button is clicked or the activity will be finished
-     * 1. Neutral Button Pressed    (resume scanner)
-     * 2. Negative Button Pressed   (resume scanner)
+     * When message pop out, only positive button will finish activity others do nothing
+     * Tests
+     * 1. Neutral Button Pressed
+     * 2. Negative Button Pressed
      * 3. Positive Button Pressed   (finish activity)
      */
     @Test
@@ -319,7 +337,7 @@ public class HomeOptionPresenterTest {
     public void testOnClickPositiveButton() throws Exception {
         manager.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
 
-        verify(dialog).cancel();
+        verify(dialog, never()).cancel();
         verify(taskView).finishActivity();
     }
 
@@ -330,7 +348,6 @@ public class HomeOptionPresenterTest {
      * Sometimes, a pop out window could be cancelled by pressing the back button
      * of the phone
      *
-     * Test if the scanner is resumed when the back button was pressed in the above case
      */
     @Test
     public void testOnCancel() throws Exception {

@@ -33,6 +33,19 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     private List<String> regNumList;
     private StaffIdentity user;
 
+    void setSent(boolean sent) {
+        this.sent = sent;
+    }
+    void setUnassignedMap(HashMap<String, Integer> unassignedMap) {
+        this.unassignedMap = unassignedMap;
+    }
+    boolean isSent() {
+        return sent;
+    }
+    HashMap<String, Integer> getUnassignedMap() {
+        return unassignedMap;
+    }
+
     public SubmissionModel(SubmissionMVP.MvpMPresenter taskPresenter){
         this.taskPresenter  = taskPresenter;
         this.sent           = false;
@@ -62,21 +75,6 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         if(!user.matchPassword(password))
             throw new ProcessException("Access denied. Incorrect Password",
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
-    }
-
-    @Override
-    public ArrayList<Candidate> getCandidatesWith(Status status) {
-        ArrayList<Candidate> candidates = new ArrayList<>();
-
-        List<String> regNumList  = attendanceList.getAllCandidateRegNumList();
-
-        for (int i = 0; i < regNumList.size(); i++) {
-            if(attendanceList.getCandidate(regNumList.get(i)).getStatus() == status){
-                candidates.add(attendanceList.getCandidate(regNumList.get(i)));
-            }
-        }
-
-        return candidates;
     }
 
     @Override

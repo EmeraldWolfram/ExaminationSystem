@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.manager.SortManager;
 import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
@@ -47,7 +48,8 @@ public class FragmentExempted extends RootFragment {
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new ExemptedListAdapter(taskModel.getCandidatesWith(Status.EXEMPTED));
+        adapter = new ExemptedListAdapter(taskModel.getCandidatesWith(Status.EXEMPTED,
+                SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_NAME, true));
         recyclerView.setAdapter(adapter);
 
         return view;

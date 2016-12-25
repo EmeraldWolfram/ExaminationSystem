@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.Role;
+import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.fragments.FragmentPresent;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
@@ -58,7 +60,12 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         toolbar         = (Toolbar)             findViewById(R.id.toolbar);
         drawer          = (DrawerLayout)        findViewById(R.id.drawer_layout);
         navigationView  = (NavigationView)      findViewById(R.id.nav_view);
+
+        View header     = navigationView.getHeaderView(0);
         uploadButton    = (FloatingActionButton)findViewById(R.id.uploadButton);
+        user            = (TextView) header.findViewById(R.id.submitInChargeName);
+        venue           = (TextView) header.findViewById(R.id.submitInChargeVenue);
+        session         = (TextView) header.findViewById(R.id.submitInChargeSession);
 
         //======================================================
         if(LoginModel.getStaff().getRole() == Role.IN_CHARGE){
@@ -67,12 +74,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
             uploadButton.setVisibility(View.INVISIBLE);
         }
         //======================================================
-
-        View header     = navigationView.getHeaderView(0);
-
-        user    = (TextView) header.findViewById(R.id.submitInChargeName);
-        venue   = (TextView) header.findViewById(R.id.submitInChargeVenue);
-        session = (TextView) header.findViewById(R.id.submitInChargeSession);
 
         drawerToggleButton = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -90,13 +91,11 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         navigationView.setNavigationItemSelectedListener(this);
         toolbar.setSubtitle("Present Candidates");
 
-        if(user == null){
-            Toast.makeText(this, "SOME", Toast.LENGTH_LONG).show();
-        }
         StaffIdentity staff = LoginModel.getStaff();
+
         user.setText(staff.getName());
         venue.setText(staff.getExamVenue());
-        session.setText("AM");
+        session.setText(Session.AM.toString());
 
         taskPresenter.onNavigationItemSelected(toolbar, R.id.nav_present, errorManager,
                 getSupportFragmentManager(), drawer);
@@ -212,7 +211,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         return taskPresenter.onNavigationItemSelected(toolbar, item.getItemId(), errorManager,
                                                         getSupportFragmentManager(), drawer);
     }

@@ -68,10 +68,7 @@ public interface TakeAttdMVP {
     }
 
     interface Model extends /*Runnable,*/ DialogInterface.OnClickListener, TaskSecureModel {
-        //boolean isInitialized();
-        //void initAttendance() throws ProcessException;  //prepare the Attd & papers (download or db)
         void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
-        //void saveAttendance();  //save before destroy
         void updateAssignList() throws ProcessException;    //update the assigned list
         //================================================================================
 

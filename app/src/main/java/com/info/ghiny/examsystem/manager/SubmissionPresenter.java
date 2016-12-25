@@ -42,6 +42,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     private boolean uploadFlag;
     private boolean secureFlag;
     private boolean navFlag;
+    private StaffIdentity user;
 
     public SubmissionPresenter(SubmissionMVP.MvpView taskView){
         this.taskView   = taskView;
@@ -56,10 +57,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     public void setHandler(Handler handler) {
         this.handler = handler;
-    }
-
-    boolean isUploadFlag() {
-        return uploadFlag;
     }
 
     @Override
@@ -134,10 +131,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         try{
             taskView.closeProgressWindow();
             taskModel.verifyChiefResponse(messageRx);
-            /*this.setSent(true);
-            boolean uploaded = JsonHelper.parseBoolean(messageRx);
-            throw new ProcessException("Submission successful",
-                    ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);*/
         } catch (ProcessException err){
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
@@ -206,7 +199,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         }
     }
 
-    //= MvpMPresenter =================================================================================
+    //= MvpMPresenter ==============================================================================
 
     @Override
     public void onCancel(DialogInterface dialog) {
@@ -219,5 +212,25 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
             taskView.closeProgressWindow();
             taskView.displayError(err);
         }
+    }
+
+    //==============================================================================================
+    void setUploadFlag(boolean uploadFlag) {
+        this.uploadFlag = uploadFlag;
+    }
+    void setSecureFlag(boolean secureFlag) {
+        this.secureFlag = secureFlag;
+    }
+    void setNavFlag(boolean navFlag) {
+        this.navFlag = navFlag;
+    }
+    boolean isUploadFlag() {
+        return uploadFlag;
+    }
+    boolean isSecureFlag() {
+        return secureFlag;
+    }
+    boolean isNavFlag() {
+        return navFlag;
     }
 }

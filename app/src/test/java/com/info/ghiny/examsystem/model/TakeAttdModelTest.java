@@ -745,7 +745,7 @@ public class TakeAttdModelTest {
         } catch(ProcessException err){
             assertNull(model.getTempCdd());
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
-            assertEquals("The paper was quarantized for Ms. Qua", err.getErrorMsg());
+            assertEquals("The paper was quarantined for Ms. Qua", err.getErrorMsg());
         }
     }
 
@@ -861,7 +861,7 @@ public class TakeAttdModelTest {
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
-            assertEquals("Previous: Table 12 assigned to NYN\nNew: Table 12 assign to FGY",
+            assertEquals("Previous: \nTable 12 assigned to NYN\nNew: \nTable 12 assign to FGY",
                     err.getErrorMsg());
         }
     }
@@ -883,7 +883,7 @@ public class TakeAttdModelTest {
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
-            assertEquals("Previous: FGY assigned to Table 14\nNew: FGY assign to 12",
+            assertEquals("Previous: \nFGY assigned to Table 14\nNew: \nFGY assign to 12",
                     err.getErrorMsg());
         }
     }
@@ -1109,7 +1109,7 @@ public class TakeAttdModelTest {
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
-            assertEquals("Previous: Table 12 assigned to NYN\nNew: Table 12 assign to FGY",
+            assertEquals("Previous: \nTable 12 assigned to NYN\nNew: \nTable 12 assign to FGY",
                     err.getErrorMsg());
         }
     }
@@ -1129,7 +1129,7 @@ public class TakeAttdModelTest {
             fail("Expected UPDATE_PROMPT but none thrown");
         }catch(ProcessException err){
             assertEquals(ProcessException.UPDATE_PROMPT, err.getErrorType());
-            assertEquals("Previous: FGY assigned to Table 14\nNew: FGY assign to 12",
+            assertEquals("Previous: \nFGY assigned to Table 14\nNew: \nFGY assign to 12",
                     err.getErrorMsg());
         }
     }

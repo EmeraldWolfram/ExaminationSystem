@@ -1,22 +1,22 @@
 package com.info.ghiny.examsystem.model;
 
-import android.content.DialogInterface;
 
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.Connector;
-import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
 
@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
 /**
  * Created by user09 on 12/25/2016.
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class HomeOptionModelTest {
 
     private HomeOptionModel model;
@@ -107,9 +109,23 @@ public class HomeOptionModelTest {
 
     //= PrepareLogout ==============================================================================
 
+    /**
+     * prepareLogout()
+     *
+     * This method prepare an Exception with the
+     * -Yes Button as confirm logout
+     * -No Button for cancel
+     *
+     */
     @Test
     public void prepareLogout() throws Exception {
+        ProcessException test   = model.prepareLogout();
 
+        assertEquals("Confirm logout and exit?", test.getErrorMsg());
+        assertEquals(ProcessException.YES_NO_MESSAGE, test.getErrorType());
+        assertEquals(taskPresenter, test.getBackPressListener());
+        assertEquals(taskPresenter, test.getListener(ProcessException.yesButton));
+        assertEquals(taskPresenter, test.getListener(ProcessException.noButton));
     }
 
     //= InitAttendance() ===========================================================================
@@ -261,14 +277,41 @@ public class HomeOptionModelTest {
      * the activity was destroyed.
      *
      * Test
-     * Check if method called to save data into database
+     * 1. Attendance List is ready and host is Chief, save the attendance list in database
+     * 2. Attendance List is null and host is Chief, do not save anything
+     * 3. Attendance List is ready and host is In-Charge, do not save anything
      */
     @Test
-    public void testSaveAttendance() throws Exception {
+    public void testSaveAttendance1_PositiveTest() throws Exception {
+        connector.setMyHost(Role.CHIEF);
+        TakeAttdModel.setAttdList(new AttendanceList());
+
         model.saveAttendance();
 
         verify(dBLoader).saveAttendanceList(any(AttendanceList.class));
         verify(dBLoader).savePaperList(any(HashMap.class));
+    }
+
+    @Test
+    public void testSaveAttendance2_AttendanceListIsNull() throws Exception {
+        connector.setMyHost(Role.CHIEF);
+        TakeAttdModel.setAttdList(null);
+
+        model.saveAttendance();
+
+        verify(dBLoader, never()).saveAttendanceList(any(AttendanceList.class));
+        verify(dBLoader, never()).savePaperList(any(HashMap.class));
+    }
+
+    @Test
+    public void testSaveAttendance3_HostIsNotChief() throws Exception {
+        connector.setMyHost(Role.IN_CHARGE);
+        TakeAttdModel.setAttdList(new AttendanceList());
+
+        model.saveAttendance();
+
+        verify(dBLoader, never()).saveAttendanceList(any(AttendanceList.class));
+        verify(dBLoader, never()).savePaperList(any(HashMap.class));
     }
 
     //= Run() ======================================================================================

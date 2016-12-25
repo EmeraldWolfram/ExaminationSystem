@@ -41,6 +41,9 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
 
+    static ArrayList<Candidate> getUpdatingList() {
+        return updatingList;
+    }
 
     boolean isTagNextLate() {
         return tagNextLate;
@@ -348,7 +351,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }
         if(cdd.getStatus() == Status.QUARANTINED){
-            throw new ProcessException("The paper was quarantized for "
+            throw new ProcessException("The paper was quarantined for "
                     + cdd.getExamIndex(),
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
         }

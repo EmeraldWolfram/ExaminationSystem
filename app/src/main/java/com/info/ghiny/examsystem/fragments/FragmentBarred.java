@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.manager.SortManager;
 import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
@@ -43,7 +44,8 @@ public class FragmentBarred extends RootFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view       =  inflater.inflate(R.layout.fragment_status_barred, null);
         recyclerView    = (RecyclerView) view.findViewById(R.id.recyclerBarredList);
-        adapter         = new BarredListAdapter(taskModel.getCandidatesWith(Status.BARRED));
+        adapter         = new BarredListAdapter(taskModel.getCandidatesWith(Status.BARRED,
+                SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_NAME, true));
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
