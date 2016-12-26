@@ -52,7 +52,6 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         this.unassignedMap  = new HashMap<>();
         this.attendanceList = TakeAttdModel.getAttdList();
         this.sortManager    = new SortManager();
-        this.regNumList     = attendanceList.getAllCandidateRegNumList();
         this.user           = LoginModel.getStaff();
     }
 
@@ -80,8 +79,14 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     @Override
     public ArrayList<Candidate> getCandidatesWith(Status                    status,
                                                   SortManager.SortMethod    sortMethod,
-                                                  boolean                   ascendingOrder) {
-
+                                                  boolean                   ascendingOrder)
+                                                    throws ProcessException {
+        if(attendanceList == null){
+            throw new ProcessException("Attendance List is not initialize yet",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        } else if(regNumList == null){
+            regNumList     = attendanceList.getAllCandidateRegNumList();
+        }
         TreeSet<Candidate> treeSet  = new TreeSet<>(sortManager.getComparator(sortMethod));
         for(int i = 0; i < regNumList.size(); i++) {
             Candidate tempCdd = attendanceList.getCandidate(regNumList.get(i));

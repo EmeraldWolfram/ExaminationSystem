@@ -15,7 +15,7 @@ public class SortManager {
         GROUP_PAPER_GROUP_PROGRAM_SORT_NAME,
         GROUP_PAPER_GROUP_PROGRAM_SORT_TABLE,
         GROUP_PAPER_SORT_ID,
-        GROUP_PAPER_SORT_NAME,
+        GROUP_PAPER_SORT_NAME
     }
 
     private Comparator<Candidate> grpProgSortId;

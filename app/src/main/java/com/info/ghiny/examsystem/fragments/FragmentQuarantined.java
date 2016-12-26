@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.Candidate;
+import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.SortManager;
+import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.view_holder.CandidateDisplayHolder;
 import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
@@ -26,6 +28,7 @@ public class FragmentQuarantined extends RootFragment{
     private SubmissionMVP.MvpModel taskModel;
     private RecyclerView recyclerView;
     private QuarantinedListAdapter adapter;
+    private ErrorManager errorManager;
 
     public FragmentQuarantined(){}
 
@@ -48,8 +51,12 @@ public class FragmentQuarantined extends RootFragment{
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new QuarantinedListAdapter(taskModel.getCandidatesWith(Status.QUARANTINED,
-                SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_NAME, true));
+        try {
+            adapter = new QuarantinedListAdapter(taskModel.getCandidatesWith(Status.QUARANTINED,
+                    SortManager.SortMethod.GROUP_PAPER_GROUP_PROGRAM_SORT_NAME, true));
+        } catch (ProcessException e) {
+            errorManager.displayError(e);
+        }
         recyclerView.setAdapter(adapter);
 
         return view;

@@ -7,7 +7,7 @@
             android:key="CrossHair"
             android:summary="Check to enable target square"
             android:defaultValue="true"
-            android:icon="@drawable/setting_1_cross_hair"/>
+            android:icon="@drawable/setting_1_cross_hair_2"/>
 
         <CheckBoxPreference
             android:id="@+id/beep"
@@ -30,7 +30,7 @@
             android:summary="Tap to select scan mode of QR scanner"
             android:entries="@array/modeEntries"
             android:entryValues="@array/modeValues"
-            android:defaultValue="4"
+            android:defaultValue="1"
             android:icon="@drawable/setting_1_mode"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Attendance List Group &amp; Sort" android:key="Sort">

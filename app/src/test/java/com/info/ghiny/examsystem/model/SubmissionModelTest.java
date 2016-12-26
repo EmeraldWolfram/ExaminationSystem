@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.info.ghiny.examsystem.model.ProcessException.FATAL_MESSAGE;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -206,7 +207,7 @@ public class SubmissionModelTest {
      * 3. Obtaining the list sorted in ID number for BARRED only
      * 4. Obtaining the list sorted in ID number for EXEMPTED only
      * 5. Obtaining the list sorted in ID number for QUARANTINED only
-     *
+     * 6. Attendance List is null, throw FATAL_ERROR
      */
 
     @Test
@@ -255,6 +256,22 @@ public class SubmissionModelTest {
         assertEquals(cdd6, testList.get(0));
     }
 
+    @Test
+    public void testGetCandidatesWith_6_FATAL_ERROR_thrownWhenAttendanceListNull() throws Exception {
+        TakeAttdModel.setAttdList(null);
+        model   = new SubmissionModel(taskPresenter);
+
+        try{
+            ArrayList<Candidate> testList   = model.getCandidatesWith(Status.QUARANTINED,
+                    SortManager.SortMethod.GROUP_PAPER_SORT_ID, true);
+
+        } catch (ProcessException err){
+            assertEquals(FATAL_MESSAGE, err.getErrorType());
+            assertEquals("Attendance List is not initialize yet", err.getErrorMsg());
+        }
+
+    }
+
     //= UnassignCandidate ==========================================================================
 
     /**
@@ -301,7 +318,7 @@ public class SubmissionModelTest {
 
             fail("Expected FATAL_ERROR but none was thrown");
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals(FATAL_MESSAGE, err.getErrorType());
             assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(1, attendanceList.getNumberOfCandidates(Status.PRESENT));
             assertEquals(0, TakeAttdModel.getUpdatingList().size());
@@ -321,7 +338,7 @@ public class SubmissionModelTest {
 
             fail("Expected FATAL_ERROR but none was thrown");
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals(FATAL_MESSAGE, err.getErrorType());
             assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(1, attendanceList.getNumberOfCandidates(Status.PRESENT));
             assertEquals(0, TakeAttdModel.getUpdatingList().size());
@@ -380,7 +397,7 @@ public class SubmissionModelTest {
 
             fail("Expected FATAL_ERROR but none was thrown");
         } catch (ProcessException err) {
-            assertEquals(ProcessException.FATAL_MESSAGE, err.getErrorType());
+            assertEquals(FATAL_MESSAGE, err.getErrorType());
             assertEquals("Candidate Info Corrupted", err.getErrorMsg());
             assertEquals(0, attendanceList.getNumberOfCandidates(Status.PRESENT));
             assertEquals(0, TakeAttdModel.getUpdatingList().size());

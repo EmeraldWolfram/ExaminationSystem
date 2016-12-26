@@ -43,7 +43,8 @@ public interface SubmissionMVP {
     interface MvpModel extends Runnable, TaskSecureModel {
         void verifyChiefResponse(String messageRx) throws ProcessException;
         void uploadAttdList() throws ProcessException;
-        ArrayList<Candidate> getCandidatesWith(Status status, SortManager.SortMethod sortMethod, boolean ascendingOrder);
+        ArrayList<Candidate> getCandidatesWith(Status status, SortManager.SortMethod sortMethod,
+                                               boolean ascendingOrder) throws ProcessException ;
         void unassignCandidate(int lastPosition, Candidate candidate) throws ProcessException;
         void assignCandidate(Candidate candidate) throws ProcessException;
     }

@@ -56,10 +56,9 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
         this.taskModel  = taskModel;
-        initAbsentList();
     }
 
-    private void initAbsentList(){
+    private void initAbsentList() throws ProcessException{
         if(prefGroup){
             switch (prefSort){
                 case 1:
@@ -96,7 +95,11 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
         prefGroup   = preferences.getBoolean("ProgrammeGrouping", true);
         prefAscend  = preferences.getBoolean("AscendingSort", true);
         prefSort    = Integer.parseInt(preferences.getString("CandidatesSorting", "3"));
-        initAbsentList();
+        try{
+            initAbsentList();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
     }
 
     @Override
@@ -199,5 +202,18 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
         } catch (ProcessException err) {
             taskView.displayError(err);
         }
+    }
+
+    void setTempCandidate(Candidate tempCandidate) {
+        this.tempCandidate = tempCandidate;
+    }
+    void setTempPosition(int tempPosition) {
+        this.tempPosition = tempPosition;
+    }
+    void setAbsentList(ArrayList<Candidate> absentList) {
+        this.absentList = absentList;
+    }
+    ArrayList<Candidate> getAbsentList() {
+        return absentList;
     }
 }

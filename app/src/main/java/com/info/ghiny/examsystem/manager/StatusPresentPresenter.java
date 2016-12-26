@@ -56,10 +56,9 @@ public class StatusPresentPresenter implements StatusFragmentMVP.PresentMvpPrese
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
         this.taskModel      = taskModel;
-        initPresentList();
     }
 
-    private void initPresentList(){
+    private void initPresentList() throws ProcessException{
         if(prefGroup){
             switch (prefSort){
                 case 1:
@@ -96,7 +95,11 @@ public class StatusPresentPresenter implements StatusFragmentMVP.PresentMvpPrese
         prefGroup   = preferences.getBoolean("ProgrammeGrouping", true);
         prefAscend  = preferences.getBoolean("AscendingSort", true);
         prefSort    = Integer.parseInt(preferences.getString("CandidatesSorting", "3"));
-        initPresentList();
+        try {
+            initPresentList();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
     }
 
     @Override
@@ -209,5 +212,18 @@ public class StatusPresentPresenter implements StatusFragmentMVP.PresentMvpPrese
         } catch (ProcessException err) {
             taskView.displayError(err);
         }
+    }
+
+    void setTempCandidate(Candidate tempCandidate) {
+        this.tempCandidate = tempCandidate;
+    }
+    void setTempPosition(int tempPosition) {
+        this.tempPosition = tempPosition;
+    }
+    void setPresentList(ArrayList<Candidate> presentList) {
+        this.presentList = presentList;
+    }
+    ArrayList<Candidate> getPresentList() {
+        return presentList;
     }
 }
