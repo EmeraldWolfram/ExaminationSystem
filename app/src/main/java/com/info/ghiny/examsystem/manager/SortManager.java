@@ -37,7 +37,11 @@ public class SortManager {
                 if(check != 0){
                     return check;
                 }
-                return lhs.getRegNum().compareTo(rhs.getRegNum());
+                check   =  lhs.getRegNum().compareTo(rhs.getRegNum());
+                if(check != 0){
+                    return check;
+                }
+                return -1;
             }
         };
 
@@ -57,7 +61,11 @@ public class SortManager {
                 if(check != 0){
                     return check;
                 }
-                return lhs.getRegNum().compareTo(rhs.getRegNum());
+                check = lhs.getRegNum().compareTo(rhs.getRegNum());
+                if(check != 0){
+                    return check;
+                }
+                return -1;
             }
         };
 
@@ -68,14 +76,22 @@ public class SortManager {
                 if(table != 0) {
                     return table;
                 }
-                return lhs.getRegNum().compareTo(rhs.getRegNum());
+                int check = lhs.getRegNum().compareTo(rhs.getRegNum());
+                if(check != 0){
+                    return check;
+                }
+                return -1;
             }
         };
 
         noGrpSortId = new Comparator<Candidate>() {
             @Override
             public int compare(Candidate lhs, Candidate rhs) {
-                return lhs.getRegNum().compareTo(rhs.getRegNum());
+                int check = lhs.getRegNum().compareTo(rhs.getRegNum());
+                if(check != 0){
+                    return check;
+                }
+                return -1;
             }
         };
 
@@ -87,7 +103,11 @@ public class SortManager {
                 if(check != 0){
                     return check;
                 }
-                return lhs.getRegNum().compareTo(rhs.getRegNum());
+                check = lhs.getRegNum().compareTo(rhs.getRegNum());
+                if(check != 0){
+                    return check;
+                }
+                return -1;
             }
         };
     }
