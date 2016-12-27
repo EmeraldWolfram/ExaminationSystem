@@ -53,6 +53,8 @@ public interface CollectionMVP {
         void notifyCollectorScanned(String id);
 
         void notifyClearance();
+
+        void notifyUpload();
     }
 
     interface Model extends Runnable, TaskSecureModel{

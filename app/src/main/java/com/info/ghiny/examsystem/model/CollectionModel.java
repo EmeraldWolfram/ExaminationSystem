@@ -144,6 +144,7 @@ public class CollectionModel implements CollectionMVP.Model {
 
     private void sendCollection() throws ProcessException {
         if(staffIdentity != null && bundle != null){
+            taskPresenter.notifyUpload();
             acknowledgeCollection   = false;
             ExternalDbLoader.acknowledgeCollection(staffIdentity, bundle);
         }

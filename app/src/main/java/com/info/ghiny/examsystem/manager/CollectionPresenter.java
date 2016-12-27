@@ -130,11 +130,8 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
             taskView.pauseScanning();
             taskView.beep();
             taskModel.bundleCollection(scanStr);
-            taskView.openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
-            handler.postDelayed(taskModel, 5000);
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, this);
-
             taskView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
                 taskView.resumeScanning();
@@ -169,6 +166,12 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
 
     //= For MvpModel ==================================================================================
 
+
+    @Override
+    public void notifyUpload() {
+        taskView.openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
+        handler.postDelayed(taskModel, 5000);
+    }
 
     @Override
     public void notifyBundleScanned(PaperBundle bundle) {
