@@ -146,7 +146,13 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
             case R.id.action_test:
                 Intent testing  = new Intent(this, InfoDisplayActivity.class);
                 testing.putExtra(JsonHelper.MINOR_KEY_PAPER_LIST,
-                        "{\"PaperList\":[{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 1\",\"PaperDate\":\"11/2/2016\",\"PaperCode\":\"BAME 0001\",\"PaperVenue\":\"H3\"},{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 2\",\"PaperDate\":\"11/2/2016\",\"PaperCode\":\"BAME 0002\",\"PaperVenue\":\"H4\"}],\"Result\":true}");
+                        "{\"PaperList\":[" +
+                                "{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 1\",\"PaperDate\":\"5/1/2017\",\"PaperCode\":\"BAME 0001\",\"PaperVenue\":\"H3\"}," +
+                                "{\"PaperSession\":\"PM\",\"PaperDesc\":\"SUBJECT 2\",\"PaperDate\":\"6/12/2017\",\"PaperCode\":\"BAME 0002\",\"PaperVenue\":\"V2\"}," +
+                                "{\"PaperSession\":\"PM\",\"PaperDesc\":\"SUBJECT 3\",\"PaperDate\":\"7/12/2017\",\"PaperCode\":\"BAME 0003\",\"PaperVenue\":\"M2\"}," +
+                                "{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 4\",\"PaperDate\":\"8/12/2017\",\"PaperCode\":\"BAME 0004\",\"PaperVenue\":\"M2\"}," +
+                                "{\"PaperSession\":\"VM\",\"PaperDesc\":\"SUBJECT 5\",\"PaperDate\":\"10/1/2017\",\"PaperCode\":\"BAME 0005\",\"PaperVenue\":\"M4\"}" +
+                                "],\"Result\":true}");
                 startActivity(testing);
                 return true;
             case R.id.action_test_2:
