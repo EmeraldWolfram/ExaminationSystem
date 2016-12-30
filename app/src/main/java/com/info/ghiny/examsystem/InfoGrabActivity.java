@@ -39,6 +39,9 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     private InfoGrabMVP.VPresenter taskPresenter;
     private ErrorManager errManager;
 
+    private RelativeLayout help;
+    private boolean helpDisplay;
+
     private int mode;
     private ImageView crossHairView;
     private FloatingActionButton scanInitiater;
@@ -74,6 +77,7 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
         scanInitiater   = (FloatingActionButton) findViewById(R.id.grabInfoScanButton);
         crossHairView   = (ImageView) findViewById(R.id.grabInfoCrossHair);
         errManager      = new ErrorManager(this);
+        help            = (RelativeLayout) findViewById(R.id.infoHelpContext);
 
         RelativeLayout thisLayout = (RelativeLayout) findViewById(R.id.obtainInfoLayout);
         assert thisLayout != null;
@@ -81,6 +85,16 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
             @Override
             public void onSwipeTop() {
                 taskPresenter.onSwipeTop();
+            }
+        });
+
+        helpDisplay = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -96,6 +110,16 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     }
 
     @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
@@ -104,6 +128,10 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 return taskPresenter.onSetting();
             default:
@@ -181,6 +209,10 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
 
     @Override
     public void resumeScanning() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        }
         switch (mode){
             case 2:
                 barcodeView.postDelayed(this, 1000);

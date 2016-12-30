@@ -4,9 +4,11 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.BeepManager;
@@ -49,6 +53,9 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     private int mode;
 
     //MvpView Objects
+
+    private RelativeLayout help;
+    private boolean helpDisplay;
     private ProgressDialog progDialog;
     private ImageView crossHairView;
     private FloatingActionButton scanInitiater;
@@ -85,8 +92,20 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
         barcodeView                 = (BarcodeView) findViewById(R.id.ipScanner);
         scanInitiater               = (FloatingActionButton) findViewById(R.id.linkScanButton);
         crossHairView               = (ImageView) findViewById(R.id.linkerCrossHair);
+        help                        = (RelativeLayout) findViewById(R.id.helpLinker);
         errorManager                = new ErrorManager(this);
         beepManager                 = new BeepManager(this);
+        helpDisplay                 = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(helpDisplay){
+                    helpDisplay = false;
+                    help.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     private void initMVP(){
@@ -139,6 +158,10 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
 
         switch (item.getItemId()){
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 Intent setting  = new Intent(this, SettingActivity.class);
                 startActivity(setting);
@@ -161,6 +184,16 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -206,6 +239,10 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
 
     @Override
     public void resumeScanning() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        }
         switch (mode){
             case 2:
                 barcodeView.postDelayed(this, 1000);

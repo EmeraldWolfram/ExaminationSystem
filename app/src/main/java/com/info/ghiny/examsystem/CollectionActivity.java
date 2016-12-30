@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
@@ -47,6 +48,9 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     private TextView bundleProgramme;
     private TextView bundleVenue;
 
+    private RelativeLayout help;
+    private boolean helpDisplay;
+
     private LinearLayout infoContainer;
     private ProgressDialog progDialog;
     private BarcodeView barcodeView;
@@ -58,8 +62,7 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
             }
         }
         @Override
-        public void possibleResultPoints(List<ResultPoint> resultPoints) {
-        }
+        public void possibleResultPoints(List<ResultPoint> resultPoints) {}
     };
 
     //==============================================================================================
@@ -81,6 +84,7 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
         barcodeView     = (BarcodeView) findViewById(R.id.bundleScanner);
         scanInitiater   = (FloatingActionButton) findViewById(R.id.collectScanButton);
         crossHairView   = (ImageView) findViewById(R.id.collectCrossHair);
+        help            = (RelativeLayout) findViewById(R.id.collectionHelpContext);
 
         collectorId     = (TextView) findViewById(R.id.collectorId);
         bundlePaper     = (TextView) findViewById(R.id.bundlePaperCode);
@@ -89,6 +93,16 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
         infoContainer   = (LinearLayout) findViewById(R.id.collectionInfo);
         infoContainer.setOnTouchListener(new OnSwipeAnimator(this, infoContainer, taskPresenter));
+
+        helpDisplay = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void initMVP(){
@@ -109,6 +123,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 return taskPresenter.onSetting();
             default:
@@ -144,6 +162,16 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     protected void onDestroy() {
         taskPresenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -196,6 +224,10 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
 
     @Override
     public void resumeScanning() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        }
         switch (mode){
             case 2:
                 barcodeView.postDelayed(this, 1000);

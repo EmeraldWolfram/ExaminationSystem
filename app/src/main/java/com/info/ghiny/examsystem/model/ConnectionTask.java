@@ -30,6 +30,12 @@ public class ConnectionTask extends AsyncTask<String, String, JavaHost> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+    }
+
+    @Override
     protected JavaHost doInBackground(String... params) {
 
         JavaHost javaHost = new JavaHost(new JavaHost.OnMessageReceived() {
@@ -37,8 +43,8 @@ public class ConnectionTask extends AsyncTask<String, String, JavaHost> {
             public void messageReceived(String message) {}
         });
         ExternalDbLoader.setJavaHost(javaHost);
-        if(javaHost != null)
-            javaHost.run();
+        javaHost.run();
+
         return null;
     }
 

@@ -113,7 +113,9 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             taskView.pauseScanning();
             taskView.beep();
             taskModel.tryConnectWithQR(scanStr);
-            taskView.navigateActivity(MainLoginActivity.class);
+            taskView.openProgressWindow("Connecting", "Establishing connection to Host!");
+            handler.postDelayed(establishCheck, 2000);
+            //taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             taskView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)
@@ -169,4 +171,18 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         taskView.resumeScanning();
         dialog.cancel();
     }
+
+    Runnable establishCheck = new Runnable() {
+        @Override
+        public void run() {
+            if(ExternalDbLoader.getJavaHost().isConnected()){
+                taskView.closeProgressWindow();
+                taskView.navigateActivity(MainLoginActivity.class);
+            } else {
+                taskView.closeProgressWindow();
+                taskView.displayError(new ProcessException("Connection failed!",
+                        ProcessException.MESSAGE_DIALOG, IconManager.WARNING));
+            }
+        }
+    };
 }

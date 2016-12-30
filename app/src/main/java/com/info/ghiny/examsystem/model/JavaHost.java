@@ -30,14 +30,12 @@ public class JavaHost implements Runnable{
     private String serverMessage;
     /**
      * Specify the Server Ip Address here. Whereas our Socket Server is started.
-     * */
-    //public static String SERVERIP = "192.168.0.112"; // your computer IP address
-    //public static int SERVERPORT = 5657;
+     */
     private static Connector connector;
-    private static Role myHost;
     private OnMessageReceived msgListener = null;
     private boolean running;
     private boolean sending;
+    private Socket socket;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -56,12 +54,9 @@ public class JavaHost implements Runnable{
         sending     = false;
     }
 
-    /*public static void setServerIp(String ipAddress){
-        JavaHost.SERVERIP = ipAddress;
+    public boolean isConnected(){
+        return socket != null && socket.isConnected();
     }
-    public static void setServerPort(int portNumber){
-        JavaHost.SERVERPORT = portNumber;
-    }*/
 
     public static void setConnector(Connector connector) {
         JavaHost.connector = connector;
@@ -123,16 +118,13 @@ public class JavaHost implements Runnable{
             InetAddress serverAddr = InetAddress.getByName(connector.getIpAddress());
             SocketAddress address   = new InetSocketAddress(serverAddr, connector.getPortNumber());
 
-            //create a socket to make the connection with the server
-            Socket socket = new Socket(serverAddr, connector.getPortNumber());
+            socket = new Socket(serverAddr, connector.getPortNumber());
 
-            //Log.d(LinkChiefActivity.TAG, String.format("ip: %s, port: %d", connector.getIpAddress(), connector.getPortNumber()));
             try {
                 out = new PrintWriter(
                         new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                //in this while the client listens for the messages sent by the server
                 while (running) {
                     serverMessage = in.readLine();
 

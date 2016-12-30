@@ -9,7 +9,9 @@ import com.info.ghiny.examsystem.model.ProcessException;
  */
 
 public interface LinkChiefMVP {
-    interface ViewFace extends TaskScanView, GeneralView, TaskConnView {}
+    interface ViewFace extends TaskScanView, GeneralView, TaskConnView {
+
+    }
 
     interface PresenterFace extends TaskScanPresenter, TaskConnPresenter {
         /**

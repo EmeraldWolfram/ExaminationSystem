@@ -60,6 +60,8 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     private TextView paperView;
     private ImageView tagIndicator;
 
+    private RelativeLayout help;
+    private boolean helpDisplay;
     private RelativeLayout cddLayout;
     private RelativeLayout bottomLayout;
 
@@ -104,6 +106,7 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
         paperView       = (TextView)findViewById(R.id.paperAssignText);
         tableView       = (TextView)findViewById(R.id.tableNumberText);
         tagIndicator    = (ImageView)findViewById(R.id.assignImageTag);
+        help            = (RelativeLayout) findViewById(R.id.takeAttdHelpContext);
 
         scanInitiater   = (FloatingActionButton) findViewById(R.id.takeAttdScanButton);
         tagButton       = (FloatingActionButton) findViewById(R.id.lateTagButton);
@@ -114,6 +117,16 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
             @Override
             public void onSwipeLeft() {
                 taskPresenter.onSwipeLeft();
+            }
+        });
+
+        helpDisplay = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -138,6 +151,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 return taskPresenter.onSetting();
             default:
@@ -177,6 +194,16 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         taskPresenter.onPasswordReceived(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -242,6 +269,10 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
 
     @Override
     public void resumeScanning() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        }
         switch (mode){
             case 2:
                 barcodeView.postDelayed(this, 1000);

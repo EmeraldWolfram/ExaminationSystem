@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.manager.ConfigManager;
@@ -20,6 +21,9 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
     private InfoDisplayMVP.Presenter taskPresenter;
     private DisplayListAdapter listAdapter;
     private ErrorManager errorManager;
+
+    private RelativeLayout help;
+    private boolean helpDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,16 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
     protected void onRestart() {
         taskPresenter.onRestart();
         super.onRestart();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initMVP(){

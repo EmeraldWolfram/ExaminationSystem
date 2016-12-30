@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
@@ -54,6 +55,8 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
     private BeepManager beepManager;
     private ProgressDialog progDialog;
 
+    private RelativeLayout help;
+    private boolean helpDisplay;
     private int mode;
     private ImageView crossHairView;
     private FloatingActionButton scanInitiater;
@@ -91,15 +94,26 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
         barcodeView     = (BarcodeView) findViewById(R.id.loginScanner);
         scanInitiater   = (FloatingActionButton) findViewById(R.id.loginScanButton);
         crossHairView   = (ImageView) findViewById(R.id.loginCrossHair);
+        help            = (RelativeLayout) findViewById(R.id.loginHelpContext);
+        helpDisplay     = false;
+
         errorManager    = new ErrorManager(this);
         beepManager     = new BeepManager(this);
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void initMVP(){
         dbLoader        = new LocalDbLoader(this);
         SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(this);
-        LoginPresenter presenter  = new LoginPresenter(this, preferences);
-        LoginModel model       = new LoginModel(presenter, dbLoader);
+        LoginPresenter presenter        = new LoginPresenter(this, preferences);
+        LoginModel model                = new LoginModel(presenter, dbLoader);
         presenter.setHandler(new Handler());
         presenter.setTaskModel(model);
         taskPresenter           = presenter;
@@ -169,6 +183,10 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
         Candidate.setPaperList(papers);
 
         switch (item.getItemId()){
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 Intent setting  = new Intent(this, SettingActivity.class);
                 startActivity(setting);
@@ -184,6 +202,16 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -245,6 +273,10 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
 
     @Override
     public void resumeScanning() {
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        }
         switch (mode){
             case 2:
                 barcodeView.postDelayed(this, 1000);

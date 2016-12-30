@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.info.ghiny.examsystem.database.LocalDbLoader;
@@ -42,6 +43,9 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     private ImageView connectionButton;
     private ImageView attendanceButton;
     private ProgressDialog progDialog;
+
+    private RelativeLayout help;
+    private boolean helpDisplay;
 
     private boolean infoEnable;
     private boolean collectionEnable;
@@ -81,6 +85,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
         collectionButton    = (ImageView) findViewById(R.id.optionCollection);
         connectionButton    = (ImageView) findViewById(R.id.optionConnection);
         attendanceButton    = (ImageView) findViewById(R.id.optionAttendance);
+        help                = (RelativeLayout) findViewById(R.id.homeHelpContext);
 
         Intent loginActivity    = getIntent();
         infoEnable          = loginActivity.getBooleanExtra(FEATURE_INFO_GRAB, true);
@@ -92,6 +97,17 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
         setupButton(collectionEnable, collectionButton);
         setupButton(connectionEnable, connectionButton);
         setupButton(attendanceEnable, attendanceButton);
+
+        helpDisplay = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
     private void initMVP(){
@@ -123,6 +139,10 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 return taskPresenter.onSetting();
             default:
@@ -138,7 +158,12 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
 
     @Override
     public void onBackPressed() {
-        taskPresenter.onBackPressed();
+        if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
+        } else {
+            taskPresenter.onBackPressed();
+        }
     }
 
     @Override

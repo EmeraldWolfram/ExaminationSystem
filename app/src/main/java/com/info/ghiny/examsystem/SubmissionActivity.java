@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,9 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
+    private RelativeLayout help;
+    private boolean helpDisplay;
+
     private TextView venue;
     private TextView user;
     private TextView session;
@@ -66,6 +70,17 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         user            = (TextView) header.findViewById(R.id.submitInChargeName);
         venue           = (TextView) header.findViewById(R.id.submitInChargeVenue);
         session         = (TextView) header.findViewById(R.id.submitInChargeSession);
+        help            = (RelativeLayout) findViewById(R.id.attendanceListHelpContext);
+
+        helpDisplay = false;
+        help.setVisibility(View.INVISIBLE);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDisplay = false;
+                help.setVisibility(View.INVISIBLE);
+            }
+        });
 
         //======================================================
         if(LoginModel.getStaff().getRole() == Role.IN_CHARGE){
@@ -107,6 +122,8 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         drawerToggleButton.syncState();
     }
 
+
+
     private void initMVP(){
         errorManager    = new ErrorManager(this);
         SubmissionPresenter presenter   = new SubmissionPresenter(this);
@@ -138,6 +155,9 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if(helpDisplay){
+            helpDisplay = false;
+            help.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -152,6 +172,10 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
+            case R.id.action_help:
+                helpDisplay = true;
+                help.setVisibility(View.VISIBLE);
+                return true;
             case R.id.action_setting:
                 return taskPresenter.onSetting();
             default:

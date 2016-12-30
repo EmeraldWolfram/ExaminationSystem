@@ -14,5 +14,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <RelativeLayout
+        android:id="@+id/attendanceListHelpContext"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Swipe to RESET item"
+            android:textColor="@color/colorDarkerBlue"
+            android:id="@+id/textView2"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/arrow"
+            android:layout_alignStart="@+id/arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Press and Hold to tag Late"
+            android:textColor="@color/colorDarkerBlue"
+            android:layout_below="@+id/arrow"
+            android:layout_alignLeft="@+id/arrow"
+            android:layout_alignStart="@+id/arrow"
+            android:id="@+id/textView3" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:src="@drawable/arrow_right"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/textView2"
+            android:layout_alignRight="@+id/textView"
+            android:layout_alignEnd="@+id/textView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Press to upload Attendance List"
+            android:textColor="@color/colorDarkerGreen"
+            android:layout_marginBottom="60dp"
+            android:id="@+id/textView"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>
