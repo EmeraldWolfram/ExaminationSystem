@@ -98,6 +98,11 @@ public class InfoDisplayActivity extends AppCompatActivity implements InfoDispla
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void displayError(ProcessException err) {
         errorManager.displayError(err);
     }

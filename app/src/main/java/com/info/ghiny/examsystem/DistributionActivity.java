@@ -22,7 +22,6 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
     private ErrorManager errorManager;
 
     private ImageView qrView;
-    private boolean inForeground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +36,6 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
 
     @Override
     protected void onStart() {
-        inForeground    = true;
         super.onStart();
     }
 
@@ -49,7 +47,6 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
 
     @Override
     protected void onStop() {
-        inForeground    = false;
         super.onStop();
     }
 
@@ -75,11 +72,6 @@ public class DistributionActivity extends AppCompatActivity implements Distribut
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         taskPresenter.onPasswordReceived(requestCode, resultCode, data);
-    }
-
-    @Override
-    public boolean stillInForeground() {
-        return inForeground;
     }
 
     @Override

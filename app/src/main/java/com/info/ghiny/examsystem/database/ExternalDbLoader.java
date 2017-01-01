@@ -119,4 +119,14 @@ public class ExternalDbLoader {
 
     }
 
+    public static void acknowledgeUpdateReceive() throws ProcessException {
+        if(javaHost != null){
+            String str = JsonHelper.formatUpdateAcknowledge();
+            javaHost.putMessageIntoSendQueue(str);
+        } else {
+            throw new ProcessException("Fail to send out update!\nPlease consult developer",
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING);
+        }
+    }
+
 }

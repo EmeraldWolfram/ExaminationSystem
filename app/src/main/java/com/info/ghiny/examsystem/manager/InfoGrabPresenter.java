@@ -9,12 +9,16 @@ import android.os.Handler;
 import com.info.ghiny.examsystem.InfoDisplayActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SettingActivity;
+import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoGrabMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
+import com.info.ghiny.examsystem.model.TakeAttdModel;
+
+import java.util.ArrayList;
 
 /**
  * Created by GhinY on 08/08/2016.
@@ -68,6 +72,7 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
 
     @Override
     public void onResume(final ErrorManager errManager){
+        ExternalDbLoader.getJavaHost().setTaskView(taskView);
         ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             @Override
             public void messageReceived(String message) {
@@ -80,12 +85,17 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            if(JsonHelper.parseType(messageRx).equals(JsonHelper.TYPE_CANDIDATE_INFO)){
+            String type = JsonHelper.parseType(messageRx);
+            if(type.equals(JsonHelper.TYPE_CANDIDATE_INFO)){
                 taskView.closeProgressWindow();
                 ConnectionTask.setCompleteFlag(true);
                 boolean ack =   JsonHelper.parseBoolean(messageRx);
                 studentSubjects = messageRx;
                 taskView.navigateActivity(InfoDisplayActivity.class);
+            } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
+                ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
+                TakeAttdModel.rxAttendanceUpdate(candidates);
+                ExternalDbLoader.acknowledgeUpdateReceive();
             }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);

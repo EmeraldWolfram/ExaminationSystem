@@ -10,4 +10,5 @@ public interface GeneralView {
     void displayError(ProcessException err);
     void navigateActivity(Class<?> cls);
     void finishActivity();
+    void runItSeparate(Runnable runner);
 }

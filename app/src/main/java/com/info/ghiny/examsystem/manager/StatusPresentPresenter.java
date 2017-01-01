@@ -214,6 +214,15 @@ public class StatusPresentPresenter implements StatusFragmentMVP.PresentMvpPrese
         }
     }
 
+    public void onRefresh(){
+        try{
+            presentList.clear();
+            initPresentList();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
+    }
+
     void setTempCandidate(Candidate tempCandidate) {
         this.tempCandidate = tempCandidate;
     }

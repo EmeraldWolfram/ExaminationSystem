@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 /**
  * Created by GhinY on 06/06/2016.
@@ -62,6 +63,7 @@ public class JsonHelper {
     //=== BTW ANDROID & ANDROID ===================================================================
     public static final String TYPE_ATTENDANCE_UP   = "AttendanceUpdate";
     public static final String MINOR_KEY_UPDATE     = "UpdateList";
+    public static final String TYPE_ATTENDANCE_ACK  = "UpdateAcknowledge";
 
     public static String formatString(String type, String valueStr){
         JSONObject object = new JSONObject();
@@ -69,6 +71,17 @@ public class JsonHelper {
             object.put(MAJOR_KEY_TYPE_TX, type);
             object.put(MAJOR_KEY_TYPE_ID, 0);
             object.put(MINOR_KEY_VALUE, valueStr);
+            return object.toString();
+        } catch(Exception err){
+            return null;
+        }
+    }
+
+    public static String formatUpdateAcknowledge(){
+        JSONObject object = new JSONObject();
+        try{
+            object.put(MAJOR_KEY_TYPE_TX, TYPE_ATTENDANCE_ACK);
+            object.put(MAJOR_KEY_TYPE_ID, 0);
             return object.toString();
         } catch(Exception err){
             return null;

@@ -91,6 +91,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
                 taskView.displayError(err);
             }
 
+            ExternalDbLoader.getJavaHost().setTaskView(taskView);
             ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
                 //here the messageReceived method is implemented
                 @Override

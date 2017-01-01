@@ -49,6 +49,12 @@ public class FragmentPresent extends RootFragment implements StatusFragmentMVP.P
         this.errorManager   = errorManager;
     }
 
+    @Override
+    public void refresh() {
+        taskPresenter.onRefresh();
+        adapter.notifyDataSetChanged();
+    }
+
     //==============================================================================================
 
     @Override

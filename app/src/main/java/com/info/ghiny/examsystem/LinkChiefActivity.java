@@ -209,6 +209,11 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void navigateActivity(Class<?> cls) {
         Intent login    = new Intent(this, cls);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

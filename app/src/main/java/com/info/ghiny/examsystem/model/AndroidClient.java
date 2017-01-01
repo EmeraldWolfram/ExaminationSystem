@@ -125,12 +125,10 @@ public class AndroidClient extends Thread {
         }
     }
 
-    /**
-     * Sends the message entered by client to the server
-     * @param message text entered by client
-     */
+
     public void sendMessage(String message){
         if (out != null && !out.checkError()) {
+            Log.d(DistributionActivity.TAG, "### SEND ####" + message);
             out.println(message);
             out.flush();
         }
@@ -226,6 +224,10 @@ public class AndroidClient extends Thread {
                     break;
                 case JsonHelper.TYPE_VENUE_INFO:
                     onReqVenueInfo();
+                    break;
+                case JsonHelper.TYPE_ATTENDANCE_ACK:
+                    //receive acknowledge, do nothing   - Can be extend to do something useful
+                    //But not needed now as disconnection handle by Socket
                     break;
                 default:
                     onExtraReq(clientMsg);

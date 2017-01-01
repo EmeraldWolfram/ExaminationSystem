@@ -72,7 +72,7 @@ public interface TakeAttdMVP {
         void updateAssignList() throws ProcessException;    //update the assigned list
         //================================================================================
 
-        void rxAttendanceUpdate(ArrayList<Candidate> modifyList);
+        //void rxAttendanceUpdate(ArrayList<Candidate> modifyList);
         void txAttendanceUpdate() throws ProcessException;
 
         /**

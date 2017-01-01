@@ -214,6 +214,11 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void displayError(ProcessException err) {
         errorManager.displayError(err);
     }

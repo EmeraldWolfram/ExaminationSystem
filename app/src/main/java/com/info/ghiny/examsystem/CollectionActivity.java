@@ -247,6 +247,11 @@ public class CollectionActivity extends AppCompatActivity implements CollectionM
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void openProgressWindow(String title, String message) {
         progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);
         progDialog.setMessage(message);

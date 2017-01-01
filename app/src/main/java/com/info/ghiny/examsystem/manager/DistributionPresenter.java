@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -35,6 +36,7 @@ public class DistributionPresenter
             context.startService(new Intent(context, TasksSynchronizer.class));
         }
         TasksSynchronizer.startNewThread(taskView, taskModel);
+        ExternalDbLoader.getJavaHost().setTaskView(taskView);
     }
 
     @Override

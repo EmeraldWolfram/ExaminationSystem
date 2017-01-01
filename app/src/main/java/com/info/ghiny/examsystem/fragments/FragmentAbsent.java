@@ -49,6 +49,11 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
         this.errorManager   = errorManager;
     }
 
+    @Override
+    public void refresh() {
+        adapter.notifyDataSetChanged();
+    }
+
     //==============================================================================================
 
     @Override
@@ -136,6 +141,7 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
         public int getItemCount() {
             return taskPresenter.getItemCount();
         }
+
     }
 
     //= MVP MvpView Interface Implementation ==========================================================

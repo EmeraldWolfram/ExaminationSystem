@@ -258,6 +258,11 @@ public class TakeAttdActivity extends AppCompatActivity implements TakeAttdMVP.V
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void securityPrompt(boolean cancellable) {
         Intent secure   = new Intent(this, PopUpLogin.class);
         secure.putExtra("Cancellable", cancellable);

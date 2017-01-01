@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.info.ghiny.examsystem.DistributionActivity;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
@@ -20,6 +21,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by user09 on 12/13/2016.
@@ -128,12 +130,15 @@ public final class TasksSynchronizer extends Service{
     }
 
     public static void updateAttendance(ArrayList<Candidate> updatingList){
-        if(clientsMap.size() > 0 && updatingList.size() > 0){
+        if(clientsMap.size() > 0){
             String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
+
+            Log.d(DistributionActivity.TAG, String.format(Locale.ENGLISH, "%d of client", clientsMap.size()));
 
             for(AndroidClient client : clientsMap.values()){
                 client.putMessageIntoSendQueue(msgUpdate);
             }
+            updatingList.clear();
         }
     }
 
@@ -159,23 +164,26 @@ public final class TasksSynchronizer extends Service{
     }
 
     public static String getThisIpv4() throws ProcessException {
-        String ip = "";
+        String ip = null;
         try {
             Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface
                     .getNetworkInterfaces();
             while (enumNetworkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = enumNetworkInterfaces
-                        .nextElement();
-                Enumeration<InetAddress> enumInetAddress = networkInterface
-                        .getInetAddresses();
+                NetworkInterface networkInterface = enumNetworkInterfaces.nextElement();
+                Enumeration<InetAddress> enumInetAddress = networkInterface.getInetAddresses();
                 while (enumInetAddress.hasMoreElements()) {
-                    InetAddress inetAddress = enumInetAddress
-                            .nextElement();
+                    InetAddress inetAddress = enumInetAddress.nextElement();
 
                     if (inetAddress.isSiteLocalAddress()) {
-                        ip = inetAddress.getHostAddress();
+                        if(!inetAddress.getHostAddress().startsWith("10") || ip == null){
+                            ip = inetAddress.getHostAddress();
+                        }
                     }
                 }
+            }
+
+            if(ip == null){
+                throw new SocketException("Fail");
             }
             return ip;
         } catch (SocketException e) {

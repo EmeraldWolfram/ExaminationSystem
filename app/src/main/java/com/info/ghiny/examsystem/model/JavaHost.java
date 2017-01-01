@@ -7,6 +7,8 @@ import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.interfacer.GeneralView;
+import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.IconManager;
 
 import org.json.JSONObject;
@@ -20,6 +22,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,6 +39,7 @@ public class JavaHost implements Runnable{
     private boolean running;
     private boolean sending;
     private Socket socket;
+    private GeneralView taskView;
 
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -60,6 +64,10 @@ public class JavaHost implements Runnable{
 
     public static void setConnector(Connector connector) {
         JavaHost.connector = connector;
+    }
+
+    public void setTaskView(GeneralView taskView) {
+        this.taskView = taskView;
     }
 
     public static Connector getConnector() {
@@ -127,19 +135,31 @@ public class JavaHost implements Runnable{
 
                 while (running) {
                     serverMessage = in.readLine();
-
-                    int deviceId    = JsonHelper.parseClientId(serverMessage);
-                    if(deviceId != 0){
-                        serverMessage   = JsonHelper.modifyDeviceId(serverMessage, 0);
-                        TasksSynchronizer.passMessageBack(deviceId, serverMessage);
-                    } else if (msgListener != null) {
-                        msgListener.messageReceived(serverMessage);
+                    if(serverMessage != null){
+                        int deviceId    = JsonHelper.parseClientId(serverMessage);
+                        if(deviceId != 0){
+                            serverMessage   = JsonHelper.modifyDeviceId(serverMessage, 0);
+                            TasksSynchronizer.passMessageBack(deviceId, serverMessage);
+                        } else if (msgListener != null) {
+                            msgListener.messageReceived(serverMessage);
+                        }
+                    } else {
+                        throw new ProcessException("Connection Lost!\n" +
+                                "Please restart the app and connect again!",
+                                ProcessException.FATAL_MESSAGE, IconManager.WARNING);
                     }
+
                     serverMessage = null;
                 }
-            } catch (Exception e) {
-                throw new ProcessException(e.getMessage(), ProcessException.FATAL_MESSAGE,
-                        IconManager.WARNING);
+            } catch (SocketException err) {
+                Log.d(LinkChiefActivity.TAG, err.getMessage());
+            } catch (final ProcessException err) {
+                taskView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        taskView.displayError(err);
+                    }
+                });
             } finally {
                 socket.close();
             }

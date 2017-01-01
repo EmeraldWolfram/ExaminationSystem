@@ -181,6 +181,11 @@ public class InfoGrabActivity extends AppCompatActivity implements InfoGrabMVP.V
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void displayError(ProcessException err) {
         errManager.displayError(err);
     }

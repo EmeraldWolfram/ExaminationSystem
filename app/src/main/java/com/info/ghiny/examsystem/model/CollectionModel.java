@@ -1,10 +1,13 @@
 package com.info.ghiny.examsystem.model;
 
+import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
+
+import java.util.ArrayList;
 
 /**
  * Created by GhinY on 05/10/2016.
@@ -159,10 +162,11 @@ public class CollectionModel implements CollectionMVP.Model {
             case JsonHelper.TYPE_UNDO_COLLECTION:
                 acknowledgeUndoCollection = true;
                 break;
+            case JsonHelper.TYPE_ATTENDANCE_UP:
+                ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
+                TakeAttdModel.rxAttendanceUpdate(candidates);
+                ExternalDbLoader.acknowledgeUpdateReceive();
+                break;
         }
-
-        //if(!JsonHelper.parseBoolean(messageRx)){
-            //throw error
-        //}
     }
 }

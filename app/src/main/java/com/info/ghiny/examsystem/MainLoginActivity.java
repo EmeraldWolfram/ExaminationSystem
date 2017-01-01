@@ -253,6 +253,11 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
     public void securityPrompt(boolean cancellable) {
         Intent pwPrompt = new Intent(this, PopUpLogin.class);
         pwPrompt.putExtra("Cancellable", cancellable);

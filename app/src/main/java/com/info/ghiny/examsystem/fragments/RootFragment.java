@@ -18,4 +18,6 @@ public class RootFragment extends Fragment {
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {}
 
     public void setErrorManager(ErrorManager errorManager){}
+
+    public void refresh(){}
 }

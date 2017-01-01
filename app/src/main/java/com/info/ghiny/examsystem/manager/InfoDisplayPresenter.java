@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
@@ -43,6 +44,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
             String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST);
             taskModel.updateSubjects(message);
             taskView.notifyDataSetChanged();
+            ExternalDbLoader.getJavaHost().setTaskView(taskView);
         } catch (Exception err) {
             taskView.finishActivity();
         }

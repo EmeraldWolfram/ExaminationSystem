@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -1228,6 +1229,9 @@ public class TakeAttdModelTest {
      */
     @Test
     public void testRxAttendanceUpdate1_PositiveTest() throws Exception {
+
+        Socket socket   = Mockito.mock(Socket.class);
+        assertFalse(socket.isConnected());
 
     }
 

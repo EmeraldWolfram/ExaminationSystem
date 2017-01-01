@@ -172,6 +172,12 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     }
 
     @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+
+    @Override
     public void displayError(ProcessException err) {
         this.errorManager.displayError(err);
     }

@@ -70,6 +70,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
 
     @Override
     public void onResume(final ErrorManager errorManager){
+        ExternalDbLoader.getJavaHost().setTaskView(taskView);
         ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
@@ -100,8 +101,6 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
         try{
             taskView.closeProgressWindow();
             taskModel.acknowledgeChiefReply(messageRx);
-            //setAcknowledgementComplete(true);
-            //boolean ack = JsonHelper.parseBoolean(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }

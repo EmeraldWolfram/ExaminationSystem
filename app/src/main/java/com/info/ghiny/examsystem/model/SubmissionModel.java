@@ -107,9 +107,10 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
                     ProcessException.FATAL_MESSAGE, IconManager.WARNING);
         }
         unassignedMap.put(candidate.getRegNum(), candidate.getTableNumber());
+        attendanceList.removeCandidate(candidate.getRegNum());
         candidate.setStatus(Status.ABSENT);
         candidate.setTableNumber(0);
-        attendanceList.removeCandidate(candidate.getRegNum());
+        candidate.setCollector(null);
         attendanceList.addCandidate(candidate);
         TakeAttdModel.updateAbsentForUpdatingList(candidate);
     }
@@ -128,6 +129,7 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
         }
 
         attendanceList.removeCandidate(candidate.getRegNum());
+        candidate.setCollector(user.getIdNo());
         candidate.setTableNumber(table);
         candidate.setStatus(Status.PRESENT);
         attendanceList.addCandidate(candidate);

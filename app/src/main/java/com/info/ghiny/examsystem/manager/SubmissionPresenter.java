@@ -14,6 +14,7 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
+import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
@@ -30,6 +31,8 @@ import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
 
+import java.util.ArrayList;
+
 /**
  * Created by user09 on 11/17/2016.
  */
@@ -39,11 +42,12 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     private SubmissionMVP.MvpView taskView;
     private SubmissionMVP.MvpModel taskModel;
     private Handler handler;
-    private Handler attdSyn;
-    //private boolean sent;
     private boolean uploadFlag;
     private boolean secureFlag;
     private boolean navFlag;
+    private RootFragment fragment;
+
+    private Handler timer;
 
 
     public SubmissionPresenter(SubmissionMVP.MvpView taskView){
@@ -51,7 +55,8 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         this.uploadFlag = false;
         this.secureFlag = false;
         this.navFlag    = false;
-        this.attdSyn    = new Handler();
+        this.timer      = new Handler();
+        this.timer.postDelayed(displaySync, 4000);
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -65,6 +70,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onResume(final ErrorManager errManager) {
         if(ExternalDbLoader.getJavaHost() != null){
+            ExternalDbLoader.getJavaHost().setTaskView(taskView);
             ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
                 @Override
                 public void messageReceived(String message) {
@@ -88,6 +94,7 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     public void onDestroy() {
         taskView.closeProgressWindow();
         handler.removeCallbacks(taskModel);
+        timer.removeCallbacks(displaySync);
     }
 
     @Override
@@ -137,7 +144,9 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
                 taskView.closeProgressWindow();
                 taskModel.verifyChiefResponse(messageRx);
             } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
-                attdSyn.postDelayed(synTimer,1000);
+                ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
+                TakeAttdModel.rxAttendanceUpdate(candidates);
+                ExternalDbLoader.acknowledgeUpdateReceive();
             }
         } catch (ProcessException err){
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -147,8 +156,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public boolean onNavigationItemSelected(Toolbar toolbar, int itemId, ErrorManager errManager,
                                             FragmentManager manager, DrawerLayout drawer) {
-        RootFragment fragment;
-
         switch (itemId){
             case R.id.nav_present:
                 fragment    = new FragmentPresent();
@@ -183,6 +190,8 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         ft.commit();
 
         drawer.closeDrawer(GravityCompat.START);
+
+
         return true;
     }
 
@@ -222,10 +231,13 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         }
     }
 
-    Runnable synTimer   = new Runnable() {
+    private Runnable displaySync    = new Runnable() {
         @Override
         public void run() {
-            //Notify New Set Added or Removed;
+            if(fragment != null){
+                fragment.refresh();
+            }
+            timer.postDelayed(displaySync, 4000);
         }
     };
 

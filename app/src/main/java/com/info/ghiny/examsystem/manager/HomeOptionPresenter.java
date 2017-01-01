@@ -11,12 +11,15 @@ import com.info.ghiny.examsystem.InfoGrabActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.SettingActivity;
 import com.info.ghiny.examsystem.TakeAttdActivity;
+import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
+
+import java.util.ArrayList;
 
 /**
  * Created by FOONG on 9/12/2016.
@@ -54,6 +57,7 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
 
     @Override
     public void onResume(final ErrorManager errManager) {
+        ExternalDbLoader.getJavaHost().setTaskView(taskView);
         ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
@@ -162,9 +166,14 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
-            if(JsonHelper.parseType(messageRx).equals(JsonHelper.TYPE_VENUE_INFO)){
+            String type = JsonHelper.parseType(messageRx);
+            if(type.equals(JsonHelper.TYPE_VENUE_INFO)){
                 taskView.closeProgressWindow();//Might Change
                 taskModel.checkDownloadResult(messageRx);
+            } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
+                ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
+                TakeAttdModel.rxAttendanceUpdate(candidates);
+                ExternalDbLoader.acknowledgeUpdateReceive();
             }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);

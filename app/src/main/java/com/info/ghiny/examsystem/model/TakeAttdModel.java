@@ -69,6 +69,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
         if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
             ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(chiefMessage);
             rxAttendanceUpdate(candidates);
+            ExternalDbLoader.acknowledgeUpdateReceive();
         }
     }
 
@@ -218,8 +219,7 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
     }
 
     //This is only for Client as Server side will handle in TaskSynchronizer
-    @Override
-    public void rxAttendanceUpdate(ArrayList<Candidate> modifyList) {
+    public static void rxAttendanceUpdate(ArrayList<Candidate> modifyList) {
         for(int i=0; i < modifyList.size(); i++){
             Candidate cdd = modifyList.get(i);
             if(cdd.getStatus() == Status.PRESENT){
@@ -231,11 +231,12 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
 
     }
 
-    //TODO: Start a timer and send when time comes
     @Override
     public void txAttendanceUpdate() throws ProcessException{
         if(user.getRole() == Role.INVIGILATOR){
-            ExternalDbLoader.updateAttendance(updatingList);
+            if(updatingList.size() > 0){
+                ExternalDbLoader.updateAttendance(updatingList);
+            }
         } else {
             if(TasksSynchronizer.isDistributed()){
                 TasksSynchronizer.updateAttendance(updatingList);

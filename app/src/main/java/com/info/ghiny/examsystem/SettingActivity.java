@@ -7,12 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.info.ghiny.examsystem.database.StaffIdentity;
+import com.info.ghiny.examsystem.interfacer.GeneralView;
 import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.IconManager;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends AppCompatActivity implements GeneralView{
 
     private boolean secureFlag;
     private ErrorManager errorManager;
@@ -61,7 +62,28 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
-    private void securityPrompt(boolean cancellable) {
+    @Override
+    public void displayError(ProcessException err) {
+        errorManager.displayError(err);
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
+    }
+
+    @Override
+    public void navigateActivity(Class<?> cls) {
+
+    }
+
+    @Override
+    public void runItSeparate(Runnable runner) {
+        runOnUiThread(runner);
+    }
+
+    @Override
+    public void securityPrompt(boolean cancellable) {
         Intent secure   = new Intent(this, PopUpLogin.class);
         secure.putExtra("Cancellable", cancellable);
         startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);

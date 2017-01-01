@@ -59,7 +59,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     public void setSynTimer(Handler synTimer) {
         this.synTimer = synTimer;
-        this.synTimer.postDelayed(taskSyn, 8000);
+        this.synTimer.postDelayed(taskSyn, 6000);
     }
 
     void setNavigationFlag(boolean navigationFlag) {
@@ -81,6 +81,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
 
     @Override
     public void onResume(final ErrorManager errManager) {
+        ExternalDbLoader.getJavaHost().setTaskView(taskView);
         ExternalDbLoader.getJavaHost().setMessageListener(new JavaHost.OnMessageReceived() {
             //here the messageReceived method is implemented
             @Override
@@ -192,7 +193,6 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
-            taskView.closeProgressWindow();//Might Change
             taskModel.checkDownloadResult(messageRx);
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
@@ -303,7 +303,7 @@ public class TakeAttdPresenter implements TakeAttdMVP.VPresenter, TakeAttdMVP.MP
         public void run() {
             try{
                 taskModel.txAttendanceUpdate();
-                synTimer.postDelayed(this, 8000);
+                synTimer.postDelayed(this, 6000);
             } catch (ProcessException err){
                 taskView.displayError(err);
             }
