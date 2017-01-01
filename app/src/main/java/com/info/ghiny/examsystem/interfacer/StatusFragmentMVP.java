@@ -32,6 +32,7 @@ public interface StatusFragmentMVP {
         void onChildDraw(Canvas canvas, RecyclerView recyclerView,
                          RecyclerView.ViewHolder viewHolder, float dX, float dY,
                          int actionState, boolean isCurrentlyActive);
+        void onRefresh();
     }
 
     interface PresentMvpView {

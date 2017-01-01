@@ -204,6 +204,16 @@ public class StatusAbsentPresenter implements StatusFragmentMVP.AbsentMvpVPresen
         }
     }
 
+    @Override
+    public void onRefresh() {
+        try{
+            absentList.clear();
+            initAbsentList();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
+        }
+    }
+
     void setTempCandidate(Candidate tempCandidate) {
         this.tempCandidate = tempCandidate;
     }

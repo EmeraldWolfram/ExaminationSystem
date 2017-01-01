@@ -51,6 +51,7 @@ public class FragmentAbsent extends RootFragment implements StatusFragmentMVP.Ab
 
     @Override
     public void refresh() {
+        taskPresenter.onRefresh();
         adapter.notifyDataSetChanged();
     }
 
