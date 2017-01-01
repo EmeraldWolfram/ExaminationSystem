@@ -10,6 +10,7 @@ import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.model.JavaHost;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -142,10 +143,12 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
-            taskView.closeProgressWindow();
-            setRequestComplete(true);
-            taskModel.onChallengeMessageReceived(messageRx);
-            taskView.navigateActivity(MainLoginActivity.class);
+            if(JsonHelper.parseType(messageRx).equals(JsonHelper.TYPE_RECONNECTION)){
+                taskView.closeProgressWindow();
+                setRequestComplete(true);
+                taskModel.onChallengeMessageReceived(messageRx);
+                taskView.navigateActivity(MainLoginActivity.class);
+            }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }

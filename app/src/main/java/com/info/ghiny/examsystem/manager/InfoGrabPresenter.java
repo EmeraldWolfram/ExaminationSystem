@@ -80,11 +80,13 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            taskView.closeProgressWindow();
-            ConnectionTask.setCompleteFlag(true);
-            boolean ack =   JsonHelper.parseBoolean(messageRx);
-            studentSubjects = messageRx;
-            taskView.navigateActivity(InfoDisplayActivity.class);
+            if(JsonHelper.parseType(messageRx).equals(JsonHelper.TYPE_CANDIDATE_INFO)){
+                taskView.closeProgressWindow();
+                ConnectionTask.setCompleteFlag(true);
+                boolean ack =   JsonHelper.parseBoolean(messageRx);
+                studentSubjects = messageRx;
+                taskView.navigateActivity(InfoDisplayActivity.class);
+            }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }

@@ -14,6 +14,7 @@ import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.interfacer.HomeOptionMVP;
 import com.info.ghiny.examsystem.model.JavaHost;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
 
@@ -161,8 +162,10 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try {
-            taskView.closeProgressWindow();//Might Change
-            taskModel.checkDownloadResult(messageRx);
+            if(JsonHelper.parseType(messageRx).equals(JsonHelper.TYPE_VENUE_INFO)){
+                taskView.closeProgressWindow();//Might Change
+                taskModel.checkDownloadResult(messageRx);
+            }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }

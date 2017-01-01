@@ -25,6 +25,7 @@ import com.info.ghiny.examsystem.fragments.FragmentQuarantined;
 import com.info.ghiny.examsystem.fragments.RootFragment;
 import com.info.ghiny.examsystem.interfacer.SubmissionMVP;
 import com.info.ghiny.examsystem.model.JavaHost;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
@@ -38,17 +39,19 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     private SubmissionMVP.MvpView taskView;
     private SubmissionMVP.MvpModel taskModel;
     private Handler handler;
+    private Handler attdSyn;
     //private boolean sent;
     private boolean uploadFlag;
     private boolean secureFlag;
     private boolean navFlag;
-    private StaffIdentity user;
+
 
     public SubmissionPresenter(SubmissionMVP.MvpView taskView){
         this.taskView   = taskView;
         this.uploadFlag = false;
         this.secureFlag = false;
         this.navFlag    = false;
+        this.attdSyn    = new Handler();
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -129,8 +132,13 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            taskView.closeProgressWindow();
-            taskModel.verifyChiefResponse(messageRx);
+            String type = JsonHelper.parseType(messageRx);
+            if(type.equals(JsonHelper.TYPE_SUBMISSION)){
+                taskView.closeProgressWindow();
+                taskModel.verifyChiefResponse(messageRx);
+            } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
+                attdSyn.postDelayed(synTimer,1000);
+            }
         } catch (ProcessException err){
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
@@ -213,6 +221,13 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
             taskView.displayError(err);
         }
     }
+
+    Runnable synTimer   = new Runnable() {
+        @Override
+        public void run() {
+            //Notify New Set Added or Removed;
+        }
+    };
 
     //==============================================================================================
     void setUploadFlag(boolean uploadFlag) {

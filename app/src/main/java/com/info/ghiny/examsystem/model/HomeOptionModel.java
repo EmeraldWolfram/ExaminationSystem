@@ -79,15 +79,12 @@ public class HomeOptionModel implements HomeOptionMVP.MvpModel {
 
     @Override
     public void checkDownloadResult(String chiefMessage) throws ProcessException {
-        String type = JsonHelper.parseType(chiefMessage);
-        if(type.equals(JsonHelper.TYPE_VENUE_INFO)){
-            isDownloadComplete  = true;
-            TakeAttdModel.setAttdList(JsonHelper.parseAttdList(chiefMessage));
-            Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
-            setInitialized(true);
-            throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
-                    IconManager.MESSAGE);
-        }
+        isDownloadComplete  = true;
+        TakeAttdModel.setAttdList(JsonHelper.parseAttdList(chiefMessage));
+        Candidate.setPaperList(JsonHelper.parsePaperMap(chiefMessage));
+        setInitialized(true);
+        throw new ProcessException("Download Complete", ProcessException.MESSAGE_TOAST,
+                IconManager.MESSAGE);
     }
 
     @Override

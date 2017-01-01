@@ -98,7 +98,7 @@ public class LoginModel implements LoginMVP.MvpModel {
     }
 
     @Override
-    public Role checkLoginResult(String msgFromChief) throws ProcessException{
+    public Role checkLoginResult(String msgFromChief) throws ProcessException {
         loginCount--;
 
         if(loginCount < 1){
@@ -109,7 +109,6 @@ public class LoginModel implements LoginMVP.MvpModel {
                         ProcessException.FATAL_MESSAGE, IconManager.WARNING);
             }
         }
-
         staff       = JsonHelper.parseStaffIdentity(msgFromChief, loginCount);
         staff.setPassword(this.inputPW);
         staff.setHashPass(this.hashCode);
