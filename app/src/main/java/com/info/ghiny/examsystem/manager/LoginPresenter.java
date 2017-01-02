@@ -138,7 +138,7 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
                             taskView.finishActivity();
                         }
                     });
-                    taskView.displayError(err);
+                    throw err;
                 }
             }
         } catch (ProcessException err) {

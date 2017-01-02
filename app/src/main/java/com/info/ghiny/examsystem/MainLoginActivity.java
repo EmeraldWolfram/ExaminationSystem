@@ -34,6 +34,7 @@ import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.manager.LoginPresenter;
 import com.info.ghiny.examsystem.manager.ConfigManager;
 import com.info.ghiny.examsystem.manager.ErrorManager;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.model.TakeAttdModel;
@@ -158,7 +159,7 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
         staff = new StaffIdentity("123456", true, "Staff 1", "M4");
         staff.setPassword("1");
         try{
-            staff.setHashPass(staff.hmacSha("1", "DUEL"));
+            staff.setHashPass(staff.hmacSha("1", JavaHost.getConnector().getDuelMessage()));
         } catch (ProcessException err) {
             Log.d("HMAC Error", err.getErrorMsg());
         }

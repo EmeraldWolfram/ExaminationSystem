@@ -109,6 +109,7 @@ public class JavaHost implements Runnable{
      */
     private void sendMessage(String message){
         if (out != null && !out.checkError()) {
+            Log.d(LinkChiefActivity.TAG, "&&& Send to Host: " + message);
             out.println(message);
             out.flush();
         }
@@ -136,6 +137,7 @@ public class JavaHost implements Runnable{
                 while (running) {
                     serverMessage = in.readLine();
                     if(serverMessage != null){
+                        Log.d(LinkChiefActivity.TAG, "&&& Receive from Host: " + serverMessage);
                         int deviceId    = JsonHelper.parseClientId(serverMessage);
                         if(deviceId != 0){
                             serverMessage   = JsonHelper.modifyDeviceId(serverMessage, 0);
