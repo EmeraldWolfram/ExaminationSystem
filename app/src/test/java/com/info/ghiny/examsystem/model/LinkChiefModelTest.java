@@ -3,6 +3,7 @@ package com.info.ghiny.examsystem.model;
 import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
+import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.TasksSynchronizer;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
@@ -65,19 +66,16 @@ public class LinkChiefModelTest {
      */
     @Test
     public void testTryConnectWithQR_If_correct_String_format() throws Exception{
-        try{
-            assertNull(JavaHost.getConnector());
-            assertNull(ExternalDbLoader.getConnectionTask());
+        assertNull(JavaHost.getConnector());
+        assertNull(ExternalDbLoader.getConnectionTask());
 
-            model.tryConnectWithQR("$CHIEF:192.168.0.1:5000:DUEL:$");
+        model.prepareConnector(new String[]{"$CHIEF", "192.168.0.1", "5000", "DUEL", "$"});
 
-            verify(dbLoader).saveConnector(any(Connector.class));
-            assertEquals("192.168.0.1", JavaHost.getConnector().getIpAddress());
-            assertEquals(Integer.valueOf(5000), JavaHost.getConnector().getPortNumber());
-            assertNotNull(ExternalDbLoader.getConnectionTask());
-        } catch (ProcessException err){
-            fail("No Exception expected but thrown " + err.getErrorMsg());
-        }
+        verify(dbLoader).saveConnector(any(Connector.class));
+        assertEquals("192.168.0.1", JavaHost.getConnector().getIpAddress());
+        assertEquals(Integer.valueOf(5000), JavaHost.getConnector().getPortNumber());
+        assertEquals(Role.CHIEF, JavaHost.getConnector().getMyHost());
+
     }
 
     @Test

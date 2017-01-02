@@ -129,6 +129,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
             taskView.pauseScanning();
             taskView.beep();
             taskModel.bundleCollection(scanStr);
+
         } catch (ProcessException err) {
             err.setListener(ProcessException.okayButton, this);
             taskView.displayError(err);

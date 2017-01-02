@@ -209,7 +209,7 @@ public class InfoGrabPresenterTest {
         ConnectionTask.setCompleteFlag(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
-        String message = "{\"Result\":true}";
+        String message = "{\"Result\":true,\"Type\":\"CandidateInfo\"}";
 
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);
@@ -225,7 +225,7 @@ public class InfoGrabPresenterTest {
         ConnectionTask.setCompleteFlag(false);
         ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
-        String message = "{\"Result\":false}";
+        String message = "{\"Result\":false,\"Type\":\"CandidateInfo\"}";
 
         assertFalse(ConnectionTask.isComplete());
         manager.onChiefRespond(errManager, message);

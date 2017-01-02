@@ -24,7 +24,10 @@ import com.info.ghiny.examsystem.model.TakeAttdModel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -39,6 +42,8 @@ import static org.mockito.Mockito.when;
 /**
  * Created by user09 on 12/25/2016.
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class HomeOptionPresenterTest {
 
     private HomeOptionPresenter manager;
@@ -371,12 +376,14 @@ public class HomeOptionPresenterTest {
     @Test
     public void testOnChiefRespond1_PositiveResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
-        doNothing().when(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
+        doNothing().when(taskModel).checkDownloadResult("{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
 
-        manager.onChiefRespond(errorManager, "ATTENDANCE & PAPERS");
+
+        manager.onChiefRespond(errorManager, "{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
+
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
+        verify(taskModel).checkDownloadResult("{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -384,12 +391,12 @@ public class HomeOptionPresenterTest {
     public void testOnChiefRespond2_NegativeResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         ProcessException err    = new ProcessException(ProcessException.FATAL_MESSAGE);
-        doThrow(err).when(taskModel).checkDownloadResult("NO DATA");
+        doThrow(err).when(taskModel).checkDownloadResult("{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
 
-        manager.onChiefRespond(errorManager, "NO DATA");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).checkDownloadResult("NO DATA");
+        verify(taskModel).checkDownloadResult("{\"Type\":\"VenueInfo\",\"Value\":\"ATTENDANCE & PAPERS\"}");
         verify(task).publishError(errorManager, err);
     }
 

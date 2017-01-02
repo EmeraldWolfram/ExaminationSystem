@@ -150,7 +150,7 @@ public class InfoDisplayModelTest {
 
         Integer dayLeft = model.getDaysLeft(paperDate);
 
-        assertEquals(799, dayLeft.intValue());
+        assertEquals(800, dayLeft.intValue());
     }
 
     //= GetNumberOfSubject() =======================================================================

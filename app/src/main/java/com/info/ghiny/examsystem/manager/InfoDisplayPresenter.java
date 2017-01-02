@@ -106,7 +106,7 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
         else if(days == 1)
             dayLeft = "TOMORROW";
         else
-            dayLeft = days.toString() + " days left";
+            dayLeft = days.toString() + " days later";
 
         examPaper.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));
         examDay.setTypeface(configManager.getTypeface(ConfigManager.DEFAULT_FONT));

@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.util.Log;
 
+import com.info.ghiny.examsystem.MainLoginActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;

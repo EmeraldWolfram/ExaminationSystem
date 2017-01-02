@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainLoginActivity extends AppCompatActivity implements LoginMVP.MvpView {
-    private static final String TAG = MainLoginActivity.class.getSimpleName();
+    public static final String TAG = MainLoginActivity.class.getSimpleName();
 
     //private LoginPresenter loginManager;
     private LoginMVP.MvpVPresenter taskPresenter;

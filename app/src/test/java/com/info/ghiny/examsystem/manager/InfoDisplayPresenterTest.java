@@ -301,7 +301,7 @@ public class InfoDisplayPresenterTest {
         manager.getView(0, view, parent);
 
         verify(paperView).setText(subject1.toString());
-        verify(dayView).setText("2 days left");
+        verify(dayView).setText("2 days later");
         verify(venueView).setText(subject1.getExamVenue());
         verify(sessionView).setText(subject1.getPaperSession());
     }

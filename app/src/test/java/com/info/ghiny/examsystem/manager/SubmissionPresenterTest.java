@@ -29,8 +29,11 @@ import com.info.ghiny.examsystem.model.TakeAttdModel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -45,6 +48,8 @@ import static org.mockito.Mockito.when;
 /**
  * Created by FOONG on 25/12/2016.
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest= Config.NONE)
 public class SubmissionPresenterTest {
 
     private SubmissionPresenter manager;
@@ -271,12 +276,12 @@ public class SubmissionPresenterTest {
     @Test
     public void testOnChiefRespond1_PositiveResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
-        doNothing().when(taskModel).verifyChiefResponse("RECEIVED ATTENDANCE LIST");
+        doNothing().when(taskModel).verifyChiefResponse("{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
 
-        manager.onChiefRespond(errorManager, "RECEIVED ATTENDANCE LIST");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).verifyChiefResponse("RECEIVED ATTENDANCE LIST");
+        verify(taskModel).verifyChiefResponse("{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -284,41 +289,14 @@ public class SubmissionPresenterTest {
     public void testOnChiefRespond2_NegativeResult() throws Exception {
         ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
         ProcessException err    = new ProcessException(ProcessException.FATAL_MESSAGE);
-        doThrow(err).when(taskModel).verifyChiefResponse("NO DATA");
+        doThrow(err).when(taskModel).verifyChiefResponse("{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
 
-        manager.onChiefRespond(errorManager, "NO DATA");
+
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).verifyChiefResponse("NO DATA");
+        verify(taskModel).verifyChiefResponse("{\"Type\":\"Submission\",\"Value\":\"NO DATA\"}");
         verify(task).publishError(errorManager, err);
-    }
-
-    //= OnNavigationItemSelected ===================================================================
-
-    /**
-     * onNavigationItemSelected(...)
-     *
-     * This method handle the item selected from the drawer menu
-     * 1. It create instance of the Fragment of the selection as the content of the activity
-     * 2. It initialize the model and presenter layer
-     * 3. It hide back the drawer as it was selected
-     *
-     */
-
-    @Test
-    public void onNavigationItemSelected() throws Exception {
-        ErrorManager errorManager   = Mockito.mock(ErrorManager.class);
-        Toolbar toolbar             = Mockito.mock(Toolbar.class);
-        DrawerLayout drawerLayout   = Mockito.mock(DrawerLayout.class);
-        FragmentManager fragManager = Mockito.mock(FragmentManager.class);
-        FragmentTransaction ft      = Mockito.mock(FragmentTransaction.class);
-        when(fragManager.beginTransaction()).thenReturn(ft);
-
-        assertTrue(manager.onNavigationItemSelected(toolbar, R.id.nav_present, errorManager,
-                fragManager, drawerLayout));
-
-        verify(fragManager).beginTransaction();
-        verify(drawerLayout).closeDrawer(GravityCompat.START);
     }
 
 

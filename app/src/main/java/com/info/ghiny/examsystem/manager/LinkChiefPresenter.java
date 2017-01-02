@@ -176,7 +176,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         dialog.cancel();
     }
 
-    Runnable establishCheck = new Runnable() {
+    private Runnable establishCheck = new Runnable() {
         @Override
         public void run() {
             if(ExternalDbLoader.getJavaHost().isConnected()){

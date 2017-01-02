@@ -305,7 +305,6 @@ public class TakeAttdPresenterTest {
 
         manager.onChiefRespond(errorManager, "ATTENDANCE & PAPERS");
 
-        verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("ATTENDANCE & PAPERS");
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
@@ -318,7 +317,6 @@ public class TakeAttdPresenterTest {
 
         manager.onChiefRespond(errorManager, "NO DATA");
 
-        verify(taskView).closeProgressWindow();
         verify(taskModel).checkDownloadResult("NO DATA");
         verify(task).publishError(errorManager, err);
     }

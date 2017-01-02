@@ -133,8 +133,6 @@ public final class TasksSynchronizer extends Service{
         if(clientsMap.size() > 0){
             String msgUpdate    = JsonHelper.formatAttendanceUpdate(updatingList);
 
-            Log.d(DistributionActivity.TAG, String.format(Locale.ENGLISH, "%d of client", clientsMap.size()));
-
             for(AndroidClient client : clientsMap.values()){
                 client.putMessageIntoSendQueue(msgUpdate);
             }

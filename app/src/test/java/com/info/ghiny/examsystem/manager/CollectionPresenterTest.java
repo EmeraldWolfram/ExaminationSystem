@@ -153,8 +153,8 @@ public class CollectionPresenterTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskView).pauseScanning();
-        verify(taskView).openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
-        verify(handler).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView).beep();
+        verify(taskModel).bundleCollection(anyString());
 
         verify(taskView, never()).displayError(any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
@@ -169,8 +169,8 @@ public class CollectionPresenterTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskView).pauseScanning();
-        verify(taskView, never()).openProgressWindow(anyString(), anyString());
-        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
+        verify(taskView).beep();
+        verify(taskModel).bundleCollection(anyString());
 
         verify(taskView).displayError(err);
         verify(taskView).resumeScanning();
@@ -185,8 +185,8 @@ public class CollectionPresenterTest {
         manager.onScan("PAPER ABCD");
 
         verify(taskView).pauseScanning();
-        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
-        verify(taskView, never()).openProgressWindow(anyString(), anyString());
+        verify(taskView).beep();
+        verify(taskModel).bundleCollection(anyString());
 
         verify(taskView).displayError(err);
         verify(taskView, never()).resumeScanning();

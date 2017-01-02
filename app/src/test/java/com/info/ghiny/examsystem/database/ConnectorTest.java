@@ -53,6 +53,6 @@ public class ConnectorTest {
     @Test
     public void testToString() throws Exception{
         Connector connector = new Connector("127.0.0.1", 6666, "DUEL");
-        assertEquals("$IN-CHARGE:127.0.0.1:6666:DUEL:$", connector.toString());
+        assertEquals("$IN_CHARGE:127.0.0.1:6666:DUEL:$", connector.toString());
     }
 }

@@ -55,8 +55,6 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         this.uploadFlag = false;
         this.secureFlag = false;
         this.navFlag    = false;
-        this.timer      = new Handler();
-        this.timer.postDelayed(displaySync, 4000);
     }
 
     public void setTaskModel(SubmissionMVP.MvpModel taskModel) {
@@ -65,6 +63,11 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public void setTimer(Handler timer) {
+        this.timer = timer;
+        this.timer.postDelayed(displaySync, 4000);
     }
 
     @Override
@@ -93,8 +96,12 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
     @Override
     public void onDestroy() {
         taskView.closeProgressWindow();
-        handler.removeCallbacks(taskModel);
-        timer.removeCallbacks(displaySync);
+        if(handler != null){
+            handler.removeCallbacks(taskModel);
+        }
+        if(timer != null){
+            timer.removeCallbacks(displaySync);
+        }
     }
 
     @Override

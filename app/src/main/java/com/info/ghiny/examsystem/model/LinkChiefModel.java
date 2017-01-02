@@ -36,19 +36,7 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
     public void tryConnectWithQR(String scanStr) throws ProcessException{
         String[] chiefArr   = scanStr.split(":");
         if(chiefArr.length == 5 && scanStr.endsWith("$") && scanStr.startsWith("$")){
-
-            Role host       = Role.parseRole(chiefArr[0].substring(1));
-            String ip       = chiefArr[1];
-            Integer port    = Integer.parseInt(chiefArr[2]);
-            String msg      = chiefArr[3];
-
-            Connector connector     = new Connector(ip, port, msg);
-            connector.setMyHost(host);
-
-            if(connector.getMyHost() == Role.CHIEF){
-                dbLoader.saveConnector(connector);
-            }
-            JavaHost.setConnector(connector);
+            prepareConnector(chiefArr);
             task    = new ConnectionTask();
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ExternalDbLoader.setConnectionTask(task);
@@ -56,6 +44,21 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
             throw new ProcessException("Not a chief address", ProcessException.MESSAGE_TOAST,
                     IconManager.WARNING);
         }
+    }
+
+    void prepareConnector(String[] chiefArr){
+        Role host       = Role.parseRole(chiefArr[0].substring(1));
+        String ip       = chiefArr[1];
+        Integer port    = Integer.parseInt(chiefArr[2]);
+        String msg      = chiefArr[3];
+
+        Connector connector     = new Connector(ip, port, msg);
+        connector.setMyHost(host);
+
+        if(connector.getMyHost() == Role.CHIEF){
+            dbLoader.saveConnector(connector);
+        }
+        JavaHost.setConnector(connector);
     }
 
     @Override

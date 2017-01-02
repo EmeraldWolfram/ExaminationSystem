@@ -130,6 +130,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         SubmissionModel model        = new SubmissionModel(presenter);
         presenter.setTaskModel(model);
         presenter.setHandler(new Handler());
+        presenter.setTimer(new Handler());
         taskPresenter   = presenter;
     }
 

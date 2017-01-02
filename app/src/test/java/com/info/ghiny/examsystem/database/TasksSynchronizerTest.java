@@ -190,10 +190,10 @@ public class TasksSynchronizerTest {
 
         TasksSynchronizer.updateAttendance(cdds);
 
-        verify(thread1, never()).putMessageIntoSendQueue(anyString());
-        verify(thread2, never()).putMessageIntoSendQueue(anyString());
-        verify(thread3, never()).putMessageIntoSendQueue(anyString());
-        verify(thread4, never()).putMessageIntoSendQueue(anyString());
+        verify(thread1).putMessageIntoSendQueue(anyString());
+        verify(thread2).putMessageIntoSendQueue(anyString());
+        verify(thread3).putMessageIntoSendQueue(anyString());
+        verify(thread4).putMessageIntoSendQueue(anyString());
     }
 
     @Test
@@ -313,6 +313,6 @@ public class TasksSynchronizerTest {
     @Test
     public void getThisIpv4() throws Exception {
         String ip   = TasksSynchronizer.getThisIpv4();
-        assertEquals("192.168.95.1", ip);
+        assertEquals("192.168.43.88", ip);
     }
 }

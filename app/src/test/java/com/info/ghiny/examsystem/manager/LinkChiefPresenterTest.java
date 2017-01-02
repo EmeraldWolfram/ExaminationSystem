@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -83,7 +84,7 @@ public class LinkChiefPresenterTest {
         manager.onScan("$CHIEF:...:$");
 
         verify(genView).pauseScanning();
-        verify(genView).navigateActivity(MainLoginActivity.class);
+        verify(handler).postDelayed(any(Runnable.class), anyInt());
         verify(genView, never()).displayError(err);
         verify(genView, never()).resumeScanning();
     }
@@ -225,10 +226,10 @@ public class LinkChiefPresenterTest {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         manager.setReconnect(true);
 
-        manager.onChiefRespond(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
 
         verify(genView).closeProgressWindow();
-        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genModel).onChallengeMessageReceived(anyString());
         verify(genView).navigateActivity(MainLoginActivity.class);
         verify(task, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(genView, never()).resumeScanning();
@@ -239,13 +240,13 @@ public class LinkChiefPresenterTest {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         manager.setReconnect(true);
         err = new ProcessException(ProcessException.MESSAGE_TOAST);
-        doThrow(err).when(genModel).onChallengeMessageReceived("Message");
+        doThrow(err).when(genModel).onChallengeMessageReceived("{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
 
-        manager.onChiefRespond(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
 
         assertTrue(manager.isReconnect());
         verify(genView).closeProgressWindow();
-        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genModel).onChallengeMessageReceived("{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
         verify(genView, never()).navigateActivity(MainLoginActivity.class);
         verify(task).publishError(errorManager, err);
     }
@@ -255,13 +256,13 @@ public class LinkChiefPresenterTest {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         manager.setReconnect(true);
         err = new ProcessException(ProcessException.FATAL_MESSAGE);
-        doThrow(err).when(genModel).onChallengeMessageReceived("Message");
+        doThrow(err).when(genModel).onChallengeMessageReceived("{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
 
-        manager.onChiefRespond(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
 
         assertTrue(manager.isReconnect());
         verify(genView).closeProgressWindow();
-        verify(genModel).onChallengeMessageReceived("Message");
+        verify(genModel).onChallengeMessageReceived("{\"Type\":\"Reconnection\",\"Value\":\"Message\"}");
         verify(genView, never()).navigateActivity(MainLoginActivity.class);
         verify(task).publishError(errorManager, err);
     }

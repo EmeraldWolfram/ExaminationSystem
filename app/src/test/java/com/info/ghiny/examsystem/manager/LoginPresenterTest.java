@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
+import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
@@ -228,10 +229,13 @@ public class LoginPresenterTest {
     public void testOnChiefRespond_withPositiveResult() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
+        Connector connector = new Connector("", 1, "");
+        connector.setMyHost(Role.IN_CHARGE);
+        JavaHost.setConnector(connector);
 
-        when(taskModel.checkLoginResult("Message")).thenReturn(Role.INVIGILATOR);
+        when(taskModel.checkLoginResult("{\"Type\":\"Identification\",\"Value\":\"Message\"}")).thenReturn(Role.INVIGILATOR);
 
-        manager.onChiefRespond(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
 
         verify(taskView).navToHome(true, true, true, false);
     }
@@ -261,10 +265,10 @@ public class LoginPresenterTest {
         ExternalDbLoader.setConnectionTask(connectionTask);
 
         ProcessException err = new ProcessException("ERROR", ProcessException.FATAL_MESSAGE, 1);
-        doThrow(err).when(taskModel).checkLoginResult("Message");
+        doThrow(err).when(taskModel).checkLoginResult("{\"Type\":\"Identification\",\"Value\":\"Message\"}");
 
         assertFalse(manager.isDlFlag());
-        manager.onChiefRespond(errorManager, "Message");
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
         assertFalse(manager.isDlFlag());
 
         verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
@@ -276,10 +280,14 @@ public class LoginPresenterTest {
     public void testOnChiefRespond4_withInCharge() throws Exception {
         ErrorManager errorManager = Mockito.mock(ErrorManager.class);
         ExternalDbLoader.setConnectionTask(new ConnectionTask());
+        Connector connector = new Connector("", 1, "");
+        connector.setMyHost(Role.CHIEF);
+        JavaHost.setConnector(connector);
 
-        when(taskModel.checkLoginResult("Message")).thenReturn(Role.IN_CHARGE);
+        when(taskModel.checkLoginResult("{\"Type\":\"Identification\",\"Value\":\"Message\"}")).thenReturn(Role.IN_CHARGE);
 
-        manager.onChiefRespond(errorManager, "Message");
+
+        manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
 
         verify(taskView).navToHome(true, true, true, true);
     }
