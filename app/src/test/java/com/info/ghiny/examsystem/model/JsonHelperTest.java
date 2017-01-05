@@ -417,7 +417,7 @@ public class JsonHelperTest {
         array.put(subject2);
 
         object.put(JsonHelper.MAJOR_KEY_TYPE_RX, true);
-        object.put(JsonHelper.MINOR_KEY_PAPER_LIST, array);
+        object.put(JsonHelper.MINOR_KEY_VALUE, array);
         List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
 
         assertEquals(2, paperList.size());
@@ -431,12 +431,32 @@ public class JsonHelperTest {
             JSONObject object   = new JSONObject();
 
             object.put("Result", false);
-            object.put(JsonHelper.MINOR_KEY_PAPER_LIST, null);
+            object.put(JsonHelper.MINOR_KEY_VALUE, null);
 
             List<ExamSubject> paperList = JsonHelper.parsePaperList(object.toString());
         } catch (ProcessException err) {
             assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
             assertEquals("Not a Candidate Identity", err.getErrorMsg());
+        }
+    }
+
+    @Test
+    public void testParsePaperList_RealTimeTest() throws Exception {
+        try{
+            JsonHelper.parsePaperList("{\"Type\":\"CandidateInfo\",\"ThreadId\":14,\"DeviceId\":0,\"Value\":[" +
+                    "{\"PaperSession\":\"AM\"," +
+                    "\"PaperDesc\":\"Mathematic\"," +
+                    "\"PaperDate\":\"10/2/2012\"," +
+                    "\"PaperCode\":\"BABE2203\"," +
+                    "\"PaperVenue\":\"M4\"}," +
+                    "{\"PaperSession\":\"AM\"," +
+                    "\"PaperDesc\":\"Mathematic\"," +
+                    "\"PaperDate\":\"10/2/2012\"," +
+                    "\"PaperCode\":\"BABE2203\"," +
+                    "\"PaperVenue\":\"M4\"}]," +
+                    "\"Result\":true}");
+        } catch (ProcessException err){
+            System.out.print(err.getErrorMsg());
         }
     }
 

@@ -41,12 +41,12 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
     @Override
     public void onCreate(Intent intent){
         try{
-            String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST);
+            String message  = intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
             taskModel.updateSubjects(message);
             taskView.notifyDataSetChanged();
             ExternalDbLoader.getJavaHost().setTaskView(taskView);
-        } catch (Exception err) {
-            taskView.finishActivity();
+        } catch (ProcessException err) {
+            taskView.displayError(err);
         }
     }
 

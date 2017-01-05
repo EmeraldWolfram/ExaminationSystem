@@ -391,7 +391,7 @@ public class JsonHelper {
 
             JSONObject jObj         = new JSONObject(inStr);
             if(jObj.getBoolean(MAJOR_KEY_TYPE_RX)){
-                JSONArray subjectArr    = jObj.getJSONArray(MINOR_KEY_PAPER_LIST);
+                JSONArray subjectArr    = jObj.getJSONArray(MINOR_KEY_VALUE);
                 for(int i = 0; i < subjectArr.length(); i++){
                     JSONObject jSubject = subjectArr.getJSONObject(i);
                     ExamSubject subject = new ExamSubject();

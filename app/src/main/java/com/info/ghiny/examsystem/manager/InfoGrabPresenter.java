@@ -91,7 +91,12 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
                 ConnectionTask.setCompleteFlag(true);
                 boolean ack =   JsonHelper.parseBoolean(messageRx);
                 studentSubjects = messageRx;
-                taskView.navigateActivity(InfoDisplayActivity.class);
+                taskView.runItSeparate(new Runnable() {
+                    @Override
+                    public void run() {
+                        taskView.navigateActivity(InfoDisplayActivity.class);
+                    }
+                });
             } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
                 ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
                 TakeAttdModel.rxAttendanceUpdate(candidates);
