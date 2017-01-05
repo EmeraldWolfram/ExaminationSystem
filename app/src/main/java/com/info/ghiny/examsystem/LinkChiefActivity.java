@@ -168,7 +168,7 @@ public class LinkChiefActivity extends AppCompatActivity implements LinkChiefMVP
                 return true;
             case R.id.action_test:
                 Intent testing  = new Intent(this, InfoDisplayActivity.class);
-                testing.putExtra(JsonHelper.MINOR_KEY_PAPER_LIST,
+                testing.putExtra(JsonHelper.MINOR_KEY_CANDIDATES,
                         "{\"Value\":[" +
                                 "{\"PaperSession\":\"AM\",\"PaperDesc\":\"SUBJECT 1\",\"PaperDate\":\"5/1/2017\",\"PaperCode\":\"BAME 0001\",\"PaperVenue\":\"H3\"}," +
                                 "{\"PaperSession\":\"PM\",\"PaperDesc\":\"SUBJECT 2\",\"PaperDate\":\"6/12/2017\",\"PaperCode\":\"BAME 0002\",\"PaperVenue\":\"V2\"}," +

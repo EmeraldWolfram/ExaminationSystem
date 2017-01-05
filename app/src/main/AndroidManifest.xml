@@ -30,7 +30,7 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".InfoGrabActivity"
-            android:label="Info Enquiry"
+            android:label="Student Papers Enquiry"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".TakeAttdActivity"
@@ -50,7 +50,7 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".InfoDisplayActivity"
-            android:label="Information"
+            android:label="Student's Papers"
             android:screenOrientation="userPortrait"/>
         <activity
             android:name=".SettingActivity"
