@@ -55,6 +55,8 @@ public interface CollectionMVP {
         void notifyClearance();
 
         void notifyUpload();
+
+        void notifyReceiveMessage(String message, int errorIcon);
     }
 
     interface Model extends Runnable, TaskSecureModel{

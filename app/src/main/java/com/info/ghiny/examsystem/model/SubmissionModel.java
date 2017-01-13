@@ -65,8 +65,13 @@ public class SubmissionModel implements SubmissionMVP.MvpModel {
     public void verifyChiefResponse(String messageRx) throws ProcessException {
         sent    = true;
         boolean uploaded = JsonHelper.parseBoolean(messageRx);
-        throw new ProcessException("Submission successful",
-                ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
+        if(uploaded){
+            throw new ProcessException("Submission successful",
+                    ProcessException.MESSAGE_DIALOG, IconManager.ASSIGNED);
+        } else {
+            throw new ProcessException("Submission denied by Chief",
+                    ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+        }
     }
 
     @Override

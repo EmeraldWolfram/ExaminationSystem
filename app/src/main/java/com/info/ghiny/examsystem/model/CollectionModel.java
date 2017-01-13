@@ -1,5 +1,7 @@
 package com.info.ghiny.examsystem.model;
 
+import android.graphics.drawable.Icon;
+
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
@@ -158,9 +160,19 @@ public class CollectionModel implements CollectionMVP.Model {
         switch (JsonHelper.parseType(messageRx)){
             case JsonHelper.TYPE_COLLECTION:
                 acknowledgeCollection = true;
+                if(JsonHelper.parseBoolean(messageRx)){
+                    taskPresenter.notifyReceiveMessage("Collection successfully recorded!", IconManager.ASSIGNED);
+                } else {
+                    taskPresenter.notifyReceiveMessage("Chief denied collection", IconManager.WARNING);
+                }
                 break;
             case JsonHelper.TYPE_UNDO_COLLECTION:
                 acknowledgeUndoCollection = true;
+                if(JsonHelper.parseBoolean(messageRx)){
+                    taskPresenter.notifyReceiveMessage("Undo collection successfully recorded!", IconManager.ASSIGNED);
+                } else {
+                    taskPresenter.notifyReceiveMessage("Chief denied request", IconManager.WARNING);
+                }
                 break;
             case JsonHelper.TYPE_ATTENDANCE_UP:
                 ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);

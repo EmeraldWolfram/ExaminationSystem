@@ -64,7 +64,7 @@ public class ErrorManager {
 
     private void showMessageDialog(ProcessException err){
         AlertDialog.Builder dialog = new AlertDialog.Builder(act);
-        dialog.setTitle("ERROR");
+        dialog.setTitle("MESSAGE");
         dialog.setIcon(err.getErrorIcon());
         dialog.setMessage(err.getMessage());
         dialog.setCancelable(true);

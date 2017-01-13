@@ -63,18 +63,31 @@ public class HomeOptionModel implements HomeOptionMVP.MvpModel {
     @Override
     public void initAttendance() throws ProcessException {
         if(JavaHost.getConnector().getMyHost() == Role.IN_CHARGE){
-            isDownloadComplete = false;
-            ExternalDbLoader.dlAttendanceList();
+            downloadInfo();
         } else {
             if(dbLoader.emptyAttdInDB() || dbLoader.emptyPapersInDB()){
-                isDownloadComplete = false;
-                ExternalDbLoader.dlAttendanceList();
+                downloadInfo();
             } else {
-                TakeAttdModel.setAttdList(dbLoader.queryAttendanceList());
-                Candidate.setPaperList(dbLoader.queryPapers());
-                initialized = true;
+                taskPresenter.notifyDatabaseFound();
             }
         }
+    }
+
+    @Override
+    public void downloadInfo() throws ProcessException{
+        dbLoader.clearDatabase();
+        isDownloadComplete = false;
+        ExternalDbLoader.dlAttendanceList();
+        taskPresenter.notifyDownloadInfo();
+    }
+
+    @Override
+    public void restoreInfo() throws ProcessException {
+        TakeAttdModel.setAttdList(dbLoader.queryAttendanceList());
+        Candidate.setPaperList(dbLoader.queryPapers());
+        initialized = true;
+        throw new ProcessException("Restore Complete", ProcessException.MESSAGE_TOAST,
+                IconManager.MESSAGE);
     }
 
     @Override

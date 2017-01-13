@@ -68,10 +68,6 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
         if(TakeAttdModel.getAttdList() == null){
             try{
                 taskModel.initAttendance();
-                if(!taskModel.isInitialized()){
-                    taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-                    handler.postDelayed(taskModel, 5000);
-                }
             } catch (ProcessException err) {
                 taskView.displayError(err);
             }
@@ -187,4 +183,43 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
             taskView.displayError(err);
         }
     }
+
+    @Override
+    public void notifyDatabaseFound() {
+        ProcessException err = new ProcessException("Previous Attendance List was found " +
+                "in database.\nDo you want to restore it?",
+                ProcessException.YES_NO_MESSAGE, IconManager.MESSAGE);
+        err.setListener(ProcessException.yesButton, restoreYes);
+        err.setListener(ProcessException.noButton, restoreNo);
+
+        taskView.displayError(err);
+    }
+
+    @Override
+    public void notifyDownloadInfo() {
+        taskView.openProgressWindow("Preparing Attendance List:", "Retrieving data...");
+        handler.postDelayed(taskModel, 5000);
+    }
+
+    private DialogInterface.OnClickListener restoreYes  = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            try{
+                taskModel.restoreInfo();
+            } catch (ProcessException err){
+                taskView.displayError(err);
+            }
+        }
+    };
+
+    private DialogInterface.OnClickListener restoreNo   = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            try{
+                taskModel.downloadInfo();
+            } catch (ProcessException err) {
+                taskView.displayError(err);
+            }
+        }
+    };
 }

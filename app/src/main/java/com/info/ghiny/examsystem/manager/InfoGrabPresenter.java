@@ -90,13 +90,18 @@ public class InfoGrabPresenter implements InfoGrabMVP.VPresenter, InfoGrabMVP.MP
                 taskView.closeProgressWindow();
                 ConnectionTask.setCompleteFlag(true);
                 boolean ack =   JsonHelper.parseBoolean(messageRx);
-                studentSubjects = messageRx;
-                taskView.runItSeparate(new Runnable() {
-                    @Override
-                    public void run() {
-                        taskView.navigateActivity(InfoDisplayActivity.class);
-                    }
-                });
+                if(ack){
+                    studentSubjects = messageRx;
+                    taskView.runItSeparate(new Runnable() {
+                        @Override
+                        public void run() {
+                            taskView.navigateActivity(InfoDisplayActivity.class);
+                        }
+                    });
+                } else {
+                    throw new ProcessException("Server request denied!",
+                            ProcessException.MESSAGE_DIALOG, IconManager.WARNING);
+                }
             } else if(type.equals(JsonHelper.TYPE_ATTENDANCE_UP)){
                 ArrayList<Candidate> candidates = JsonHelper.parseUpdateList(messageRx);
                 TakeAttdModel.rxAttendanceUpdate(candidates);

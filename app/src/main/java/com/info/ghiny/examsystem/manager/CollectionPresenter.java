@@ -12,6 +12,7 @@ import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;
 import com.info.ghiny.examsystem.interfacer.CollectionMVP;
 import com.info.ghiny.examsystem.model.JavaHost;
+import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 /**
@@ -30,6 +31,7 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     private boolean beep;
     private boolean vibrate;
     private int mode;
+    private int waitTime;
 
     public CollectionPresenter(CollectionMVP.View taskView, SharedPreferences pref){
         this.taskView       = taskView;
@@ -99,8 +101,13 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     @Override
     public void onChiefRespond(ErrorManager errManager, String messageRx) {
         try{
-            taskView.closeProgressWindow();
+            String type = JsonHelper.parseType(messageRx);
+            if(type.equals(JsonHelper.TYPE_COLLECTION)
+                    || type.equals(JsonHelper.TYPE_UNDO_COLLECTION)) {
+                taskView.closeProgressWindow();
+            }
             taskModel.acknowledgeChiefReply(messageRx);
+
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errManager, err);
         }
@@ -143,7 +150,8 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
         crossHair   = preferences.getBoolean("CrossHair", true);
         beep        = preferences.getBoolean("Beep", false);
         vibrate     = preferences.getBoolean("Vibrate", false);
-        mode        = Integer.parseInt(preferences.getString("ScannerMode", "4"));
+        mode        = Integer.parseInt(preferences.getString("ScannerMode", "1"));
+        waitTime    = Integer.parseInt(preferences.getString("PacketWaitTime", "5000"));
 
         taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
@@ -170,7 +178,21 @@ public class CollectionPresenter implements CollectionMVP.MvpVPresenter, Collect
     @Override
     public void notifyUpload() {
         taskView.openProgressWindow("Notify Collection:", "Waiting for Acknowledgement...");
-        handler.postDelayed(taskModel, 5000);
+        handler.postDelayed(taskModel, waitTime);
+    }
+
+    @Override
+    public void notifyReceiveMessage(final String message, final int icon) {
+        taskView.runItSeparate(new Runnable() {
+            @Override
+            public void run() {
+                ProcessException err = new ProcessException(message,
+                        ProcessException.MESSAGE_DIALOG, icon);
+                err.setListener(ProcessException.okayButton, CollectionPresenter.this);
+                taskView.displayError(err);
+            }
+        });
+
     }
 
     @Override

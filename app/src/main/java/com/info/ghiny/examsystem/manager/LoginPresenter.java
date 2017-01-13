@@ -33,6 +33,9 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
     private boolean vibrate;
     private int mode;
 
+    private Role userRole;
+    private Role hostRole;
+
     public LoginPresenter(LoginMVP.MvpView taskView, SharedPreferences pref){
         this.preferences    = pref;
         this.taskView       = taskView;
@@ -122,26 +125,26 @@ public class LoginPresenter implements LoginMVP.MvpVPresenter, LoginMVP.MvpMPres
             if(type.equals(JsonHelper.TYPE_IDENTIFICATION)){
                 taskView.closeProgressWindow();
                 ConnectionTask.setCompleteFlag(true);
-                Role userRole   = taskModel.checkLoginResult(message);
-                Role hostRole   = JavaHost.getConnector().getMyHost();
 
-                if(userRole == Role.IN_CHARGE
-                        || (userRole == Role.INVIGILATOR && hostRole == Role.IN_CHARGE)
-                        || userRole == Role.CHIEF){
-                    taskView.navToHome(!(userRole == Role.CHIEF), true, true, (hostRole == Role.CHIEF));
-                } else {
-                    ProcessException err = new ProcessException("Thank you for using Exam Attendance"
-                            + " System!\nYour attendance (" + LoginModel.getStaff().getIdNo()
-                            + ") is collected",
-                            ProcessException.MESSAGE_DIALOG, IconManager.ASSIGNED);
-                    err.setListener(ProcessException.okayButton, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            taskView.finishActivity();
-                        }
-                    });
-                    throw err;
-                }
+                userRole   = taskModel.checkLoginResult(message);
+                hostRole   = JavaHost.getConnector().getMyHost();
+
+                ProcessException err = new ProcessException("Thank you for using Exam Attendance"
+                        + " System!\nYour attendance (" + LoginModel.getStaff().getIdNo()
+                        + ") is collected",
+                        ProcessException.MESSAGE_DIALOG, IconManager.ASSIGNED);
+
+                err.setListener(ProcessException.okayButton, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        taskView.navToHome((hostRole == Role.IN_CHARGE
+                                || (hostRole == Role.CHIEF && userRole == Role.IN_CHARGE)),
+                                true, true,
+                                (userRole == Role.IN_CHARGE));
+                    }
+                });
+                throw err;
+
             }
         } catch (ProcessException err) {
             ExternalDbLoader.getConnectionTask().publishError(errorManager, err);

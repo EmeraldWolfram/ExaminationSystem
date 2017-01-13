@@ -316,8 +316,7 @@ public class JsonHelper {
             if(obj.getBoolean(MAJOR_KEY_TYPE_RX)){
                 return true;
             } else {
-                throw new ProcessException("Request Failed", ProcessException.MESSAGE_DIALOG,
-                        IconManager.WARNING);
+                return false;
             }
         } catch (JSONException err) {
             throw new ProcessException("FATAL: Data from Chief corrupted\nPlease consult developer",

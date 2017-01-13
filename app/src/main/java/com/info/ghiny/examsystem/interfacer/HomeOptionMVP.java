@@ -22,6 +22,8 @@ public interface HomeOptionMVP {
 
     interface MvpMPresenter extends DialogInterface.OnCancelListener, DialogInterface.OnClickListener{
         void onTimesOut(ProcessException err);
+        void notifyDownloadInfo();
+        void notifyDatabaseFound();
     }
 
     interface MvpModel extends TaskSecureModel, Runnable{
@@ -30,5 +32,7 @@ public interface HomeOptionMVP {
         void checkDownloadResult(String chiefMessage) throws ProcessException;  //parse Attd and papers
         void saveAttendance();  //save before destroy
         ProcessException prepareLogout();
+        void restoreInfo() throws ProcessException;
+        void downloadInfo() throws ProcessException;
     }
 }

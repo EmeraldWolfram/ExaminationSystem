@@ -58,4 +58,16 @@
             android:icon="@drawable/setting_2_sorting"/>
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="Connection Group" android:key="Conn">
+        <ListPreference
+            android:title="Packet Wait Time"
+            android:key="PacketWaitTime"
+            android:summary="Interval to wait for chief response"
+            android:entries="@array/timerEntries"
+            android:entryValues="@array/timerValues"
+            android:defaultValue="5000"
+            android:icon="@drawable/setting_1_mode" />
+    </PreferenceCategory>
+
+
 </PreferenceScreen>

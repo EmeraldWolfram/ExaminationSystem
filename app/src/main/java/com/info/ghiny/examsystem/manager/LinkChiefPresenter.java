@@ -28,6 +28,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
     private boolean beep;
     private boolean vibrate;
     private int mode;
+    private int waitTime;
 
 
     public LinkChiefPresenter(LinkChiefMVP.ViewFace taskView, SharedPreferences pref){
@@ -71,7 +72,8 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
         crossHair   = preferences.getBoolean("CrossHair", true);
         beep        = preferences.getBoolean("Beep", false);
         vibrate     = preferences.getBoolean("Vibrate", false);
-        mode        = Integer.parseInt(preferences.getString("ScannerMode", "4"));
+        mode        = Integer.parseInt(preferences.getString("ScannerMode", "1"));
+        waitTime    = Integer.parseInt(preferences.getString("PacketWaitTime", "5000"));
 
         taskView.changeScannerSetting(crossHair, beep, vibrate, mode);
     }
@@ -84,7 +86,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             try{
                 if(taskModel.reconnect()){
                     taskView.openProgressWindow("RECONNECTION", "Authenticating...");
-                    handler.postDelayed(taskModel, 5000);
+                    handler.postDelayed(taskModel, waitTime);
                 }
                 reconnect = false;
             } catch (ProcessException err) {
@@ -116,7 +118,7 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             taskView.beep();
             taskModel.tryConnectWithQR(scanStr);
             taskView.openProgressWindow("Connecting", "Establishing connection to Host!");
-            handler.postDelayed(establishCheck, 2000);
+            handler.postDelayed(establishCheck, waitTime);
             //taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             taskView.displayError(err);
