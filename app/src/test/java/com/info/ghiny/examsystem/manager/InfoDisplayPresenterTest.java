@@ -1,9 +1,7 @@
 package com.info.ghiny.examsystem.manager;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +10,16 @@ import android.widget.TextView;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.database.ExamSubject;
+import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Session;
 import com.info.ghiny.examsystem.interfacer.InfoDisplayMVP;
+import com.info.ghiny.examsystem.model.JavaHost;
 import com.info.ghiny.examsystem.model.JsonHelper;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -30,7 +29,6 @@ import java.util.Calendar;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -49,6 +47,7 @@ public class InfoDisplayPresenterTest {
     private InfoDisplayMVP.Model taskModel;
     private String MESSAGE_FROM_CHIEF;
 
+    private JavaHost host;
     private ConfigManager configManager;
     private Typeface typeface;
 
@@ -66,6 +65,7 @@ public class InfoDisplayPresenterTest {
     public void setUp() throws Exception {
         taskView    = Mockito.mock(InfoDisplayMVP.ViewFace.class);
         taskModel   = Mockito.mock(InfoDisplayMVP.Model.class);
+        host        = Mockito.mock(JavaHost.class);
 
         paperView   = Mockito.mock(TextView.class);
         sessionView = Mockito.mock(TextView.class);
@@ -99,7 +99,9 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate1_PositiveTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST)).thenReturn(MESSAGE_FROM_CHIEF);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        doNothing().when(taskModel).updateSubjects(MESSAGE_FROM_CHIEF);
+        ExternalDbLoader.setJavaHost(host);
 
         manager.onCreate(intent);
 
@@ -113,28 +115,31 @@ public class InfoDisplayPresenterTest {
     public void testOnCreate2_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        when(intent.getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST)).thenReturn(MESSAGE_FROM_CHIEF);
-        doThrow(new ProcessException(ProcessException.MESSAGE_TOAST))
-                .when(taskModel).updateSubjects(MESSAGE_FROM_CHIEF);
+        ProcessException err    = new ProcessException(ProcessException.MESSAGE_TOAST);
+        when(intent.getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES)).thenReturn(MESSAGE_FROM_CHIEF);
+        doThrow(err).when(taskModel).updateSubjects(MESSAGE_FROM_CHIEF);
+        ExternalDbLoader.setJavaHost(host);
 
         manager.onCreate(intent);
 
         verify(taskModel).updateSubjects(anyString());
         verify(taskView, never()).notifyDataSetChanged();
-        verify(taskView).finishActivity();
+        verify(taskView).displayError(err);
     }
 
     @Test
     public void testOnCreate3_NegativeTest() throws Exception {
         MESSAGE_FROM_CHIEF = "Exam Paper";
         Intent intent   = Mockito.mock(Intent.class);
-        doThrow(new NullPointerException()).when(intent).getStringExtra(JsonHelper.MINOR_KEY_PAPER_LIST);
+        NullPointerException err    = new NullPointerException();
+        doThrow(err).when(intent).getStringExtra(JsonHelper.MINOR_KEY_CANDIDATES);
+        ExternalDbLoader.setJavaHost(host);
 
         manager.onCreate(intent);
 
         verify(taskModel, never()).updateSubjects(anyString());
         verify(taskView, never()).notifyDataSetChanged();
-        verify(taskView).finishActivity();
+        verify(taskView).displayError(any(ProcessException.class));
     }
 
     //= OnRestart() ================================================================================

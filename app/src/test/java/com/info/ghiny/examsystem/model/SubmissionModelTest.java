@@ -135,7 +135,7 @@ public class SubmissionModelTest {
         } catch (ProcessException err) {
             assertTrue(model.isSent());
             assertEquals("Submission successful", err.getErrorMsg());
-            assertEquals(ProcessException.MESSAGE_TOAST, err.getErrorType());
+            assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
     }
 
@@ -150,7 +150,7 @@ public class SubmissionModelTest {
             fail("Expected MESSAGE_DIALOG but nothing was thrown");
         } catch (ProcessException err) {
             assertTrue(model.isSent());
-            assertEquals("Request Failed", err.getErrorMsg());
+            assertEquals("Submission denied by Chief", err.getErrorMsg());
             assertEquals(ProcessException.MESSAGE_DIALOG, err.getErrorType());
         }
     }

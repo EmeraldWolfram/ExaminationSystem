@@ -97,8 +97,6 @@ public class HomeOptionPresenterTest {
 
         verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskModel).initAttendance();
-        verify(taskView).openProgressWindow("Preparing Attendance List:", "Retrieving data...");
-        verify(handler).postDelayed(any(Runnable.class), anyInt());
     }
 
     @Test
@@ -111,8 +109,6 @@ public class HomeOptionPresenterTest {
 
         verify(javaHost).setMessageListener(any(JavaHost.OnMessageReceived.class));
         verify(taskModel, never()).initAttendance();
-        verify(taskView, never()).openProgressWindow(anyString(), anyString());
-        verify(handler, never()).postDelayed(any(Runnable.class), anyInt());
     }
 
     @Test

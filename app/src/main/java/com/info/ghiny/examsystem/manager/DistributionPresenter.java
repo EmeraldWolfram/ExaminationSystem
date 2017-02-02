@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.model.ProcessException;
 
@@ -32,10 +32,10 @@ public class DistributionPresenter
 
     @Override
     public void onCreate(Context context) {
-        if(!TasksSynchronizer.isRunning()){
-            context.startService(new Intent(context, TasksSynchronizer.class));
+        if(!ThreadManager.isRunning()){
+            context.startService(new Intent(context, ThreadManager.class));
         }
-        TasksSynchronizer.startNewThread(taskView, taskModel);
+        ThreadManager.startNewThread(taskView, taskModel);
         ExternalDbLoader.getJavaHost().setTaskView(taskView);
     }
 
@@ -49,7 +49,7 @@ public class DistributionPresenter
 
     @Override
     public void onDestroy() {
-        TasksSynchronizer.removeUnconnectedThread();
+        ThreadManager.removeUnconnectedThread();
     }
 
     @Override

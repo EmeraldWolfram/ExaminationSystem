@@ -52,7 +52,7 @@ public class LinkChiefPresenterTest {
         genView     = Mockito.mock(LinkChiefMVP.ViewFace.class);
         genModel    = Mockito.mock(LinkChiefMVP.ModelFace.class);
         handler     = Mockito.mock(Handler.class);
-        javaHost = Mockito.mock(JavaHost.class);
+        javaHost    = Mockito.mock(JavaHost.class);
         task        = Mockito.mock(ConnectionTask.class);
         dialog      = Mockito.mock(DialogInterface.class);
         preferences = Mockito.mock(SharedPreferences.class);
@@ -185,14 +185,15 @@ public class LinkChiefPresenterTest {
     public void testOnResume1_ReconnectUsingDatabase() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         when(genModel.reconnect()).thenReturn(true);
-        when(preferences.getString(anyString(), anyString())).thenReturn("4");
+        when(preferences.getString("ScannerMode", "1")).thenReturn("1");
+        when(preferences.getString("PacketWaitTime", "5000")).thenReturn("5000");
 
         manager.setReconnect(true);
 
         manager.onResume(errManager);
 
         verify(genView).openProgressWindow(anyString(), anyString());
-        verify(handler).postDelayed(genModel, 5000);
+        verify(handler).postDelayed(genModel, 0);
         verify(genModel).reconnect();
         verify(genView).resumeScanning();
     }
@@ -201,7 +202,7 @@ public class LinkChiefPresenterTest {
     public void testOnResume2_ConnectThroughQR() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
         manager.setReconnect(false);
-        when(preferences.getString(anyString(), anyString())).thenReturn("4");
+        when(preferences.getString(anyString(), anyString())).thenReturn("1");
 
         manager.onResume(errManager);
 

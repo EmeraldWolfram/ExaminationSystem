@@ -10,7 +10,7 @@ import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExamSubject;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -183,7 +183,7 @@ public class AndroidClient extends Thread {
                 });
             }
 
-            TasksSynchronizer.notifyClientConnected(this);
+            ThreadManager.notifyClientConnected(this);
 
             try {
                 out = new PrintWriter(
@@ -277,7 +277,7 @@ public class AndroidClient extends Thread {
                 }
             }
 
-            HashMap<Integer, AndroidClient> clients = TasksSynchronizer.getClientsMap();
+            HashMap<Integer, AndroidClient> clients = ThreadManager.getClientsMap();
             for(AndroidClient client : clients.values()){
                 if(client.getLocalPort() != localPort){
                     client.putMessageIntoSendQueue(inStr);

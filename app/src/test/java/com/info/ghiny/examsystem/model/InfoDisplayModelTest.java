@@ -64,7 +64,8 @@ public class InfoDisplayModelTest {
     @Test
     public void updateSubjects() throws Exception {
         assertEquals(0, subjects.size());
-        MESSAGE_FROM_CHIEF = "{\"Result\":true,\"PaperList\":[" +
+        MESSAGE_FROM_CHIEF = "{\"Result\":true,\"Type\":\"PaperList\"," +
+                "\"Value\":[" +
                 "{\"PaperDesc\":\"SUBJECT 1\",\"PaperVenue\":\"M4\",\"PaperCode\":\"BAME 0001\"," +
                                                 "\"PaperDate\":\"10:10:2016\",\"PaperSession\":\"AM\"}," +
                 "{\"PaperDesc\":\"SUBJECT 2\",\"PaperVenue\":\"M4\",\"PaperCode\":\"BAME 0002\"," +

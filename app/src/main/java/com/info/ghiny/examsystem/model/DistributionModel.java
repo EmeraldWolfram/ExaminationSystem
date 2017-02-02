@@ -7,7 +7,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -31,7 +31,7 @@ public class DistributionModel implements DistributionMVP.MvpModel{
     @Override
     public Bitmap encodeQr(int localPort) throws ProcessException {
 
-        String ip           = TasksSynchronizer.getThisIpv4();
+        String ip           = ThreadManager.getThisIpv4();
         Connector connector = new Connector(ip, localPort, JavaHost.getConnector().getDuelMessage());
         BitMatrix result;
         try {

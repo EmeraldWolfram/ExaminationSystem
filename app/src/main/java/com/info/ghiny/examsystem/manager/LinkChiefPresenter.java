@@ -119,7 +119,6 @@ public class LinkChiefPresenter implements LinkChiefMVP.PresenterFace, LinkChief
             taskModel.tryConnectWithQR(scanStr);
             taskView.openProgressWindow("Connecting", "Establishing connection to Host!");
             handler.postDelayed(establishCheck, waitTime);
-            //taskView.navigateActivity(MainLoginActivity.class);
         } catch (ProcessException err) {
             taskView.displayError(err);
             if(err.getErrorType() == ProcessException.MESSAGE_TOAST)

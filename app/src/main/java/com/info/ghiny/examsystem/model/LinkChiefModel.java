@@ -7,7 +7,7 @@ import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.LinkChiefMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -104,8 +104,8 @@ public class LinkChiefModel implements LinkChiefMVP.ModelFace {
             ExternalDbLoader.getConnectionTask().cancel(true);
             ExternalDbLoader.setConnectionTask(null);
         }
-        if(TasksSynchronizer.isRunning()){
-            HashMap<Integer, AndroidClient> map = TasksSynchronizer.getClientsMap();
+        if(ThreadManager.isRunning()){
+            HashMap<Integer, AndroidClient> map = ThreadManager.getClientsMap();
             if(map != null){
                 while(map.size() > 0){
                     map.remove(0).stopClient();

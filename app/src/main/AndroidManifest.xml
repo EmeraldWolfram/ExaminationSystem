@@ -65,7 +65,7 @@
             android:label="Work Distribution"
             android:screenOrientation="userPortrait"/>
 
-        <service android:name=".database.TasksSynchronizer"/>
+        <service android:name=".database.ThreadManager"/>
 
     </application>
 

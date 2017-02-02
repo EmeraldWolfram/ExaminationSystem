@@ -1,17 +1,14 @@
 package com.info.ghiny.examsystem.model;
 
 import android.content.DialogInterface;
-import android.util.Log;
 
-import com.info.ghiny.examsystem.TakeAttdActivity;
 import com.info.ghiny.examsystem.database.AttendanceList;
 import com.info.ghiny.examsystem.database.Candidate;
-import com.info.ghiny.examsystem.database.LocalDbLoader;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
 import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.database.Status;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.TakeAttdMVP;
 import com.info.ghiny.examsystem.manager.IconManager;
 
@@ -238,8 +235,8 @@ public class TakeAttdModel implements TakeAttdMVP.Model {
                 ExternalDbLoader.updateAttendance(updatingList);
             }
         } else {
-            if(TasksSynchronizer.isDistributed()){
-                TasksSynchronizer.updateAttendance(updatingList);
+            if(ThreadManager.isDistributed()){
+                ThreadManager.updateAttendance(updatingList);
             }
         }
     }

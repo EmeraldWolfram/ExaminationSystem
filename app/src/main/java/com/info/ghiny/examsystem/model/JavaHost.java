@@ -5,13 +5,9 @@ import android.util.Log;
 
 import com.info.ghiny.examsystem.LinkChiefActivity;
 import com.info.ghiny.examsystem.database.Connector;
-import com.info.ghiny.examsystem.database.Role;
-import com.info.ghiny.examsystem.database.TasksSynchronizer;
+import com.info.ghiny.examsystem.database.ThreadManager;
 import com.info.ghiny.examsystem.interfacer.GeneralView;
-import com.info.ghiny.examsystem.manager.ErrorManager;
 import com.info.ghiny.examsystem.manager.IconManager;
-
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -141,7 +137,7 @@ public class JavaHost implements Runnable{
                         int deviceId    = JsonHelper.parseClientId(serverMessage);
                         if(deviceId != 0){
                             serverMessage   = JsonHelper.modifyDeviceId(serverMessage, 0);
-                            TasksSynchronizer.passMessageBack(deviceId, serverMessage);
+                            ThreadManager.passMessageBack(deviceId, serverMessage);
                         } else if (msgListener != null) {
                             msgListener.messageReceived(serverMessage);
                         }

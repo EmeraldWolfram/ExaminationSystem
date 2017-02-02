@@ -52,6 +52,7 @@ public class HomeOptionModelTest {
         dBLoader        = Mockito.mock(LocalDbLoader.class);
 
         connector = new Connector("add", 7032, "DUEL");
+
         JavaHost.setConnector(connector);
         LoginModel.setStaff(staff);
 
@@ -140,7 +141,7 @@ public class HomeOptionModelTest {
      * Tests:
      * 1. Connected to chief, database got NO attendance list, send request to chief & start timer
      * 2. Connected to chief, database got NO exam papers info, send request to chief & start timer
-     * 3. Connected to chief, database got attendance list & exam papers info, load from the database
+     * 3. Connected to chief, database got attendance list & exam papers info, notify user
      * 4. Connected to in-charge, send request to in-charge & start timer
      */
     @Test
@@ -152,8 +153,7 @@ public class HomeOptionModelTest {
         model.initAttendance();
 
         verify(javaHost).putMessageIntoSendQueue(anyString());
-        verify(dBLoader, never()).queryAttendanceList();
-        verify(dBLoader, never()).queryPapers();
+        verify(taskPresenter, never()).notifyDatabaseFound();
         assertFalse(model.isInitialized());
     }
 
@@ -166,8 +166,7 @@ public class HomeOptionModelTest {
         model.initAttendance();
 
         verify(javaHost).putMessageIntoSendQueue(anyString());
-        verify(dBLoader, never()).queryAttendanceList();
-        verify(dBLoader, never()).queryPapers();
+        verify(taskPresenter, never()).notifyDatabaseFound();
         assertFalse(model.isInitialized());
     }
 
@@ -182,9 +181,8 @@ public class HomeOptionModelTest {
         model.initAttendance();
 
         verify(javaHost, never()).putMessageIntoSendQueue(anyString());
-        verify(dBLoader).queryAttendanceList();
-        verify(dBLoader).queryPapers();
-        assertTrue(model.isInitialized());
+        assertFalse(model.isInitialized());
+        verify(taskPresenter).notifyDatabaseFound();
     }
 
     @Test
@@ -196,8 +194,7 @@ public class HomeOptionModelTest {
         model.initAttendance();
 
         verify(javaHost).putMessageIntoSendQueue(anyString());
-        verify(dBLoader, never()).queryAttendanceList();
-        verify(dBLoader, never()).queryPapers();
+        verify(taskPresenter, never()).notifyDatabaseFound();
         assertFalse(model.isInitialized());
     }
 

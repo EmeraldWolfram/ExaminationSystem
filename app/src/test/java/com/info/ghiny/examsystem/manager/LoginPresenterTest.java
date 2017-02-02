@@ -11,9 +11,11 @@ import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.database.Connector;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.Role;
+import com.info.ghiny.examsystem.database.StaffIdentity;
 import com.info.ghiny.examsystem.interfacer.LoginMVP;
 import com.info.ghiny.examsystem.model.ConnectionTask;
 import com.info.ghiny.examsystem.model.JavaHost;
+import com.info.ghiny.examsystem.model.LoginModel;
 import com.info.ghiny.examsystem.model.ProcessException;
 
 import org.junit.Before;
@@ -55,6 +57,8 @@ public class LoginPresenterTest {
         password    = Mockito.mock(Intent.class);
         dialog      = Mockito.mock(DialogInterface.class);
         preferences = Mockito.mock(SharedPreferences.class);
+
+        LoginModel.setStaff(new StaffIdentity("24680", true, "Dr. Straight", "M4"));
 
         manager     = new LoginPresenter(taskView, preferences);
         manager.setTaskModel(taskModel);
@@ -237,7 +241,7 @@ public class LoginPresenterTest {
 
         manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
 
-        verify(taskView).navToHome(true, true, true, false);
+        verify(taskView).closeProgressWindow();
     }
 
     @Test
@@ -252,8 +256,6 @@ public class LoginPresenterTest {
         manager.onChiefRespond(errorManager, "Message");
         assertFalse(manager.isDlFlag());
 
-
-        verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }
@@ -271,7 +273,6 @@ public class LoginPresenterTest {
         manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
         assertFalse(manager.isDlFlag());
 
-        verify(taskView, never()).navigateActivity(TakeAttdActivity.class);
         verify(connectionTask).publishError(any(ErrorManager.class), any(ProcessException.class));
         verify(taskView, never()).resumeScanning();
     }
@@ -289,7 +290,7 @@ public class LoginPresenterTest {
 
         manager.onChiefRespond(errorManager, "{\"Type\":\"Identification\",\"Value\":\"Message\"}");
 
-        verify(taskView).navToHome(true, true, true, true);
+        verify(taskView).closeProgressWindow();
     }
 
     //= OnClick(...) ===============================================================================

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.info.ghiny.examsystem.DistributionActivity;
 import com.info.ghiny.examsystem.interfacer.DistributionMVP;
@@ -21,13 +20,12 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Created by user09 on 12/13/2016.
  */
 
-public final class TasksSynchronizer extends Service{
+public final class ThreadManager extends Service{
 
     private static PowerManager powerManager;
     private static PowerManager.WakeLock wakeLock;
@@ -56,11 +54,11 @@ public final class TasksSynchronizer extends Service{
     }
 
     static void setRunning(boolean running){
-        TasksSynchronizer.running   = running;
+        ThreadManager.running   = running;
     }
 
     static void setDistributed(boolean distributed){
-        TasksSynchronizer.distributed   = distributed;
+        ThreadManager.distributed   = distributed;
     }
 
     static void setClientsMap(HashMap<Integer, AndroidClient> testMap){
@@ -68,7 +66,7 @@ public final class TasksSynchronizer extends Service{
     }
 
     static void setWaitingThread(AndroidClient waitingThread) {
-        TasksSynchronizer.waitingThread = waitingThread;
+        ThreadManager.waitingThread = waitingThread;
     }
 
     static AndroidClient getWaitingThread() {
@@ -76,11 +74,11 @@ public final class TasksSynchronizer extends Service{
     }
 
     static void setPowerManager(PowerManager powerManager){
-        TasksSynchronizer.powerManager    = powerManager;
+        ThreadManager.powerManager    = powerManager;
     }
 
     static void setWakeLock(PowerManager.WakeLock wakeLock){
-        TasksSynchronizer.wakeLock    = wakeLock;
+        ThreadManager.wakeLock    = wakeLock;
     }
 
     //==============================================================================================
@@ -119,8 +117,8 @@ public final class TasksSynchronizer extends Service{
     public static void startNewThread(DistributionMVP.MvpView view, DistributionMVP.MvpModel model){
         if(view != null && model != null){
             waitingThread    = new AndroidClient(wakeLock);
-            TasksSynchronizer.view  = view;
-            TasksSynchronizer.model = model;
+            ThreadManager.view  = view;
+            ThreadManager.model = model;
 
             waitingThread.setTempView(view);
             waitingThread.setTempModel(model);

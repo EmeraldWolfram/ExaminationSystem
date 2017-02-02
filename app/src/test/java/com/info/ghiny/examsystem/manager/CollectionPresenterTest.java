@@ -203,14 +203,14 @@ public class CollectionPresenterTest {
     @Test
     public void testOnChiefRespond_1() throws Exception {
         ErrorManager errManager = Mockito.mock(ErrorManager.class);
-        ConnectionTask conTask = Mockito.mock(ConnectionTask.class);
+        ConnectionTask conTask  = Mockito.mock(ConnectionTask.class);
         ExternalDbLoader.setConnectionTask(conTask);
         doNothing().when(taskModel).acknowledgeChiefReply(anyString());
 
-        manager.onChiefRespond(errManager, "CORRECT KIND OF MESSAGE");
+        manager.onChiefRespond(errManager, "{\"Type\":\"Collection\",\"Result\":true}");
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).acknowledgeChiefReply("CORRECT KIND OF MESSAGE");
+        verify(taskModel).acknowledgeChiefReply("{\"Type\":\"Collection\",\"Result\":true}");
         verify(conTask, never()).publishError(any(ErrorManager.class), any(ProcessException.class));
     }
 
@@ -222,10 +222,10 @@ public class CollectionPresenterTest {
         ProcessException err    = Mockito.mock(ProcessException.class);
         doThrow(err).when(taskModel).acknowledgeChiefReply(anyString());
 
-        manager.onChiefRespond(errManager, "INCORRECT KIND OF MESSAGE");
+        manager.onChiefRespond(errManager, "{\"Type\":\"Collection\",\"Result\":false}");
 
         verify(taskView).closeProgressWindow();
-        verify(taskModel).acknowledgeChiefReply("INCORRECT KIND OF MESSAGE");
+        verify(taskModel).acknowledgeChiefReply("{\"Type\":\"Collection\",\"Result\":false}");
         verify(conTask).publishError(errManager, err);
     }
     //= OnPasswordReceived() ========================================================================

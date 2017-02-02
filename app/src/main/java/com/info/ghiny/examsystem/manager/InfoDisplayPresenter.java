@@ -47,6 +47,9 @@ public class InfoDisplayPresenter implements InfoDisplayMVP.Presenter {
             ExternalDbLoader.getJavaHost().setTaskView(taskView);
         } catch (ProcessException err) {
             taskView.displayError(err);
+        } catch (Exception err){
+            taskView.displayError(new ProcessException(err.getMessage(),
+                    ProcessException.FATAL_MESSAGE, IconManager.WARNING));
         }
     }
 

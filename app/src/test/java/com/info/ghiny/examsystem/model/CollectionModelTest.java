@@ -503,7 +503,8 @@ public class CollectionModelTest {
         model.setAcknowledgeCollection(false);
         model.setAcknowledgeUndoCollection(false);
 
-        model.acknowledgeChiefReply("{\"Type\":\"Collection\"}");
+        model.acknowledgeChiefReply("{\"Type\":\"Collection\",\"Result\":true}");
+
 
         assertFalse(model.isAcknowledgeUndoCollection());
         assertTrue(model.isAcknowledgeCollection());
@@ -514,7 +515,7 @@ public class CollectionModelTest {
         model.setAcknowledgeCollection(false);
         model.setAcknowledgeUndoCollection(false);
 
-        model.acknowledgeChiefReply("{\"Type\":\"UndoCollection\"}");
+        model.acknowledgeChiefReply("{\"Type\":\"UndoCollection\",\"Result\":true}");
 
         assertTrue(model.isAcknowledgeUndoCollection());
         assertFalse(model.isAcknowledgeCollection());
