@@ -32,7 +32,7 @@ Software Requirements
 - **SQLiteBrowser**
   - *Download SQLiteBrowser at http://sqlitebrowser.org/*
   - *Install SQLite Browser*
-- **Netbean**
+- **NetBean**
   - *Download NetBean IDE at https://netbeans.org/downloads/*
   - *Install NetBean*
 
@@ -50,23 +50,23 @@ to clone the project into the computer.
 Development
 -----
 - Open Android Studio -> Open an existing Android Studio project -> browse the project cloned (ExaminationSystem)
-~~~~$$Browse Picture
-- Wait for project initialization. (Slow if the computer have small RAM)
+![Starting](screenshot/BrowseProject.png)
+- Wait for project initialization. *(Slow if the computer have small RAM)*
 - Project can be developed in all the folder in this list
-~~~~$$Open Project Picture
+![Open Project](screenshot/Open.png)
 - Important Starting Point were highlighted in blue
   - 1st highlighted folder store JAVA program
   - 2nd highlighted folder store TEST code
   - 3rd highlighted folder store USER INTERFACE layout
   - 4th highlighted folder allow dependency and library inclusion
-~~~$$IMPORTANT POINT
+![Important Checkpoints](screenshot/ImportantStartingPoint.png)
 
 Testing
 -----
 - To run automated Test, press the circular green button as shown below:
-~~~~$$ Run Test Picture
+![Run Automated Test](screenshot/RunTest.png)
 - To run on PC Simulator, select 'app' and press 'RUN' on the targeted virtual device as shown below:
-~~~~$$ Select Picture
+![Simulation](screenshot/Target.png)
 - To run on a real Android Phone
   - Flash through USB cable
     - Enable Developer Mode in Android phone by pressing Build Number under Setting for 7 times.
@@ -74,7 +74,7 @@ Testing
     **NOTE that you could brick your phone if you disconnect your phone while flashing**
   - Generate APK and install
     - Generate APK as shown below
-    ~~~$$$ APK Generation
+    [APK Generation](screenshot/BuildingAPK.png)
     - The APK will be generated in app/build/outputs/apk/app-debug.apk
     - Suggestion: Upload to Google Drive, download and install
     - If you FAIL to install the APK, uninstall the existing application and retry.
