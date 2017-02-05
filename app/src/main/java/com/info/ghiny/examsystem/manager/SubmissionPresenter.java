@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 
+import com.info.ghiny.examsystem.AttdReportActivity;
 import com.info.ghiny.examsystem.PopUpLogin;
 import com.info.ghiny.examsystem.R;
 import com.info.ghiny.examsystem.SettingActivity;
@@ -119,6 +120,14 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
 
     @Override
     public void onUpload() {
+        /**
+         * This part is still working fine
+         * But new User Interface was added at next activity
+         * Therefore, this part was commented
+         *
+         * uncomment it to back to previous version
+         *
+         *
         StaffIdentity staff = LoginModel.getStaff();
         AttendanceList list = TakeAttdModel.getAttdList();
 
@@ -133,6 +142,9 @@ public class SubmissionPresenter implements SubmissionMVP.MvpVPresenter, Submiss
         String totalSize    = total.toString();
 
         taskView.displayReportWindow(staff.getName(), staff.getExamVenue(), statusSize, totalSize);
+         */
+        navFlag = true;
+        taskView.navigateActivity(AttdReportActivity.class);
     }
 
     @Override

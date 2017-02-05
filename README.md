@@ -74,7 +74,7 @@ Testing
     **NOTE that you could brick your phone if you disconnect your phone while flashing**
   - Generate APK and install
     - Generate APK as shown below
-    [APK Generation](screenshot/BuildingAPK.png)
+    ![APK Generation](screenshot/BuildingAPK.png)
     - The APK will be generated in app/build/outputs/apk/app-debug.apk
     - Suggestion: Upload to Google Drive, download and install
     - If you FAIL to install the APK, uninstall the existing application and retry.

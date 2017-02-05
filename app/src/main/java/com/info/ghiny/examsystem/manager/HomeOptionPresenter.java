@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.info.ghiny.examsystem.AttdReportActivity;
 import com.info.ghiny.examsystem.CollectionActivity;
 import com.info.ghiny.examsystem.DistributionActivity;
 import com.info.ghiny.examsystem.InfoGrabActivity;
@@ -146,6 +147,12 @@ public class HomeOptionPresenter implements HomeOptionMVP.MvpVPresenter, HomeOpt
     public void onDistribution() {
         navFlag = true;
         taskView.navigateActivity(DistributionActivity.class);
+    }
+
+    @Override
+    public void onReport() {
+        navFlag = true;
+        taskView.navigateActivity(AttdReportActivity.class);
     }
 
     @Override

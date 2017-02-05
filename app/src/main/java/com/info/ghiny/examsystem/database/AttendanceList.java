@@ -80,6 +80,35 @@ public class AttendanceList {
         return prgList;
     }
 
+    public List<String> getPaperList(){
+        List<String> paperList    = new ArrayList<>();
+
+        for(Status status : attendanceList.keySet()){
+            for(String paper : attendanceList.get(status).keySet()){
+                if(!paperList.contains(paper)){
+                    paperList.add(paper);
+                }
+            }
+        }
+        return paperList;
+    }
+
+    public List<String> getProgrammeList(){
+        List<String> prgList    = new ArrayList<>();
+
+        for(Status status : attendanceList.keySet()){
+            for(String paper : attendanceList.get(status).keySet()){
+                for(String programme : attendanceList.get(status).get(paper).keySet()){
+                    if(!prgList.contains(programme)){
+                        prgList.add(programme);
+                    }
+                }
+            }
+        }
+
+        return prgList;
+    }
+
     public HashMap<String, Candidate> getCandidateList(Status status, String paperCode, String programme){
         if(status == null || paperCode == null || programme == null){
             return null;
@@ -146,6 +175,20 @@ public class AttendanceList {
         }
 
         return size;
+    }
+
+    public int getNumberOfCandidates(Status status, String programme){
+        int numberOfCdd = 0;
+
+        for(String paper    :   attendanceList.get(status).keySet()){
+            for(String prg  :   attendanceList.get(status).get(paper).keySet()){
+                if(prg.equals(programme)){
+                    numberOfCdd += attendanceList.get(status).get(paper).get(programme).size();
+                }
+            }
+        }
+
+        return numberOfCdd;
     }
 
     public int getNumberOfCandidates(Status status, String paperCode, String programme){

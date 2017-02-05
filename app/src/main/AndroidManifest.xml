@@ -50,23 +50,27 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".InfoDisplayActivity"
-            android:label="Student's Papers"
-            android:screenOrientation="userPortrait"/>
+            android:label="Student&apos;s Papers"
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".SettingActivity"
-            android:label="Setting"/>
+            android:label="Setting" />
         <activity
             android:name=".SubmissionActivity"
+            android:label="Attendance List"
             android:screenOrientation="userPortrait"
-            android:label="Attendance Report"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DistributionActivity"
             android:label="Work Distribution"
-            android:screenOrientation="userPortrait"/>
+            android:screenOrientation="userPortrait" />
 
-        <service android:name=".database.ThreadManager"/>
+        <service android:name=".database.ThreadManager" />
 
+        <activity
+            android:name=".AttdReportActivity"
+            android:label="Attendance Report"
+            android:screenOrientation="userPortrait" />
     </application>
 
 </manifest>

@@ -55,6 +55,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
     private ImageView collectionButton;
     private ImageView connectionButton;
     private ImageView attendanceButton;
+    private ImageView reportButton;
     private ProgressDialog progDialog;
 
     private RelativeLayout help;
@@ -98,6 +99,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
         collectionButton    = (ImageView) findViewById(R.id.optionCollection);
         connectionButton    = (ImageView) findViewById(R.id.optionConnection);
         attendanceButton    = (ImageView) findViewById(R.id.optionAttendance);
+        reportButton        = (ImageView) findViewById(R.id.optionReport);
         help                = (RelativeLayout) findViewById(R.id.homeHelpContext);
 
         Intent loginActivity    = getIntent();
@@ -110,6 +112,7 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
         setupButton(collectionEnable, collectionButton);
         setupButton(connectionEnable, connectionButton);
         setupButton(attendanceEnable, attendanceButton);
+        setupButton(attendanceEnable, reportButton);
 
         helpDisplay = false;
         help.setVisibility(View.INVISIBLE);

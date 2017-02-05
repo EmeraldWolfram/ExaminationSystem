@@ -1,127 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/black"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <View
-        android:id="@+id/centerHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true" />
-
-    <View
-        android:id="@+id/centerVertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_centerVertical="true" />
 
     <RelativeLayout
-        android:id="@+id/homeHelpContext"
+        android:background="@color/black"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <TextView
+        <View
+            android:id="@+id/centerHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true" />
+
+        <RelativeLayout
+            android:id="@+id/homeHelpContext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:text="Exam Papers Colection"
+                android:textColor="@color/colorLightRed"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="Attendance Collection"
+                android:textColor="@color/colorLightRed"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="180dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="Info Enquiry"
+                android:textColor="@color/colorLightRed"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="180dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:text="Distribute Task"
+                android:textColor="@color/colorLightRed"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="370dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="Attendance Report"
+                android:textColor="@color/colorLightRed"/>
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/optionAttendance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginEnd="15dp"
-            android:text="Exam Papers Colection"
-            android:textColor="@color/colorLightRed"/>
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/centerHorizontal"
+            android:layout_toStartOf="@id/centerHorizontal"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            app:srcCompat="@drawable/option_attendance"
+            android:background="@drawable/custom_border_enabled"
+            android:onClick="onAttendance"
+            android:contentDescription="Attendance"/>
 
-        <TextView
+        <ImageButton
+            android:id="@+id/optionCollection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp"
-            android:text="Attendance Collection"
-            android:textColor="@color/colorLightRed"/>
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/centerHorizontal"
+            android:layout_toEndOf="@id/centerHorizontal"
+            app:srcCompat="@drawable/option_collection"
+            android:background="@drawable/custom_border_enabled"
+            android:onClick="onCollection"
+            android:contentDescription="Bundle Collection"/>
 
-        <TextView
+        <ImageButton
+            android:id="@+id/optionInfoGrab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp"
-            android:text="Info Enquiry"
-            android:textColor="@color/colorLightRed"/>
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_below="@id/optionAttendance"
+            android:layout_toLeftOf="@id/centerHorizontal"
+            android:layout_toStartOf="@id/centerHorizontal"
+            app:srcCompat="@drawable/option_info_grab"
+            android:background="@drawable/custom_border_enabled"
+            android:onClick="onInfo"
+            android:contentDescription="Info"/>
 
-        <TextView
+        <ImageButton
+            android:id="@+id/optionConnection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginEnd="15dp"
-            android:text="Distribute Task"
-            android:textColor="@color/colorLightRed"/>
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_below="@id/optionCollection"
+            android:layout_toRightOf="@id/centerHorizontal"
+            android:layout_toEndOf="@id/centerHorizontal"
+            app:srcCompat="@drawable/option_connection"
+            android:onClick="onDistribution"
+            android:background="@drawable/custom_border_enabled"
+            android:contentDescription="Distribution"/>
 
+        <ImageButton
+            android:id="@+id/optionReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_below="@id/optionInfoGrab"
+            android:layout_toLeftOf="@id/centerHorizontal"
+            android:layout_toStartOf="@id/centerHorizontal"
+            app:srcCompat="@drawable/option_report"
+            android:onClick="onDistribution"
+            android:background="@drawable/custom_border_enabled"
+            android:contentDescription="Report"/>
     </RelativeLayout>
-
-    <ImageButton
-        android:id="@+id/optionAttendance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/centerVertical"
-        android:layout_toLeftOf="@id/centerHorizontal"
-        android:layout_toStartOf="@id/centerHorizontal"
-        android:layout_margin="10dp"
-        android:padding="10dp"
-        app:srcCompat="@drawable/option_attendance"
-        android:background="@drawable/custom_border_enabled"
-        android:onClick="onAttendance"
-        android:contentDescription="Attendance"/>
-
-    <ImageButton
-        android:id="@+id/optionCollection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="10dp"
-        android:layout_above="@id/centerVertical"
-        android:layout_toRightOf="@id/centerHorizontal"
-        android:layout_toEndOf="@id/centerHorizontal"
-        app:srcCompat="@drawable/option_collection"
-        android:background="@drawable/custom_border_enabled"
-        android:onClick="onCollection"
-        android:contentDescription="Bundle Collection"/>
-
-    <ImageButton
-        android:id="@+id/optionInfoGrab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="10dp"
-        android:layout_below="@id/centerVertical"
-        android:layout_toLeftOf="@id/centerHorizontal"
-        android:layout_toStartOf="@id/centerHorizontal"
-        app:srcCompat="@drawable/option_info_grab"
-        android:background="@drawable/custom_border_enabled"
-        android:onClick="onInfo"
-        android:contentDescription="Info"/>
-
-    <ImageButton
-        android:id="@+id/optionConnection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="10dp"
-        android:layout_below="@id/centerVertical"
-        android:layout_toRightOf="@id/centerHorizontal"
-        android:layout_toEndOf="@id/centerHorizontal"
-        app:srcCompat="@drawable/option_connection"
-        android:onClick="onDistribution"
-        android:background="@drawable/custom_border_enabled"
-        android:contentDescription="Distribution"/>
-
-
-
-</RelativeLayout>
+</ScrollView>

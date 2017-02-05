@@ -30,6 +30,7 @@ public interface HomeOptionMVP {
         void onCollection();
         void onInfo();
         void onDistribution();
+        void onReport();
         boolean onSetting();
     }
 

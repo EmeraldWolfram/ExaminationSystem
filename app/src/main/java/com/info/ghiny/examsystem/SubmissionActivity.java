@@ -99,13 +99,13 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
             }
         });
 
-        //======================================================
+        /*======================================================
         if(LoginModel.getStaff().getRole() == Role.IN_CHARGE){
             uploadButton.setVisibility(View.VISIBLE);
         } else {
             uploadButton.setVisibility(View.INVISIBLE);
         }
-        //======================================================
+        /======================================================*/
 
         drawerToggleButton = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -138,8 +138,6 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
         super.onPostCreate(savedInstanceState);
         drawerToggleButton.syncState();
     }
-
-
 
     private void initMVP(){
         errorManager    = new ErrorManager(this);
@@ -223,7 +221,7 @@ public class SubmissionActivity extends AppCompatActivity implements SubmissionM
     @Override
     public void navigateActivity(Class<?> cls) {
         Intent secure   = new Intent(this, cls);
-        startActivityForResult(secure, PopUpLogin.PASSWORD_REQ_CODE);
+        startActivity(secure);
     }
 
     @Override
