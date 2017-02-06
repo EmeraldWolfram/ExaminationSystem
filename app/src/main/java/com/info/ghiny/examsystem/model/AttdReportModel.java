@@ -14,9 +14,21 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by FOONG on 3/2/2017.
+ * Copyright (C) 2016 - 2017 Steven Foong Ghin Yew <stevenfgy@yahoo.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
-
 public class AttdReportModel implements AttdReportMVP.MvpModel {
 
     private AttdReportMVP.MvpMPresenter taskPresenter;
@@ -57,34 +69,47 @@ public class AttdReportModel implements AttdReportMVP.MvpModel {
                     ProcessException.MESSAGE_TOAST, IconManager.MESSAGE);
     }
 
-    private List<StatusDisplayHolder> getDisplayBody(String programme) {
+    private ArrayList<StatusDisplayHolder> getDisplayBody(String programme) {
 
-        List<StatusDisplayHolder> body  = new ArrayList<>();
+        ArrayList<StatusDisplayHolder> body  = new ArrayList<>();
 
-        body.add(new StatusDisplayHolder(Status.PRESENT,
-                attendanceList.getNumberOfCandidates(Status.PRESENT, programme)));
-        body.add(new StatusDisplayHolder(Status.ABSENT,
-                attendanceList.getNumberOfCandidates(Status.ABSENT, programme)));
-        body.add(new StatusDisplayHolder(Status.BARRED,
-                attendanceList.getNumberOfCandidates(Status.BARRED, programme)));
-        body.add(new StatusDisplayHolder(Status.EXEMPTED,
-                attendanceList.getNumberOfCandidates(Status.EXEMPTED, programme)));
-        body.add(new StatusDisplayHolder(Status.QUARANTINED,
-                attendanceList.getNumberOfCandidates(Status.QUARANTINED, programme)));
+        int presentNum  = attendanceList.getNumberOfCandidates(Status.PRESENT, programme);
+        int absentNum   = attendanceList.getNumberOfCandidates(Status.ABSENT, programme);
+        int barredNum   = attendanceList.getNumberOfCandidates(Status.BARRED, programme);
+        int exemptNum   = attendanceList.getNumberOfCandidates(Status.EXEMPTED, programme);
+        int quaranNum   = attendanceList.getNumberOfCandidates(Status.QUARANTINED, programme);
+
+        body.add(new StatusDisplayHolder(Status.PRESENT, presentNum));
+        body.add(new StatusDisplayHolder(Status.ABSENT, absentNum));
+        body.add(new StatusDisplayHolder(Status.BARRED, barredNum));
+        body.add(new StatusDisplayHolder(Status.EXEMPTED, exemptNum));
+        body.add(new StatusDisplayHolder(Status.QUARANTINED, quaranNum));
+
+        body.add(new StatusDisplayHolder(Status.TOTAL,
+                presentNum + absentNum + barredNum + exemptNum + quaranNum));
 
         return body;
     }
 
     @Override
-    public HashMap<ProgrammeDisplayHolder, List<StatusDisplayHolder>> getDisplayMap(){
+    public HashMap<ProgrammeDisplayHolder, List<StatusDisplayHolder>> getDisplayMap(List<ProgrammeDisplayHolder> header){
         HashMap<ProgrammeDisplayHolder, List<StatusDisplayHolder>> displaysMap = new HashMap<>();
-        List<ProgrammeDisplayHolder> header = getDisplayHeader();
         List<StatusDisplayHolder> tempBody;
 
-        for(int i = 0; i < header.size(); i++){
+        for(int i = 0; i < (header.size() - 1); i++){
             tempBody    = getDisplayBody(header.get(i).getProgramme());
             displaysMap.put(header.get(i), tempBody);
         }
+
+
+        List<StatusDisplayHolder> summary   = new ArrayList<>();
+        summary.add(new StatusDisplayHolder(Status.PRESENT, attendanceList.getNumberOfCandidates(Status.PRESENT)));
+        summary.add(new StatusDisplayHolder(Status.ABSENT, attendanceList.getNumberOfCandidates(Status.ABSENT)));
+        summary.add(new StatusDisplayHolder(Status.BARRED, attendanceList.getNumberOfCandidates(Status.BARRED)));
+        summary.add(new StatusDisplayHolder(Status.EXEMPTED, attendanceList.getNumberOfCandidates(Status.EXEMPTED)));
+        summary.add(new StatusDisplayHolder(Status.QUARANTINED, attendanceList.getNumberOfCandidates(Status.QUARANTINED)));
+        summary.add(new StatusDisplayHolder(Status.TOTAL, attendanceList.getTotalNumberOfCandidates()));
+        displaysMap.put(header.get(header.size() - 1), summary);
 
         return displaysMap;
     }
@@ -92,7 +117,7 @@ public class AttdReportModel implements AttdReportMVP.MvpModel {
     @Override
     public List<ProgrammeDisplayHolder> getDisplayHeader() {
         List<String> programmeList  = attendanceList.getProgrammeList();
-        List<ProgrammeDisplayHolder> displayHolders = new ArrayList<>();
+        ArrayList<ProgrammeDisplayHolder> displayHolders = new ArrayList<>();
 
         for(int i = 0; i < programmeList.size(); i++){
             String tempPrg  = programmeList.get(i);
@@ -105,6 +130,7 @@ public class AttdReportModel implements AttdReportMVP.MvpModel {
             displayHolders.add(new ProgrammeDisplayHolder(tempPrg, tempTotal));
         }
 
+        displayHolders.add(new ProgrammeDisplayHolder("TOTAL", attendanceList.getTotalNumberOfCandidates()));
 
         return displayHolders;
     }

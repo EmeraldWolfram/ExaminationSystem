@@ -2,13 +2,12 @@ package com.info.ghiny.examsystem.interfacer;
 
 import android.content.DialogInterface;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.info.ghiny.examsystem.database.Status;
 import com.info.ghiny.examsystem.model.ProcessException;
 import com.info.ghiny.examsystem.view_holder.ProgrammeDisplayHolder;
 import com.info.ghiny.examsystem.view_holder.StatusDisplayHolder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public interface AttdReportMVP {
 
     interface MvpView extends GeneralView, TaskConnView {
-        void onSubmit();
+        void onSubmit(View view);
     }
 
     interface MvpVPresenter extends TaskConnPresenter, TaskSecurePresenter {
@@ -43,7 +42,8 @@ public interface AttdReportMVP {
         void verifyChiefResponse(String messageRx) throws ProcessException;
         void uploadAttdList() throws ProcessException;
         List<ProgrammeDisplayHolder> getDisplayHeader();
-        HashMap<ProgrammeDisplayHolder, List<StatusDisplayHolder>> getDisplayMap();
+        HashMap<ProgrammeDisplayHolder, List<StatusDisplayHolder>>
+        getDisplayMap(List<ProgrammeDisplayHolder> header);
     }
 
 }

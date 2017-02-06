@@ -1,7 +1,5 @@
 package com.info.ghiny.examsystem.model;
 
-import android.graphics.drawable.Icon;
-
 import com.info.ghiny.examsystem.database.Candidate;
 import com.info.ghiny.examsystem.database.ExternalDbLoader;
 import com.info.ghiny.examsystem.database.PaperBundle;

@@ -227,6 +227,10 @@ public class HomeOptionActivity extends AppCompatActivity implements HomeOptionM
         taskPresenter.onDistribution();
     }
 
+    public void onReport(View view){
+        taskPresenter.onReport();
+    }
+
     @Override
     public void openProgressWindow(String title, String message) {
         progDialog  = new ProgressDialog(this, R.style.ProgressDialogTheme);

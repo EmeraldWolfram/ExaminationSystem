@@ -26,9 +26,21 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by FOONG on 3/2/2017.
+ * Copyright (C) 2016 - 2017 Steven Foong Ghin Yew <stevenfgy@yahoo.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
-
 public class AttdReportPresenter implements AttdReportMVP.MvpVPresenter, AttdReportMVP.MvpMPresenter {
 
     private AttdReportMVP.MvpView taskView;
@@ -53,7 +65,7 @@ public class AttdReportPresenter implements AttdReportMVP.MvpVPresenter, AttdRep
     public void setTaskModel(AttdReportMVP.MvpModel taskModel) {
         this.taskModel      = taskModel;
         this.reportParent   = taskModel.getDisplayHeader();
-        this.reportChild    = taskModel.getDisplayMap();
+        this.reportChild    = taskModel.getDisplayMap(reportParent);
     }
 
     public void setTimer(Handler timer) {

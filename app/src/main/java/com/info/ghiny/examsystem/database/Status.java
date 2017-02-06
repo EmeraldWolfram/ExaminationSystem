@@ -22,7 +22,8 @@ public enum Status {
     ABSENT,
     EXEMPTED,
     BARRED,
-    QUARANTINED;
+    QUARANTINED,
+    TOTAL;
 
     @Override
     public String toString() {
@@ -39,6 +40,8 @@ public enum Status {
                 return Status.EXEMPTED;
             case "QUARANTINED":
                 return Status.QUARANTINED;
+            case "TOTAL":
+                return Status.TOTAL;
             default:
                 return Status.ABSENT;
         }
