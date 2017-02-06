@@ -193,12 +193,12 @@ public class MainLoginActivity extends AppCompatActivity implements LoginMVP.Mvp
         attdList.addCandidate(new Candidate(0, "RMB3", "Candidate H", "15WAR00008", "BAME 0001", Status.EXEMPTED));
         attdList.addCandidate(new Candidate(0, "RMB3", "Candidate I", "15WAR00009", "BAME 0001", Status.QUARANTINED));
 
-        attdList.addCandidate(new Candidate(15, "RMC3", "Candidate B", "15WAR00002", "BAME 0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(14, "RMC3", "Candidate C", "15WAR00003", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(21, "RMC3", "Candidate J", "15WAR00010", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(22, "RMC3", "Candidate K", "15WAR00011", "BAME 0001", Status.PRESENT));
 
-        attdList.addCandidate(new Candidate(13, "RMA3", "Candidate D", "15WAR00004", "BAME 0001", Status.PRESENT));
-        attdList.addCandidate(new Candidate(0, "RMA3", "Candidate E", "15WAR00005", "BAME 0001", Status.ABSENT));
-        attdList.addCandidate(new Candidate(0, "RMA3", "Candidate F", "15WAR00006", "BAME 0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(26, "RMA3", "Candidate D", "15WAR00012", "BAME 0001", Status.PRESENT));
+        attdList.addCandidate(new Candidate(0, "RMA3", "Candidate L", "15WAR00013", "BAME 0001", Status.ABSENT));
+        attdList.addCandidate(new Candidate(0, "RMA3", "Candidate M", "15WAR00014", "BAME 0001", Status.ABSENT));
         TakeAttdModel.setAttdList(attdList);
 
         ExamSubject examSubject = new ExamSubject("BAME 0001", "SUBJECT 1",
